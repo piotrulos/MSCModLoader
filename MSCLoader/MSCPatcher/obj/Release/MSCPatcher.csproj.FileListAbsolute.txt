@@ -10,3 +10,4 @@ C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\MSCPatcher\obj\Re
 C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\RefExtern\MSCPatcher.exe.config
 C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\RefExtern\MSCPatcher.exe
 C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\RefExtern\MSCPatcher.pdb
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\MSCPatcher\obj\Release\MSCPatcher.csprojResolveAssemblyReference.cache

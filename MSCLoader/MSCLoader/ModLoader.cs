@@ -53,7 +53,7 @@ namespace MSCLoader
 		{
 			if (IsDoneLoading || Instance)
 			{
-				ModConsole.Error("PBLoader is already loaded!");
+				ModConsole.Error("MSCLoader is already loaded!");
 				return;
 			}
 

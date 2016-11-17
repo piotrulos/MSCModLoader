@@ -17,7 +17,7 @@ namespace MSCLoader
 		/// <summary>
 		/// Mod ID.
 		/// </summary>
-		public override string ID { get { return "PBLoader_Settings"; } }
+		public override string ID { get { return "MSCLoader_Settings"; } }
 
 		/// <summary>
 		/// Display name.

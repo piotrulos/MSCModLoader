@@ -8,15 +8,15 @@ using MSCLoader.Commands;
 
 namespace MSCLoader
 {
-	/// <summary>
-	/// The console for PBLoader.
-	/// </summary>
-	public class ModConsole : Mod
+    /// <summary>
+    /// The console for MSCLoader.
+    /// </summary>
+    public class ModConsole : Mod
 	{
 		/// <summary>
 		/// ID of the mod.
 		/// </summary>
-		public override string ID { get { return "PBLoader_Console"; } }
+		public override string ID { get { return "MSCLoader_Console"; } }
 
 		/// <summary>
 		/// Display name of the mod.
