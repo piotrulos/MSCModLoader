@@ -1,0 +1,7 @@
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\PBLoader\FirstPlugin\bin\Debug\FirstPlugin.dll
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\PBLoader\FirstPlugin\bin\Debug\FirstPlugin.pdb
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\PBLoader\FirstPlugin\bin\Debug\PBLoader.dll
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\PBLoader\FirstPlugin\bin\Debug\UnityEngine.dll
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\PBLoader\FirstPlugin\obj\Debug\FirstPlugin.csprojResolveAssemblyReference.cache
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\PBLoader\FirstPlugin\obj\Debug\FirstPlugin.dll
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\PBLoader\FirstPlugin\obj\Debug\FirstPlugin.pdb

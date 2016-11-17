@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Modifications>
+  <Class Name="StartGame">
+    <Method Name=".ctor">
+      <Instruction OpCode="Call" Assembly="MSCLoader" Type="MSCLoader.ModLoader" Method="Init" />
+    </Method>
+  </Class>
+</Modifications>

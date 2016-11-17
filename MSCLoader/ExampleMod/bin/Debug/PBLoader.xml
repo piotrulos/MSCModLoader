@@ -1,0 +1,385 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PBLoader</name>
+    </assembly>
+    <members>
+        <member name="T:PBLoader.ConsoleCommand">
+            <summary>
+            Allows for Mods to easily add rebindable console commands.
+            </summary>
+        </member>
+        <member name="F:PBLoader.ConsoleCommand.Commands">
+            <summary>
+            List of all console commands.
+            </summary>
+        </member>
+        <member name="P:PBLoader.ConsoleCommand.Name">
+            <summary>
+            The name of the ConsoleCommand (What the user will have to type in console to trigger the command) [Cannot contain spaces].
+            </summary>
+        </member>
+        <member name="P:PBLoader.ConsoleCommand.Help">
+            <summary>
+            The help message that will be displayed for the command when the user types "help"
+            </summary>
+        </member>
+        <member name="M:PBLoader.ConsoleCommand.Run(System.String[])">
+            <summary>
+            The function that will get called when the command is ran.
+            </summary>
+            <param name="args">The arguments the user passed to the command.</param>
+        </member>
+        <member name="M:PBLoader.ConsoleCommand.Add(PBLoader.ConsoleCommand)">
+            <summary>
+            Adds a console command.
+            </summary>
+            <param name="cmd">The instance of the command to add.</param>
+        </member>
+        <member name="T:PBLoader.Game">
+            <summary>
+            Collection of utility functions for interacting with the game.
+            </summary>
+        </member>
+        <member name="T:PBLoader.GameUtil">
+            <summary>
+            Collection of utility functions for retrieving info from the game.
+            </summary>
+        </member>
+        <member name="M:PBLoader.GameUtil.GetPrivateField``1(System.Object,System.String)">
+            <summary>
+            Return private field from class.
+            </summary>
+            <typeparam name="T">The type of field to get.</typeparam>
+            <param name="instance">The instance of the class to get the field from.</param>
+            <param name="name">The name of the private field.</param>
+            <returns>Private field from class.</returns>
+        </member>
+        <member name="T:PBLoader.Keybind">
+            <summary>
+            Allows for Mods to easily add rebindable keybinds.
+            </summary>
+        </member>
+        <member name="F:PBLoader.Keybind.Keybinds">
+            <summary>
+            List of Keybinds.
+            </summary>
+        </member>
+        <member name="F:PBLoader.Keybind.DefaultKeybinds">
+            <summary>
+            List of default Keybinds.
+            </summary>
+        </member>
+        <member name="P:PBLoader.Keybind.ID">
+            <summary>
+            The ID of the keybind (Should only be used once in your mod).
+            </summary>
+        </member>
+        <member name="P:PBLoader.Keybind.Name">
+            <summary>
+            The name that will be displayed.
+            </summary>
+        </member>
+        <member name="P:PBLoader.Keybind.Key">
+            <summary>
+            The KeyCode the user will have to press.
+            </summary>
+        </member>
+        <member name="P:PBLoader.Keybind.Modifier">
+            <summary>
+            The modifier KeyCode the user will have to press in conjunction with the Key.
+            </summary>
+        </member>
+        <member name="P:PBLoader.Keybind.Mod">
+            <summary>
+            The Mod this Keybind belongs to (This is set when using Keybind.Add).
+            </summary>
+        </member>
+        <member name="M:PBLoader.Keybind.Add(PBLoader.Mod,PBLoader.Keybind)">
+            <summary>
+            Add a keybind.
+            </summary>
+            <param name="mod">The instance of your mod.</param>
+            <param name="key">The Keybind to add.</param>
+        </member>
+        <member name="M:PBLoader.Keybind.Get(PBLoader.Mod)">
+            <summary>
+            Return all keybinds for mod.
+            </summary>
+            <param name="mod">The mod to get the Keybinds for.</param>
+            <returns>List of Keybinds for the mod.</returns>
+        </member>
+        <member name="M:PBLoader.Keybind.GetDefault(PBLoader.Mod)">
+            <summary>
+            Return all default keybinds for mod.
+            </summary>
+            <param name="mod">The mod to get the keybinds for.</param>
+            <returns>List of default Keybinds for the mod.</returns>
+        </member>
+        <member name="M:PBLoader.Keybind.#ctor(System.String,System.String,UnityEngine.KeyCode)">
+            <summary>
+            Constructor for Keybind
+            </summary>
+            <param name="id">The ID of the Keybind.</param>
+            <param name="name">The name of the Keybind.</param>
+            <param name="key">The KeyCode the user will press.</param>
+        </member>
+        <member name="M:PBLoader.Keybind.#ctor(System.String,System.String,UnityEngine.KeyCode,UnityEngine.KeyCode)">
+            <summary>
+            Constructor for Keybind
+            </summary>
+            <param name="id">The ID of the Keybind (Used only once in your mod).</param>
+            <param name="name">The name of the Keybind that will be displayed.</param>
+            <param name="key">The KeyCode the user will press.</param>
+            <param name="modifier">The modifier KeyCode the user will have to press.</param>
+        </member>
+        <member name="M:PBLoader.Keybind.IsPressed">
+            <summary>
+            Checks if the Keybind is being held down.
+            </summary>
+            <returns>If the Keybind is being held down.</returns>
+        </member>
+        <member name="M:PBLoader.Keybind.IsDown">
+            <summary>
+            Checks if the Keybind was just pressed this tick.
+            </summary>
+            <returns>If the Keybind is being held down.</returns>
+        </member>
+        <member name="T:PBLoader.Mod">
+            <summary>
+            The base mod class, all mods should derive this.
+            </summary>
+        </member>
+        <member name="P:PBLoader.Mod.ID">
+            <summary>
+            The ID for your mod (This should be unique).
+            </summary>
+        </member>
+        <member name="P:PBLoader.Mod.Name">
+            <summary>
+            The name that will be displayed.
+            </summary>
+        </member>
+        <member name="P:PBLoader.Mod.Version">
+            <summary>
+            The current version of the mod.
+            </summary>
+        </member>
+        <member name="P:PBLoader.Mod.Author">
+            <summary>
+            The name of the author.
+            </summary>
+        </member>
+        <member name="M:PBLoader.Mod.OnLoad">
+            <summary>
+            Called when the mod is loaded.
+            </summary>
+        </member>
+        <member name="M:PBLoader.Mod.OnGUI">
+            <summary>
+            Called to draw the mod's GUI.
+            </summary>
+        </member>
+        <member name="M:PBLoader.Mod.Update">
+            <summary>
+            Called every tick.
+            </summary>
+        </member>
+        <member name="T:PBLoader.ModConsole">
+            <summary>
+            The console for PBLoader.
+            </summary>
+        </member>
+        <member name="P:PBLoader.ModConsole.ID">
+            <summary>
+            ID of the mod.
+            </summary>
+        </member>
+        <member name="P:PBLoader.ModConsole.Name">
+            <summary>
+            Display name of the mod.
+            </summary>
+        </member>
+        <member name="P:PBLoader.ModConsole.Version">
+            <summary>
+            Version of the mod.
+            </summary>
+        </member>
+        <member name="P:PBLoader.ModConsole.Author">
+            <summary>
+            Author.
+            </summary>
+        </member>
+        <member name="P:PBLoader.ModConsole.IsOpen">
+            <summary>
+            If the console is open or not
+            </summary>
+        </member>
+        <member name="M:PBLoader.ModConsole.Print(System.Object)">
+            <summary>
+            Append a message to console.
+            </summary>
+            <param name="obj">Text or object to append to console.</param>
+        </member>
+        <member name="M:PBLoader.ModConsole.Error(System.Object)">
+            <summary>
+            Append an error to the console.
+            </summary>
+            <param name="obj">Text or object to append to error log.</param>
+        </member>
+        <member name="M:PBLoader.ModConsole.Clear">
+            <summary>
+            Clear the console.
+            </summary>
+        </member>
+        <member name="M:PBLoader.ModConsole.Toggle">
+            <summary>
+            Toggle if the console is open or not.
+            </summary>
+        </member>
+        <member name="M:PBLoader.ModConsole.OnLoad">
+            <summary>
+            Load built-in console commands.
+            </summary>
+        </member>
+        <member name="M:PBLoader.ModConsole.OnGUI">
+            <summary>
+            Draw console.
+            </summary>
+        </member>
+        <member name="M:PBLoader.ModConsole.Update">
+            <summary>
+            Listen for Keybind press.
+            </summary>
+        </member>
+        <member name="T:PBLoader.ModLoader">
+            <summary>
+            Main ModLoader class.
+            </summary>
+        </member>
+        <member name="P:PBLoader.ModLoader.IsDoneLoading">
+            <summary>
+            If the ModLoader is done loading or not.
+            </summary>
+        </member>
+        <member name="P:PBLoader.ModLoader.LoadedMods">
+            <summary>
+            A list of all currently loaded mods.
+            </summary>
+        </member>
+        <member name="P:PBLoader.ModLoader.Instance">
+            <summary>
+            The instance of ModLoader.
+            </summary>
+        </member>
+        <member name="F:PBLoader.ModLoader.Version">
+            <summary>
+            The current version of the ModLoader.
+            </summary>
+        </member>
+        <member name="F:PBLoader.ModLoader.ModsFolder">
+            <summary>
+            The folder where all Mods are stored.
+            </summary>
+        </member>
+        <member name="F:PBLoader.ModLoader.ConfigFolder">
+            <summary>
+            The folder where the config files for Mods are stored.
+            </summary>
+        </member>
+        <member name="M:PBLoader.ModLoader.Init">
+            <summary>
+            Initialize the ModLoader
+            </summary>
+        </member>
+        <member name="M:PBLoader.ModLoader.LoadMods">
+            <summary>
+            Load all mods in the "mods" folder.
+            </summary>
+        </member>
+        <member name="M:PBLoader.ModLoader.LoadDLL(System.String)">
+            <summary>
+            Load mod from DLL file.
+            </summary>
+            <param name="file">The path of the DLL file to load the Mod from.</param>
+        </member>
+        <member name="M:PBLoader.ModLoader.LoadMod(PBLoader.Mod,System.Boolean)">
+            <summary>
+            Load a Mod.
+            </summary>
+            <param name="mod">The instance of the Mod to load.</param>
+            <param name="isInternal">If the Mod is internal or not.</param>
+        </member>
+        <member name="M:PBLoader.ModLoader.OnGUI">
+            <summary>
+            Draw GUI.
+            </summary>
+        </member>
+        <member name="M:PBLoader.ModLoader.Update">
+            <summary>
+            Call Update for all loaded Mods.
+            </summary>
+        </member>
+        <member name="T:PBLoader.ModSettings">
+            <summary>
+            Handles the settings for all Mods.
+            </summary>
+        </member>
+        <member name="P:PBLoader.ModSettings.ID">
+            <summary>
+            Mod ID.
+            </summary>
+        </member>
+        <member name="P:PBLoader.ModSettings.Name">
+            <summary>
+            Display name.
+            </summary>
+        </member>
+        <member name="P:PBLoader.ModSettings.Version">
+            <summary>
+            Version.
+            </summary>
+        </member>
+        <member name="P:PBLoader.ModSettings.Author">
+            <summary>
+            Author
+            </summary>
+        </member>
+        <member name="M:PBLoader.ModSettings.Toggle">
+            <summary>
+            Toggles if the settings menu is open or not.
+            </summary>
+        </member>
+        <member name="M:PBLoader.ModSettings.SaveAllBinds">
+            <summary>
+            Save all keybinds to config files.
+            </summary>
+        </member>
+        <member name="M:PBLoader.ModSettings.SaveModBinds(PBLoader.Mod)">
+            <summary>
+            Save keybind for a single mod to config file.
+            </summary>
+            <param name="mod">The mod to save the config for.</param>
+        </member>
+        <member name="M:PBLoader.ModSettings.LoadBinds">
+            <summary>
+            Load all keybinds.
+            </summary>
+        </member>
+        <member name="M:PBLoader.ModSettings.OnLoad">
+            <summary>
+            Load the keybinds.
+            </summary>
+        </member>
+        <member name="M:PBLoader.ModSettings.OnGUI">
+            <summary>
+            Draw menu.
+            </summary>
+        </member>
+        <member name="M:PBLoader.ModSettings.Update">
+            <summary>
+            Open menu if the key is pressed.
+            </summary>
+        </member>
+    </members>
+</doc>
