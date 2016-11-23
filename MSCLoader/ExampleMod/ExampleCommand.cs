@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MSCLoader;
+﻿using MSCLoader;
 
 namespace ExampleMod
 {
-	public class ExampleCommand : ConsoleCommand
+    public class ExampleCommand : ConsoleCommand
 	{
 		// What the player has to type into the console to execute your commnad
 		public override string Name { get { return "example_command"; } }

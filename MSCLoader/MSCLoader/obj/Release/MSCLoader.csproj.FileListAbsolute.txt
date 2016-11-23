@@ -2,8 +2,8 @@ c:\users\djoe4\documents\visual studio 2015\Projects\MSCLoader\MSCLoader\bin\Rel
 c:\users\djoe4\documents\visual studio 2015\Projects\MSCLoader\MSCLoader\bin\Release\MSCLoader.pdb
 c:\users\djoe4\documents\visual studio 2015\Projects\MSCLoader\MSCLoader\bin\Release\Assembly-CSharp.dll
 c:\users\djoe4\documents\visual studio 2015\Projects\MSCLoader\MSCLoader\bin\Release\UnityEngine.dll
-c:\users\djoe4\documents\visual studio 2015\Projects\MSCLoader\MSCLoader\obj\Release\MSCLoader.csprojResolveAssemblyReference.cache
-c:\users\djoe4\documents\visual studio 2015\Projects\MSCLoader\MSCLoader\obj\Release\MSCLoader.dll
-c:\users\djoe4\documents\visual studio 2015\Projects\MSCLoader\MSCLoader\obj\Release\MSCLoader.pdb
-c:\users\djoe4\documents\visual studio 2015\Projects\MSCLoader\RefExtern\MSCLoader.dll
-c:\users\djoe4\documents\visual studio 2015\Projects\MSCLoader\RefExtern\MSCLoader.pdb
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\RefExtern\MSCLoader.dll
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\RefExtern\MSCLoader.pdb
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\MSCLoader\obj\Release\MSCLoader.dll
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\MSCLoader\obj\Release\MSCLoader.pdb
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\MSCLoader\obj\Release\MSCLoader.csprojResolveAssemblyReference.cache

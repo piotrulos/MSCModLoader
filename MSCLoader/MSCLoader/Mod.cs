@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MSCLoader
+﻿namespace MSCLoader
 {
-	/// <summary>
-	/// The base mod class, all mods should derive this.
-	/// </summary>
-	public abstract class Mod
+    /// <summary>
+    /// The base mod class, all mods should derive this.
+    /// </summary>
+    public abstract class Mod
 	{
 		/// <summary>
 		/// The ID for your mod (This should be unique).

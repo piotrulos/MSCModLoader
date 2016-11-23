@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MSCLoader;
+﻿using MSCLoader;
 using UnityEngine;
 
 namespace ExampleMod
 {
-	public class ExampleMod : Mod
+    public class ExampleMod : Mod
 	{
 		// The ID of the mod - Should be unique
 		public override string ID { get { return "ExampleMod"; } }

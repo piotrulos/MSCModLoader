@@ -33,8 +33,8 @@ C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\PBLoader\TeleportPlugin\bin
 C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\PBLoader\TeleportPlugin\obj\Release\TeleportPlugin.csprojResolveAssemblyReference.cache
 C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\PBLoader\TeleportPlugin\obj\Release\TeleportPlugin.dll
 C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\PBLoader\TeleportPlugin\obj\Release\TeleportPlugin.pdb
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\TeleportPlugin\obj\Release\TeleportPlugin.csprojResolveAssemblyReference.cache
 C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\RefExtern\TeleportPlugin.dll
 C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\RefExtern\TeleportPlugin.pdb
-C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\TeleportPlugin\obj\Release\TeleportPlugin.csprojResolveAssemblyReference.cache
 C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\TeleportPlugin\obj\Release\TeleportPlugin.dll
 C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\TeleportPlugin\obj\Release\TeleportPlugin.pdb

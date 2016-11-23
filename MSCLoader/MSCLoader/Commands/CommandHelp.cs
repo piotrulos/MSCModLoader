@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MSCLoader.Commands
+﻿namespace MSCLoader.Commands
 {
-	public class CommandHelp : ConsoleCommand
+    public class CommandHelp : ConsoleCommand
 	{
 		public override string Name { get { return "help"; } }
 		public override string Help { get { return "Offers help about commands"; } }

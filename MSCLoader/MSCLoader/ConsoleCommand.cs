@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace MSCLoader
 {
-	/// <summary>
-	/// Allows for Mods to easily add rebindable console commands.
-	/// </summary>
-	public abstract class ConsoleCommand
+    /// <summary>
+    /// Allows for Mods to easily add rebindable console commands.
+    /// </summary>
+    public abstract class ConsoleCommand
 	{
 		/// <summary>
 		/// List of all console commands.

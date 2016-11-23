@@ -19,7 +19,7 @@ C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\PBLoader\ExampleMod\obj\Rel
 C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\PBLoader\ExampleMod\bin\Release\MCLoader.dll
 C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\PBLoader\ExampleMod\bin\Release\MCLoader.pdb
 C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\ExampleMod\obj\Release\ExampleMod.csprojResolveAssemblyReference.cache
-C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\ExampleMod\obj\Release\ExampleMod.dll
-C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\ExampleMod\obj\Release\ExampleMod.pdb
 C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\RefExtern\ExampleMod.dll
 C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\RefExtern\ExampleMod.pdb
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\ExampleMod\obj\Release\ExampleMod.dll
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\ExampleMod\obj\Release\ExampleMod.pdb

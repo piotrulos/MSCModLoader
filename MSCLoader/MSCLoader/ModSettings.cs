@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using System.Xml;
+using System.Xml.Schema;
 using UnityEngine;
 
 namespace MSCLoader
@@ -260,15 +257,19 @@ namespace MSCLoader
 		/// <param name="mod">The mod to save the config for.</param>
 		public static void SaveModBinds(Mod mod)
 		{
+            
+            
 			string path = ModLoader.ConfigFolder + mod.ID + "\\keybinds.xml";
 
 			// Clear file
 			File.WriteAllText(path, "");
 
-			// Write XML
-			XmlDocument doc = new XmlDocument();
-			XmlElement keybinds = doc.CreateElement(string.Empty, "Keybinds", string.Empty);
 
+            // Write XML
+            XmlDocument doc = new XmlDocument();
+            XmlElement keybinds = doc.CreateElement(string.Empty, "Keybinds", string.Empty);
+            
+            
 			foreach (Keybind bind in Keybind.Get(mod))
 			{
 				XmlElement keybind = doc.CreateElement(string.Empty, "Keybind", string.Empty);
@@ -286,16 +287,18 @@ namespace MSCLoader
 				keybind.AppendChild(modifier);
 
 				keybinds.AppendChild(keybind);
-			}
+               
+                 }
 
 			doc.AppendChild(keybinds);
 			doc.Save(path);
-		}
+             
+        }
 
-		/// <summary>
-		/// Load all keybinds.
-		/// </summary>
-		public static void LoadBinds()
+        /// <summary>
+        /// Load all keybinds.
+        /// </summary>
+        public static void LoadBinds()
 		{
 			foreach (Mod mod in ModLoader.LoadedMods)
 			{

@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using System.Reflection;
 using UnityEngine;
 
 namespace MSCLoader
 {
-	/// <summary>
-	/// Main ModLoader class.
-	/// </summary>
-	public class ModLoader : MonoBehaviour
+    /// <summary>
+    /// Main ModLoader class.
+    /// </summary>
+    public class ModLoader : MonoBehaviour
 	{
 		/// <summary>
 		/// If the ModLoader is done loading or not.
@@ -63,8 +60,10 @@ namespace MSCLoader
             Instance = go.GetComponent<ModLoader>();
 			GameObject.DontDestroyOnLoad(go);
 
-			// Init variables
-			ModConsole.Print("Loading...");
+            // Init variables
+            ModConsole.Print("ModLoader by http://mysummercar.fr");
+            ModConsole.Print("Loading...");
+
             IsDoneLoading = false;
 			LoadedMods = new List<Mod>();
 
@@ -89,8 +88,8 @@ namespace MSCLoader
 			LoadMods();
 			ModSettings.LoadBinds();
 
-			// Finished loading
-			IsDoneLoading = true;
+            // Finished loading
+            IsDoneLoading = true;
 			ModConsole.Print("Done loading");
 		}
 
