@@ -52,7 +52,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TeleportPluginCommand.cs" />
     <Compile Include="TeleportPluginMod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

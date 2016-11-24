@@ -6,3 +6,5 @@ C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\MscSavePlugins\bi
 C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\MscSavePlugins\obj\Release\MscSavePlugins.csprojResolveAssemblyReference.cache
 C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\MscSavePlugins\obj\Release\MscSavePlugins.dll
 C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\MscSavePlugins\obj\Release\MscSavePlugins.pdb
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\RefExtern\MscSavePlugins.dll
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\RefExtern\MscSavePlugins.pdb

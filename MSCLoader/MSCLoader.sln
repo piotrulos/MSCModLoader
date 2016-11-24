@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleMod", "ExampleMod\Ex
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MscSavePlugins", "MscSavePlugins\MscSavePlugins.csproj", "{4542EC89-BEAA-4945-AF39-E5F3AC8B7555}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSCNeon", "MSCNeon\MSCNeon.csproj", "{989D49AA-EC93-4FA4-81B3-EAFA9679B33E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MscCheat", "MscCheat\MscCheat.csproj", "{CBAE2A40-4C4C-439C-AEA1-1B1AFC47D639}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{4542EC89-BEAA-4945-AF39-E5F3AC8B7555}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4542EC89-BEAA-4945-AF39-E5F3AC8B7555}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4542EC89-BEAA-4945-AF39-E5F3AC8B7555}.Release|Any CPU.Build.0 = Release|Any CPU
+		{989D49AA-EC93-4FA4-81B3-EAFA9679B33E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{989D49AA-EC93-4FA4-81B3-EAFA9679B33E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{989D49AA-EC93-4FA4-81B3-EAFA9679B33E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{989D49AA-EC93-4FA4-81B3-EAFA9679B33E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBAE2A40-4C4C-439C-AEA1-1B1AFC47D639}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBAE2A40-4C4C-439C-AEA1-1B1AFC47D639}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBAE2A40-4C4C-439C-AEA1-1B1AFC47D639}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBAE2A40-4C4C-439C-AEA1-1B1AFC47D639}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

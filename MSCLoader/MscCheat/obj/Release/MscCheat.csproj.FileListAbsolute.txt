@@ -1,0 +1,11 @@
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\MscCheat\bin\Release\MscCheat.dll
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\MscCheat\bin\Release\MscCheat.pdb
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\MscCheat\bin\Release\MSCLoader.dll
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\MscCheat\bin\Release\PlayMaker.dll
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\MscCheat\bin\Release\UnityEngine.dll
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\MscCheat\bin\Release\MSCLoader.pdb
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\MscCheat\obj\Release\MscCheat.csprojResolveAssemblyReference.cache
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\MscCheat\obj\Release\MscCheat.dll
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\MscCheat\obj\Release\MscCheat.pdb
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\RefExtern\MscCheat.dll
+C:\Users\Djoe4\Documents\Visual Studio 2015\Projects\MSCLoader\RefExtern\MscCheat.pdb
