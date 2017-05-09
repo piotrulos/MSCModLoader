@@ -8,14 +8,7 @@ namespace MSCLoader
 	/// </summary>
 	public class Keybind
 	{
-		/// <summary>
-		/// List of Keybinds.
-		/// </summary>
 		public static List<Keybind> Keybinds = new List<Keybind>();
-
-		/// <summary>
-		/// List of default Keybinds.
-		/// </summary>
 		public static List<Keybind> DefaultKeybinds = new List<Keybind>();
 
 		/// <summary>

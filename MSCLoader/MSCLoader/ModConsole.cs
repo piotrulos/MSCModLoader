@@ -1,7 +1,6 @@
-﻿using System;
-using System.Linq;
-using UnityEngine;
+﻿using UnityEngine;
 using MSCLoader.Commands;
+using UnityEngine.UI;
 
 namespace MSCLoader
 {
@@ -10,174 +9,137 @@ namespace MSCLoader
     /// </summary>
     public class ModConsole : Mod
 	{
-		/// <summary>
-		/// ID of the mod.
-		/// </summary>
 		public override string ID { get { return "MSCLoader_Console"; } }
-
-		/// <summary>
-		/// Display name of the mod.
-		/// </summary>
 		public override string Name { get { return "Console"; } }
-
-		/// <summary>
-		/// Version of the mod.
-		/// </summary>
 		public override string Version { get { return ModLoader.Version; } }
+		public override string Author { get { return "piotrulos"; } }
 
-		/// <summary>
-		/// Author.
-		/// </summary>
-		public override string Author { get { return "sfoy"; } }
-
-
-		/// <summary>
-		/// If the console is open or not
-		/// </summary>
 		public static bool IsOpen { get; private set; }
+        public static ConsoleView console = new ConsoleView();
+        private Keybind consoleKey = new Keybind("Open", "Open console", KeyCode.BackQuote);
 
-		private static string consoleText = "";
-		private static string commandText = "";
+        /// <summary>
+        /// Create console UI using UnityEngine.UI
+        /// </summary>
+        public void CreateConsoleUI()
+        {
+            //Create parent gameobject for console.
+            GameObject consoleObj = ModUI.CreateParent("MSCLoader Console", false);
+            consoleObj.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+            consoleObj.GetComponent<RectTransform>().anchorMax = new Vector2(0, 0);
+            consoleObj.GetComponent<RectTransform>().pivot = new Vector2(0, 0);
+            consoleObj.GetComponent<RectTransform>().sizeDelta = new Vector2(346, 150);
+            console = consoleObj.AddComponent<ConsoleView>();
 
-		private Rect windowRect = new Rect(40, Screen.height - 500, 680, 480);
-		private Vector2 scrollPosition = new Vector2(0, 0);
+            //Create console container
+            GameObject consoleObjc = ModUI.CreateUIBase("MSCLoader ConsoleContainer", consoleObj);
+            consoleObjc.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+            consoleObjc.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+            consoleObjc.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
+            consoleObjc.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 0);
 
-		private Keybind consoleKey = new Keybind("Open", "Open console", KeyCode.BackQuote);
+            consoleObj.GetComponent<ConsoleView>().viewContainer = consoleObjc; //set viewContainer in ConsoleView.cs
+            //console = consoleObj.GetComponent<ConsoleView>();
 
-		/// <summary>
-		/// Append a message to console.
-		/// </summary>
-		/// <param name="obj">Text or object to append to console.</param>
-		public static void Print(object obj)
-		{
-			consoleText += "<color=white>" + obj.ToString() + "</color>" + Environment.NewLine;
+            //Create input field
+            GameObject consoleInput = ModUI.CreateInputField("InputField", "Enter command...", consoleObjc, 322, 30);
+            consoleInput.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+            consoleInput.GetComponent<RectTransform>().anchorMax = new Vector2(0, 0);
+            consoleInput.GetComponent<RectTransform>().pivot = new Vector2(0, 0);
+            consoleInput.GetComponent<InputField>().onEndEdit.AddListener(delegate { consoleObj.GetComponent<ConsoleView>().runCommand(); });
+
+            consoleObj.GetComponent<ConsoleView>().inputField = consoleInput.GetComponent<InputField>();
+          
+            //Submit button
+            GameObject enterBtn = ModUI.CreateButton("SubmitBtn",">",consoleObjc,24,30);
+            enterBtn.GetComponent<RectTransform>().anchorMin = new Vector2(1, 0);
+            enterBtn.GetComponent<RectTransform>().anchorMax = new Vector2(1, 0);
+            enterBtn.GetComponent<RectTransform>().pivot = new Vector2(1, 0);
+            enterBtn.GetComponent<Button>().onClick.AddListener(() => consoleObj.GetComponent<ConsoleView>().runCommand());
+
+            //Log view text
+            GameObject logView = ModUI.CreateUIBase("LogView",consoleObjc);
+            logView.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
+            logView.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1);
+            logView.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
+            logView.GetComponent<RectTransform>().sizeDelta = new Vector2(333, 120);
+            logView.AddComponent<Image>().color = Color.black;
+            logView.AddComponent<Mask>().showMaskGraphic = true;
+
+            GameObject logViewTxt = ModUI.CreateTextBlock("LogText",">", logView, TextAnchor.LowerLeft, Color.white,false);
+            logViewTxt.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+            logViewTxt.GetComponent<RectTransform>().anchorMax = new Vector2(1, 0);
+            logViewTxt.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0);
+            logViewTxt.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 1425);
+            logViewTxt.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            consoleObj.GetComponent<ConsoleView>().logTextArea = logViewTxt.GetComponent<Text>();
+            logView.AddComponent<ScrollRect>().content = logViewTxt.GetComponent<RectTransform>();
+            logView.GetComponent<ScrollRect>().horizontal = false;
+            logView.GetComponent<ScrollRect>().inertia = false;
+            logView.GetComponent<ScrollRect>().movementType = ScrollRect.MovementType.Clamped;
+            logView.GetComponent<ScrollRect>().scrollSensitivity = 30f;
+
+            //Scrollbar
+            GameObject scrollbar = ModUI.CreateScrollbar(consoleObjc,120,13,90);
+            scrollbar.GetComponent<RectTransform>().anchorMin = new Vector2(1, 1);
+            scrollbar.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+            scrollbar.GetComponent<RectTransform>().pivot = new Vector2(1, 0);
+
+            logView.GetComponent<ScrollRect>().verticalScrollbar = scrollbar.GetComponent<Scrollbar>();
+
+        }
+        
+        public override void Update()
+        {
+            if (consoleKey.IsDown())
+            {
+                console.toggleVisibility();
+            }
+        }
+
+        public override void OnLoad()
+        {
+            Keybind.Add(this, consoleKey);
+            CreateConsoleUI();
+            console.setVisibility(false);
+            ConsoleCommand.Add(new CommandClear());
+            ConsoleCommand.Add(new CommandHelp());
+        }
+
+        /// <summary>
+        /// Print a message to console.
+        /// </summary>
+        /// <param name="str">Text or object to append to console.</param>
+        public static void Print(string str)
+        {
+             console.console.appendLogLine(str);
 		}
-
-		/// <summary>
-		/// Append an error to the console.
-		/// </summary>
-		/// <param name="obj">Text or object to append to error log.</param>
-		public static void Error(object obj)
+        /// <summary>
+        /// OBSOLETE: For compatibility with 0.1 plugins, please use string str overload!
+        /// </summary>
+        /// <param name="obj">Text or object to append to console.</param>
+        public static void Print(object obj)
+        {
+            console.console.appendLogLine(obj.ToString());
+        }
+        /// <summary>
+        /// Append an error to the console.
+        /// </summary>
+        /// <param name="str">Text or object to append to error log.</param>
+        public static void Error(string str)
 		{
-			Print("<color=red>[Error] " + consoleText.ToString() + "</color>");
-			IsOpen = true;
-		}
+            console.setVisibility(true);
+            console.console.appendLogLine(string.Format("<color=red><b>Error: </b>{0}</color>", str));
+        }
 
 		/// <summary>
 		/// Clear the console.
 		/// </summary>
 		public static void Clear()
 		{
-			consoleText = "";
+            console.console.clearConsole();
 		}
 
-		/// <summary>
-		/// Toggle if the console is open or not.
-		/// </summary>
-		public static void Toggle()
-		{
-			IsOpen = !IsOpen;
-			commandText = "";
-		}
-
-		// Run command
-		private void RunCommand()
-		{
-			string[] parts = commandText.Split(' ');
-
-			// Empty command
-			if (string.IsNullOrEmpty(commandText)) { return; }
-
-			// Invalid command
-			if (parts.Length < 1)
-			{
-				Print("<color=red>Invalid command</color>");
-				return;
-			}
-
-			// Parse command
-			foreach (ConsoleCommand cmd in ConsoleCommand.Commands)
-			{
-				if (cmd.Name == parts[0])
-				{
-					if (parts.Length >= 2)
-					{
-						string[] args = (string[])parts.Skip(1);
-						cmd.Run(args);
-					}
-					else
-					{
-						cmd.Run(new string[] { });
-					}
-
-					commandText = "";
-					return;
-				}
-			}
-
-			commandText = "";
-			Print("<color=red>Command does not exist</color>");
-		}
-
-		// Manage windows
-		private void windowManager(int id)
-		{
-			if (id == 0)
-			{
-				scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.Width(600), GUILayout.Height(400));
-				GUILayout.TextArea(consoleText, new GUIStyle() { richText = true });
-				GUILayout.EndScrollView();
-
-				commandText = GUI.TextField(new Rect(12, windowRect.height - 40, 600, 20), commandText);
-
-				if (GUI.Button(new Rect(625, 30, 40, 40), "X"))
-				{
-					IsOpen = false;
-				}
-
-				if (GUI.Button(new Rect(625, windowRect.height - 50, 40, 40), ">"))
-				{
-					RunCommand();
-					scrollPosition.y = int.MaxValue;
-				}
-
-				GUI.DragWindow();
-			}
-		}
-
-		/// <summary>
-		/// Load built-in console commands.
-		/// </summary>
-		public override void OnLoad()
-		{
-			IsOpen = false;
-
-			Keybind.Add(this, consoleKey);
-
-			ConsoleCommand.Add(new CommandClear());
-			ConsoleCommand.Add(new CommandHelp());
-		}
-
-		/// <summary>
-		/// Draw console.
-		/// </summary>
-		public override void OnGUI()
-		{
-			if (IsOpen)
-			{
-				windowRect = GUI.Window(0, windowRect, windowManager, "ModLoader Console");
-			}
-		}
-
-		/// <summary>
-		/// Listen for Keybind press.
-		/// </summary>
-		public override void Update()
-		{
-			if (consoleKey.IsDown())
-			{
-				Toggle();
-			}
-		}
 	}
 }

@@ -1,0 +1,13 @@
+D:\programowanie_unity\MSCMody\MSCModLoader\MSCPatcher\MSCPatcher\bin\Release\MSCPatcher.exe
+D:\programowanie_unity\MSCMody\MSCModLoader\MSCPatcher\MSCPatcher\bin\Release\MSCPatcher.pdb
+D:\programowanie_unity\MSCMody\MSCModLoader\MSCPatcher\MSCPatcher\bin\Release\Mono.Cecil.dll
+D:\programowanie_unity\MSCMody\MSCModLoader\MSCPatcher\MSCPatcher\bin\Release\Mono.Cecil.Mdb.dll
+D:\programowanie_unity\MSCMody\MSCModLoader\MSCPatcher\MSCPatcher\bin\Release\Mono.Cecil.Pdb.dll
+D:\programowanie_unity\MSCMody\MSCModLoader\MSCPatcher\MSCPatcher\bin\Release\Mono.Cecil.Rocks.dll
+D:\programowanie_unity\MSCMody\MSCModLoader\MSCPatcher\MSCPatcher\obj\Release\MSCPatcher.Form1.resources
+D:\programowanie_unity\MSCMody\MSCModLoader\MSCPatcher\MSCPatcher\obj\Release\MSCPatcher.Properties.Resources.resources
+D:\programowanie_unity\MSCMody\MSCModLoader\MSCPatcher\MSCPatcher\obj\Release\MSCPatcher.csproj.GenerateResource.Cache
+D:\programowanie_unity\MSCMody\MSCModLoader\MSCPatcher\MSCPatcher\obj\Release\MSCPatcher.exe
+D:\programowanie_unity\MSCMody\MSCModLoader\MSCPatcher\MSCPatcher\obj\Release\MSCPatcher.pdb
+D:\programowanie_unity\MSCMody\MSCModLoader\MSCPatcher\MSCPatcher\obj\Release\MSCPatcher.csprojResolveAssemblyReference.cache
+D:\programowanie_unity\MSCMody\MSCModLoader\MSCPatcher\MSCPatcher\bin\Release\MSCPatcher.exe.config

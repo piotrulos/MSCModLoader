@@ -3,14 +3,14 @@ A mod loader for My Summer Car
 
 Installation
 ------------
-1. Download the latest release of MSCLoader from [here](http://mysummercar.fr/forum/partage/modloader/#post-90)
-2. Navigate to your My Summer Car install directory (Most likely {Steam install dir}\steamapps\common\My Summer Car)
-3. Navigate to your Managed folder ({Steam install dir}\steamapps\common\My Summer Car\mysummercar_Data\Managed)
-4. Place MSCLoader.dll, Mono.Cecil.dll, Mono.Cecil.Rocks and MSCPatcher.exe in that folder
-5. Use MSCPatcher.exe 
-6. Launch your game, and load.
-7. Quit the game
-8. Navigate to your Mods folder ({my documents}\MySummerCar\Mods)
-9. Put your plugins (example "TeleportPlugin.dll") in the folder and your ready!
+1. Download the latest release of MSCLoader from [here](https://github.com/piotrulos/MSCModLoader/releases)
+2. Unpack anywhere you want
+3. Open MSCPatcher.exe and click on "MSC Folder" to select game folder (in \Steam\steamapps\common\My Summer Car\)
+4. MSCPatcher will detect what version of MSCLoader you have, and allow you to update.
+5. You can select location of Mods folder if you want, or leave default
+6. After successful instalation you can click "Launch MSC", this will run game on steam.
+7. Navigate to your selected Mods folder 
+8. Put your plugins in the mods folder and your ready!
 
-Credit: Longwelwind & TheNoob454
+
+Credit: djoe45 for MSCLoader that was based on Longwelwind & TheNoob454 work ([PhiPatcher](https://github.com/Longwelwind/PhiScript) and [PBLoader](https://github.com/TheNoob454/PBLoader))

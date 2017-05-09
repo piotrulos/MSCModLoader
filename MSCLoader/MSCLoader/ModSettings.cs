@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Xml;
-using System.Xml.Schema;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace MSCLoader
 {
@@ -11,206 +11,154 @@ namespace MSCLoader
 	/// </summary>
 	public class ModSettings : Mod
 	{
-		/// <summary>
-		/// Mod ID.
-		/// </summary>
 		public override string ID { get { return "MSCLoader_Settings"; } }
-
-		/// <summary>
-		/// Display name.
-		/// </summary>
 		public override string Name { get { return "Settings"; } }
-
-		/// <summary>
-		/// Version.
-		/// </summary>
 		public override string Version { get { return ModLoader.Version; } }
+		public override string Author { get { return "piotrulos"; } }
 
-		/// <summary>
-		/// Author
-		/// </summary>
-		public override string Author { get { return "sfoy"; } }
-
-		private static bool menuOpen = false;
-		private static bool awaitingInput = false;
-		private static int awaitingKeyID = -1;
-		private static int menuState = 0;
 		private static Mod selectedMod = null;
 		private static Vector2 scrollPos = new Vector2(0, 0);
-		private static Keybind awaitingKey = null;
 
-		private Keybind menuKey = new Keybind("Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
+        private Keybind menuKey = new Keybind("Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
+        public SettingsView settings;
 
-		/// <summary>
-		/// Toggles if the settings menu is open or not.
-		/// </summary>
-		public static void Toggle()
-		{
-			menuOpen = !menuOpen;
-			menuState = 0;
-			selectedMod = null;
-			scrollPos = Vector2.zero;
-		}
+        /// <summary>
+        /// Create Settings UI using UnityEngine.UI
+        /// </summary>
+        public void CreateSettingsUI()
+        {
+            
+            GameObject settingsView = ModUI.CreateParent("MSCLoader Settings", true);
+            settingsView.GetComponent<RectTransform>().sizeDelta = new Vector2(300, 450);
+            settingsView.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
+            settingsView.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
+            settingsView.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
 
-		// Manage windows
-		private void windowManager(int id)
-		{
-			if (id == 0)
-			{
-				if (menuState == 0)
-				{
-					// Main menu
+            settings = settingsView.AddComponent<SettingsView>();
+            settingsView.GetComponent<SettingsView>().settingView = settingsView;
 
-					scrollPos = GUILayout.BeginScrollView(scrollPos);
+            GameObject settingsViewC = ModUI.CreateUIBase("MSCLoader SettingsContainer", settingsView);
+            settingsViewC.GetComponent<RectTransform>().sizeDelta = new Vector2(300, 450);
+            settingsViewC.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
+            settingsViewC.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
+            settingsViewC.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
+            settingsViewC.AddComponent<Image>().color = Color.black;
 
-					GUILayout.Label("Loaded mods");
+            settingsView.GetComponent<SettingsView>().settingViewContainer = settingsViewC;
 
-					GUILayout.Space(20);
+            GameObject title = ModUI.CreateTextBlock("Title", "Loaded Mods:", settingsViewC, TextAnchor.MiddleCenter, Color.white, false);
+            title.GetComponent<RectTransform>().sizeDelta = new Vector2(300, 20);
+            title.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 1);
+            title.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 1);
+            title.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 1);
+            title.GetComponent<Text>().fontSize = 16;
+            title.GetComponent<Text>().fontStyle = FontStyle.Bold;
 
-					foreach (Mod mod in ModLoader.LoadedMods)
-					{
-						if (GUILayout.Button(mod.Name, GUILayout.Height(30)))
-						{
-							menuState = 1;
-							selectedMod = mod;
-						}
-					}
+            GameObject goBack = ModUI.CreateUIBase("GoBackButton", title);
+            goBack.GetComponent<RectTransform>().sizeDelta = new Vector2(80, 20);
+            goBack.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0.5f);
+            goBack.GetComponent<RectTransform>().anchorMax = new Vector2(0, 0.5f);
+            goBack.GetComponent<RectTransform>().pivot = new Vector2(0, 0.5f);
+            goBack.AddComponent<Image>();
+            goBack.AddComponent<Button>().targetGraphic = goBack.GetComponent<Image>();
+            ColorBlock cb = goBack.GetComponent<Button>().colors;
+            cb.normalColor = Color.black;
+            cb.highlightedColor = Color.red;
+            goBack.GetComponent<Button>().colors = cb;
+            goBack.GetComponent<Button>().targetGraphic = goBack.GetComponent<Image>();
+            goBack.GetComponent<Button>().onClick.AddListener(() => settingsView.GetComponent<SettingsView>().goBack());
 
-					GUILayout.EndScrollView();
+            settingsView.GetComponent<SettingsView>().goBackBtn = goBack;
 
-					GUILayout.Space(20);
+            GameObject BtnTxt = ModUI.CreateTextBlock("Text", " < Back", goBack, TextAnchor.MiddleLeft, Color.white);
+            BtnTxt.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
+            BtnTxt.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1);
+            BtnTxt.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
+            BtnTxt.GetComponent<RectTransform>().sizeDelta = new Vector2(80, 20);
+            BtnTxt.GetComponent<Text>().fontSize = 16;
+            goBack.SetActive(false);
+            //modList 
+            GameObject modList = ModUI.CreateUIBase("ModList", settingsViewC);
+            modList.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0);
+            modList.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0);
+            modList.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0);
+            modList.GetComponent<RectTransform>().sizeDelta = new Vector2(300, 430);
+            modList.AddComponent<Image>().color = Color.black;
+            modList.AddComponent<Mask>().showMaskGraphic = true;
 
-					if (GUILayout.Button("Close", GUILayout.Height(30)))
-					{
-						menuOpen = false;
-					}
-				}
-				else if (menuState == 1)
-				{
-					// Mod info
+            settingsView.GetComponent<SettingsView>().modList = modList;
 
-					scrollPos = GUILayout.BeginScrollView(scrollPos);
+            //ModView
+            GameObject scrollbar = ModUI.CreateScrollbar(settingsViewC, 450, 10, 90);
+            scrollbar.GetComponent<RectTransform>().anchorMin = new Vector2(1, 1);
+            scrollbar.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+            scrollbar.GetComponent<RectTransform>().pivot = new Vector2(1, 1);
 
-					GUILayout.Space(20);
+            GameObject modView = ModListS(modList, scrollbar, "ModView");
+            settingsView.GetComponent<SettingsView>().modView = modView;
 
-					if (selectedMod != null)
-					{
-						GUILayout.Label("ID: " + selectedMod.ID);
-						GUILayout.Label("Name: " + selectedMod.Name);
-						GUILayout.Label("Version: " + selectedMod.Version);
-						GUILayout.Label("Author: " + selectedMod.Author);
+            GameObject modSettings = ModUI.CreateUIBase("ModSettings", settingsViewC);
+            modSettings.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0);
+            modSettings.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0);
+            modSettings.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0);
+            modSettings.GetComponent<RectTransform>().sizeDelta = new Vector2(300, 430);
+            modSettings.AddComponent<Image>().color = Color.black;
+            modSettings.AddComponent<Mask>().showMaskGraphic = true;
 
-						GUILayout.Space(20);
+            GameObject modSettingsView = ModListS(modSettings, scrollbar, "ModSettingsView");
+            settingsView.GetComponent<SettingsView>().modSettings = modSettings;
+            settingsView.GetComponent<SettingsView>().ModSettingsView = modSettingsView;
+            // modSettingsView.AddComponent<Image>().color = Color.white;
+            settingsView.GetComponent<SettingsView>().IDtxt = ModUI.CreateTextBlock("ID", "", modSettingsView).GetComponent<Text>();
+            settingsView.GetComponent<SettingsView>().Nametxt = ModUI.CreateTextBlock("Name", "", modSettingsView).GetComponent<Text>();
+            settingsView.GetComponent<SettingsView>().Versiontxt = ModUI.CreateTextBlock("Version", "", modSettingsView).GetComponent<Text>();
+            settingsView.GetComponent<SettingsView>().Authortxt = ModUI.CreateTextBlock("Author", "", modSettingsView).GetComponent<Text>();
 
-						if (GUILayout.Button("Keybinds", GUILayout.Height(30)))
-						{
-							menuState = 2;
-							scrollPos = Vector2.zero;
-						}
-					}
-					else
-					{
-						GUILayout.Label("Invalid mod");
-					}
+            Separator(modSettingsView);
+            GameObject keyBindsTitle = ModUI.CreateTextBlock("KeyBindsText", "Key Bindings", modSettingsView,TextAnchor.MiddleCenter);
+            keyBindsTitle.GetComponent<Text>().fontStyle = FontStyle.Bold;
+            Separator(modSettingsView);
 
-					GUILayout.EndScrollView();
+            GameObject keybinds = ModUI.CreateUIBase("Keybinds", modSettingsView);
+            keybinds.AddComponent<VerticalLayoutGroup>().spacing = 5;
+            settingsView.GetComponent<SettingsView>().keybindsList = keybinds;
+            // test
+            /*settings.modButton("Test1","v1.0.3","SAS");
+            settings.modButton("Test2", "v1.5.3", "SES");
+            settings.modButton("Test3", "v1.0", "SOS");*/
+            Separator(modSettingsView);
+            modSettings.SetActive(false);
 
-					GUILayout.Space(20);
+        }
 
-					if (GUILayout.Button("Back", GUILayout.Height(30)))
-					{
-						menuState = 0;
-						selectedMod = null;
-						scrollPos = Vector2.zero;
-					}
-				}
-				else if (menuState == 2)
-				{
-					// Edit keybinds
+        private static void Separator(GameObject modSettingsView)
+        {
+            GameObject separator = ModUI.CreateUIBase("Separator", modSettingsView);
+            separator.AddComponent<Image>().color = Color.white;
+            separator.AddComponent<LayoutElement>().minHeight = 1;
+        }
 
-					GUILayout.Label("Keybinds");
-					GUILayout.Space(20);
+        private static GameObject ModListS(GameObject modList, GameObject scrollbar, string name)
+        {
+            GameObject modView = ModUI.CreateUIBase(name, modList);
+            modView.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 1);
+            modView.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 1);
+            modView.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 1);
+            modView.GetComponent<RectTransform>().sizeDelta = new Vector2(300, 430);
+            modView.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            modView.AddComponent<VerticalLayoutGroup>().padding = new RectOffset(5, 5, 5, 5);
+            modView.GetComponent<VerticalLayoutGroup>().spacing = 5;
+            modView.GetComponent<VerticalLayoutGroup>().childAlignment = TextAnchor.UpperCenter;
+            modView.GetComponent<VerticalLayoutGroup>().childForceExpandHeight = false;
 
-					scrollPos = GUILayout.BeginScrollView(scrollPos);
-
-					if (selectedMod != null)
-					{
-						bool none = true;
-
-						foreach (Keybind key in Keybind.Keybinds)
-						{
-							if (key.Mod == selectedMod)
-							{
-								GUILayout.Label(key.Name);
-
-								string modStr = key.Modifier.ToString();
-								string keyStr = key.Key.ToString();
-
-								if (awaitingInput)
-								{
-									if (awaitingKeyID == 0)
-									{
-										modStr = "Press any key";
-									}
-									else if (awaitingKeyID == 1)
-									{
-										keyStr = "Press any key";
-									}
-								}
-
-								if (GUILayout.Button("Modifier - " + modStr, GUILayout.Height(30)))
-								{
-									if (!awaitingInput)
-									{
-										awaitingInput = true;
-										awaitingKeyID = 0;
-										awaitingKey = key;
-									}
-								}
-
-								if (GUILayout.Button("Key - " + keyStr, GUILayout.Height(30)))
-								{
-									if (!awaitingInput)
-									{
-										awaitingInput = true;
-										awaitingKeyID = 1;
-										awaitingKey = key;
-									}
-								}
-
-								GUILayout.Space(10);
-
-								none = false;
-							}
-						}
-
-						if (none)
-						{
-							GUILayout.Label("This mod has no keybinds");
-						}
-					}
-					else
-					{
-						GUILayout.Label("Invalid mod");
-					}
-
-					GUILayout.EndScrollView();
-
-					GUILayout.Space(20);
-
-					if (GUILayout.Button("Reset", GUILayout.Height(30)))
-					{
-						resetBinds();
-					}
-
-					if (GUILayout.Button("Back", GUILayout.Height(30)))
-					{
-						menuState = 1;
-						scrollPos = Vector2.zero;
-					}
-				}
-			}
-		}
+            modList.AddComponent<ScrollRect>().content = modView.GetComponent<RectTransform>();
+            modList.GetComponent<ScrollRect>().horizontal = false;
+            modList.GetComponent<ScrollRect>().inertia = false;
+            modList.GetComponent<ScrollRect>().movementType = ScrollRect.MovementType.Clamped;
+            modList.GetComponent<ScrollRect>().scrollSensitivity = 30f;
+            modList.GetComponent<ScrollRect>().verticalScrollbar = scrollbar.GetComponent<Scrollbar>();
+            return modView;
+        }
 
 		// Reset keybinds
 		private void resetBinds()
@@ -303,7 +251,7 @@ namespace MSCLoader
 			foreach (Mod mod in ModLoader.LoadedMods)
 			{
 				// Check if there are custom keybinds
-				string path = ModLoader.ConfigFolder + mod.ID + "\\keybinds.xml";
+				string path = Path.Combine(ModLoader.ConfigFolder, mod.ID + "\\keybinds.xml");
 
 				if (!File.Exists(path))
 				{
@@ -343,7 +291,8 @@ namespace MSCLoader
 					catch (Exception e)
 					{
 						bind.Key = KeyCode.None;
-					}
+                        ModConsole.Error(e.Message);
+                    }
 
 					try
 					{
@@ -353,7 +302,8 @@ namespace MSCLoader
 					catch (Exception e)
 					{
 						bind.Modifier = KeyCode.None;
-					}
+                        ModConsole.Error(e.Message);
+                    }
 				}
 			}
 		}
@@ -364,18 +314,10 @@ namespace MSCLoader
 		public override void OnLoad()
 		{
 			Keybind.Add(this, menuKey);
-		}
-
-		/// <summary>
-		/// Draw menu.
-		/// </summary>
-		public override void OnGUI()
-		{
-			if (menuOpen)
-			{
-				GUI.Window(0, new Rect(Screen.width / 2 - 200, Screen.height / 2 - 300, 400, 600), windowManager, "ModLoader Settings");
-			}
-		}
+            CreateSettingsUI();
+            settings.setVisibility(false);
+            LoadBinds();
+        }
 
 		/// <summary>
 		/// Open menu if the key is pressed.
@@ -385,73 +327,7 @@ namespace MSCLoader
 			// Open menu
 			if (menuKey.IsDown())
 			{
-				Toggle();
-			}
-
-			// Rebinds
-			if (awaitingInput)
-			{
-				// Cancel rebind
-				if (Input.GetKeyDown(KeyCode.Escape))
-				{
-					if (awaitingKeyID == 0)
-					{
-						awaitingKey.Modifier = KeyCode.None;
-					}
-					else if (awaitingKeyID == 1)
-					{
-						awaitingKey.Key = KeyCode.None;
-					}
-
-					awaitingInput = false;
-					awaitingKeyID = -1;
-					awaitingKey = null;
-				}
-
-				if (Input.anyKeyDown)
-				{
-					if (awaitingKeyID == 0)
-					{
-						if (Event.current.keyCode != KeyCode.None)
-						{
-							awaitingKey.Modifier = Event.current.keyCode;
-						}
-						else
-						{
-							if (Event.current.shift)
-							{
-								awaitingKey.Modifier = KeyCode.LeftShift;
-							}
-						}
-					}
-					else if (awaitingKeyID == 1)
-					{
-						string input = Input.inputString.ToUpper();
-						KeyCode code = KeyCode.None;
-
-						try
-						{
-							code = (KeyCode)Enum.Parse(typeof(KeyCode), input);
-						}
-						catch (Exception e)
-						{
-							if (input == "`")
-							{
-								code = KeyCode.BackQuote;
-							}
-							else
-							{
-								ModConsole.Error("Invalid key");
-							}
-						}
-
-						awaitingKey.Key = code;
-					}
-
-					awaitingInput = false;
-					awaitingKey = null;
-					awaitingKeyID = -1;
-				}
+                settings.toggleVisibility();
 			}
 		}
 	}

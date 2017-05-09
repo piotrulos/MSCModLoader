@@ -32,7 +32,7 @@
 		public virtual void OnLoad() { }
 
 		/// <summary>
-		/// Called to draw the mod's GUI.
+		/// Called to draw the obsolete GUI.
 		/// </summary>
 		public virtual void OnGUI() { }
 

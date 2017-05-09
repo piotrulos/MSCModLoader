@@ -3,16 +3,12 @@
     public class CommandHelp : ConsoleCommand
 	{
 		public override string Name { get { return "help"; } }
-		public override string Help { get { return "Offers help about commands"; } }
+		public override string Help { get { return "This screen"; } }
 
 		public override void Run(string[] args)
 		{
-			ModConsole.Print("Available commands");
-
-			foreach (ConsoleCommand cmd in ConsoleCommand.Commands)
-			{
-				ModConsole.Print(cmd.Name + "    -    " + cmd.Help);
-			}
+			ModConsole.Print("<color=green><b>Available commands:</b></color>");
+            cc.help(args);
 		}
 	}
 }
