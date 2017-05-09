@@ -1,9 +1,2 @@
 D:\programowanie_unity\MSCMody\MSCModLoader\MSCLoader\MSCLoader\bin\Release\MSCLoader.dll
-D:\programowanie_unity\MSCMody\MSCModLoader\MSCLoader\MSCLoader\bin\Release\MSCLoader.pdb
-D:\programowanie_unity\MSCMody\MSCModLoader\MSCLoader\MSCLoader\bin\Release\UnityEngine.dll
-D:\programowanie_unity\MSCMody\MSCModLoader\MSCLoader\MSCLoader\bin\Release\UnityEngine.UI.dll
 D:\programowanie_unity\MSCMody\MSCModLoader\MSCLoader\MSCLoader\obj\Release\MSCLoader.dll
-D:\programowanie_unity\MSCMody\MSCModLoader\MSCLoader\MSCLoader\obj\Release\MSCLoader.pdb
-D:\programowanie_unity\MSCMody\MSCModLoader\MSCLoader\MSCLoader\bin\Release\System.Xml.dll
-D:\programowanie_unity\MSCMody\MSCModLoader\MSCLoader\MSCLoader\bin\Release\PlayMaker.dll
-D:\programowanie_unity\MSCMody\MSCModLoader\MSCLoader\MSCLoader\obj\Release\MSCLoader.csprojResolveAssemblyReference.cache
