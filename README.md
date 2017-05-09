@@ -1,8 +1,14 @@
 # MSCLoader
-A mod loader for My Summer Car
+A mod loader for My Summer Car 
 
-Installation
-------------
+Please report any issues and ideas [here](https://github.com/piotrulos/MSCModLoader/issues)
+
+**Example Mods** - this folder contains example mods source files.
+
+## Documentation
+A documentation for MSCLoader is avaliable [here](https://github.com/piotrulos/MSCModLoader/wiki) (for modders and users)
+
+## Installation
 1. Download the latest release of MSCLoader from [here](https://github.com/piotrulos/MSCModLoader/releases)
 2. Unpack anywhere you want
 3. Open MSCPatcher.exe and click on "MSC Folder" to select game folder (in \Steam\steamapps\common\My Summer Car\)
@@ -12,5 +18,5 @@ Installation
 7. Navigate to your selected Mods folder 
 8. Put your plugins in the mods folder and your ready!
 
-
-Credit: djoe45 for MSCLoader that was based on Longwelwind & TheNoob454 work ([PhiPatcher](https://github.com/Longwelwind/PhiScript) and [PBLoader](https://github.com/TheNoob454/PBLoader))
+#### Credit
+**djoe45** for MSCLoader that was based on **Longwelwind** and **TheNoob454** work ([PhiPatcher](https://github.com/Longwelwind/PhiScript) and [PBLoader](https://github.com/TheNoob454/PBLoader))
