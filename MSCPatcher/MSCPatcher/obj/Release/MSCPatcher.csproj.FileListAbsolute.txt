@@ -5,4 +5,3 @@ D:\programowanie_unity\MSCMody\MSCModLoader\MSCPatcher\MSCPatcher\obj\Release\MS
 D:\programowanie_unity\MSCMody\MSCModLoader\MSCPatcher\MSCPatcher\obj\Release\MSCPatcher.Properties.Resources.resources
 D:\programowanie_unity\MSCMody\MSCModLoader\MSCPatcher\MSCPatcher\obj\Release\MSCPatcher.csproj.GenerateResource.Cache
 D:\programowanie_unity\MSCMody\MSCModLoader\MSCPatcher\MSCPatcher\obj\Release\MSCPatcher.exe
-D:\programowanie_unity\MSCMody\MSCModLoader\MSCPatcher\MSCPatcher\obj\Release\MSCPatcher.csprojResolveAssemblyReference.cache

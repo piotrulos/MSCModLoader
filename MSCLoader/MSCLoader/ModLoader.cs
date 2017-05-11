@@ -63,7 +63,7 @@ namespace MSCLoader
         /// </summary>
         public static void Init_AD()
         {
-            ModsFolder = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"..\LocalLow\Royal John Love\My Summer Car\Mods"));
+            ModsFolder = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"..\LocalLow\Amistech\My Summer Car\Mods"));
             Init(); //Main init
         }
 
