@@ -17,14 +17,15 @@ namespace MSCLoader
 		public static bool IsOpen { get; private set; }
         public static ConsoleView console = new ConsoleView();
         private Keybind consoleKey = new Keybind("Open", "Open console", KeyCode.BackQuote);
-
+        private Keybind consoleSizeKey = new Keybind("Console_size", "Make console bigger/smaller", KeyCode.BackQuote, KeyCode.LeftControl);
         /// <summary>
         /// Create console UI using UnityEngine.UI
         /// </summary>
+        GameObject consoleObj, logView, scrollbar;
         public void CreateConsoleUI()
         {
             //Create parent gameobject for console.
-            GameObject consoleObj = ModUI.CreateParent("MSCLoader Console", false);
+            consoleObj = ModUI.CreateParent("MSCLoader Console", false);
             consoleObj.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
             consoleObj.GetComponent<RectTransform>().anchorMax = new Vector2(0, 0);
             consoleObj.GetComponent<RectTransform>().pivot = new Vector2(0, 0);
@@ -58,7 +59,7 @@ namespace MSCLoader
             enterBtn.GetComponent<Button>().onClick.AddListener(() => consoleObj.GetComponent<ConsoleView>().runCommand());
 
             //Log view text
-            GameObject logView = ModUI.CreateUIBase("LogView",consoleObjc);
+            logView = ModUI.CreateUIBase("LogView",consoleObjc);
             logView.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
             logView.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1);
             logView.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
@@ -81,7 +82,7 @@ namespace MSCLoader
             logView.GetComponent<ScrollRect>().scrollSensitivity = 30f;
 
             //Scrollbar
-            GameObject scrollbar = ModUI.CreateScrollbar(consoleObjc,120,13,90);
+            scrollbar = ModUI.CreateScrollbar(consoleObjc,120,13,90);
             scrollbar.GetComponent<RectTransform>().anchorMin = new Vector2(1, 1);
             scrollbar.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
             scrollbar.GetComponent<RectTransform>().pivot = new Vector2(1, 0);
@@ -89,18 +90,50 @@ namespace MSCLoader
             logView.GetComponent<ScrollRect>().verticalScrollbar = scrollbar.GetComponent<Scrollbar>();
 
         }
+        int conSizeStep = 0;
+        public void ChangeConsoleSize() //change to dynamic scale later
+        {
+            conSizeStep++;
+            switch(conSizeStep)
+            {
+                case 1:
+                    consoleObj.GetComponent<RectTransform>().sizeDelta = new Vector2(346, 400);
+                    logView.GetComponent<RectTransform>().sizeDelta = new Vector2(333, 370);
+                    scrollbar.GetComponent<RectTransform>().sizeDelta = new Vector2(370, 13);
+                    break;
+                case 2:
+                    consoleObj.GetComponent<RectTransform>().sizeDelta = new Vector2(346, 500);
+                    logView.GetComponent<RectTransform>().sizeDelta = new Vector2(333, 470);
+                    scrollbar.GetComponent<RectTransform>().sizeDelta = new Vector2(470, 13);
+                    break;
+                default:
+                    consoleObj.GetComponent<RectTransform>().sizeDelta = new Vector2(346, 150);
+                    logView.GetComponent<RectTransform>().sizeDelta = new Vector2(333, 120);
+                    scrollbar.GetComponent<RectTransform>().sizeDelta = new Vector2(120, 13);
+                    conSizeStep = 0;
+                    break;
+
+            }
+
+        }
         
         public override void Update()
         {
-            if (consoleKey.IsDown())
+            if (consoleKey.IsDown() && !consoleSizeKey.IsDown())
             {
                 console.toggleVisibility();
+            }
+
+            if (consoleSizeKey.IsDown())
+            {
+                ChangeConsoleSize();
             }
         }
 
         public override void OnLoad()
         {
             Keybind.Add(this, consoleKey);
+            Keybind.Add(this, consoleSizeKey);
             CreateConsoleUI();
             console.setVisibility(false);
             ConsoleCommand.Add(new CommandClear());

@@ -40,7 +40,7 @@ public class ConsoleController {
 	/// How many log lines should be retained?
 	/// Note that strings submitted to appendLogLine with embedded newlines will be counted as a single line.
 	/// </summary>
-	const int scrollbackSize = 85;
+	const int scrollbackSize = 150;
 
 	Queue<string> scrollback = new Queue<string>(scrollbackSize);
 	List<string> commandHistory = new List<string>();

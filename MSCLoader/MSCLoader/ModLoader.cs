@@ -30,7 +30,7 @@ namespace MSCLoader
 		/// <summary>
 		/// The current version of the ModLoader.
 		/// </summary>
-		public static string Version = "0.2";
+		public static string Version = "0.2.1";
 
 		/// <summary>
 		/// The folder where all Mods are stored.
