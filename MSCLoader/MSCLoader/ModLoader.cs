@@ -40,7 +40,7 @@ namespace MSCLoader
         /// <summary>
         /// The folder where the config files for Mods are stored.
         /// </summary>
-        public static string ConfigFolder = Path.Combine(ModsFolder, "Config\\");
+        public static string ConfigFolder = Path.Combine(ModsFolder, @"Config\");
 
         /// <summary>
         /// Initialize with Mods folder in My Documents (like in 0.1)
@@ -72,6 +72,8 @@ namespace MSCLoader
         /// </summary>
         public static void Init()
 		{
+            //Set config folder in mods folder
+            ConfigFolder = Path.Combine(ModsFolder, @"Config\");
             //if mods not loaded and game is loaded.
             if (!IsModsDoneLoading && Application.loadedLevelName == "GAME")
             {
