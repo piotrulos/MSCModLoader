@@ -3,10 +3,10 @@ A mod loader for My Summer Car
 
 Please report any issues and ideas [here](https://github.com/piotrulos/MSCModLoader/issues)
 
-**Example Mods** - this folder contains example mods source files (see documentation how to use them)
-**Visual Studio templates** - this folder contains templates for Visual Studio for easy mod creation. (see documentation how to use them)
+**Example Mods** - this folder contains example mods source files (see documentation how to use them)  
+**Visual Studio templates** - this folder contains templates for Visual Studio for easy mod creation. (see documentation how to use them)  
 ## Documentation
-A documentation for MSCLoader is avaliable [here](https://github.com/piotrulos/MSCModLoader/wiki) (for modders and users)
+A documentation for MSCLoader is avaliable [here](https://github.com/piotrulos/MSCModLoader/wiki) (for modders and users)  
 
 ## Installation
 1. Download the latest release of MSCLoader from [here](https://github.com/piotrulos/MSCModLoader/releases)

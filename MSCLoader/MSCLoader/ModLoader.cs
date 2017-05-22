@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
@@ -30,7 +32,7 @@ namespace MSCLoader
 		/// <summary>
 		/// The current version of the ModLoader.
 		/// </summary>
-		public static string Version = "0.2.1";
+		public static string Version = "0.2.2";
 
 		/// <summary>
 		/// The folder where all Mods are stored.
@@ -41,6 +43,14 @@ namespace MSCLoader
         /// The folder where the config files for Mods are stored.
         /// </summary>
         public static string ConfigFolder = Path.Combine(ModsFolder, @"Config\");
+
+        /// <summary>
+        /// Return your mod config folder, use this if you want save something. 
+        /// </summary>
+        public static string GetModConfigFolder(Mod mod)
+        {
+            return ConfigFolder + mod.ID;
+        }
 
         /// <summary>
         /// Initialize with Mods folder in My Documents (like in 0.1)
@@ -79,19 +89,19 @@ namespace MSCLoader
             {
                 // Load all mods
                 ModConsole.Print("Loading mods...");
-                try
-                {
+                //try
+                //{
                     LoadMods();
                     ModSettings.LoadBinds();
                     IsModsDoneLoading = true;
                     ModConsole.Print("Loading mods complete!");
-                }
+               /* }
                 catch (Exception e)
                 {
                     IsModsDoneLoading = true; //do not load failed mod forever
                     ModConsole.Error("Loading mods failed:");
                     ModConsole.Error(e.Message);
-                }
+                }*/
             }
 
             if(IsDoneLoading && Application.loadedLevelName == "MainMenu")
@@ -150,15 +160,33 @@ namespace MSCLoader
 		/// </summary>
         private static void MainMenuInfo(bool destroy = false)
         {
-                //Create parent gameobject in canvas for layout and text information.
-                GameObject modInfo = ModUI.CreateUIBase("MSCLoader Info", GameObject.Find("MSCLoader Canvas"));
-                modInfo.AddComponent<VerticalLayoutGroup>().childForceExpandHeight = false;
-                modInfo.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
-                modInfo.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1);
-                modInfo.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
+            //Create parent gameobject in canvas for layout and text information.
+            GameObject modInfo = ModUI.CreateUIBase("MSCLoader Info", GameObject.Find("MSCLoader Canvas"));
+            modInfo.AddComponent<VerticalLayoutGroup>().childForceExpandHeight = false;
+            modInfo.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
+            modInfo.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1);
+            modInfo.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
 
-                ModUI.CreateTextBlock("MSCLoader Info Text", string.Format("Mod Loader MCSLoader v{0} is ready!", Version), modInfo, TextAnchor.MiddleLeft, Color.white, true).GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;              
-                ModUI.CreateTextBlock("MSCLoader Mod location Text", string.Format("Mods folder: {0}", ModsFolder), modInfo, TextAnchor.MiddleLeft, Color.white, true).GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;
+            //check if new version is available
+            try
+            {
+                string version;
+                using (WebClient client = new WebClient())
+                {
+                    version = client.DownloadString("http://my-summer-car.ml/version.txt");
+                }
+                int i = Version.CompareTo(version.Trim());
+                if (i != 0)
+                    ModUI.CreateTextBlock("MSCLoader Info Text", string.Format("Mod Loader MCSLoader v{0} is ready! (<color=orange>New version available: <b>v{1}</b></color>)", Version, version.Trim()), modInfo, TextAnchor.MiddleLeft, Color.white, true).GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;
+                else if (i == 0)
+                    ModUI.CreateTextBlock("MSCLoader Info Text", string.Format("Mod Loader MCSLoader v{0} is ready! (<color=lime>Up to date</color>)", Version, i.ToString()), modInfo, TextAnchor.MiddleLeft, Color.white, true).GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;
+            }
+            catch(Exception e)
+            {
+                ModConsole.Error(string.Format("Check for new version failed with error: {0}",e.Message));
+                ModUI.CreateTextBlock("MSCLoader Info Text", string.Format("Mod Loader MCSLoader v{0} is ready!", Version), modInfo, TextAnchor.MiddleLeft, Color.white, true).GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;
+            }
+            ModUI.CreateTextBlock("MSCLoader Mod location Text", string.Format("Mods folder: {0}", ModsFolder), modInfo, TextAnchor.MiddleLeft, Color.white, true).GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;
         }
 
         /// <summary>
@@ -195,17 +223,29 @@ namespace MSCLoader
         /// <param name="file">The path of the DLL file to load the Mod from.</param>
         private static void LoadDLL(string file)
 		{
-			Assembly asm = Assembly.LoadFrom(file);
+            try
+            {
+                Assembly asm = Assembly.LoadFrom(file);
+                
+                // Look through all public classes
+                foreach (Type type in asm.GetTypes())
+                {
+                    // Check if class inherits Mod
+                    if (type.IsSubclassOf(typeof(Mod)))
+                    {
+                        LoadMod((Mod)Activator.CreateInstance(type));
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                var st = new StackTrace(e, true);
+                var frame = st.GetFrame(0);
+                
+                string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(),Environment.NewLine);
+                ModConsole.Error(string.Format("Mod <b>{0}</b> ({1}) failed to load!{2}",e.Source,Path.GetFileName(file), errorDetails));
+            }
 
-			// Look through all public classes
-			foreach (Type type in asm.GetTypes())
-			{
-				// Check if class inherits Mod
-				if (type.IsSubclassOf(typeof(Mod)))
-				{
-					LoadMod((Mod)Activator.CreateInstance(type));
-				}
-			}
 		}
 
 		/// <summary>

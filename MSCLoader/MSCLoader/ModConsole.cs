@@ -90,8 +90,8 @@ namespace MSCLoader
             logView.GetComponent<ScrollRect>().verticalScrollbar = scrollbar.GetComponent<Scrollbar>();
 
         }
-        int conSizeStep = 0;
-        public void ChangeConsoleSize() //change to dynamic scale later
+        
+        public void ChangeConsoleSize(int conSizeStep = 0) //change to dynamic scale later
         {
             conSizeStep++;
             switch(conSizeStep)
@@ -161,7 +161,7 @@ namespace MSCLoader
         /// </summary>
         /// <param name="str">Text or object to append to error log.</param>
         public static void Error(string str)
-		{
+		{          
             console.setVisibility(true);
             console.console.appendLogLine(string.Format("<color=red><b>Error: </b>{0}</color>", str));
         }
