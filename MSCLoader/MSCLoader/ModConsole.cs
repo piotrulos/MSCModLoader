@@ -138,6 +138,7 @@ namespace MSCLoader
             console.setVisibility(false);
             ConsoleCommand.Add(new CommandClear());
             ConsoleCommand.Add(new CommandHelp());
+            ConsoleCommand.Add(new CommandLogAll());
         }
 
         /// <summary>

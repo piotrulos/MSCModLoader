@@ -14,6 +14,8 @@ namespace MSCLoader
     /// </summary>
     public class ModLoader : MonoBehaviour
 	{
+
+        public static bool LogAllErrors = false;
 		/// <summary>
 		/// If the ModLoader is done loading or not.
 		/// </summary>
@@ -89,19 +91,12 @@ namespace MSCLoader
             {
                 // Load all mods
                 ModConsole.Print("Loading mods...");
-                //try
-                //{
-                    LoadMods();
-                    ModSettings.LoadBinds();
-                    IsModsDoneLoading = true;
-                    ModConsole.Print("Loading mods complete!");
-               /* }
-                catch (Exception e)
-                {
-                    IsModsDoneLoading = true; //do not load failed mod forever
-                    ModConsole.Error("Loading mods failed:");
-                    ModConsole.Error(e.Message);
-                }*/
+
+                LoadMods();
+                ModSettings.LoadBinds();
+                IsModsDoneLoading = true;
+                ModConsole.Print("Loading mods complete!");
+
             }
 
             if(IsDoneLoading && Application.loadedLevelName == "MainMenu")
@@ -291,8 +286,22 @@ namespace MSCLoader
 			// Call OnGUI for loaded mods
 			foreach (Mod mod in LoadedMods)
 			{
-				mod.OnGUI();
-			}
+                try
+                {
+                    mod.OnGUI();
+                }
+                catch (Exception e)
+                {
+                    if (LogAllErrors)
+                    {
+                        var st = new StackTrace(e, true);
+                        var frame = st.GetFrame(0);
+
+                        string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
+                        ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
+                    }
+                }
+            }
 		}
 
 		/// <summary>
@@ -303,8 +312,22 @@ namespace MSCLoader
 			// Call update for loaded mods
 			foreach (Mod mod in LoadedMods)
 			{
-				mod.Update();
-			}
+                try
+                {
+                    mod.Update();
+                }
+                catch (Exception e)
+                {
+                    if (LogAllErrors)
+                    {
+                        var st = new StackTrace(e, true);
+                        var frame = st.GetFrame(0);
+
+                        string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
+                        ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
+                    }
+                }
+            }
 		}
 	}
 }

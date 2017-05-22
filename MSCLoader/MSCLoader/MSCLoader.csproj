@@ -56,6 +56,7 @@
   <ItemGroup>
     <Compile Include="Commands\CommandClear.cs" />
     <Compile Include="Commands\CommandHelp.cs" />
+    <Compile Include="Commands\CommandLogAll.cs" />
     <Compile Include="ConsoleCommand.cs" />
     <Compile Include="ConsoleController.cs" />
     <Compile Include="ConsoleView.cs" />
