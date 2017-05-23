@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Windows.Forms;
@@ -34,7 +35,7 @@ namespace MSCPatcher
         private bool oldPatchFound = false; //0.1 patch found, recover and patch Assembly-CSharp.original.dll and cleanup unused files
         private bool oldFilesFound = false; //0.1 files found, but no patch, cleanup files and patch new Assembly-CSharp.dll
         private bool mscloaderUpdate = false; //new MSCLoader.dll found, but no new patch needed.
-
+        FileVersionInfo mscLoaderVersion;
         private XElement mModifications;
         public Form1()
         {
@@ -44,7 +45,7 @@ namespace MSCPatcher
             MDlabel.Text = mdPath;
             if (Directory.Exists(mdPath))
             {
-                Log(string.Format("Found mods folder in: {0}",mdPath));
+                Log(string.Format("Found mods folder in: {0}", mdPath));
                 MDlabel.ForeColor = Color.Green;
                 MDradio.Checked = true;
             }
@@ -55,9 +56,44 @@ namespace MSCPatcher
                 ADlabel.ForeColor = Color.Green;
                 ADradio.Checked = true;
             }
-                Log("");
-                Log("MSCPatcher ready!");
-                Log("=================");
+            try
+            {
+                mscLoaderVersion = FileVersionInfo.GetVersionInfo("MSCLoader.dll");
+                string currentVersion = string.Format("{0}.{1}.{2}", mscLoaderVersion.FileMajorPart, mscLoaderVersion.FileMinorPart, mscLoaderVersion.FileBuildPart);
+                //string currentVersion = "0.2.1";
+                string version;
+                using (WebClient client = new WebClient())
+                {
+                    version = client.DownloadString("http://my-summer-car.ml/version.txt");
+                }
+                int i = currentVersion.CompareTo(version.Trim());
+                if (i != 0)
+                {
+                    Log(string.Format("MCSLoader v{0}, New version available: v{1}", currentVersion, version.Trim()));
+                    if(MessageBox.Show(string.Format("New version is available: v{0}, wanna check it out?", version.Trim()), "MCSLoader v"+ currentVersion,MessageBoxButtons.YesNo,MessageBoxIcon.Information) == DialogResult.Yes)
+                    {
+                        try
+                        {
+                            ProcessStartInfo updateURL = new ProcessStartInfo("https://github.com/piotrulos/MSCModLoader/releases");
+                            Process.Start(updateURL);
+                            Environment.Exit(0);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(string.Format("Failed to open url!{1}{1}Error details:{1}{0}", ex.Message, Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                }
+                else if (i == 0)
+                    Log(string.Format("MCSLoader v{0} is up to date, no new version found.", currentVersion));
+            }
+            catch (Exception e)
+            {
+                Log(string.Format("Check for new version failed with error: {0}", e.Message));
+            }
+            Log("");
+            Log("MSCPatcher ready!");
+            Log("=================");
             if (mscPath != "(unknown)")
             {
                 mscPathLabel.Text = mscPath;
@@ -427,7 +463,7 @@ namespace MSCPatcher
                     }
                     catch(Exception ex)
                     {
-                        MessageBox.Show(ex.Message,"Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(ex.Message +Environment.NewLine+"Please restart patcher!","Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 else if (GFradio.Checked)
@@ -439,7 +475,7 @@ namespace MSCPatcher
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(ex.Message + Environment.NewLine + "Please restart patcher!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 else if (ADradio.Checked)
@@ -451,7 +487,7 @@ namespace MSCPatcher
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(ex.Message + Environment.NewLine + "Please restart patcher!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
 

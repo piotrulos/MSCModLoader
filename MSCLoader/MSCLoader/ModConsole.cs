@@ -90,8 +90,8 @@ namespace MSCLoader
             logView.GetComponent<ScrollRect>().verticalScrollbar = scrollbar.GetComponent<Scrollbar>();
 
         }
-        
-        public void ChangeConsoleSize(int conSizeStep = 0) //change to dynamic scale later
+        int conSizeStep = 0;
+        public void ChangeConsoleSize() //change to dynamic scale later
         {
             conSizeStep++;
             switch(conSizeStep)
