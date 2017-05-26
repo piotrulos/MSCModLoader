@@ -46,6 +46,8 @@ namespace MSCLoader
         /// </summary>
         public static string ConfigFolder = Path.Combine(ModsFolder, @"Config\");
 
+        static bool  experimental = true; 
+
         /// <summary>
         /// Return your mod config folder, use this if you want save something. 
         /// </summary>
@@ -105,10 +107,11 @@ namespace MSCLoader
             }
 
             if (IsDoneLoading || Instance)
-            {   if(Application.loadedLevelName != "MainMenu")
+            {
+                if (Application.loadedLevelName != "MainMenu")
                     Destroy(GameObject.Find("MSCLoader Info")); //remove top left info in game.
                 if (Application.loadedLevelName != "GAME")
-                    ModConsole.Print("MSCLoader is already loaded!");
+                    ModConsole.Print("MSCLoader is already loaded!");//debug
             }
             else
             {
@@ -163,25 +166,33 @@ namespace MSCLoader
             modInfo.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
 
             //check if new version is available
-            try
+            if (!experimental)
             {
-                string version;
-                using (WebClient client = new WebClient())
+                try
                 {
-                    version = client.DownloadString("http://my-summer-car.ml/version.txt");
+                    string version;
+                    using (WebClient client = new WebClient())
+                    {
+                        version = client.DownloadString("http://my-summer-car.ml/version.txt");
+                    }
+                    int i = Version.CompareTo(version.Trim());
+                    if (i != 0)
+                        ModUI.CreateTextBlock("MSCLoader Info Text", string.Format("Mod Loader MCSLoader v{0} is ready! (<color=orange>New version available: <b>v{1}</b></color>)", Version, version.Trim()), modInfo, TextAnchor.MiddleLeft, Color.white, true).GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;
+                    else if (i == 0)
+                        ModUI.CreateTextBlock("MSCLoader Info Text", string.Format("Mod Loader MCSLoader v{0} is ready! (<color=lime>Up to date</color>)", Version, i.ToString()), modInfo, TextAnchor.MiddleLeft, Color.white, true).GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;
                 }
-                int i = Version.CompareTo(version.Trim());
-                if (i != 0)
-                    ModUI.CreateTextBlock("MSCLoader Info Text", string.Format("Mod Loader MCSLoader v{0} is ready! (<color=orange>New version available: <b>v{1}</b></color>)", Version, version.Trim()), modInfo, TextAnchor.MiddleLeft, Color.white, true).GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;
-                else if (i == 0)
-                    ModUI.CreateTextBlock("MSCLoader Info Text", string.Format("Mod Loader MCSLoader v{0} is ready! (<color=lime>Up to date</color>)", Version, i.ToString()), modInfo, TextAnchor.MiddleLeft, Color.white, true).GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;
+                catch (Exception e)
+                {
+                    ModConsole.Error(string.Format("Check for new version failed with error: {0}", e.Message));
+                    ModUI.CreateTextBlock("MSCLoader Info Text", string.Format("Mod Loader MCSLoader v{0} is ready!", Version), modInfo, TextAnchor.MiddleLeft, Color.white, true).GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;
+                }
             }
-            catch(Exception e)
+            else
             {
-                ModConsole.Error(string.Format("Check for new version failed with error: {0}",e.Message));
-                ModUI.CreateTextBlock("MSCLoader Info Text", string.Format("Mod Loader MCSLoader v{0} is ready!", Version), modInfo, TextAnchor.MiddleLeft, Color.white, true).GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;
+                ModUI.CreateTextBlock("MSCLoader Info Text", string.Format("Mod Loader MCSLoader v{0} is ready! (<color=magenta>Experimental</color>)", Version), modInfo, TextAnchor.MiddleLeft, Color.white, true).GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;
             }
             ModUI.CreateTextBlock("MSCLoader Mod location Text", string.Format("Mods folder: {0}", ModsFolder), modInfo, TextAnchor.MiddleLeft, Color.white, true).GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;
+            
         }
 
         /// <summary>

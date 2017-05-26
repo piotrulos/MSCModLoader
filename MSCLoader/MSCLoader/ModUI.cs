@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace MSCLoader
 {
-    class ModUI : MonoBehaviour
+    public class ModUI : MonoBehaviour
     {
         /// <summary>
         /// Create canvas for UI
@@ -20,7 +20,6 @@ namespace MSCLoader
             canvasGO.GetComponent<CanvasScaler>().referenceResolution = new Vector2(1280f, 720f);
             canvasGO.GetComponent<CanvasScaler>().screenMatchMode = CanvasScaler.ScreenMatchMode.Shrink;
             canvasGO.GetComponent<CanvasScaler>().referencePixelsPerUnit = 100;
-
             canvasGO.AddComponent<GraphicRaycaster>();
             DontDestroyOnLoad(canvasGO);
 
@@ -59,6 +58,22 @@ namespace MSCLoader
             return createWindow;
         }
 
+        public static void Separator(GameObject parent, string text = null)
+        {
+
+            GameObject separator = CreateUIBase("Separator", parent);
+            separator.AddComponent<Image>().color = Color.white;
+            separator.AddComponent<LayoutElement>().minHeight = 1;
+            if (text != null)
+            {
+                GameObject keyBindsTitle =CreateTextBlock("SeparatorText", text, parent, TextAnchor.MiddleCenter);
+                keyBindsTitle.GetComponent<Text>().fontStyle = FontStyle.Bold;
+                GameObject separator2 = CreateUIBase("Separator", parent);
+                separator2.AddComponent<Image>().color = Color.white;
+                separator2.AddComponent<LayoutElement>().minHeight = 1;
+
+            }
+        }
 
         /// <summary>
         /// Creates Text on canvas or any other selected parent

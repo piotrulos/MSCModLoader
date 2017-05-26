@@ -17,7 +17,6 @@ namespace MSCLoader
 		public override string Author { get { return "piotrulos"; } }
 
 		private static Mod selectedMod = null;
-		private static Vector2 scrollPos = new Vector2(0, 0);
 
         private Keybind menuKey = new Keybind("Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
         public SettingsView settings;
@@ -108,35 +107,24 @@ namespace MSCLoader
             GameObject modSettingsView = ModListS(modSettings, scrollbar, "ModSettingsView");
             settingsView.GetComponent<SettingsView>().modSettings = modSettings;
             settingsView.GetComponent<SettingsView>().ModSettingsView = modSettingsView;
-            // modSettingsView.AddComponent<Image>().color = Color.white;
             settingsView.GetComponent<SettingsView>().IDtxt = ModUI.CreateTextBlock("ID", "", modSettingsView).GetComponent<Text>();
             settingsView.GetComponent<SettingsView>().Nametxt = ModUI.CreateTextBlock("Name", "", modSettingsView).GetComponent<Text>();
             settingsView.GetComponent<SettingsView>().Versiontxt = ModUI.CreateTextBlock("Version", "", modSettingsView).GetComponent<Text>();
             settingsView.GetComponent<SettingsView>().Authortxt = ModUI.CreateTextBlock("Author", "", modSettingsView).GetComponent<Text>();
 
-            Separator(modSettingsView);
-            GameObject keyBindsTitle = ModUI.CreateTextBlock("KeyBindsText", "Key Bindings", modSettingsView,TextAnchor.MiddleCenter);
-            keyBindsTitle.GetComponent<Text>().fontStyle = FontStyle.Bold;
-            Separator(modSettingsView);
+            //keybinds
+            ModUI.Separator(modSettingsView, "Key Bindings");
 
             GameObject keybinds = ModUI.CreateUIBase("Keybinds", modSettingsView);
             keybinds.AddComponent<VerticalLayoutGroup>().spacing = 5;
             settingsView.GetComponent<SettingsView>().keybindsList = keybinds;
-            // test
-            /*settings.modButton("Test1","v1.0.3","SAS");
-            settings.modButton("Test2", "v1.5.3", "SES");
-            settings.modButton("Test3", "v1.0", "SOS");*/
-            Separator(modSettingsView);
+
+            ModUI.Separator(modSettingsView);
+
             modSettings.SetActive(false);
-
         }
 
-        private static void Separator(GameObject modSettingsView)
-        {
-            GameObject separator = ModUI.CreateUIBase("Separator", modSettingsView);
-            separator.AddComponent<Image>().color = Color.white;
-            separator.AddComponent<LayoutElement>().minHeight = 1;
-        }
+ 
 
         private static GameObject ModListS(GameObject modList, GameObject scrollbar, string name)
         {
