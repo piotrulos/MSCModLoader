@@ -34,7 +34,7 @@ namespace MSCLoader
 		/// <summary>
 		/// The current version of the ModLoader.
 		/// </summary>
-		public static string Version = "0.2.2";
+		public static string Version = "0.2.3";
 
 		/// <summary>
 		/// The folder where all Mods are stored.
@@ -46,7 +46,7 @@ namespace MSCLoader
         /// </summary>
         public static string ConfigFolder = Path.Combine(ModsFolder, @"Config\");
 
-        static bool  experimental = true; 
+        static bool  experimental = false; 
 
         /// <summary>
         /// Return your mod config folder, use this if you want save something. 
@@ -101,7 +101,7 @@ namespace MSCLoader
 
             }
 
-            if(IsDoneLoading && Application.loadedLevelName == "MainMenu")
+            if (IsDoneLoading && Application.loadedLevelName == "MainMenu" && GameObject.Find("MSCLoader Info") == null)
             {
                 MainMenuInfo();
             }
