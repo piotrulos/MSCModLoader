@@ -1,3 +1,2 @@
 D:\programowanie_unity\MSCMody\MSCModLoader\MSCLoader\MSCLoader\bin\Release\MSCLoader.dll
 D:\programowanie_unity\MSCMody\MSCModLoader\MSCLoader\MSCLoader\obj\Release\MSCLoader.dll
-D:\programowanie_unity\MSCMody\MSCModLoader\MSCLoader\MSCLoader\obj\Release\MSCLoader.csprojResolveAssemblyReference.cache
