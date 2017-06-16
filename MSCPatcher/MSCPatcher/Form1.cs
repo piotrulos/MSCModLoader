@@ -40,6 +40,11 @@ namespace MSCPatcher
         public Form1()
         {
             InitializeComponent();
+            if (File.Exists("MSCFolder.txt"))
+            {
+                mscPath = File.ReadAllText("MSCFolder.txt");
+                Log(string.Format("Loaded saved MSC Folder: {0}", mscPath));
+            }
             mscPathLabel.Text = mscPath;
 
             MDlabel.Text = mdPath;
@@ -69,7 +74,7 @@ namespace MSCPatcher
                 int i = currentVersion.CompareTo(version.Trim());
                 if (i != 0)
                 {
-                    Log(string.Format("MCSLoader v{0}, New version available: v{1}", currentVersion, version.Trim()));
+                    Log(string.Format("{2}MCSLoader v{0}, New version available: v{1}", currentVersion, version.Trim(), Environment.NewLine));
                     if(MessageBox.Show(string.Format("New version is available: v{0}, wanna check it out?", version.Trim()), "MCSLoader v"+ currentVersion,MessageBoxButtons.YesNo,MessageBoxIcon.Information) == DialogResult.Yes)
                     {
                         try
@@ -85,7 +90,7 @@ namespace MSCPatcher
                     }
                 }
                 else if (i == 0)
-                    Log(string.Format("MCSLoader v{0} is up to date, no new version found.", currentVersion));
+                    Log(string.Format("{1}MCSLoader v{0} is up to date, no new version found.", currentVersion,Environment.NewLine));
             }
             catch (Exception e)
             {
@@ -94,6 +99,7 @@ namespace MSCPatcher
             Log("");
             Log("MSCPatcher ready!");
             Log("=================");
+
             if (mscPath != "(unknown)")
             {
                 mscPathLabel.Text = mscPath;
@@ -106,9 +112,10 @@ namespace MSCPatcher
                     GFlabel.ForeColor = Color.Green;
                     GFradio.Checked = true;
                 }
-                Log(string.Format("Game folder set to: {0}", mscPath));
+                Log(string.Format("Game folder set to: {0}{1}", mscPath,Environment.NewLine));
                 checkPatchStatus();
             }
+
 
         }
         public void Log(string log)
@@ -514,7 +521,8 @@ namespace MSCPatcher
                     GFradio.Checked = true;
                 }
                 Log(string.Format("Game folder set to: {0}", mscPath));
-
+                File.WriteAllText("MSCFolder.txt", mscPath);
+                Log(string.Format("Game folder is saved as: {0}{1}", mscPath,Environment.NewLine));
                 checkPatchStatus();
             }
 
