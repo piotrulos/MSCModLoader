@@ -514,6 +514,7 @@ namespace MSCPatcher
                     GFradio.Checked = true;
                 }
                 Log(string.Format("Game folder set to: {0}", mscPath));
+
                 checkPatchStatus();
             }
 
