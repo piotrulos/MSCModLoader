@@ -40,7 +40,7 @@ namespace MSCLoader
             GameObject createWindow = new GameObject();
             createWindow.name = name;
             createWindow.layer = 5;
-            createWindow.transform.parent = parent.transform;
+            createWindow.transform.SetParent(parent.transform,false);
             createWindow.AddComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
             return createWindow;
         }
