@@ -46,7 +46,7 @@ namespace MSCLoader
         /// </summary>
         public static string ConfigFolder = Path.Combine(ModsFolder, @"Config\");
 
-        static bool  experimental = false; 
+        static bool experimental = true; 
 
         /// <summary>
         /// Return your mod config folder, use this if you want save something. 
@@ -93,12 +93,16 @@ namespace MSCLoader
             {
                 // Load all mods
                 ModConsole.Print("Loading mods...");
-
+                Stopwatch s = new Stopwatch();
+                s.Start();
                 LoadMods();
                 ModSettings.LoadBinds();
                 IsModsDoneLoading = true;
-                ModConsole.Print("Loading mods complete!");
-
+                s.Stop();
+                if(s.ElapsedMilliseconds<1000)
+                    ModConsole.Print(string.Format("Loading mods complete in {0}ms!", s.ElapsedMilliseconds));
+                else
+                    ModConsole.Print(string.Format("Loading mods complete in {0} sec(s)!", s.Elapsed.Seconds));
             }
 
             if (IsDoneLoading && Application.loadedLevelName == "MainMenu" && GameObject.Find("MSCLoader Info") == null)
@@ -264,6 +268,8 @@ namespace MSCLoader
 			// Check if mod already exists
 			if (!LoadedMods.Contains(mod))
 			{
+                Stopwatch s = new Stopwatch();
+                s.Start();
 				// Generate config files
 				if (!Directory.Exists(ConfigFolder + mod.ID))
 				{
@@ -273,10 +279,10 @@ namespace MSCLoader
 				// Load
 				mod.OnLoad();
 				LoadedMods.Add(mod);
-
+                s.Stop();
 				if (!isInternal)
 				{
-					ModConsole.Print(string.Format("<color=lime><b>Mod Loaded:</b></color><color=orange><b>{0}</b></color>", mod.ID));
+					ModConsole.Print(string.Format("<color=lime><b>Mod Loaded:</b></color><color=orange><b>{0}</b> ({1}ms)</color>", mod.ID,s.ElapsedMilliseconds));
 				}
 				else
 				{
