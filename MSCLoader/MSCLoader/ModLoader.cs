@@ -16,20 +16,20 @@ namespace MSCLoader
 	{
 
         public static bool LogAllErrors = false;
-		/// <summary>
-		/// If the ModLoader is done loading or not.
-		/// </summary>
-		public static bool IsDoneLoading { get; private set; }
-        public static bool IsModsDoneLoading { get; private set; }
+        /// <summary>
+        /// If the ModLoader is done loading or not.
+        /// </summary>
+        static bool IsDoneLoading = false;
+        static bool IsModsDoneLoading = false;
         /// <summary>
         /// A list of all currently loaded mods.
         /// </summary>
-        public static List<Mod> LoadedMods { get; private set; }
+        public static List<Mod> LoadedMods;
 
-		/// <summary>
-		/// The instance of ModLoader.
-		/// </summary>
-		public static ModLoader Instance { get; private set; }
+        /// <summary>
+        /// The instance of ModLoader.
+        /// </summary>
+        public static ModLoader Instance;
 
 		/// <summary>
 		/// The current version of the ModLoader.

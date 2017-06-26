@@ -82,10 +82,11 @@ namespace MSCLoader
             logView.GetComponent<ScrollRect>().scrollSensitivity = 30f;
 
             //Scrollbar
-            scrollbar = ModUI.CreateScrollbar(consoleObjc,120,13,90);
+            scrollbar = ModUI.CreateScrollbar(consoleObjc,13,120,Scrollbar.Direction.BottomToTop);
             scrollbar.GetComponent<RectTransform>().anchorMin = new Vector2(1, 1);
             scrollbar.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
-            scrollbar.GetComponent<RectTransform>().pivot = new Vector2(1, 0);
+            scrollbar.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
+            scrollbar.GetComponent<RectTransform>().anchoredPosition = new Vector2(-13, 0);
 
             logView.GetComponent<ScrollRect>().verticalScrollbar = scrollbar.GetComponent<Scrollbar>();
 
@@ -99,17 +100,17 @@ namespace MSCLoader
                 case 1:
                     consoleObj.GetComponent<RectTransform>().sizeDelta = new Vector2(346, 400);
                     logView.GetComponent<RectTransform>().sizeDelta = new Vector2(333, 370);
-                    scrollbar.GetComponent<RectTransform>().sizeDelta = new Vector2(370, 13);
+                    scrollbar.GetComponent<RectTransform>().sizeDelta = new Vector2(13, 370);
                     break;
                 case 2:
                     consoleObj.GetComponent<RectTransform>().sizeDelta = new Vector2(346, 500);
                     logView.GetComponent<RectTransform>().sizeDelta = new Vector2(333, 470);
-                    scrollbar.GetComponent<RectTransform>().sizeDelta = new Vector2(470, 13);
+                    scrollbar.GetComponent<RectTransform>().sizeDelta = new Vector2(13, 470);
                     break;
                 default:
                     consoleObj.GetComponent<RectTransform>().sizeDelta = new Vector2(346, 150);
                     logView.GetComponent<RectTransform>().sizeDelta = new Vector2(333, 120);
-                    scrollbar.GetComponent<RectTransform>().sizeDelta = new Vector2(120, 13);
+                    scrollbar.GetComponent<RectTransform>().sizeDelta = new Vector2(13, 120);
                     conSizeStep = 0;
                     break;
 

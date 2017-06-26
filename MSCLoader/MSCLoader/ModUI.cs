@@ -153,11 +153,11 @@ namespace MSCLoader
 
             return Btn;
         }
-        public static GameObject CreateScrollbar(GameObject parent, float width, float height,float rotate)
+        public static GameObject CreateScrollbar(GameObject parent, float width, float height, Scrollbar.Direction direction)
         {
             GameObject scrollbar = CreateUIBase("Scrollbar", parent);
             scrollbar.GetComponent<RectTransform>().sizeDelta = new Vector2(width, height);
-            scrollbar.GetComponent<RectTransform>().Rotate(0, 0, rotate);
+            //scrollbar.GetComponent<RectTransform>().Rotate(0, 0, rotate);
             scrollbar.AddComponent<Image>().color = Color.black;
 
             GameObject scrollbarsa = CreateUIBase("Sliding Area", scrollbar);
@@ -165,16 +165,17 @@ namespace MSCLoader
             scrollbarsa.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
             scrollbarsa.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
             scrollbarsa.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 0);
-            scrollbarsa.GetComponent<RectTransform>().Rotate(0, 0, rotate);
+            //scrollbarsa.GetComponent<RectTransform>().Rotate(0, 0, rotate);
 
             GameObject scrollbarha = CreateUIBase("Handle", scrollbarsa);
             scrollbarha.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
             scrollbarha.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
             scrollbarha.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 0);
-            scrollbarha.GetComponent<RectTransform>().Rotate(0, 0, rotate);
+           //scrollbarha.GetComponent<RectTransform>().Rotate(0, 0, rotate);
             scrollbarha.AddComponent<Image>().color = Color.white;
             scrollbar.AddComponent<Scrollbar>().handleRect = scrollbarha.GetComponent<RectTransform>();
             scrollbar.GetComponent<Scrollbar>().targetGraphic = scrollbarha.GetComponent<Image>();
+            scrollbar.GetComponent<Scrollbar>().direction = direction;
             return scrollbar;
         }
 
