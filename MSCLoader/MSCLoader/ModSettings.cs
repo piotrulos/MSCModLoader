@@ -88,10 +88,11 @@ namespace MSCLoader
             settingsView.GetComponent<SettingsView>().modList = modList;
 
             //ModView
-            GameObject scrollbar = ModUI.CreateScrollbar(settingsViewC, 450, 10, 90);
+            GameObject scrollbar = ModUI.CreateScrollbar(settingsViewC, 10, 450, Scrollbar.Direction.BottomToTop);
             scrollbar.GetComponent<RectTransform>().anchorMin = new Vector2(1, 1);
             scrollbar.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
             scrollbar.GetComponent<RectTransform>().pivot = new Vector2(1, 1);
+            scrollbar.GetComponent<RectTransform>().anchoredPosition = new Vector2(10, 0);
 
             GameObject modView = ModListS(modList, scrollbar, "ModView");
             settingsView.GetComponent<SettingsView>().modView = modView;
