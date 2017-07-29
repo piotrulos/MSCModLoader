@@ -89,6 +89,26 @@ namespace MSCLoader
             //Set config folder in selected mods folder
             ConfigFolder = Path.Combine(ModsFolder, @"Config\");
             //if mods not loaded and game is loaded.
+            if (IsModsDoneLoading && Application.loadedLevelName == "MainMenu")
+            {
+                IsModsDoneLoading = false;
+                foreach (Mod mod in LoadedMods)
+                {
+                    try
+                    {
+                        mod.OnUnload();
+                    }
+                    catch (Exception e)
+                    {
+                        var st = new StackTrace(e, true);
+                        var frame = st.GetFrame(0);
+
+                        string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
+                        ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
+                    }
+                }
+                ModConsole.Print("Mods unloaded");
+            }
             if (!IsModsDoneLoading && Application.loadedLevelName == "GAME")
             {
                 // Load all mods
@@ -100,9 +120,9 @@ namespace MSCLoader
                 IsModsDoneLoading = true;
                 s.Stop();
                 if(s.ElapsedMilliseconds<1000)
-                    ModConsole.Print(string.Format("Loading mods complete in {0}ms!", s.ElapsedMilliseconds));
+                    ModConsole.Print(string.Format("Loading mods completed in {0}ms!", s.ElapsedMilliseconds));
                 else
-                    ModConsole.Print(string.Format("Loading mods complete in {0} sec(s)!", s.Elapsed.Seconds));
+                    ModConsole.Print(string.Format("Loading mods completed in {0} sec(s)!", s.Elapsed.Seconds));
             }
 
             if (IsDoneLoading && Application.loadedLevelName == "MainMenu" && GameObject.Find("MSCLoader Info") == null)
@@ -152,7 +172,7 @@ namespace MSCLoader
                 IsDoneLoading = true;
                 ModConsole.Print(string.Format("<color=green>ModLoader <b>v{0}</b> ready</color>", Version));
                 PreLoadMods();
-                ModConsole.Print(string.Format("Found {0} mods!", LoadedMods.Count - 2));
+                ModConsole.Print(string.Format("<color=orange>Found <color=green><b>{0}</b></color> mods!</color>", LoadedMods.Count - 2));
             }
 		}
 
@@ -248,7 +268,8 @@ namespace MSCLoader
                 foreach (Type type in asm.GetTypes())
                 {
                     // Check if class inherits Mod
-                    if (type.IsSubclassOf(typeof(Mod)))
+                    //if (type.IsSubclassOf(typeof(Mod)))
+                    if(typeof(Mod).IsAssignableFrom(type))
                     {
                         isMod = true;
                         LoadMod((Mod)Activator.CreateInstance(type));
@@ -264,15 +285,9 @@ namespace MSCLoader
                     ModConsole.Error(string.Format("<b>{0}</b> - doesn't look like a mod or missing Mod subclass!", Path.GetFileName(file)));
                 }
             }
-            catch(Exception e)
+            catch(Exception)
             {
-                /*  var st = new StackTrace(e, true);
-                  var frame = st.GetFrame(0);
-
-                  string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(),Environment.NewLine);
-                  ModConsole.Error(string.Format("Mod <b>{0}</b> ({1}) failed to load!{2}",e.Source,Path.GetFileName(file), errorDetails));*/
-                ModConsole.Error(string.Format("<b>{0}</b> - doesn't look like a mod, remove this file from mods folder!", Path.GetFileName(file)));
-
+                  ModConsole.Error(string.Format("<b>{0}</b> - doesn't look like a mod, remove this file from mods folder!", Path.GetFileName(file)));
             }
 
         }
@@ -298,8 +313,8 @@ namespace MSCLoader
                     ModSettings.LoadBinds();
                     //  ModConsole.Print(string.Format("<color=lime><b>Mod Loaded:</b></color><color=orange><b>{0}</b> ({1}ms)</color>", mod.ID, s.ElapsedMilliseconds));
                 }
-
-                LoadedMods.Add(mod);
+              
+               LoadedMods.Add(mod);
             }
             else
             {
@@ -317,7 +332,10 @@ namespace MSCLoader
 			{
                 try
                 {
-                    mod.OnGUI();
+                    if (mod.LoadInMenu)
+                        mod.OnGUI();
+                    else if (Application.loadedLevelName == "GAME")
+                        mod.OnGUI();
                 }
                 catch (Exception e)
                 {

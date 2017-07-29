@@ -17,7 +17,7 @@ namespace MSCLoader
 
         public static bool IsOpen { get; private set; }
 
-        public static ConsoleView console = new ConsoleView();
+        public static ConsoleView console;
         private Keybind consoleKey = new Keybind("Open", "Open console", KeyCode.BackQuote);
         private Keybind consoleSizeKey = new Keybind("Console_size", "Make console bigger/smaller", KeyCode.BackQuote, KeyCode.LeftControl);
         /// <summary>
