@@ -11,12 +11,13 @@ namespace MSCLoader
 	/// </summary>
 	public class ModSettings : Mod
 	{
-		public override string ID { get { return "MSCLoader_Settings"; } }
-		public override string Name { get { return "Settings"; } }
-		public override string Version { get { return ModLoader.Version; } }
-		public override string Author { get { return "piotrulos"; } }
+        public override bool LoadInMenu => true;
+        public override string ID => "MSCLoader_Settings";
+        public override string Name => "Settings";
+        public override string Version => ModLoader.Version;
+        public override string Author => "piotrulos";
 
-		private static Mod selectedMod = null;
+        private static Mod selectedMod = null;
 
         private Keybind menuKey = new Keybind("Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
         public SettingsView settings;

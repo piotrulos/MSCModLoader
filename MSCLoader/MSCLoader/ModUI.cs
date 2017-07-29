@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿//Maybe replace this with Asset Bundles for simplicity
+
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
