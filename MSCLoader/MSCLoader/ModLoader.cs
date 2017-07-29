@@ -146,14 +146,13 @@ namespace MSCLoader
                 }
 
                 // Loading internal tools (console and settings)
-                LoadMod(new ModConsole(), true);
-                LoadMod(new ModSettings(), true);
-                ModSettings.LoadBinds();
+                LoadMod(new ModConsole());
+                LoadMod(new ModSettings());
                 MainMenuInfo(); //show info in main menu.
                 IsDoneLoading = true;
-                ModConsole.Print("Loading internal tools complete!");
                 ModConsole.Print(string.Format("<color=green>ModLoader <b>v{0}</b> ready</color>", Version));
-                
+                PreLoadMods();
+                ModConsole.Print(string.Format("Found {0} mods!", LoadedMods.Count - 2));
             }
 		}
 
@@ -199,10 +198,31 @@ namespace MSCLoader
             
         }
 
+        private static void LoadMods()
+        {
+            // Load Mods
+            foreach (Mod mod in LoadedMods)
+            {
+                try
+                {
+                    if(!mod.LoadInMenu)
+                       mod.OnLoad();
+                }
+                catch (Exception e)
+                {
+                    var st = new StackTrace(e, true);
+                    var frame = st.GetFrame(0);
+
+                    string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
+                    ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
+                }
+            }
+        }
+
         /// <summary>
         /// Load all mods from "mods" folder.
         /// </summary>
-        private static void LoadMods()
+        private static void PreLoadMods()
 		{
 			// Load .dll files
 			foreach (string file in Directory.GetFiles(ModsFolder))
@@ -212,19 +232,6 @@ namespace MSCLoader
 					LoadDLL(file);
 				}
 			}
-
-			// Load subdirectories
-			/*foreach (string dir in Directory.GetDirectories(ModsFolder))
-			{
-				foreach (string file in Directory.GetFiles(dir))
-				{
-					// Only load .dll files
-					if (file.EndsWith(".dll"))
-					{
-						LoadDLL(file);
-					}
-				}
-			}*/
 		}
 
         /// <summary>
@@ -236,64 +243,68 @@ namespace MSCLoader
             try
             {
                 Assembly asm = Assembly.LoadFrom(file);
-                
+                bool isMod = false;
                 // Look through all public classes
                 foreach (Type type in asm.GetTypes())
                 {
                     // Check if class inherits Mod
                     if (type.IsSubclassOf(typeof(Mod)))
                     {
+                        isMod = true;
                         LoadMod((Mod)Activator.CreateInstance(type));
+                        break;
                     }
+                    else
+                    {
+                        isMod = false;
+                    }
+                }
+                if(!isMod)
+                {
+                    ModConsole.Error(string.Format("<b>{0}</b> - doesn't look like a mod or missing Mod subclass!", Path.GetFileName(file)));
                 }
             }
             catch(Exception e)
             {
-                var st = new StackTrace(e, true);
-                var frame = st.GetFrame(0);
-                
-                string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(),Environment.NewLine);
-                ModConsole.Error(string.Format("Mod <b>{0}</b> ({1}) failed to load!{2}",e.Source,Path.GetFileName(file), errorDetails));
+                /*  var st = new StackTrace(e, true);
+                  var frame = st.GetFrame(0);
+
+                  string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(),Environment.NewLine);
+                  ModConsole.Error(string.Format("Mod <b>{0}</b> ({1}) failed to load!{2}",e.Source,Path.GetFileName(file), errorDetails));*/
+                ModConsole.Error(string.Format("<b>{0}</b> - doesn't look like a mod, remove this file from mods folder!", Path.GetFileName(file)));
+
             }
 
-		}
+        }
         
 		/// <summary>
 		/// Load a Mod.
 		/// </summary>
 		/// <param name="mod">The instance of the Mod to load.</param>
-		/// <param name="isInternal">If the Mod is internal or not.</param>
-		private static void LoadMod(Mod mod, bool isInternal = false)
+		private static void LoadMod(Mod mod)
 		{
-			// Check if mod already exists
-			if (!LoadedMods.Contains(mod))
-			{
-                Stopwatch s = new Stopwatch();
-                s.Start();
-				
+            // Check if mod already exists
+            if (!LoadedMods.Contains(mod))
+            {
                 // Create config folder
-				if (!Directory.Exists(ConfigFolder + mod.ID))
-				{
-					Directory.CreateDirectory(ConfigFolder + mod.ID);
-				}
-                
-				LoadedMods.Add(mod);
-                s.Stop();
-				if (!isInternal)
-				{
-					ModConsole.Print(string.Format("<color=lime><b>Mod Loaded:</b></color><color=orange><b>{0}</b> ({1}ms)</color>", mod.ID,s.ElapsedMilliseconds));
-				}
-				else
-				{
-                    ModConsole.Print(mod.LoadInMenu);
-                    mod.OnLoad();
-                    //ModConsole.Print("Loaded internal mod: " + mod.ID); //debug
+                if (!Directory.Exists(ConfigFolder + mod.ID))
+                {
+                    Directory.CreateDirectory(ConfigFolder + mod.ID);
                 }
-			}
-			else
-			{
-				ModConsole.Print(string.Format("<color=orange><b>Mod already loaded (or duplicated ID):</b></color><color=red><b>{0}</b></color>", mod.ID));
-			}
+
+                if (mod.LoadInMenu)
+                {
+                    mod.OnLoad();
+                    ModSettings.LoadBinds();
+                    //  ModConsole.Print(string.Format("<color=lime><b>Mod Loaded:</b></color><color=orange><b>{0}</b> ({1}ms)</color>", mod.ID, s.ElapsedMilliseconds));
+                }
+
+                LoadedMods.Add(mod);
+            }
+            else
+            {
+                ModConsole.Print(string.Format("<color=orange><b>Mod already loaded (or duplicated ID):</b></color><color=red><b>{0}</b></color>", mod.ID));
+            }
 		}
 
 		/// <summary>
@@ -332,7 +343,10 @@ namespace MSCLoader
 			{
                 try
                 {
-                    mod.Update();
+                    if(mod.LoadInMenu)
+                        mod.Update();
+                    else if(Application.loadedLevelName == "GAME")
+                        mod.Update();
                 }
                 catch (Exception e)
                 {
