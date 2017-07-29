@@ -24,11 +24,11 @@
         /// The current version of the mod.
         /// </summary>
         public abstract string Version { get; }
-
-		/// <summary>
-		/// The name of the author.
-		/// </summary>
-		public abstract string Author { get; }
+ 
+        /// <summary>
+        /// The name of the author.
+        /// </summary>
+        public abstract string Author { get; }
 
 
 		/// <summary>
@@ -36,10 +36,16 @@
 		/// </summary>
 		public virtual void OnLoad() { }
 
-		/// <summary>
-		/// Called to draw the obsolete GUI.
-		/// </summary>
-		public virtual void OnGUI() { }
+        /// <summary>
+        /// Destroy any created gameobjects, changes here,
+        /// to avoid game restart to work your mod again
+        /// </summary>
+        public virtual void OnUnload() { }
+
+        /// <summary>
+        /// Called to draw the obsolete GUI.
+        /// </summary>
+        public virtual void OnGUI() { }
 
 		/// <summary>
 		/// Called every tick.
