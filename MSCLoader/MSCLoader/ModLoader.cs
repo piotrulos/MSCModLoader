@@ -86,7 +86,7 @@ namespace MSCLoader
         /// </summary>
         public static void Init()
 		{
-            //Set config folder in mods folder
+            //Set config folder in selected mods folder
             ConfigFolder = Path.Combine(ModsFolder, @"Config\");
             //if mods not loaded and game is loaded.
             if (!IsModsDoneLoading && Application.loadedLevelName == "GAME")
@@ -214,7 +214,7 @@ namespace MSCLoader
 			}
 
 			// Load subdirectories
-			foreach (string dir in Directory.GetDirectories(ModsFolder))
+			/*foreach (string dir in Directory.GetDirectories(ModsFolder))
 			{
 				foreach (string file in Directory.GetFiles(dir))
 				{
@@ -224,7 +224,7 @@ namespace MSCLoader
 						LoadDLL(file);
 					}
 				}
-			}
+			}*/
 		}
 
         /// <summary>
@@ -257,7 +257,7 @@ namespace MSCLoader
             }
 
 		}
-
+        
 		/// <summary>
 		/// Load a Mod.
 		/// </summary>
@@ -270,14 +270,13 @@ namespace MSCLoader
 			{
                 Stopwatch s = new Stopwatch();
                 s.Start();
-				// Generate config files
+				
+                // Create config folder
 				if (!Directory.Exists(ConfigFolder + mod.ID))
 				{
 					Directory.CreateDirectory(ConfigFolder + mod.ID);
 				}
-
-				// Load
-				mod.OnLoad();
+                
 				LoadedMods.Add(mod);
                 s.Stop();
 				if (!isInternal)
@@ -286,8 +285,10 @@ namespace MSCLoader
 				}
 				else
 				{
-					//ModConsole.Print("Loaded internal mod: " + mod.ID); //debug
-				}
+                    ModConsole.Print(mod.LoadInMenu);
+                    mod.OnLoad();
+                    //ModConsole.Print("Loaded internal mod: " + mod.ID); //debug
+                }
 			}
 			else
 			{

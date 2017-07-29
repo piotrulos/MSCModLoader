@@ -5,20 +5,25 @@
     /// </summary>
     public abstract class Mod
 	{
-		/// <summary>
-		/// The ID for your mod (This should be unique).
-		/// </summary>
-		public abstract string ID { get; }
+        /// <summary>
+        /// Load this mod in Main Menu (in most cases should be false).
+        /// </summary>
+        public virtual bool LoadInMenu => false;   
+      
+        /// <summary>
+        /// The ID for your mod (This should be unique).
+        /// </summary>
+        public abstract string ID { get; }
 
-		/// <summary>
-		/// The name that will be displayed.
-		/// </summary>
-		public virtual string Name { get { return ID; } }
+        /// <summary>
+        /// The name that will be displayed.
+        /// </summary>
+        public virtual string Name => ID;
 
-		/// <summary>
-		/// The current version of the mod.
-		/// </summary>
-		public abstract string Version { get; }
+        /// <summary>
+        /// The current version of the mod.
+        /// </summary>
+        public abstract string Version { get; }
 
 		/// <summary>
 		/// The name of the author.

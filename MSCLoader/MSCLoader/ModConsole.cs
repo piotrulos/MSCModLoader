@@ -9,12 +9,14 @@ namespace MSCLoader
     /// </summary>
     public class ModConsole : Mod
 	{
-		public override string ID { get { return "MSCLoader_Console"; } }
-		public override string Name { get { return "Console"; } }
-		public override string Version { get { return ModLoader.Version; } }
-		public override string Author { get { return "piotrulos"; } }
+        public override bool LoadInMenu => true;
+        public override string ID => "MSCLoader_Console";
+        public override string Name => "Console";
+        public override string Version => ModLoader.Version;
+        public override string Author => "piotrulos";
 
-		public static bool IsOpen { get; private set; }
+        public static bool IsOpen { get; private set; }
+
         public static ConsoleView console = new ConsoleView();
         private Keybind consoleKey = new Keybind("Open", "Open console", KeyCode.BackQuote);
         private Keybind consoleSizeKey = new Keybind("Console_size", "Make console bigger/smaller", KeyCode.BackQuote, KeyCode.LeftControl);
