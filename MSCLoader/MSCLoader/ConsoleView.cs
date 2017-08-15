@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class ConsoleView : MonoBehaviour {
 
-    public ConsoleController console = new ConsoleController();
+    public ConsoleController console;
 	
 	public GameObject viewContainer; //Container for console view, should be a child of this GameObject
 	public Text logTextArea;

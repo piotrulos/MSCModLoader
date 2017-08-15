@@ -7,7 +7,7 @@ namespace MSCLoader
     /// </summary>
     public abstract class ConsoleCommand
 	{
-        public static ConsoleController cc = ModConsole.console.console;
+        public static ConsoleController cc;
         public static List<ConsoleCommand> Commands = new List<ConsoleCommand>();
 
 		/// <summary>
