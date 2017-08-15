@@ -69,6 +69,7 @@
     <Compile Include="ModSettings.cs" />
     <Compile Include="ModUI.cs" />
     <Compile Include="ModUIDrag.cs" />
+    <Compile Include="MSCUnloader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SettingsView.cs" />
   </ItemGroup>

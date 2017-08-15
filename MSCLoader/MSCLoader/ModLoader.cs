@@ -14,13 +14,12 @@ namespace MSCLoader
     /// </summary>
     public class ModLoader : MonoBehaviour
 	{
-
         public static bool LogAllErrors = false;
         /// <summary>
         /// If the ModLoader is done loading or not.
         /// </summary>
-        static bool IsDoneLoading = false;
-        static bool IsModsDoneLoading = false;
+        public static bool IsDoneLoading = false;
+        public static bool IsModsDoneLoading = false;
         /// <summary>
         /// A list of all currently loaded mods.
         /// </summary>
@@ -30,11 +29,11 @@ namespace MSCLoader
         /// The instance of ModLoader.
         /// </summary>
         public static ModLoader Instance;
-
-		/// <summary>
-		/// The current version of the ModLoader.
-		/// </summary>
-		public static string Version = "0.2.3";
+        public static MSCUnloader MSCUnloaderInstance;
+        /// <summary>
+        /// The current version of the ModLoader.
+        /// </summary>
+        public static string Version = "0.2.3";
 
 		/// <summary>
 		/// The folder where all Mods are stored.
@@ -89,25 +88,18 @@ namespace MSCLoader
             //Set config folder in selected mods folder
             ConfigFolder = Path.Combine(ModsFolder, @"Config\");
             //if mods not loaded and game is loaded.
+            if(GameObject.Find("MSCUnloader") == null)
+            {
+                GameObject go = new GameObject();
+                go.name = "MSCUnloader";
+                go.AddComponent<MSCUnloader>();
+                MSCUnloaderInstance = go.GetComponent<MSCUnloader>();
+                DontDestroyOnLoad(go);
+            }
             if (IsModsDoneLoading && Application.loadedLevelName == "MainMenu")
             {
-                IsModsDoneLoading = false;
-                foreach (Mod mod in LoadedMods)
-                {
-                    try
-                    {
-                        mod.OnUnload();
-                    }
-                    catch (Exception e)
-                    {
-                        var st = new StackTrace(e, true);
-                        var frame = st.GetFrame(0);
-
-                        string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
-                        ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
-                    }
-                }
-                ModConsole.Print("Mods unloaded");
+                MSCUnloaderInstance.reset = false;
+                MSCUnloaderInstance.MSCLoaderReset();
             }
             if (!IsModsDoneLoading && Application.loadedLevelName == "GAME")
             {
@@ -227,7 +219,7 @@ namespace MSCLoader
                 {
                     if(!mod.LoadInMenu)
                        mod.OnLoad();
-                }
+                 }
                 catch (Exception e)
                 {
                     var st = new StackTrace(e, true);
@@ -262,7 +254,8 @@ namespace MSCLoader
 		{
             try
             {
-                Assembly asm = Assembly.LoadFrom(file);
+               // Assembly asm = Assembly.LoadFrom(file);
+               Assembly asm = Assembly.Load(File.ReadAllBytes(file)); //test for now
                 bool isMod = false;
                 // Look through all public classes
                 foreach (Type type in asm.GetTypes())
@@ -277,7 +270,7 @@ namespace MSCLoader
                     }
                     else
                     {
-                        isMod = false;
+                        isMod = false;                    
                     }
                 }
                 if(!isMod)
@@ -355,9 +348,18 @@ namespace MSCLoader
 		/// Call Update for all loaded Mods.
 		/// </summary>
 		private void Update()
-		{
-			// Call update for loaded mods
-			foreach (Mod mod in LoadedMods)
+        {
+           /* if (Input.GetKeyDown(KeyCode.F10)) //debug
+            {
+                IsDoneLoading = false;
+                IsModsDoneLoading = false;
+                Keybind.Keybinds = new List<Keybind>();
+                Keybind.DefaultKeybinds = new List<Keybind>();
+                MSCUnloaderInstance.reset = false;
+                MSCUnloaderInstance.MSCLoaderReset();
+            }*/
+            // Call update for loaded mods
+            foreach (Mod mod in LoadedMods)
 			{
                 try
                 {

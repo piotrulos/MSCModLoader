@@ -138,6 +138,8 @@ namespace MSCLoader
             Keybind.Add(this, consoleKey);
             Keybind.Add(this, consoleSizeKey);
             CreateConsoleUI();
+            console.console = new ConsoleController();
+            ConsoleCommand.cc = console.console;
             console.setVisibility(false);
             ConsoleCommand.Add(new CommandClear());
             ConsoleCommand.Add(new CommandHelp());
