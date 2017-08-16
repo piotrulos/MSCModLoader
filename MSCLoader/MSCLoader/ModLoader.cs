@@ -194,18 +194,23 @@ namespace MSCLoader
         {
             using (WWW www = new WWW("file:///" + Path.Combine(GetModAssetsFolder(new ModConsole()), "guiskin.unity3d")))
             {
+                while (www.progress < 1)
+                {
+                    ModConsole.Print(string.Format("Progress - {0}%.", www.progress * 100));
+                    yield return new WaitForSeconds(.1f);
+                }
                 yield return www;
                 if (www.error != null)
                 {
                     ModConsole.Error(www.error);
                     yield break;
                 }
-                ModConsole.Print(www.assetBundle.name);
-                ModConsole.Print(www.assetBundle.LoadAsset("MSCLoader.guiskin"));
+                //ModConsole.Print(www.assetBundle.name);
+                //ModConsole.Print(www.assetBundle.LoadAsset("MSCLoader.guiskin"));
                 //GUI.skin = www.assetBundle.LoadAsset("MSCLoader.guiskin") as GUISkin;
                 test = www.assetBundle.LoadAsset("MSCLoader.guiskin") as GUISkin;
-                ModConsole.Print(test.button.normal.textColor.r); //test
-                www.assetBundle.Unload(false);
+                ModConsole.Print("Load Complete"); //test
+                www.assetBundle.Unload(false); //freeup memory
             }
         }
         /// <summary>
