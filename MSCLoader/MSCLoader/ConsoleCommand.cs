@@ -8,7 +8,6 @@ namespace MSCLoader
     public abstract class ConsoleCommand
 	{
         public static ConsoleController cc;
-        public static List<ConsoleCommand> Commands = new List<ConsoleCommand>();
 
 		/// <summary>
 		/// The name of the ConsoleCommand (What the user will have to type in console to trigger the command) [Cannot contain spaces].

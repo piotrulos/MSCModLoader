@@ -8,8 +8,14 @@
         /// <summary>
         /// Load this mod in Main Menu (in most cases should be false).
         /// </summary>
-        public virtual bool LoadInMenu => false;   
-      
+        public virtual bool LoadInMenu => false;
+
+        /// <summary>
+        /// Set this to true if you want load custom files from Assets folder
+        /// (This will create a subfolder for your mod)
+        /// </summary>
+        public virtual bool UseAssetsFolder => false;
+
         /// <summary>
         /// The ID for your mod (This should be unique).
         /// </summary>
@@ -35,12 +41,6 @@
 		/// Called when the mod is loaded.
 		/// </summary>
 		public virtual void OnLoad() { }
-
-        /// <summary>
-        /// Destroy any created gameobjects, changes here,
-        /// to avoid game restart to work your mod again
-        /// </summary>
-        public virtual void OnUnload() { }
 
         /// <summary>
         /// Called to draw the obsolete GUI.
