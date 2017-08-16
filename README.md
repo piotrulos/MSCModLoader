@@ -20,9 +20,10 @@ A documentation for MSCLoader is avaliable [here](https://github.com/piotrulos/M
 
 ## Like My Work?
 If you want you can buy me a beer :)   
-Paypal: [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=39E93LN8PL9W2&item_name=Donate%20my%20work%20if%20you%20want&bn=PP-DonationsBF:btn_donate_LG.gif:NonHosted)  
-Patreon: [Here](https://www.patreon.com/monkeys)  
-BTC: 1NLRvUXHLhuLz5erVWyXdY7i8KmfCSjJgP  
+Paypal: [Paypal.me](https://www.paypal.me/piotrulos/0eur)  
+Patreon: [Monkeys :)](https://www.patreon.com/monkeys)  
+BTC/BCC: 1NLRvUXHLhuLz5erVWyXdY7i8KmfCSjJgP  
+Thanks for all donations, even small ammount helps.
 
 #### Credit
 **djoe45** for MSCLoader that was based on **Longwelwind** and **TheNoob454** work ([PhiPatcher](https://github.com/Longwelwind/PhiScript) and [PBLoader](https://github.com/TheNoob454/PBLoader))

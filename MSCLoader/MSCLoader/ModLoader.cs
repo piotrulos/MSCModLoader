@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -45,7 +46,13 @@ namespace MSCLoader
         /// </summary>
         public static string ConfigFolder = Path.Combine(ModsFolder, @"Config\");
 
-        static bool experimental = true; 
+        /// <summary>
+        /// The folder where the config files for Mods are stored.
+        /// </summary>
+        public static string AssetsFolder = Path.Combine(ModsFolder, @"Assets\");
+
+
+        static bool experimental = true; //Is this build is experimental
 
         /// <summary>
         /// Return your mod config folder, use this if you want save something. 
@@ -55,6 +62,13 @@ namespace MSCLoader
             return ConfigFolder + mod.ID;
         }
 
+        /// <summary>
+        /// Return your mod assets folder, use this if you want load custom content. 
+        /// </summary>
+        public static string GetModAssetsFolder(Mod mod)
+        {
+            return AssetsFolder + mod.ID;
+        }
         /// <summary>
         /// Initialize with Mods folder in My Documents (like in 0.1)
         /// </summary>
@@ -79,16 +93,17 @@ namespace MSCLoader
             ModsFolder = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"..\LocalLow\Amistech\My Summer Car\Mods"));
             Init(); //Main init
         }
-
+        static GUISkin test;
         /// <summary>
         /// Initialize the ModLoader
         /// </summary>
         public static void Init()
-		{
-            //Set config folder in selected mods folder
+        {
+            //Set config and Assets folder in selected mods folder
             ConfigFolder = Path.Combine(ModsFolder, @"Config\");
+            AssetsFolder = Path.Combine(ModsFolder, @"Assets\");
             //if mods not loaded and game is loaded.
-            if(GameObject.Find("MSCUnloader") == null)
+            if (GameObject.Find("MSCUnloader") == null)
             {
                 GameObject go = new GameObject();
                 go.name = "MSCUnloader";
@@ -111,7 +126,7 @@ namespace MSCLoader
                 ModSettings.LoadBinds();
                 IsModsDoneLoading = true;
                 s.Stop();
-                if(s.ElapsedMilliseconds<1000)
+                if (s.ElapsedMilliseconds < 1000)
                     ModConsole.Print(string.Format("Loading mods completed in {0}ms!", s.ElapsedMilliseconds));
                 else
                     ModConsole.Print(string.Format("Loading mods completed in {0} sec(s)!", s.Elapsed.Seconds));
@@ -139,7 +154,7 @@ namespace MSCLoader
                 DontDestroyOnLoad(go);
 
                 // Init variables
-                ModUI.CreateCanvas();          
+                ModUI.CreateCanvas();
                 IsDoneLoading = false;
                 IsModsDoneLoading = false;
                 LoadedMods = new List<Mod>();
@@ -157,6 +172,11 @@ namespace MSCLoader
                     Directory.CreateDirectory(ConfigFolder);
                 }
 
+                if (!Directory.Exists(AssetsFolder))
+                {
+                    //if config folder not exists, create it.
+                    Directory.CreateDirectory(AssetsFolder);
+                }
                 // Loading internal tools (console and settings)
                 LoadMod(new ModConsole());
                 LoadMod(new ModSettings());
@@ -165,9 +185,29 @@ namespace MSCLoader
                 ModConsole.Print(string.Format("<color=green>ModLoader <b>v{0}</b> ready</color>", Version));
                 PreLoadMods();
                 ModConsole.Print(string.Format("<color=orange>Found <color=green><b>{0}</b></color> mods!</color>", LoadedMods.Count - 2));
+                ModConsole.Print(Application.unityVersion);//debug
+                // test = AssetBundle.CreateFromFile(Path.Combine(GetModAssetsFolder(new ModConsole()), "guiskin.unity3d")).LoadAsset("MSCLoader.guiskin") as GUISkin;
+                Instance.StartCoroutine(Instance.LoadSkin());
             }
-		}
-
+        }
+        IEnumerator LoadSkin()
+        {
+            using (WWW www = new WWW("file:///" + Path.Combine(GetModAssetsFolder(new ModConsole()), "guiskin.unity3d")))
+            {
+                yield return www;
+                if (www.error != null)
+                {
+                    ModConsole.Error(www.error);
+                    yield break;
+                }
+                ModConsole.Print(www.assetBundle.name);
+                ModConsole.Print(www.assetBundle.LoadAsset("MSCLoader.guiskin"));
+                //GUI.skin = www.assetBundle.LoadAsset("MSCLoader.guiskin") as GUISkin;
+                test = www.assetBundle.LoadAsset("MSCLoader.guiskin") as GUISkin;
+                ModConsole.Print(test.button.normal.textColor.r); //test
+                www.assetBundle.Unload(false);
+            }
+        }
         /// <summary>
 		/// Print information about ModLoader in MainMenu scene.
 		/// </summary>
@@ -299,7 +339,13 @@ namespace MSCLoader
                 {
                     Directory.CreateDirectory(ConfigFolder + mod.ID);
                 }
-
+                if(mod.UseAssetsFolder)
+                {
+                    if (!Directory.Exists(AssetsFolder + mod.ID))
+                    {
+                        Directory.CreateDirectory(AssetsFolder + mod.ID);
+                    }
+                }
                 if (mod.LoadInMenu)
                 {
                     mod.OnLoad();
@@ -319,7 +365,8 @@ namespace MSCLoader
 		/// Draw obsolete OnGUI.
 		/// </summary>
 		private void OnGUI()
-		{			
+		{
+            GUI.skin = test;
 			// Call OnGUI for loaded mods
 			foreach (Mod mod in LoadedMods)
 			{
