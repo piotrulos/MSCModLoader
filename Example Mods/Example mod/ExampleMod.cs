@@ -6,16 +6,16 @@ namespace ExampleMod
     public class ExampleMod : Mod
 	{
 		// The ID of the mod - Should be unique
-		public override string ID { get { return "ExampleMod"; } }
+		public override string ID => "ExampleMod";
 
 		// The name of the mod that is displayed
-		public override string Name { get { return "Example mod"; } }
+		public override string Name => "Example mod";
 		
 		// The name of the author
-		public override string Author { get { return "Your username"; } }
+		public override string Author => "Your username";
 
 		// The version of the mod - whatever you want.
-		public override string Version { get { return "1.0"; } }
+		public override string Version => "1.0";
 
 		// Keybinds
 		private Keybind testKey = new Keybind("KeyID", "Key name", KeyCode.L, KeyCode.LeftControl);
