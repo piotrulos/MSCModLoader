@@ -62,6 +62,7 @@
     <Compile Include="ConsoleView.cs" />
     <Compile Include="Keybind.cs" />
     <Compile Include="KeyBinding.cs" />
+    <Compile Include="LoadAssets.cs" />
     <Compile Include="Mod.cs" />
     <Compile Include="ModConsole.cs" />
     <Compile Include="ModInfo.cs" />
