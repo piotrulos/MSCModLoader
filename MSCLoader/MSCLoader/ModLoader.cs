@@ -31,6 +31,7 @@ namespace MSCLoader
         /// </summary>
         public static ModLoader Instance;
         public static MSCUnloader MSCUnloaderInstance;
+        public static LoadAssets loadAssets;
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
@@ -50,7 +51,6 @@ namespace MSCLoader
         /// The folder where the config files for Mods are stored.
         /// </summary>
         public static string AssetsFolder = Path.Combine(ModsFolder, @"Assets\");
-
 
         static bool experimental = true; //Is this build is experimental
 
@@ -93,7 +93,7 @@ namespace MSCLoader
             ModsFolder = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"..\LocalLow\Amistech\My Summer Car\Mods"));
             Init(); //Main init
         }
-        static GUISkin test;
+        public static GUISkin guiskin;
         /// <summary>
         /// Initialize the ModLoader
         /// </summary>
@@ -150,7 +150,9 @@ namespace MSCLoader
                 GameObject go = new GameObject();
                 go.name = "MSCModLoader";
                 go.AddComponent<ModLoader>();
+                go.AddComponent<LoadAssets>();
                 Instance = go.GetComponent<ModLoader>();
+                loadAssets = go.GetComponent<LoadAssets>();
                 DontDestroyOnLoad(go);
 
                 // Init variables
@@ -186,33 +188,19 @@ namespace MSCLoader
                 PreLoadMods();
                 ModConsole.Print(string.Format("<color=orange>Found <color=green><b>{0}</b></color> mods!</color>", LoadedMods.Count - 2));
                 ModConsole.Print(Application.unityVersion);//debug
-                // test = AssetBundle.CreateFromFile(Path.Combine(GetModAssetsFolder(new ModConsole()), "guiskin.unity3d")).LoadAsset("MSCLoader.guiskin") as GUISkin;
-                Instance.StartCoroutine(Instance.LoadSkin());
+                //Instance.StartCoroutine(Instance.LoadSkin());
             }
         }
+
         IEnumerator LoadSkin()
         {
-            using (WWW www = new WWW("file:///" + Path.Combine(GetModAssetsFolder(new ModConsole()), "guiskin.unity3d")))
-            {
-                while (www.progress < 1)
-                {
-                    ModConsole.Print(string.Format("Progress - {0}%.", www.progress * 100));
-                    yield return new WaitForSeconds(.1f);
-                }
-                yield return www;
-                if (www.error != null)
-                {
-                    ModConsole.Error(www.error);
-                    yield break;
-                }
-                //ModConsole.Print(www.assetBundle.name);
-                //ModConsole.Print(www.assetBundle.LoadAsset("MSCLoader.guiskin"));
-                //GUI.skin = www.assetBundle.LoadAsset("MSCLoader.guiskin") as GUISkin;
-                test = www.assetBundle.LoadAsset("MSCLoader.guiskin") as GUISkin;
-                ModConsole.Print("Load Complete"); //test
-                www.assetBundle.Unload(false); //freeup memory
-            }
+            AssetBundle ab = new AssetBundle();
+            yield return StartCoroutine(loadAssets.LoadBundle(new ModConsole(), "guiskin.unity3d", value => ab = value));
+            //ModConsole.Print(ab.GetAllAssetNames());
+            guiskin = ab.LoadAsset("MSCLoader.guiskin") as GUISkin;
+            ModConsole.Print("Load Complete 2"); //test
         }
+
         /// <summary>
 		/// Print information about ModLoader in MainMenu scene.
 		/// </summary>
@@ -371,7 +359,7 @@ namespace MSCLoader
 		/// </summary>
 		private void OnGUI()
 		{
-            GUI.skin = test;
+            GUI.skin = guiskin;
 			// Call OnGUI for loaded mods
 			foreach (Mod mod in LoadedMods)
 			{
