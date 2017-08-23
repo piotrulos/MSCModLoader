@@ -198,7 +198,7 @@ namespace MSCLoader
             yield return StartCoroutine(loadAssets.LoadBundle(new ModConsole(), "guiskin.unity3d", value => ab = value));
             //ModConsole.Print(ab.GetAllAssetNames());
             guiskin = ab.LoadAsset("MSCLoader.guiskin") as GUISkin;
-            ModConsole.Print("Load Complete 2"); //test
+            ModConsole.Print("Load Complete"); //test
         }
 
         /// <summary>
