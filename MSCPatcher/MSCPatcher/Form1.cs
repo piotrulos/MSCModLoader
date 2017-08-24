@@ -40,6 +40,18 @@ namespace MSCPatcher
         public Form1()
         {
             InitializeComponent();
+            if (File.Exists("Assembly-CSharp.dll") || File.Exists("UnityEngine.dll")) //check if idiot unpacked this to managed folder.
+            {
+                if (MessageBox.Show("Did you read the instructions? (Readme.txt)", "Question for you!", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    MessageBox.Show(string.Format("Why are you lying?{0}Or maybe you can't read?{0}If you could read, you would know what you did wrong.",Environment.NewLine),"You are a liar", MessageBoxButtons.OK,MessageBoxIcon.Error);
+                }
+                else
+                {
+                    MessageBox.Show(string.Format("Yes I see.{0}Go back to readme and you will know what you did wrong.", Environment.NewLine), "You are a liar", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                Environment.Exit(0);
+            }
             if (File.Exists("MSCFolder.txt"))
             {
                 mscPath = File.ReadAllText("MSCFolder.txt");
