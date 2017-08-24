@@ -49,6 +49,24 @@ namespace MSCLoader
             return null;
         }
 
+        //Load (*.obj) file
+        public static GameObject LoadOBJ(Mod mod, string fileName)
+        {
+            string fn = Path.Combine(ModLoader.GetModAssetsFolder(mod), fileName);
+            if (!File.Exists(fn))
+            {
+                ModConsole.Error(string.Format("<b>LoadOBJ() Error:</b>{1}File not found: {0}", fn, Environment.NewLine));
+                return null;
+            }
+            string ext = Path.GetExtension(fn).ToLower();
+            if (ext == ".obj")
+                return OBJLoader.LoadOBJFile(mod, fn);
+            else
+                ModConsole.Error(string.Format("<b>LoadOBJ() Error:</b>{0}Only (*.obj) files are supported", Environment.NewLine));
+            return null;
+        }
+
+
         /* IEnumerator Testing(Mod mod, string bundleName)
          {
              AssetBundle ab = new AssetBundle();
@@ -126,7 +144,7 @@ namespace MSCLoader
             }
             catch (Exception ex)
             {
-                ModConsole.Error(string.Format("<b>LoadTexture() Error:</b>{0}Error: Could not load DDS texture", Environment.NewLine));
+                ModConsole.Error(string.Format("<b>LoadTexture() Error:</b>{0}Error: Could not load DDS texture", Environment.NewLine,ex.Message));
                 return new Texture2D(8, 8);
             }
         }

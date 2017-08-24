@@ -188,7 +188,7 @@ namespace MSCLoader
                 PreLoadMods();
                 ModConsole.Print(string.Format("<color=orange>Found <color=green><b>{0}</b></color> mods!</color>", LoadedMods.Count - 2));
                 ModConsole.Print(Application.unityVersion);//debug
-                //Instance.StartCoroutine(Instance.LoadSkin());
+                Instance.StartCoroutine(Instance.LoadSkin());
             }
         }
 
