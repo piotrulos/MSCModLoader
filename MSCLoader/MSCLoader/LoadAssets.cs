@@ -80,7 +80,7 @@ namespace MSCLoader
             {
                 while (www.progress < 1)
                 {
-                    ModConsole.Print(string.Format("Progress - {0}%.", www.progress * 100));
+                    ModConsole.Print(string.Format("Progress - {0}%.", www.progress * 100));//replace 
                     yield return new WaitForSeconds(.1f);
                 }
                 yield return www;

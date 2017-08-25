@@ -65,6 +65,7 @@
     <Compile Include="LoadAssets.cs" />
     <Compile Include="Mod.cs" />
     <Compile Include="ModConsole.cs" />
+    <Compile Include="ModCore.cs" />
     <Compile Include="ModInfo.cs" />
     <Compile Include="ModLoader.cs" />
     <Compile Include="ModSettings.cs" />

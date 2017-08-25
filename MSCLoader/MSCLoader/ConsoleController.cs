@@ -53,12 +53,13 @@ public class ConsoleController {
 	public ConsoleController() {
         registerCommand(repeatCmdName, repeatCommand, "Repeat last command.");
         registerCommand("hide", hide, "Hide the console.");
+        registerCommand("ver", version, "Version information");
         //registerCommand("babble", babble, "Example command that demonstrates how to parse arguments. babble [word] [# of times to repeat]");
         //registerCommand("echo", echo, "echoes arguments back as array (for testing argument parser)");
-        //registerCommand("reload", reload, "Reload game.");
+
     }
-	
-	public void registerCommand(string command, CommandHandler handler, string help) {
+
+    public void registerCommand(string command, CommandHandler handler, string help) {
 		commands.Add(command, new CommandRegistration(command, handler, help));
 	}
 	public void clearConsole()
@@ -209,8 +210,10 @@ public class ConsoleController {
 		}
 	}
 	
-	void reload(string[] args) {
-        Application.LoadLevel(Application.loadedLevel);
+	void version(string[] args) {
+        appendLogLine(string.Format("Unity: <b>{0}</b>",Application.unityVersion));
+        //appendLogLine(string.Format("MSC: <b>{0}</b>",Application.version)); //Shows just 1.0
+        appendLogLine(string.Format("MSCLoader: <b>{0}</b>", MSCLoader.ModLoader.Version));
     }
 
 	#endregion

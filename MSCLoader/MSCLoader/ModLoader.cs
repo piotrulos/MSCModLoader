@@ -142,7 +142,7 @@ namespace MSCLoader
                 if (Application.loadedLevelName != "MainMenu")
                     Destroy(GameObject.Find("MSCLoader Info")); //remove top left info in game.
                 if (Application.loadedLevelName != "GAME")
-                    ModConsole.Print("MSCLoader is already loaded!");//debug
+                    ModConsole.Print("<color=#505050ff>MSCLoader is already loaded!</color>");//debug
             }
             else
             {
@@ -187,18 +187,19 @@ namespace MSCLoader
                 ModConsole.Print(string.Format("<color=green>ModLoader <b>v{0}</b> ready</color>", Version));
                 PreLoadMods();
                 ModConsole.Print(string.Format("<color=orange>Found <color=green><b>{0}</b></color> mods!</color>", LoadedMods.Count - 2));
-                ModConsole.Print(Application.unityVersion);//debug
+                ModConsole.Print("Loading core assets...");
                 Instance.StartCoroutine(Instance.LoadSkin());
+                ModConsole.Print("Lodading core assets completed!");
             }
         }
 
         IEnumerator LoadSkin()
         {
             AssetBundle ab = new AssetBundle();
-            yield return StartCoroutine(loadAssets.LoadBundle(new ModConsole(), "guiskin.unity3d", value => ab = value));
+            yield return StartCoroutine(loadAssets.LoadBundle(new ModCore(), "guiskin.unity3d", value => ab = value));
             //ModConsole.Print(ab.GetAllAssetNames());
             guiskin = ab.LoadAsset("MSCLoader.guiskin") as GUISkin;
-            ModConsole.Print("Load Complete"); //test
+            //ModConsole.Print("Load Complete"); //test
         }
 
         /// <summary>
@@ -245,14 +246,15 @@ namespace MSCLoader
 
         private static void LoadMods()
         {
+            ModConsole.Print("<color=#505050ff>");
             // Load Mods
             foreach (Mod mod in LoadedMods)
             {
                 try
-                {
+                {                    
                     if(!mod.LoadInMenu)
-                       mod.OnLoad();
-                 }
+                       mod.OnLoad();                  
+                }
                 catch (Exception e)
                 {
                     var st = new StackTrace(e, true);
@@ -262,6 +264,7 @@ namespace MSCLoader
                     ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
                 }
             }
+            ModConsole.Print("</color>");
         }
 
         /// <summary>
