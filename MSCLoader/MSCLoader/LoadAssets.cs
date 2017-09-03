@@ -21,6 +21,7 @@ namespace MSCLoader
         /// <param name="mod">Mod instance.</param>
         /// <param name="fileName">File name to load (for example "texture.dds")</param>
         /// <param name="normalMap">Normal mapping (default false)</param>
+        /// <returns>Returns unity Texture2D</returns>
         public static Texture2D LoadTexture(Mod mod, string fileName, bool normalMap = false)
         {
             string fn = Path.Combine(ModLoader.GetModAssetsFolder(mod), fileName);
@@ -65,6 +66,7 @@ namespace MSCLoader
         /// </summary>
         /// <param name="mod">Mod instance.</param>
         /// <param name="fileName">File name to load (for example "beer.obj")</param>
+        /// <returns>Returns unity GameObject</returns>
         public static GameObject LoadOBJ(Mod mod, string fileName)
         {
             string fn = Path.Combine(ModLoader.GetModAssetsFolder(mod), fileName);
