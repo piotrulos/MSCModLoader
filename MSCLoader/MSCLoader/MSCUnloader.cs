@@ -6,6 +6,8 @@ using UnityEngine;
 // No need to reset game for some mods.
 namespace MSCLoader
 {
+#pragma warning disable CS1591
+
     public class MSCUnloader : MonoBehaviour
     {
         public bool reset;
@@ -39,4 +41,5 @@ namespace MSCLoader
             }
         }
     }
+#pragma warning restore CS1591
 }

@@ -2,11 +2,10 @@
 
 namespace MSCLoader
 {
-    /// <summary>
-    /// Added to ModList button in settings
-    /// </summary>
+#pragma warning disable CS1591
     public class ModInfo : MonoBehaviour
     {
         public Mod mod = null;
     }
+#pragma warning restore CS1591
 }

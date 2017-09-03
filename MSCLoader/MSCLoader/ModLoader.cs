@@ -11,18 +11,27 @@ using UnityEngine.UI;
 namespace MSCLoader
 {
     /// <summary>
-    /// Main ModLoader class.
+    /// This is main Mod Loader class.
     /// </summary>
     public class ModLoader : MonoBehaviour
 	{
-        public static bool LogAllErrors = false;
         /// <summary>
-        /// If the ModLoader is done loading or not.
+        /// When true, it prints all errors from Update() and OnGUI() class.
+        /// </summary>
+        public static bool LogAllErrors = false;
+ 
+        /// <summary>
+        /// When true, modLoader is ready.
         /// </summary>
         public static bool IsDoneLoading = false;
-        public static bool IsModsDoneLoading = false;
+
         /// <summary>
-        /// A list of all currently loaded mods.
+        /// When true, all mods is loaded.
+        /// </summary>
+        public static bool IsModsDoneLoading = false;
+
+        /// <summary>
+        /// A list of all loaded mods.
         /// </summary>
         public static List<Mod> LoadedMods;
 
@@ -30,47 +39,52 @@ namespace MSCLoader
         /// The instance of ModLoader.
         /// </summary>
         public static ModLoader Instance;
+
+        /// <summary>
+        /// The instance of MSCUnloader.
+        /// </summary>
         public static MSCUnloader MSCUnloaderInstance;
+
+        /// <summary>
+        /// The instance of LoadAssets.
+        /// </summary>
         public static LoadAssets loadAssets;
+
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
         public static string Version = "0.2.3";
-
-		/// <summary>
-		/// The folder where all Mods are stored.
-		/// </summary>
-		static string ModsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"MySummerCar\Mods");
-   
+       
         /// <summary>
-        /// The folder where the config files for Mods are stored.
+        /// non-public fields, please use  GetModConfigFolder() or GetModAssetsFolder() instead
         /// </summary>
+        static string ModsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"MySummerCar\Mods");
         static string ConfigFolder = Path.Combine(ModsFolder, @"Config\");
-
-        /// <summary>
-        /// The folder where the config files for Mods are stored.
-        /// </summary>
         static string AssetsFolder = Path.Combine(ModsFolder, @"Assets\");
 
         static bool experimental = true; //Is this build is experimental
 
         /// <summary>
-        /// Return your mod config folder, use this if you want save something. 
+        /// Mod config folder, use this if you want save something. 
         /// </summary>
+        /// <returns>Path to your mod config folder</returns>
+        /// <param name="mod">Your mod Class.</param>
         public static string GetModConfigFolder(Mod mod)
         {
             return Path.Combine(ConfigFolder, mod.ID);
         }
 
         /// <summary>
-        /// Return your mod assets folder, use this if you want load custom content. 
+        /// Mod assets folder, use this if you want load custom content. 
         /// </summary>
+        /// <returns>Path to your mod assets folder</returns>
+        /// <param name="mod">Your mod Class.</param>
         public static string GetModAssetsFolder(Mod mod)
         {
             return Path.Combine(AssetsFolder, mod.ID);
         }
         /// <summary>
-        /// Initialize with Mods folder in My Documents (like in 0.1)
+        /// Initialize ModLoader with Mods folder in My Documents (like it was in 0.1)
         /// </summary>
         public static void Init_MD()
         {
@@ -78,7 +92,7 @@ namespace MSCLoader
             Init(); //Main init
         }
         /// <summary>
-        /// Initialize with Mods folder in Game Folder (near game's exe)
+        /// Initialize ModLoader with Mods folder in Game Folder (near game's exe)
         /// </summary>
         public static void Init_GF()
         {
@@ -86,16 +100,21 @@ namespace MSCLoader
             Init(); //Main init
         }
         /// <summary>
-        /// Initialize with Mods folder in AppData/LocalLow (near game's save)
+        /// Initialize ModLoader with Mods folder in AppData/LocalLow (near game's save)
         /// </summary>
         public static void Init_AD()
         {
             ModsFolder = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"..\LocalLow\Amistech\My Summer Car\Mods"));
             Init(); //Main init
         }
-        public static GUISkin guiskin;
+
         /// <summary>
-        /// Initialize the ModLoader
+        /// GUISkin for OnGUI()
+        /// </summary>
+        public static GUISkin guiskin;
+
+        /// <summary>
+        /// Main function to initialize the ModLoader
         /// </summary>
         public static void Init()
         {
@@ -203,9 +222,9 @@ namespace MSCLoader
         }
 
         /// <summary>
-		/// Print information about ModLoader in MainMenu scene.
+		/// Prints information about ModLoader in MainMenu scene.
 		/// </summary>
-        private static void MainMenuInfo(bool destroy = false)
+        private static void MainMenuInfo()
         {
             //Create parent gameobject in canvas for layout and text information.
             GameObject modInfo = ModUI.CreateUIBase("MSCLoader Info", GameObject.Find("MSCLoader Canvas"));
@@ -244,6 +263,9 @@ namespace MSCLoader
             
         }
 
+        /// <summary>
+        /// Load mods, this will call OnLoad() for all loaded mods.
+        /// </summary>
         private static void LoadMods()
         {
             ModConsole.Print("<color=#505050ff>");
@@ -268,7 +290,7 @@ namespace MSCLoader
         }
 
         /// <summary>
-        /// Load all mods from "mods" folder.
+        /// Load all mods from "mods" folder, but don't call OnLoad()
         /// </summary>
         private static void PreLoadMods()
 		{
@@ -282,10 +304,6 @@ namespace MSCLoader
 			}
 		}
 
-        /// <summary>
-        /// Load mod from DLL file.
-        /// </summary>
-        /// <param name="file">The path of the DLL file to load the Mod from.</param>
         private static void LoadDLL(string file)
 		{
             try
@@ -321,10 +339,6 @@ namespace MSCLoader
 
         }
         
-		/// <summary>
-		/// Load a Mod.
-		/// </summary>
-		/// <param name="mod">The instance of the Mod to load.</param>
 		private static void LoadMod(Mod mod)
 		{
             // Check if mod already exists
@@ -358,7 +372,7 @@ namespace MSCLoader
 		}
 
 		/// <summary>
-		/// Draw obsolete OnGUI.
+		/// Call Unity OnGUI() function, for each loaded mods.
 		/// </summary>
 		private void OnGUI()
 		{
@@ -387,10 +401,10 @@ namespace MSCLoader
             }
 		}
 
-		/// <summary>
-		/// Call Update for all loaded Mods.
-		/// </summary>
-		private void Update()
+        /// <summary>
+        /// Call Unity Update() function, for each loaded mods.
+        /// </summary>
+        private void Update()
         {
            /* if (Input.GetKeyDown(KeyCode.F10)) //debug
             {

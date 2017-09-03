@@ -1,4 +1,4 @@
-﻿//Maybe replace this with Asset Bundles for simplicity
+﻿//Replace this with Asset Bundles for simplicity
 
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -6,11 +6,10 @@ using UnityEngine.UI;
 
 namespace MSCLoader
 {
+#pragma warning disable CS1591
     public class ModUI : MonoBehaviour
     {
-        /// <summary>
-        /// Create canvas for UI
-        /// </summary>
+
         public static void CreateCanvas()
         {
             GameObject canvasGO = new GameObject();
@@ -32,11 +31,8 @@ namespace MSCLoader
             evSys.AddComponent<StandaloneInputModule>();
             DontDestroyOnLoad(evSys);
         }
-        /// <summary>
-        /// Create base gameObject for your UI.
-        /// </summary>
-        /// <param name="name">GameObject name.</param>
-        /// <param name="parent">Parent object for this base.</param>
+
+        // Create base gameObject for your UI.
         public static GameObject CreateUIBase(string name, GameObject parent)
         {
             GameObject createWindow = new GameObject();
@@ -47,11 +43,8 @@ namespace MSCLoader
             return createWindow;
         }
 
-        /// <summary>
-        /// Create parent gameObject for UI on canvas.
-        /// </summary>
-        /// <param name="name">GameObject name.</param>
-        /// <param name="draggable">Can drag this object by mouse.</param>
+        
+        // Create parent gameObject for UI on canvas.
         public static GameObject CreateParent(string name, bool draggable)
         {
             GameObject createWindow = CreateUIBase(name, GameObject.Find("MSCLoader Canvas"));
@@ -77,14 +70,7 @@ namespace MSCLoader
             }
         }
 
-        /// <summary>
-        /// Creates Text on canvas or any other selected parent
-        /// </summary>
-        /// <param name="name">GameObject name.</param>
-        /// <param name="text">Text you want to display.</param>
-        /// <param name="parent">Where to put GameObject.</param>
-        /// <param name="color">Font color (default white)</param>
-        /// <param name="outline">A small outline around text for clear visibility on any surface. (default true)</param>
+        // Creates Text on canvas or any other selected parent
         public static GameObject CreateTextBlock(string name, string text, GameObject parent, TextAnchor alignment = TextAnchor.MiddleLeft, Color? color =  null, bool outline = false)
         {
             GameObject textBlock = CreateUIBase(name, parent);
@@ -98,15 +84,8 @@ namespace MSCLoader
             }
             return textBlock;
         }
-
-        /// <summary>
-        /// Creates Input Field
-        /// </summary>
-        /// <param name="name">GameObject name.</param>
-        /// <param name="placeholderText">Text you want to display as placeholder.</param>
-        /// <param name="parent">Where to put GameObject.</param>
-        /// <param name="width">width</param>
-        /// <param name="height">height</param>
+     
+        // Creates Input Field
         public static GameObject CreateInputField(string name, string placeholderText, GameObject parent, float width, float height)
         {
             GameObject inputField = CreateUIBase(name, parent);
@@ -132,14 +111,8 @@ namespace MSCLoader
 
             return inputField;
         }
-        /// <summary>
-        /// Creates Button
-        /// </summary>
-        /// <param name="name">GameObject name.</param>
-        /// <param name="text">Text you want to display on this button.</param>
-        /// <param name="parent">Where to put GameObject.</param>
-        /// <param name="width">width</param>
-        /// <param name="height">height</param>
+
+        // Creates Button
         public static GameObject CreateButton(string name, string text, GameObject parent, float width, float height)
         {
             GameObject Btn = CreateUIBase(name, parent);
@@ -182,4 +155,5 @@ namespace MSCLoader
         }
 
     }
+#pragma warning restore CS1591
 }

@@ -1,5 +1,6 @@
 ﻿namespace MSCLoader.Commands
 {
+#pragma warning disable CS1591
     public class CommandClear : ConsoleCommand
 	{
         public override string Name => "clear";
@@ -10,4 +11,6 @@
 			ModConsole.Clear();
 		}
 	}
+#pragma warning restore CS1591
+
 }
