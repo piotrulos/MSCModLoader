@@ -9,6 +9,7 @@ namespace MSCLoader
     /// </summary>
     public class ModConsole : Mod
 	{
+    #pragma warning disable CS1591
         public override bool LoadInMenu => true;
         public override string ID => "MSCLoader_Console";
         public override string Name => "Console";
@@ -21,9 +22,7 @@ namespace MSCLoader
         public static ConsoleView console;
         private Keybind consoleKey = new Keybind("Open", "Open console", KeyCode.BackQuote);
         private Keybind consoleSizeKey = new Keybind("Console_size", "Make console bigger/smaller", KeyCode.BackQuote, KeyCode.LeftControl);
-        /// <summary>
-        /// Create console UI using UnityEngine.UI
-        /// </summary>
+
         GameObject consoleObj, logView, scrollbar;
         public void CreateConsoleUI()
         {
@@ -146,11 +145,11 @@ namespace MSCLoader
             ConsoleCommand.Add(new CommandHelp());
             ConsoleCommand.Add(new CommandLogAll());
         }
-
+    #pragma warning restore CS1591
         /// <summary>
         /// Print a message to console.
         /// </summary>
-        /// <param name="str">Text or object to append to console.</param>
+        /// <param name="str">Text to print to console.</param>
         public static void Print(string str)
         {
              console.console.appendLogLine(str);
@@ -164,9 +163,9 @@ namespace MSCLoader
             console.console.appendLogLine(obj.ToString());
         }
         /// <summary>
-        /// Append an error to the console.
+        /// Print an error to the console.
         /// </summary>
-        /// <param name="str">Text or object to append to error log.</param>
+        /// <param name="str">Text to print to error log.</param>
         public static void Error(string str)
 		{          
             console.setVisibility(true);

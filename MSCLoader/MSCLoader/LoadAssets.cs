@@ -7,9 +7,20 @@ using UnityEngine;
 
 namespace MSCLoader
 {
+    /// <summary>
+    /// Class for Loading custom assets from Assets folder
+    /// </summary>
     public class LoadAssets : MonoBehaviour
     {
-        //Load texture from mod assets folder
+
+        /// <summary>
+        /// Load texture (*.dds, *.jpg, *.png, *.tga) from mod assets folder
+        /// </summary>
+        /// <example><code source="Examples.cs" region="LoadTexture" lang="C#" 
+        /// title="Example for change texture when we press key" /></example>
+        /// <param name="mod">Mod instance.</param>
+        /// <param name="fileName">File name to load (for example "texture.dds")</param>
+        /// <param name="normalMap">Normal mapping (default false)</param>
         public static Texture2D LoadTexture(Mod mod, string fileName, bool normalMap = false)
         {
             string fn = Path.Combine(ModLoader.GetModAssetsFolder(mod), fileName);
@@ -49,7 +60,11 @@ namespace MSCLoader
             return null;
         }
 
-        //Load (*.obj) file
+        /// <summary>
+        /// Load (*.obj) file from mod assets folder
+        /// </summary>
+        /// <param name="mod">Mod instance.</param>
+        /// <param name="fileName">File name to load (for example "beer.obj")</param>
         public static GameObject LoadOBJ(Mod mod, string fileName)
         {
             string fn = Path.Combine(ModLoader.GetModAssetsFolder(mod), fileName);
@@ -74,6 +89,12 @@ namespace MSCLoader
 
          }*/
 
+        /// <summary>
+        /// A Coroutine for Loading AssetBundles (prefered to call from another Corountine)
+        /// </summary>
+        /// <param name="mod">Mod instance.</param>
+        /// <param name="bundleName">File name to load (for example "something.unity3d")</param>
+        /// <param name="ab">Returned AssetBundle</param>
         public IEnumerator LoadBundle(Mod mod, string bundleName, Action<AssetBundle> ab)
         {
             using (WWW www = new WWW("file:///" + Path.Combine(ModLoader.GetModAssetsFolder(mod), bundleName)))

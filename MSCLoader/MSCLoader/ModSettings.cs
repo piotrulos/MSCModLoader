@@ -6,11 +6,10 @@ using UnityEngine.UI;
 
 namespace MSCLoader
 {
-	/// <summary>
-	/// Handles the settings for all Mods.
-	/// </summary>
+    #pragma warning disable CS1591
 	public class ModSettings : Mod
 	{
+
         public override bool LoadInMenu => true;
         public override string ID => "MSCLoader_Settings";
         public override string Name => "Settings";
@@ -22,9 +21,6 @@ namespace MSCLoader
         private Keybind menuKey = new Keybind("Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
         public SettingsView settings;
 
-        /// <summary>
-        /// Create Settings UI using UnityEngine.UI
-        /// </summary>
         public void CreateSettingsUI()
         {
             
@@ -178,9 +174,8 @@ namespace MSCLoader
 			}
 		}
 		
-		/// <summary>
-		/// Save all keybinds to config files.
-		/// </summary>
+
+		// Save all keybinds to config files.
 		public static void SaveAllBinds()
 		{
 			foreach (Mod mod in ModLoader.LoadedMods)
@@ -189,10 +184,8 @@ namespace MSCLoader
 			}
 		}
 
-		/// <summary>
-		/// Save keybind for a single mod to config file.
-		/// </summary>
-		/// <param name="mod">The mod to save the config for.</param>
+
+		// Save keybind for a single mod to config file.
 		public static void SaveModBinds(Mod mod)
 		{
             
@@ -233,9 +226,8 @@ namespace MSCLoader
              
         }
 
-        /// <summary>
-        /// Load all keybinds.
-        /// </summary>
+        
+        // Load all keybinds.
         public static void LoadBinds()
 		{
 			foreach (Mod mod in ModLoader.LoadedMods)
@@ -298,9 +290,7 @@ namespace MSCLoader
 			}
 		}
 
-		/// <summary>
-		/// Load the keybinds.
-		/// </summary>
+		// Load the keybinds.
 		public override void OnLoad()
 		{
 			Keybind.Add(this, menuKey);
@@ -309,9 +299,8 @@ namespace MSCLoader
             LoadBinds();
         }
 
-		/// <summary>
-		/// Open menu if the key is pressed.
-		/// </summary>
+
+		// Open menu if the key is pressed.
 		public override void Update()
 		{
 			// Open menu
@@ -321,4 +310,5 @@ namespace MSCLoader
 			}
 		}
 	}
+#pragma warning restore CS1591
 }

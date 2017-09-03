@@ -23,32 +23,35 @@
 
         /// <summary>
         /// The name that will be displayed.
+        /// (if not set, will be same as ID)
         /// </summary>
         public virtual string Name => ID;
 
         /// <summary>
         /// The current version of the mod.
+        /// (prefered standard version format 2, 3 or 4 digit)
         /// </summary>
         public abstract string Version { get; }
  
         /// <summary>
-        /// The name of the author.
+        /// Author of the mod
+        /// (Enter your nickname)
         /// </summary>
         public abstract string Author { get; }
 
 
 		/// <summary>
-		/// Called when the mod is loaded.
+		/// Called once, when the mod is loaded during game.
 		/// </summary>
 		public virtual void OnLoad() { }
 
         /// <summary>
-        /// Called to draw the obsolete GUI.
+        /// Standard unity OnGUI().
         /// </summary>
         public virtual void OnGUI() { }
 
 		/// <summary>
-		/// Called every tick.
+		/// Called once every frame (standard unity Update()).
 		/// </summary>
 		public virtual void Update() { }
 	}

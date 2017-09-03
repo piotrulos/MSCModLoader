@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 namespace MSCLoader
 {
+#pragma warning disable CS1591
     public class SettingsView : MonoBehaviour
     {
         public GameObject settingView;
@@ -192,4 +193,6 @@ namespace MSCLoader
             settingViewContainer.SetActive(visible);
         }
     }
+#pragma warning restore CS1591
+
 }

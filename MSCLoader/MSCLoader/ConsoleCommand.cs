@@ -1,16 +1,17 @@
-﻿using System.Collections.Generic;
-
-namespace MSCLoader
+﻿namespace MSCLoader
 {
     /// <summary>
-    /// Allows for Mods to easily add rebindable console commands.
+    /// Allows for Mods to easily add console commands.
     /// </summary>
     public abstract class ConsoleCommand
 	{
+        /// <summary>
+        /// ConsoleController Instance
+        /// </summary>
         public static ConsoleController cc;
 
 		/// <summary>
-		/// The name of the ConsoleCommand (What the user will have to type in console to trigger the command) [Cannot contain spaces].
+		/// The name of the ConsoleCommand (What the user will have to type in console to trigger the command). Cannot contain spaces!
 		/// </summary>
 		public abstract string Name { get; }
 

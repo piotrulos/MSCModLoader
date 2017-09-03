@@ -1,6 +1,7 @@
 ﻿//Class for adding console commands
 namespace MSCLoader.Commands
 {
+#pragma warning disable CS1591
     public class CommandLogAll : ConsoleCommand
     {
         // What the player has to type into the console to execute your commnad
@@ -15,6 +16,6 @@ namespace MSCLoader.Commands
             ModConsole.Print(string.Format("<color=orange>Log All errors is set to <b>{0}</b></color>", !ModLoader.LogAllErrors));
             ModLoader.LogAllErrors = !ModLoader.LogAllErrors;
         }
-
     }
+#pragma warning restore CS1591
 }

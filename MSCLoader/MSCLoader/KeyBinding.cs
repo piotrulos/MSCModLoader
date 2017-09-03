@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 namespace MSCLoader 
 {
+    #pragma warning disable CS1591
     public class KeyBinding : MonoBehaviour
     {
         public KeyCode modifierKey;
@@ -101,4 +102,5 @@ namespace MSCLoader
         }
 
     }
+    #pragma warning restore CS1591
 }

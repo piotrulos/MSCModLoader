@@ -4,12 +4,18 @@ using UnityEngine;
 namespace MSCLoader
 {
 	/// <summary>
-	/// Allows for Mods to easily add rebindable keybinds.
+	/// Allow Mods to easily add rebindable keybinds.
 	/// </summary>
 	public class Keybind
 	{
-		public static List<Keybind> Keybinds = new List<Keybind>();
-		public static List<Keybind> DefaultKeybinds = new List<Keybind>();
+        /// <summary>
+        /// List of Keybinds
+        /// </summary>
+        public static List<Keybind> Keybinds = new List<Keybind>();
+        /// <summary>
+        /// List of Default Keybinds
+        /// </summary>
+        public static List<Keybind> DefaultKeybinds = new List<Keybind>();
 
 		/// <summary>
 		/// The ID of the keybind (Should only be used once in your mod).
@@ -17,7 +23,7 @@ namespace MSCLoader
 		public string ID { get; set; }
 
 		/// <summary>
-		/// The name that will be displayed.
+		/// The name that will be displayed in settings
 		/// </summary>
 		public string Name { get; set; }
 
@@ -27,7 +33,7 @@ namespace MSCLoader
 		public KeyCode Key { get; set; }
 
 		/// <summary>
-		/// The modifier KeyCode the user will have to press in conjunction with the Key.
+		/// The modifier KeyCode the user will have to press with the Key.
 		/// </summary>
 		public KeyCode Modifier { get; set; }
 
@@ -113,9 +119,9 @@ namespace MSCLoader
 		}
 
 		/// <summary>
-		/// Checks if the Keybind was just pressed this tick.
+		/// Checks if the Keybind was just pressed.
 		/// </summary>
-		/// <returns>If the Keybind is being held down.</returns>
+		/// <returns>If the Keybind is being pressed.</returns>
 		public bool IsDown()
 		{
 			if (Modifier != KeyCode.None)

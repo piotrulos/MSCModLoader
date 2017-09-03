@@ -1,5 +1,7 @@
 ﻿namespace MSCLoader.Commands
 {
+#pragma warning disable CS1591
+
     public class CommandHelp : ConsoleCommand
 	{
         public override string Name => "help";
@@ -11,4 +13,6 @@
             cc.help(args);
 		}
 	}
+#pragma warning restore CS1591
+
 }

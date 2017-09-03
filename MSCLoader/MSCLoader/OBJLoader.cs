@@ -6,6 +6,7 @@ using System.Linq;
 
 namespace MSCLoader
 {
+#pragma warning disable CS1591
     public class OBJLoader 
     {
         public static bool splitByMaterial = false;
@@ -433,4 +434,6 @@ namespace MSCLoader
             return parentObject;
         }
     }
+#pragma warning restore CS1591
+
 }

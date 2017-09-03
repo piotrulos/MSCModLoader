@@ -1,6 +1,7 @@
 ﻿//Core class (placeholder for core assets)
 namespace MSCLoader
 {
+#pragma warning disable CS1591
     public class ModCore : Mod
     {
         public override string ID => "MSCLoader_Core"; 
@@ -8,4 +9,5 @@ namespace MSCLoader
         public override string Author => "Piotrulos";
         public override string Version => ModLoader.Version;
     }
+#pragma warning restore CS1591
 }
