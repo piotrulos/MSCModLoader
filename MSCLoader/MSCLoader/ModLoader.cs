@@ -40,17 +40,17 @@ namespace MSCLoader
 		/// <summary>
 		/// The folder where all Mods are stored.
 		/// </summary>
-		public static string ModsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"MySummerCar\Mods");
+		static string ModsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"MySummerCar\Mods");
    
         /// <summary>
         /// The folder where the config files for Mods are stored.
         /// </summary>
-        public static string ConfigFolder = Path.Combine(ModsFolder, @"Config\");
+        static string ConfigFolder = Path.Combine(ModsFolder, @"Config\");
 
         /// <summary>
         /// The folder where the config files for Mods are stored.
         /// </summary>
-        public static string AssetsFolder = Path.Combine(ModsFolder, @"Assets\");
+        static string AssetsFolder = Path.Combine(ModsFolder, @"Assets\");
 
         static bool experimental = true; //Is this build is experimental
 
@@ -59,7 +59,7 @@ namespace MSCLoader
         /// </summary>
         public static string GetModConfigFolder(Mod mod)
         {
-            return ConfigFolder + mod.ID;
+            return Path.Combine(ConfigFolder, mod.ID);
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace MSCLoader
         /// </summary>
         public static string GetModAssetsFolder(Mod mod)
         {
-            return AssetsFolder + mod.ID;
+            return Path.Combine(AssetsFolder, mod.ID);
         }
         /// <summary>
         /// Initialize with Mods folder in My Documents (like in 0.1)

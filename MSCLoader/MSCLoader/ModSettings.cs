@@ -156,7 +156,7 @@ namespace MSCLoader
 			if (selectedMod != null)
 			{
 				// Delete file
-				string path = ModLoader.ConfigFolder + selectedMod.ID + "\\keybinds.xml";
+				string path = Path.Combine(ModLoader.GetModConfigFolder(selectedMod),"keybinds.xml");
 				File.WriteAllText(path, "");
 
 				// Revert binds
@@ -197,7 +197,7 @@ namespace MSCLoader
 		{
             
             
-			string path = ModLoader.ConfigFolder + mod.ID + "\\keybinds.xml";
+			string path = Path.Combine(ModLoader.GetModConfigFolder(mod), "keybinds.xml");
 
 			// Clear file
 			File.WriteAllText(path, "");
@@ -241,7 +241,7 @@ namespace MSCLoader
 			foreach (Mod mod in ModLoader.LoadedMods)
 			{
 				// Check if there are custom keybinds
-				string path = Path.Combine(ModLoader.ConfigFolder, mod.ID + "\\keybinds.xml");
+				string path = Path.Combine(ModLoader.GetModConfigFolder(mod), "keybinds.xml");
 
 				if (!File.Exists(path))
 				{
