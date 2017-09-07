@@ -18,6 +18,9 @@ namespace MSCLoader
 
         //from AssetBundle
         public GameObject ModButton;
+        public GameObject ModButton_Pre;
+        public GameObject ModButton_Invalid;
+        public GameObject ModViewLabel;
 
         //icons
         public GameObject HasAssets;
@@ -30,10 +33,32 @@ namespace MSCLoader
         public Text Authortxt;
 
         Mod selected;
-
+        bool loadedLabel = false;
+        bool preloadedLabel = false;
+        bool invalidLabel = false;
         public void modButton(string name, string version, string author, Mod mod)
         {
-            GameObject modButton = Instantiate(ModButton);
+            if (!loadedLabel)
+            {
+                GameObject modViewLabel = Instantiate(ModViewLabel);
+                modViewLabel.GetComponent<Text>().text = "Loaded Mods:";
+                modViewLabel.transform.SetParent(modView.transform, false);
+                loadedLabel = true;
+            }
+            GameObject modButton;
+            if (!mod.LoadInMenu && Application.loadedLevelName == "MainMenu")
+            {
+                if (!preloadedLabel)
+                {
+                    GameObject modViewLabel = Instantiate(ModViewLabel);
+                    modViewLabel.GetComponent<Text>().text = "Ready to Load:";
+                    modViewLabel.transform.SetParent(modView.transform, false);
+                    preloadedLabel = true;
+                }
+                modButton = Instantiate(ModButton_Pre);
+            }
+            else
+                modButton = Instantiate(ModButton);
             //ModButton = Instantiate(ModButton);
             modButton.AddComponent<ModInfo>().mod = mod;
             modButton.GetComponent<Button>().onClick.AddListener(() => settingView.GetComponent<SettingsView>().selectMod());
@@ -60,11 +85,11 @@ namespace MSCLoader
 
         public void KeyBindsList(string name, KeyCode modifier, KeyCode key, string ID)
         {
-            
+
             GameObject keyBind = ModUI.CreateUIBase("KeyBind", keybindsList);
             keyBind.AddComponent<LayoutElement>().preferredHeight = 35;
             keyBind.AddComponent<KeyBinding>();
-            GameObject keyName = ModUI.CreateTextBlock("Key Name", name, keyBind,TextAnchor.MiddleLeft);
+            GameObject keyName = ModUI.CreateTextBlock("Key Name", name, keyBind, TextAnchor.MiddleLeft);
             keyName.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 1);
             keyName.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 1);
             keyName.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 1);
@@ -122,7 +147,7 @@ namespace MSCLoader
             keyBind.GetComponent<KeyBinding>().key = key;
             keyBind.GetComponent<KeyBinding>().modifierKey = modifier;
             keyBind.GetComponent<KeyBinding>().mod = selected;
-            keyBind.GetComponent<KeyBinding>().id = ID ;
+            keyBind.GetComponent<KeyBinding>().id = ID;
             keyBind.GetComponent<KeyBinding>().LoadBind();
 
         }
@@ -166,11 +191,43 @@ namespace MSCLoader
         {
             if (!settingViewContainer.activeSelf)
             {
+                loadedLabel = false;
+                preloadedLabel = false;
+                invalidLabel = false;
                 RemoveChildren(modView.transform);
                 setVisibility(!settingViewContainer.activeSelf);
-                foreach (Mod mod in ModLoader.LoadedMods)
+                if (Application.loadedLevelName == "MainMenu")
                 {
-                    modButton(mod.Name, mod.Version, mod.Author, mod);
+                    foreach (Mod mod in ModLoader.LoadedMods)
+                    {
+                        if (mod.LoadInMenu)
+                            modButton(mod.Name, mod.Version, mod.Author, mod);
+                    }
+                    foreach (Mod mod in ModLoader.LoadedMods)
+                    {
+                        if (!mod.LoadInMenu)
+                            modButton(mod.Name, mod.Version, mod.Author, mod);
+                    }
+                }
+                else
+                {
+                    foreach (Mod mod in ModLoader.LoadedMods)
+                    {
+                        modButton(mod.Name, mod.Version, mod.Author, mod);
+                    }
+                }
+                foreach(string s in ModLoader.InvalidMods)
+                {
+                    if (!invalidLabel)
+                    {
+                        GameObject modViewLabel = Instantiate(ModViewLabel);
+                        modViewLabel.GetComponent<Text>().text = "Invalid Mods:";
+                        modViewLabel.transform.SetParent(modView.transform, false);
+                        invalidLabel = true;
+                    }
+                    GameObject invMod = Instantiate(ModButton_Invalid);
+                    invMod.transform.GetChild(0).GetComponent<Text>().text = s;
+                    invMod.transform.SetParent(modView.transform, false);
                 }
             }
             else

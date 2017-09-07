@@ -34,7 +34,11 @@ namespace MSCLoader
         /// A list of all loaded mods.
         /// </summary>
         public static List<Mod> LoadedMods;
-
+      
+        /// <summary>
+        /// A list of invalid mod files (like random dll in Mods Folder that isn't a mod).
+        /// </summary>
+        public static List<string> InvalidMods;
         /// <summary>
         /// The instance of ModLoader.
         /// </summary>
@@ -183,6 +187,7 @@ namespace MSCLoader
                 IsDoneLoading = false;
                 IsModsDoneLoading = false;
                 LoadedMods = new List<Mod>();
+                InvalidMods = new List<string>();
 
                 // Init mod loader settings
                 if (!Directory.Exists(ModsFolder))
@@ -312,15 +317,15 @@ namespace MSCLoader
 		{
             try
             {
-               // Assembly asm = Assembly.LoadFrom(file);
-               Assembly asm = Assembly.Load(File.ReadAllBytes(file)); //test for now
+                // Assembly asm = Assembly.LoadFrom(file);
+                Assembly asm = Assembly.Load(File.ReadAllBytes(file)); //test for now
                 bool isMod = false;
                 // Look through all public classes
                 foreach (Type type in asm.GetTypes())
                 {
                     // Check if class inherits Mod
                     //if (type.IsSubclassOf(typeof(Mod)))
-                    if(typeof(Mod).IsAssignableFrom(type))
+                    if (typeof(Mod).IsAssignableFrom(type))
                     {
                         isMod = true;
                         LoadMod((Mod)Activator.CreateInstance(type));
@@ -328,17 +333,19 @@ namespace MSCLoader
                     }
                     else
                     {
-                        isMod = false;                    
+                        isMod = false;
                     }
                 }
-                if(!isMod)
+                if (!isMod)
                 {
                     ModConsole.Error(string.Format("<b>{0}</b> - doesn't look like a mod or missing Mod subclass!", Path.GetFileName(file)));
+                    InvalidMods.Add(Path.GetFileName(file));
                 }
             }
-            catch(Exception)
+            catch (Exception)
             {
-                  ModConsole.Error(string.Format("<b>{0}</b> - doesn't look like a mod, remove this file from mods folder!", Path.GetFileName(file)));
+                ModConsole.Error(string.Format("<b>{0}</b> - doesn't look like a mod, remove this file from mods folder!", Path.GetFileName(file)));
+                InvalidMods.Add(Path.GetFileName(file));
             }
 
         }
