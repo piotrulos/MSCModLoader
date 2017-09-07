@@ -145,11 +145,13 @@ namespace MSCLoader
             ConsoleCommand.Add(new CommandHelp());
             ConsoleCommand.Add(new CommandLogAll());
         }
-    #pragma warning restore CS1591
+#pragma warning restore CS1591
         /// <summary>
         /// Print a message to console.
         /// </summary>
         /// <param name="str">Text to print to console.</param>
+        /// <example><code source="Examples.cs" region="ModConsolePrint" lang="C#" 
+        /// title="Example Code" /></example>
         public static void Print(string str)
         {
              console.console.appendLogLine(str);
@@ -158,6 +160,8 @@ namespace MSCLoader
         /// OBSOLETE: For compatibility with 0.1 plugins, please use string str overload!
         /// </summary>
         /// <param name="obj">Text or object to append to console.</param>
+        /// <example><code source="Examples.cs" region="ModConsolePrint" lang="C#" 
+        /// title="Example Code" /></example>
         public static void Print(object obj)
         {
             console.console.appendLogLine(obj.ToString());
@@ -166,6 +170,8 @@ namespace MSCLoader
         /// Print an error to the console.
         /// </summary>
         /// <param name="str">Text to print to error log.</param>
+        /// <example><code source="Examples.cs" region="ModConsoleError" lang="C#" 
+        /// title="Example Code" /></example>
         public static void Error(string str)
 		{          
             console.setVisibility(true);

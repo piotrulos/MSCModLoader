@@ -1,8 +1,10 @@
 ﻿namespace MSCLoader
 {
     /// <summary>
-    /// The base mod class, all mods should derive this.
+    /// The base mod class, all mods should derive this.    /// 
     /// </summary>
+    /// <example><code source="Examples.cs" region="Mod" lang="C#" 
+    /// title="Example Mod Class" /></example>
     public abstract class Mod
 	{
         /// <summary>

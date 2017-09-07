@@ -54,9 +54,9 @@ namespace MSCLoader
         /// The current version of the ModLoader.
         /// </summary>
         public static string Version = "0.2.3";
-       
+
         /// <summary>
-        /// non-public fields, please use  GetModConfigFolder() or GetModAssetsFolder() instead
+        /// non-public field, please use <c>GetModConfigFolder</c> or <c>GetModAssetsFolder</c> instead
         /// </summary>
         static string ModsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"MySummerCar\Mods");
         static string ConfigFolder = Path.Combine(ModsFolder, @"Config\");
@@ -79,6 +79,10 @@ namespace MSCLoader
         /// </summary>
         /// <returns>Path to your mod assets folder</returns>
         /// <param name="mod">Your mod Class.</param>
+        /// <example><code source="Examples.cs" region="GetModAssetsFolder" lang="C#" 
+        /// title="Example Code in Mod subclass" />
+        /// <code source="Examples.cs" region="GetModAssetsFolder2" lang="C#" 
+        /// title="Example Code" /></example> 
         public static string GetModAssetsFolder(Mod mod)
         {
             return Path.Combine(AssetsFolder, mod.ID);
