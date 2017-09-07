@@ -21,7 +21,15 @@ namespace MSCLoader
             yield return StartCoroutine(ModLoader.loadAssets.LoadBundle(new ModSettings(), "settingsui.unity3d", value => ab = value));
             foreach(var s in ab.GetAllAssetNames())
                 ModConsole.Print(s);
+
             ms.UI = ab.LoadAsset("MSCLoader Settings.prefab") as GameObject;
+
+            ms.ModButton = ab.LoadAsset("ModButton.prefab") as GameObject;
+
+            ms.HasAssets = ab.LoadAsset("HasAssets.prefab") as GameObject;
+            ms.PluginOk = ab.LoadAsset("PluginOK.prefab") as GameObject;
+            ms.InMenu = ab.LoadAsset("InMenu.prefab") as GameObject;
+
             ModConsole.Print("Load set UI Complete"); //test
             ms.CreateSettingsUI();
             Destroy(this);
@@ -40,6 +48,13 @@ namespace MSCLoader
         private static Mod selectedMod = null;
 
         public GameObject UI = new GameObject();
+        public GameObject ModButton = new GameObject();
+
+        //icons for SettinsView
+        public GameObject HasAssets;
+        public GameObject PluginOk;
+        public GameObject InMenu;
+
         private Keybind menuKey = new Keybind("Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
         public SettingsView settings;
 
@@ -59,6 +74,12 @@ namespace MSCLoader
             UI.GetComponent<SettingsView>().goBackBtn = UI.GetComponent<SettingsView>().settingViewContainer.transform.GetChild(0).GetChild(0).gameObject;
             UI.GetComponent<SettingsView>().goBackBtn.GetComponent<Button>().onClick.AddListener(() => UI.GetComponent<SettingsView>().goBack());
             UI.GetComponent<SettingsView>().keybindsList = UI.GetComponent<SettingsView>().ModSettingsView.transform.GetChild(7).gameObject;
+
+            UI.GetComponent<SettingsView>().ModButton = ModButton;
+
+            UI.GetComponent<SettingsView>().HasAssets = HasAssets;
+            UI.GetComponent<SettingsView>().PluginOk = PluginOk;
+            UI.GetComponent<SettingsView>().InMenu = InMenu;
 
             UI.GetComponent<SettingsView>().IDtxt = UI.GetComponent<SettingsView>().ModSettingsView.transform.GetChild(0).GetComponent<Text>();
             UI.GetComponent<SettingsView>().Nametxt = UI.GetComponent<SettingsView>().ModSettingsView.transform.GetChild(1).GetComponent<Text>();
