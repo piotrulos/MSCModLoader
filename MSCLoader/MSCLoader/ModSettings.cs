@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace MSCLoader
 {
-    #pragma warning disable CS1591
+#pragma warning disable CS1591
     public class ModSettingsUI : MonoBehaviour
     {
         public ModSettings ms = null;
@@ -19,12 +19,15 @@ namespace MSCLoader
         {
             AssetBundle ab = new AssetBundle();
             yield return StartCoroutine(ModLoader.loadAssets.LoadBundle(new ModSettings(), "settingsui.unity3d", value => ab = value));
-            foreach(var s in ab.GetAllAssetNames())
+            foreach (var s in ab.GetAllAssetNames())
                 ModConsole.Print(s);
 
             ms.UI = ab.LoadAsset("MSCLoader Settings.prefab") as GameObject;
 
             ms.ModButton = ab.LoadAsset("ModButton.prefab") as GameObject;
+            ms.ModButton_Pre = ab.LoadAsset("ModButton_Pre.prefab") as GameObject;
+            ms.ModButton_Invalid = ab.LoadAsset("ModButton_Invalid.prefab") as GameObject;
+            ms.ModViewLabel = ab.LoadAsset("ModViewLabel.prefab") as GameObject;
 
             ms.HasAssets = ab.LoadAsset("HasAssets.prefab") as GameObject;
             ms.PluginOk = ab.LoadAsset("PluginOK.prefab") as GameObject;
@@ -35,8 +38,8 @@ namespace MSCLoader
             Destroy(this);
         }
     }
-	public class ModSettings : Mod
-	{
+    public class ModSettings : Mod
+    {
 
         public override bool LoadInMenu => true;
         public override bool UseAssetsFolder => true;
@@ -47,8 +50,11 @@ namespace MSCLoader
 
         private static Mod selectedMod = null;
 
-        public GameObject UI = new GameObject();
-        public GameObject ModButton = new GameObject();
+        public GameObject UI;
+        public GameObject ModButton;
+        public GameObject ModButton_Pre;
+        public GameObject ModButton_Invalid;
+        public GameObject ModViewLabel;
 
         //icons for SettinsView
         public GameObject HasAssets;
@@ -76,6 +82,9 @@ namespace MSCLoader
             UI.GetComponent<SettingsView>().keybindsList = UI.GetComponent<SettingsView>().ModSettingsView.transform.GetChild(7).gameObject;
 
             UI.GetComponent<SettingsView>().ModButton = ModButton;
+            UI.GetComponent<SettingsView>().ModButton_Pre = ModButton_Pre;
+            UI.GetComponent<SettingsView>().ModButton_Invalid = ModButton_Invalid;
+            UI.GetComponent<SettingsView>().ModViewLabel = ModViewLabel;
 
             UI.GetComponent<SettingsView>().HasAssets = HasAssets;
             UI.GetComponent<SettingsView>().PluginOk = PluginOk;
@@ -90,159 +99,159 @@ namespace MSCLoader
             settings.setVisibility(false);
         }
 
-		// Reset keybinds
-		private void resetBinds()
-		{
-			if (selectedMod != null)
-			{
-				// Delete file
-				string path = Path.Combine(ModLoader.GetModConfigFolder(selectedMod),"keybinds.xml");
-				File.WriteAllText(path, "");
+        // Reset keybinds
+        private void resetBinds()
+        {
+            if (selectedMod != null)
+            {
+                // Delete file
+                string path = Path.Combine(ModLoader.GetModConfigFolder(selectedMod), "keybinds.xml");
+                File.WriteAllText(path, "");
 
-				// Revert binds
-				foreach (Keybind bind in Keybind.Get(selectedMod))
-				{
-					Keybind original = Keybind.DefaultKeybinds.Find(x => x.Mod == selectedMod && x.ID == bind.ID);
+                // Revert binds
+                foreach (Keybind bind in Keybind.Get(selectedMod))
+                {
+                    Keybind original = Keybind.DefaultKeybinds.Find(x => x.Mod == selectedMod && x.ID == bind.ID);
 
-					if (original != null)
-					{
-						bind.Key = original.Key;
-						bind.Modifier = original.Modifier;
+                    if (original != null)
+                    {
+                        bind.Key = original.Key;
+                        bind.Modifier = original.Modifier;
 
-						ModConsole.Print(original.Key.ToString() + " -> " + bind.Key.ToString());
-					}
-				}
+                        ModConsole.Print(original.Key.ToString() + " -> " + bind.Key.ToString());
+                    }
+                }
 
-				// Save binds
-				SaveModBinds(selectedMod);
-			}
-		}
-		
-
-		// Save all keybinds to config files.
-		public static void SaveAllBinds()
-		{
-			foreach (Mod mod in ModLoader.LoadedMods)
-			{
-				SaveModBinds(mod);
-			}
-		}
+                // Save binds
+                SaveModBinds(selectedMod);
+            }
+        }
 
 
-		// Save keybind for a single mod to config file.
-		public static void SaveModBinds(Mod mod)
-		{
-            
-            
-			string path = Path.Combine(ModLoader.GetModConfigFolder(mod), "keybinds.xml");
+        // Save all keybinds to config files.
+        public static void SaveAllBinds()
+        {
+            foreach (Mod mod in ModLoader.LoadedMods)
+            {
+                SaveModBinds(mod);
+            }
+        }
 
-			// Clear file
-			File.WriteAllText(path, "");
+
+        // Save keybind for a single mod to config file.
+        public static void SaveModBinds(Mod mod)
+        {
+
+
+            string path = Path.Combine(ModLoader.GetModConfigFolder(mod), "keybinds.xml");
+
+            // Clear file
+            File.WriteAllText(path, "");
 
 
             // Write XML
             XmlDocument doc = new XmlDocument();
             XmlElement keybinds = doc.CreateElement(string.Empty, "Keybinds", string.Empty);
-            
-            
-			foreach (Keybind bind in Keybind.Get(mod))
-			{
-				XmlElement keybind = doc.CreateElement(string.Empty, "Keybind", string.Empty);
 
-				XmlElement name = doc.CreateElement(string.Empty, "ID", string.Empty);
-				name.AppendChild(doc.CreateTextNode(bind.ID));
-				keybind.AppendChild(name);
 
-				XmlElement key = doc.CreateElement(string.Empty, "Key", string.Empty);
-				key.AppendChild(doc.CreateTextNode(bind.Key.ToString()));
-				keybind.AppendChild(key);
+            foreach (Keybind bind in Keybind.Get(mod))
+            {
+                XmlElement keybind = doc.CreateElement(string.Empty, "Keybind", string.Empty);
 
-				XmlElement modifier = doc.CreateElement(string.Empty, "Modifier", string.Empty);
-				modifier.AppendChild(doc.CreateTextNode(bind.Modifier.ToString()));
-				keybind.AppendChild(modifier);
+                XmlElement name = doc.CreateElement(string.Empty, "ID", string.Empty);
+                name.AppendChild(doc.CreateTextNode(bind.ID));
+                keybind.AppendChild(name);
 
-				keybinds.AppendChild(keybind);
-               
-                 }
+                XmlElement key = doc.CreateElement(string.Empty, "Key", string.Empty);
+                key.AppendChild(doc.CreateTextNode(bind.Key.ToString()));
+                keybind.AppendChild(key);
 
-			doc.AppendChild(keybinds);
-			doc.Save(path);
-             
+                XmlElement modifier = doc.CreateElement(string.Empty, "Modifier", string.Empty);
+                modifier.AppendChild(doc.CreateTextNode(bind.Modifier.ToString()));
+                keybind.AppendChild(modifier);
+
+                keybinds.AppendChild(keybind);
+
+            }
+
+            doc.AppendChild(keybinds);
+            doc.Save(path);
+
         }
 
-        
+
         // Load all keybinds.
         public static void LoadBinds()
-		{
-			foreach (Mod mod in ModLoader.LoadedMods)
-			{
-				// Check if there are custom keybinds
-				string path = Path.Combine(ModLoader.GetModConfigFolder(mod), "keybinds.xml");
+        {
+            foreach (Mod mod in ModLoader.LoadedMods)
+            {
+                // Check if there are custom keybinds
+                string path = Path.Combine(ModLoader.GetModConfigFolder(mod), "keybinds.xml");
 
-				if (!File.Exists(path))
-				{
-					SaveModBinds(mod);
-					continue;
-				}
-				
-				// Load XML
-				XmlDocument doc = new XmlDocument();
-				doc.Load(path);
+                if (!File.Exists(path))
+                {
+                    SaveModBinds(mod);
+                    continue;
+                }
 
-				foreach (XmlNode keybind in doc.GetElementsByTagName("Keybind"))
-				{
-					XmlNode id = keybind.SelectSingleNode("ID");
-					XmlNode key = keybind.SelectSingleNode("Key");
-					XmlNode modifier = keybind.SelectSingleNode("Modifier");
+                // Load XML
+                XmlDocument doc = new XmlDocument();
+                doc.Load(path);
 
-					// Check if its valid and fetch
-					if (id == null || key == null || modifier == null)
-					{
-						continue;
-					}
+                foreach (XmlNode keybind in doc.GetElementsByTagName("Keybind"))
+                {
+                    XmlNode id = keybind.SelectSingleNode("ID");
+                    XmlNode key = keybind.SelectSingleNode("Key");
+                    XmlNode modifier = keybind.SelectSingleNode("Modifier");
 
-					Keybind bind = Keybind.Keybinds.Find(x => x.Mod == mod && x.ID == id.InnerText);
+                    // Check if its valid and fetch
+                    if (id == null || key == null || modifier == null)
+                    {
+                        continue;
+                    }
 
-					if (bind == null)
-					{
-						continue;
-					}
+                    Keybind bind = Keybind.Keybinds.Find(x => x.Mod == mod && x.ID == id.InnerText);
 
-					// Set bind
-					try
-					{
-						KeyCode code = (KeyCode)Enum.Parse(typeof(KeyCode), key.InnerText);
-						bind.Key = code;
-					}
-					catch (Exception e)
-					{
-						bind.Key = KeyCode.None;
+                    if (bind == null)
+                    {
+                        continue;
+                    }
+
+                    // Set bind
+                    try
+                    {
+                        KeyCode code = (KeyCode)Enum.Parse(typeof(KeyCode), key.InnerText);
+                        bind.Key = code;
+                    }
+                    catch (Exception e)
+                    {
+                        bind.Key = KeyCode.None;
                         ModConsole.Error(e.Message);
                     }
 
-					try
-					{
-						KeyCode code = (KeyCode)Enum.Parse(typeof(KeyCode), modifier.InnerText);
-						bind.Modifier = code;
-					}
-					catch (Exception e)
-					{
-						bind.Modifier = KeyCode.None;
+                    try
+                    {
+                        KeyCode code = (KeyCode)Enum.Parse(typeof(KeyCode), modifier.InnerText);
+                        bind.Modifier = code;
+                    }
+                    catch (Exception e)
+                    {
+                        bind.Modifier = KeyCode.None;
                         ModConsole.Error(e.Message);
                     }
-				}
-			}
-		}
+                }
+            }
+        }
 
-		// Load the keybinds.
-		public override void OnLoad()
-		{
+        // Load the keybinds.
+        public override void OnLoad()
+        {
             try
             {
                 GameObject test = new GameObject();
                 ModSettingsUI ui = test.AddComponent<ModSettingsUI>();
                 ui.ms = this;
-                ui.LoadUI();               
+                ui.LoadUI();
             }
             catch (Exception e)
             {
@@ -253,15 +262,15 @@ namespace MSCLoader
         }
 
 
-		// Open menu if the key is pressed.
-		public override void Update()
-		{
-			// Open menu
-			if (menuKey.IsDown())
-			{
+        // Open menu if the key is pressed.
+        public override void Update()
+        {
+            // Open menu
+            if (menuKey.IsDown())
+            {
                 settings.toggleVisibility();
-			}
-		}
-	}
+            }
+        }
+    }
 #pragma warning restore CS1591
 }
