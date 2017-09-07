@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 using System.Xml;
 using UnityEngine;
@@ -7,10 +8,30 @@ using UnityEngine.UI;
 namespace MSCLoader
 {
     #pragma warning disable CS1591
+    public class ModSettingsUI : MonoBehaviour
+    {
+        public ModSettings ms = null;
+        public void LoadUI()
+        {
+            StartCoroutine(LoadUIc());
+        }
+        IEnumerator LoadUIc()
+        {
+            AssetBundle ab = new AssetBundle();
+            yield return StartCoroutine(ModLoader.loadAssets.LoadBundle(new ModSettings(), "settingsui.unity3d", value => ab = value));
+            foreach(var s in ab.GetAllAssetNames())
+                ModConsole.Print(s);
+            ms.UI = ab.LoadAsset("MSCLoader Settings.prefab") as GameObject;
+            ModConsole.Print("Load set UI Complete"); //test
+            ms.CreateSettingsUI();
+            Destroy(this);
+        }
+    }
 	public class ModSettings : Mod
 	{
 
         public override bool LoadInMenu => true;
+        public override bool UseAssetsFolder => true;
         public override string ID => "MSCLoader_Settings";
         public override string Name => "Settings";
         public override string Version => ModLoader.Version;
@@ -18,132 +39,34 @@ namespace MSCLoader
 
         private static Mod selectedMod = null;
 
+        public GameObject UI = new GameObject();
         private Keybind menuKey = new Keybind("Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
         public SettingsView settings;
 
         public void CreateSettingsUI()
         {
-            
-            GameObject settingsView = ModUI.CreateParent("MSCLoader Settings", true);
-            settingsView.GetComponent<RectTransform>().sizeDelta = new Vector2(300, 450);
-            settingsView.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
-            settingsView.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
-            settingsView.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
 
-            settings = settingsView.AddComponent<SettingsView>();
-            settingsView.GetComponent<SettingsView>().settingView = settingsView;
+            //ModConsole.Print(UI.name);
+            UI = GameObject.Instantiate(UI);
+            UI.AddComponent<ModUIDrag>();
+            settings = UI.AddComponent<SettingsView>();
+            UI.GetComponent<SettingsView>().settingView = UI;
+            UI.GetComponent<SettingsView>().settingViewContainer = UI.transform.GetChild(0).gameObject;
+            UI.GetComponent<SettingsView>().modList = UI.GetComponent<SettingsView>().settingViewContainer.transform.GetChild(1).gameObject;
+            UI.GetComponent<SettingsView>().modView = UI.GetComponent<SettingsView>().modList.transform.GetChild(0).gameObject;
+            UI.GetComponent<SettingsView>().modSettings = UI.GetComponent<SettingsView>().settingViewContainer.transform.GetChild(3).gameObject;
+            UI.GetComponent<SettingsView>().ModSettingsView = UI.GetComponent<SettingsView>().modSettings.transform.GetChild(0).gameObject;
+            UI.GetComponent<SettingsView>().goBackBtn = UI.GetComponent<SettingsView>().settingViewContainer.transform.GetChild(0).GetChild(0).gameObject;
+            UI.GetComponent<SettingsView>().goBackBtn.GetComponent<Button>().onClick.AddListener(() => UI.GetComponent<SettingsView>().goBack());
+            UI.GetComponent<SettingsView>().keybindsList = UI.GetComponent<SettingsView>().ModSettingsView.transform.GetChild(7).gameObject;
 
-            GameObject settingsViewC = ModUI.CreateUIBase("MSCLoader SettingsContainer", settingsView);
-            settingsViewC.GetComponent<RectTransform>().sizeDelta = new Vector2(300, 450);
-            settingsViewC.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
-            settingsViewC.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
-            settingsViewC.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
-            settingsViewC.AddComponent<Image>().color = Color.black;
+            UI.GetComponent<SettingsView>().IDtxt = UI.GetComponent<SettingsView>().ModSettingsView.transform.GetChild(0).GetComponent<Text>();
+            UI.GetComponent<SettingsView>().Nametxt = UI.GetComponent<SettingsView>().ModSettingsView.transform.GetChild(1).GetComponent<Text>();
+            UI.GetComponent<SettingsView>().Versiontxt = UI.GetComponent<SettingsView>().ModSettingsView.transform.GetChild(2).GetComponent<Text>();
+            UI.GetComponent<SettingsView>().Authortxt = UI.GetComponent<SettingsView>().ModSettingsView.transform.GetChild(3).GetComponent<Text>();
 
-            settingsView.GetComponent<SettingsView>().settingViewContainer = settingsViewC;
-
-            GameObject title = ModUI.CreateTextBlock("Title", "Loaded Mods:", settingsViewC, TextAnchor.MiddleCenter, Color.white, false);
-            title.GetComponent<RectTransform>().sizeDelta = new Vector2(300, 20);
-            title.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 1);
-            title.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 1);
-            title.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 1);
-            title.GetComponent<Text>().fontSize = 16;
-            title.GetComponent<Text>().fontStyle = FontStyle.Bold;
-
-            GameObject goBack = ModUI.CreateUIBase("GoBackButton", title);
-            goBack.GetComponent<RectTransform>().sizeDelta = new Vector2(80, 20);
-            goBack.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0.5f);
-            goBack.GetComponent<RectTransform>().anchorMax = new Vector2(0, 0.5f);
-            goBack.GetComponent<RectTransform>().pivot = new Vector2(0, 0.5f);
-            goBack.AddComponent<Image>();
-            goBack.AddComponent<Button>().targetGraphic = goBack.GetComponent<Image>();
-            ColorBlock cb = goBack.GetComponent<Button>().colors;
-            cb.normalColor = Color.black;
-            cb.highlightedColor = Color.red;
-            goBack.GetComponent<Button>().colors = cb;
-            goBack.GetComponent<Button>().targetGraphic = goBack.GetComponent<Image>();
-            goBack.GetComponent<Button>().onClick.AddListener(() => settingsView.GetComponent<SettingsView>().goBack());
-
-            settingsView.GetComponent<SettingsView>().goBackBtn = goBack;
-
-            GameObject BtnTxt = ModUI.CreateTextBlock("Text", " < Back", goBack, TextAnchor.MiddleLeft, Color.white);
-            BtnTxt.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
-            BtnTxt.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1);
-            BtnTxt.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
-            BtnTxt.GetComponent<RectTransform>().sizeDelta = new Vector2(80, 20);
-            BtnTxt.GetComponent<Text>().fontSize = 16;
-            goBack.SetActive(false);
-            //modList 
-            GameObject modList = ModUI.CreateUIBase("ModList", settingsViewC);
-            modList.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0);
-            modList.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0);
-            modList.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0);
-            modList.GetComponent<RectTransform>().sizeDelta = new Vector2(300, 430);
-            modList.AddComponent<Image>().color = Color.black;
-            modList.AddComponent<Mask>().showMaskGraphic = true;
-
-            settingsView.GetComponent<SettingsView>().modList = modList;
-
-            //ModView
-            GameObject scrollbar = ModUI.CreateScrollbar(settingsViewC, 10, 450, Scrollbar.Direction.BottomToTop);
-            scrollbar.GetComponent<RectTransform>().anchorMin = new Vector2(1, 1);
-            scrollbar.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
-            scrollbar.GetComponent<RectTransform>().pivot = new Vector2(1, 1);
-            scrollbar.GetComponent<RectTransform>().anchoredPosition = new Vector2(10, 0);
-
-            GameObject modView = ModListS(modList, scrollbar, "ModView");
-            settingsView.GetComponent<SettingsView>().modView = modView;
-
-            GameObject modSettings = ModUI.CreateUIBase("ModSettings", settingsViewC);
-            modSettings.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0);
-            modSettings.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0);
-            modSettings.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0);
-            modSettings.GetComponent<RectTransform>().sizeDelta = new Vector2(300, 430);
-            modSettings.AddComponent<Image>().color = Color.black;
-            modSettings.AddComponent<Mask>().showMaskGraphic = true;
-
-            GameObject modSettingsView = ModListS(modSettings, scrollbar, "ModSettingsView");
-            settingsView.GetComponent<SettingsView>().modSettings = modSettings;
-            settingsView.GetComponent<SettingsView>().ModSettingsView = modSettingsView;
-            settingsView.GetComponent<SettingsView>().IDtxt = ModUI.CreateTextBlock("ID", "", modSettingsView).GetComponent<Text>();
-            settingsView.GetComponent<SettingsView>().Nametxt = ModUI.CreateTextBlock("Name", "", modSettingsView).GetComponent<Text>();
-            settingsView.GetComponent<SettingsView>().Versiontxt = ModUI.CreateTextBlock("Version", "", modSettingsView).GetComponent<Text>();
-            settingsView.GetComponent<SettingsView>().Authortxt = ModUI.CreateTextBlock("Author", "", modSettingsView).GetComponent<Text>();
-
-            //keybinds
-            ModUI.Separator(modSettingsView, "Key Bindings");
-
-            GameObject keybinds = ModUI.CreateUIBase("Keybinds", modSettingsView);
-            keybinds.AddComponent<VerticalLayoutGroup>().spacing = 5;
-            settingsView.GetComponent<SettingsView>().keybindsList = keybinds;
-
-            ModUI.Separator(modSettingsView);
-
-            modSettings.SetActive(false);
-        }
-
- 
-
-        private static GameObject ModListS(GameObject modList, GameObject scrollbar, string name)
-        {
-            GameObject modView = ModUI.CreateUIBase(name, modList);
-            modView.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 1);
-            modView.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 1);
-            modView.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 1);
-            modView.GetComponent<RectTransform>().sizeDelta = new Vector2(300, 430);
-            modView.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-            modView.AddComponent<VerticalLayoutGroup>().padding = new RectOffset(5, 5, 5, 5);
-            modView.GetComponent<VerticalLayoutGroup>().spacing = 5;
-            modView.GetComponent<VerticalLayoutGroup>().childAlignment = TextAnchor.UpperCenter;
-            modView.GetComponent<VerticalLayoutGroup>().childForceExpandHeight = false;
-
-            modList.AddComponent<ScrollRect>().content = modView.GetComponent<RectTransform>();
-            modList.GetComponent<ScrollRect>().horizontal = false;
-            modList.GetComponent<ScrollRect>().inertia = false;
-            modList.GetComponent<ScrollRect>().movementType = ScrollRect.MovementType.Clamped;
-            modList.GetComponent<ScrollRect>().scrollSensitivity = 30f;
-            modList.GetComponent<ScrollRect>().verticalScrollbar = scrollbar.GetComponent<Scrollbar>();
-            return modView;
+            UI.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
+            settings.setVisibility(false);
         }
 
 		// Reset keybinds
@@ -293,9 +216,18 @@ namespace MSCLoader
 		// Load the keybinds.
 		public override void OnLoad()
 		{
-			Keybind.Add(this, menuKey);
-            CreateSettingsUI();
-            settings.setVisibility(false);
+            try
+            {
+                GameObject test = new GameObject();
+                ModSettingsUI ui = test.AddComponent<ModSettingsUI>();
+                ui.ms = this;
+                ui.LoadUI();               
+            }
+            catch (Exception e)
+            {
+                ModConsole.Print(e.Message); //debug only
+            }
+            Keybind.Add(this, menuKey);
             LoadBinds();
         }
 

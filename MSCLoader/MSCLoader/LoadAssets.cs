@@ -97,6 +97,7 @@ namespace MSCLoader
         /// <param name="mod">Mod instance.</param>
         /// <param name="bundleName">File name to load (for example "something.unity3d")</param>
         /// <param name="ab">Returned AssetBundle</param>
+        /// <returns>Returns AssetBundle to your coroutine</returns>
         public IEnumerator LoadBundle(Mod mod, string bundleName, Action<AssetBundle> ab)
         {
             using (WWW www = new WWW("file:///" + Path.Combine(ModLoader.GetModAssetsFolder(mod), bundleName)))
