@@ -16,6 +16,14 @@ namespace MSCLoader
         public GameObject goBackBtn;
         public GameObject keybindsList;
 
+        //from AssetBundle
+        public GameObject ModButton;
+
+        //icons
+        public GameObject HasAssets;
+        public GameObject PluginOk;
+        public GameObject InMenu;
+
         public Text IDtxt;
         public Text Nametxt;
         public Text Versiontxt;
@@ -23,47 +31,30 @@ namespace MSCLoader
 
         Mod selected;
 
-        public void modButton(string name,string version,string author, Mod mod)
+        public void modButton(string name, string version, string author, Mod mod)
         {
-            GameObject modButton = ModUI.CreateUIBase("ModButton", modView);
-            modButton.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
-            modButton.AddComponent<Image>().color = Color.white;
-            modButton.AddComponent<LayoutElement>().minHeight = 50;
-            modButton.AddComponent<Button>().targetGraphic = modButton.GetComponent<Image>();
-            ColorBlock cb = modButton.GetComponent<Button>().colors;
-            cb.normalColor = new Color32(0x00, 0xB4, 0xFF, 0x64); //00B4FF64
-            cb.highlightedColor = new Color32(0x00, 0xFF, 0x2B, 0x64); //00FF2B64
-            modButton.GetComponent<Button>().colors = cb;
+            GameObject modButton = Instantiate(ModButton);
+            //ModButton = Instantiate(ModButton);
             modButton.AddComponent<ModInfo>().mod = mod;
-
-            GameObject modName = ModUI.CreateTextBlock("Name",name, modButton, TextAnchor.UpperLeft,Color.green);
-            modName.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
-            modName.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1);
-            modName.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
-            modName.GetComponent<RectTransform>().anchoredPosition = new Vector2(2, 0);
-            modName.GetComponent<Text>().fontStyle = FontStyle.Bold;
-            modName.GetComponent<Text>().fontSize = 18;
-            modName.AddComponent<ContentSizeFitter>().horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
-            modName.GetComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-
-            GameObject modVersion = ModUI.CreateTextBlock("Version", string.Format("v{0}",version), modButton, TextAnchor.LowerLeft, Color.yellow);
-            modVersion.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
-            modVersion.GetComponent<RectTransform>().anchorMax = new Vector2(0, 0);
-            modVersion.GetComponent<RectTransform>().pivot = new Vector2(0, 0);
-            modVersion.GetComponent<RectTransform>().anchoredPosition = new Vector2(2, 0);
-            modVersion.GetComponent<Text>().fontSize = 16;
-            modVersion.AddComponent<ContentSizeFitter>().horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
-            modVersion.GetComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-
-            GameObject modAuthor = ModUI.CreateTextBlock("Author", author, modButton, TextAnchor.LowerRight, Color.yellow);
-            modAuthor.GetComponent<RectTransform>().anchorMin = new Vector2(1, 0);
-            modAuthor.GetComponent<RectTransform>().anchorMax = new Vector2(1, 0);
-            modAuthor.GetComponent<RectTransform>().pivot = new Vector2(1, 0);
-            modAuthor.GetComponent<RectTransform>().anchoredPosition = new Vector2(-2, 0);
-            modAuthor.GetComponent<Text>().fontSize = 16;
-            modAuthor.AddComponent<ContentSizeFitter>().horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
-            modAuthor.GetComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             modButton.GetComponent<Button>().onClick.AddListener(() => settingView.GetComponent<SettingsView>().selectMod());
+            modButton.transform.GetChild(0).GetComponent<Text>().text = name;
+            modButton.transform.GetChild(1).GetComponent<Text>().text = version;
+            modButton.transform.GetChild(2).GetComponent<Text>().text = author;
+            modButton.transform.SetParent(modView.transform, false);
+            if (mod.UseAssetsFolder)
+            {
+                GameObject hasAssets = Instantiate(HasAssets);
+                hasAssets.transform.SetParent(modButton.transform.GetChild(3), false); //Add assets icon
+            }
+
+            GameObject pluginOK = Instantiate(PluginOk);
+            pluginOK.transform.SetParent(modButton.transform.GetChild(3), false); //Add plugin OK icon
+
+            if (mod.LoadInMenu)
+            {
+                GameObject inMenu = Instantiate(InMenu);
+                inMenu.transform.SetParent(modButton.transform.GetChild(3), false); //Add Menu Icon
+            }
 
         }
 
