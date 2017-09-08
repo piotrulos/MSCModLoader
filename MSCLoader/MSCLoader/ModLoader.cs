@@ -283,7 +283,7 @@ namespace MSCLoader
             {
                 try
                 {                    
-                    if(!mod.LoadInMenu)
+                    if(!mod.LoadInMenu && !mod.isDisabled)
                        mod.OnLoad();                  
                 }
                 catch (Exception e)
