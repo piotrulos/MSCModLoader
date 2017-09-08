@@ -479,6 +479,11 @@ namespace MSCPatcher
                     try
                     {
                         PatchCheck();
+                        if (!Directory.Exists(mdPath))
+                        {
+                            //if mods folder not exists, create it.
+                            Directory.CreateDirectory(mdPath);
+                        }
                     }
                     catch(Exception ex)
                     {
@@ -491,6 +496,11 @@ namespace MSCPatcher
                     try
                     {
                         PatchCheck();
+                        if (!Directory.Exists(gfPath))
+                        {
+                            //if mods folder not exists, create it.
+                            Directory.CreateDirectory(gfPath);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -503,6 +513,11 @@ namespace MSCPatcher
                     try
                     {
                         PatchCheck();
+                        if (!Directory.Exists(adPath))
+                        {
+                            //if mods folder not exists, create it.
+                            Directory.CreateDirectory(adPath);
+                        }
                     }
                     catch (Exception ex)
                     {
