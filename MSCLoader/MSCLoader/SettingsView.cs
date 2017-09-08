@@ -222,6 +222,10 @@ namespace MSCLoader
             Nametxt.text = string.Format("Name: <b>{0}</b>", selected.Name);
             Versiontxt.text = string.Format("Version: <b>{0}</b>", selected.Version);
             Authortxt.text = string.Format("Author: <b>{0}</b>", selected.Author);
+            if (Application.loadedLevelName == "MainMenu")
+                DisableMod.interactable = true;
+            else
+                DisableMod.interactable = false;
             DisableMod.isOn = selected.isDisabled;
             RemoveChildren(keybindsList.transform);
             foreach (Keybind key in Keybind.Keybinds)

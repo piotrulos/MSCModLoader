@@ -36,7 +36,9 @@ namespace MSCLoader
 
             ModConsole.Print("Load set UI Complete"); //test
             ms.CreateSettingsUI();
-            Destroy(this);
+            ab.Unload(false);
+            Destroy(gameObject);
+
         }
     }
     public class ModSettings : Mod
