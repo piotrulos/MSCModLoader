@@ -31,6 +31,7 @@ namespace MSCLoader
 
             ms.HasAssets = ab.LoadAsset("HasAssets.prefab") as GameObject;
             ms.PluginOk = ab.LoadAsset("PluginOK.prefab") as GameObject;
+            ms.PluginDisabled = ab.LoadAsset("PluginDisabled.prefab") as GameObject;
             ms.InMenu = ab.LoadAsset("InMenu.prefab") as GameObject;
 
             ModConsole.Print("Load set UI Complete"); //test
@@ -59,6 +60,7 @@ namespace MSCLoader
         //icons for SettinsView
         public GameObject HasAssets;
         public GameObject PluginOk;
+        public GameObject PluginDisabled;
         public GameObject InMenu;
 
         private Keybind menuKey = new Keybind("Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
@@ -79,7 +81,9 @@ namespace MSCLoader
             UI.GetComponent<SettingsView>().ModSettingsView = UI.GetComponent<SettingsView>().modSettings.transform.GetChild(0).gameObject;
             UI.GetComponent<SettingsView>().goBackBtn = UI.GetComponent<SettingsView>().settingViewContainer.transform.GetChild(0).GetChild(0).gameObject;
             UI.GetComponent<SettingsView>().goBackBtn.GetComponent<Button>().onClick.AddListener(() => UI.GetComponent<SettingsView>().goBack());
-            UI.GetComponent<SettingsView>().keybindsList = UI.GetComponent<SettingsView>().ModSettingsView.transform.GetChild(7).gameObject;
+            UI.GetComponent<SettingsView>().keybindsList = UI.GetComponent<SettingsView>().ModSettingsView.transform.GetChild(8).gameObject;
+            UI.GetComponent<SettingsView>().DisableMod = UI.GetComponent<SettingsView>().ModSettingsView.transform.GetChild(4).GetComponent<Toggle>();
+            UI.GetComponent<SettingsView>().DisableMod.onValueChanged.AddListener(UI.GetComponent<SettingsView>().disableMod);
 
             UI.GetComponent<SettingsView>().ModButton = ModButton;
             UI.GetComponent<SettingsView>().ModButton_Pre = ModButton_Pre;
@@ -88,6 +92,7 @@ namespace MSCLoader
 
             UI.GetComponent<SettingsView>().HasAssets = HasAssets;
             UI.GetComponent<SettingsView>().PluginOk = PluginOk;
+            UI.GetComponent<SettingsView>().PluginDisabled = PluginDisabled;
             UI.GetComponent<SettingsView>().InMenu = InMenu;
 
             UI.GetComponent<SettingsView>().IDtxt = UI.GetComponent<SettingsView>().ModSettingsView.transform.GetChild(0).GetComponent<Text>();

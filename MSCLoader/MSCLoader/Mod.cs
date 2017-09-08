@@ -1,12 +1,18 @@
 ﻿namespace MSCLoader
 {
     /// <summary>
-    /// The base mod class, all mods should derive this.    /// 
+    /// The base mod class, all mods should derive this.
     /// </summary>
     /// <example><code source="Examples.cs" region="Mod" lang="C#" 
     /// title="Example Mod Class" /></example>
     public abstract class Mod
 	{
+        bool disabled = false;
+        /// <summary>
+        /// If true, mod will never call OnLoad (used only by settings)
+        /// </summary>
+        public virtual bool isDisabled { get => disabled; set => disabled = value; }
+
         /// <summary>
         /// Load this mod in Main Menu (in most cases should be false).
         /// </summary>

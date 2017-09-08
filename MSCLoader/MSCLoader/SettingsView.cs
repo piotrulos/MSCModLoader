@@ -21,10 +21,12 @@ namespace MSCLoader
         public GameObject ModButton_Pre;
         public GameObject ModButton_Invalid;
         public GameObject ModViewLabel;
+        public Toggle DisableMod;
 
         //icons
         public GameObject HasAssets;
         public GameObject PluginOk;
+        public GameObject PluginDisabled;
         public GameObject InMenu;
 
         public Text IDtxt;
@@ -36,6 +38,7 @@ namespace MSCLoader
         bool loadedLabel = false;
         bool preloadedLabel = false;
         bool invalidLabel = false;
+        bool disabledLabel = false;
         public void modButton(string name, string version, string author, Mod mod)
         {
             if (!loadedLabel)
@@ -48,17 +51,46 @@ namespace MSCLoader
             GameObject modButton;
             if (!mod.LoadInMenu && Application.loadedLevelName == "MainMenu")
             {
-                if (!preloadedLabel)
+                if (mod.isDisabled)
                 {
-                    GameObject modViewLabel = Instantiate(ModViewLabel);
-                    modViewLabel.GetComponent<Text>().text = "Ready to Load:";
-                    modViewLabel.transform.SetParent(modView.transform, false);
-                    preloadedLabel = true;
+                    if (!disabledLabel)
+                    {
+                        GameObject modViewLabel = Instantiate(ModViewLabel);
+                        modViewLabel.GetComponent<Text>().text = "Disabled Mods:";
+                        modViewLabel.transform.SetParent(modView.transform, false);
+                        disabledLabel = true;
+                    }
+                }
+                else
+                {
+                    if (!preloadedLabel)
+                    {
+                        GameObject modViewLabel = Instantiate(ModViewLabel);
+                        modViewLabel.GetComponent<Text>().text = "Ready to Load:";
+                        modViewLabel.transform.SetParent(modView.transform, false);
+                        preloadedLabel = true;
+                    }                   
                 }
                 modButton = Instantiate(ModButton_Pre);
             }
             else
-                modButton = Instantiate(ModButton);
+            {
+                if (mod.isDisabled)
+                {
+                    if (!disabledLabel)
+                    {
+                        GameObject modViewLabel = Instantiate(ModViewLabel);
+                        modViewLabel.GetComponent<Text>().text = "Disabled Mods:";
+                        modViewLabel.transform.SetParent(modView.transform, false);
+                        disabledLabel = true;
+                    }
+                    modButton = Instantiate(ModButton_Pre);
+                }
+                else
+                {
+                    modButton = Instantiate(ModButton);
+                }
+            }              
             //ModButton = Instantiate(ModButton);
             modButton.AddComponent<ModInfo>().mod = mod;
             modButton.GetComponent<Button>().onClick.AddListener(() => settingView.GetComponent<SettingsView>().selectMod());
@@ -71,10 +103,16 @@ namespace MSCLoader
                 GameObject hasAssets = Instantiate(HasAssets);
                 hasAssets.transform.SetParent(modButton.transform.GetChild(3), false); //Add assets icon
             }
-
-            GameObject pluginOK = Instantiate(PluginOk);
-            pluginOK.transform.SetParent(modButton.transform.GetChild(3), false); //Add plugin OK icon
-
+            if (mod.isDisabled)
+            {
+                GameObject pluginDisabled = Instantiate(PluginDisabled);
+                pluginDisabled.transform.SetParent(modButton.transform.GetChild(3), false); //Add plugin Disabled icon
+            }
+            else
+            {
+                GameObject pluginOK = Instantiate(PluginOk);
+                pluginOK.transform.SetParent(modButton.transform.GetChild(3), false); //Add plugin OK icon
+            }
             if (mod.LoadInMenu)
             {
                 GameObject inMenu = Instantiate(InMenu);
@@ -162,6 +200,17 @@ namespace MSCLoader
             modSettings.SetActive(false);
             goBackBtn.SetActive(false);
         }
+        public void disableMod(bool ischecked)
+        {
+            if (selected.isDisabled != ischecked)
+            {
+                selected.isDisabled = ischecked;
+                if(ischecked)
+                    ModConsole.Print(string.Format("Mod <b><color=orange>{0}</color></b> is <color=red><b>Disabled</b></color>",selected.Name));
+                else
+                    ModConsole.Print(string.Format("Mod <b><color=orange>{0}</color></b> is <color=green><b>Enabled</b></color>", selected.Name));
+            }
+        }
 
         public void selectMod()
         {
@@ -173,6 +222,7 @@ namespace MSCLoader
             Nametxt.text = string.Format("Name: <b>{0}</b>", selected.Name);
             Versiontxt.text = string.Format("Version: <b>{0}</b>", selected.Version);
             Authortxt.text = string.Format("Author: <b>{0}</b>", selected.Author);
+            DisableMod.isOn = selected.isDisabled;
             RemoveChildren(keybindsList.transform);
             foreach (Keybind key in Keybind.Keybinds)
             {
@@ -194,6 +244,7 @@ namespace MSCLoader
                 loadedLabel = false;
                 preloadedLabel = false;
                 invalidLabel = false;
+                disabledLabel = false;
                 RemoveChildren(modView.transform);
                 setVisibility(!settingViewContainer.activeSelf);
                 if (Application.loadedLevelName == "MainMenu")
@@ -205,7 +256,7 @@ namespace MSCLoader
                     }
                     foreach (Mod mod in ModLoader.LoadedMods)
                     {
-                        if (!mod.LoadInMenu)
+                        if (!mod.LoadInMenu && !mod.isDisabled)
                             modButton(mod.Name, mod.Version, mod.Author, mod);
                     }
                 }
@@ -213,10 +264,17 @@ namespace MSCLoader
                 {
                     foreach (Mod mod in ModLoader.LoadedMods)
                     {
-                        modButton(mod.Name, mod.Version, mod.Author, mod);
+                        if(!mod.isDisabled)
+                            modButton(mod.Name, mod.Version, mod.Author, mod);
                     }
                 }
-                foreach(string s in ModLoader.InvalidMods)
+
+                foreach (Mod mod in ModLoader.LoadedMods)
+                {
+                    if (mod.isDisabled)
+                        modButton(mod.Name, mod.Version, mod.Author, mod);
+                }
+                foreach (string s in ModLoader.InvalidMods)
                 {
                     if (!invalidLabel)
                     {
