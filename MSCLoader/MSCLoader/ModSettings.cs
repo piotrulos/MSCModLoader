@@ -29,6 +29,8 @@ namespace MSCLoader
             ms.ModButton_Invalid = ab.LoadAsset("ModButton_Invalid.prefab") as GameObject;
             ms.ModViewLabel = ab.LoadAsset("ModViewLabel.prefab") as GameObject;
 
+            ms.KeyBind = ab.LoadAsset("KeyBind.prefab") as GameObject;
+
             ms.HasAssets = ab.LoadAsset("HasAssets.prefab") as GameObject;
             ms.PluginOk = ab.LoadAsset("PluginOK.prefab") as GameObject;
             ms.PluginDisabled = ab.LoadAsset("PluginDisabled.prefab") as GameObject;
@@ -58,6 +60,7 @@ namespace MSCLoader
         public GameObject ModButton_Pre;
         public GameObject ModButton_Invalid;
         public GameObject ModViewLabel;
+        public GameObject KeyBind;
 
         //icons for SettinsView
         public GameObject HasAssets;
@@ -91,6 +94,7 @@ namespace MSCLoader
             UI.GetComponent<SettingsView>().ModButton_Pre = ModButton_Pre;
             UI.GetComponent<SettingsView>().ModButton_Invalid = ModButton_Invalid;
             UI.GetComponent<SettingsView>().ModViewLabel = ModViewLabel;
+            UI.GetComponent<SettingsView>().KeyBind = KeyBind;
 
             UI.GetComponent<SettingsView>().HasAssets = HasAssets;
             UI.GetComponent<SettingsView>().PluginOk = PluginOk;
