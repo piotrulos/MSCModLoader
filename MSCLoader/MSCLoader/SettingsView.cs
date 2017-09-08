@@ -162,15 +162,21 @@ namespace MSCLoader
 
         public void selectMod()
         {
+            bool core = false;
             selected = EventSystem.current.currentSelectedGameObject.GetComponent<ModInfo>().mod;
+            if (selected.ID.StartsWith("MSCLoader_"))
+                core = true; //can't disable core components
             goBackBtn.SetActive(true);
             modList.SetActive(false);
             modSettings.SetActive(true);
             IDtxt.text = string.Format("ID: <b>{0}</b>", selected.ID);
             Nametxt.text = string.Format("Name: <b>{0}</b>", selected.Name);
-            Versiontxt.text = string.Format("Version: <b>{0}</b>", selected.Version);
+            if(core)
+                Versiontxt.text = string.Format("Version: <b>{0}</b>", selected.Version);
+            else
+                Versiontxt.text = string.Format("Version: <b>{0}</b> (compiled for <b>v{1}</b>)", selected.Version, selected.compiledVersion);
             Authortxt.text = string.Format("Author: <b>{0}</b>", selected.Author);
-            if (Application.loadedLevelName == "MainMenu")
+            if (Application.loadedLevelName == "MainMenu" && !core)
                 DisableMod.interactable = true;
             else
                 DisableMod.interactable = false;

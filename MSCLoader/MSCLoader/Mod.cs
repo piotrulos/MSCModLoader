@@ -8,6 +8,7 @@
     public abstract class Mod
 	{
         bool disabled = false;
+        string compiledVer = null;
         /// <summary>
         /// If true, mod will never call OnLoad (used only by settings)
         /// </summary>
@@ -40,7 +41,12 @@
         /// (prefered standard version format 2, 3 or 4 digit)
         /// </summary>
         public abstract string Version { get; }
- 
+   
+        /// <summary>
+        /// Compiled MSCLoader version 
+        /// </summary>
+        public virtual string compiledVersion { get => compiledVer; set => compiledVer = value; }
+
         /// <summary>
         /// Author of the mod
         /// (Enter your nickname)

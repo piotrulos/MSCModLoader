@@ -208,8 +208,8 @@ namespace MSCLoader
                     Directory.CreateDirectory(AssetsFolder);
                 }
                 // Loading internal tools (console and settings)
-                LoadMod(new ModConsole());
-                LoadMod(new ModSettings());
+                LoadMod(new ModConsole(),Version);
+                LoadMod(new ModSettings(),Version);
                 MainMenuInfo(); //show info in main menu.
                 IsDoneLoading = true;
                 ModConsole.Print(string.Format("<color=green>ModLoader <b>v{0}</b> ready</color>", Version));
@@ -218,6 +218,7 @@ namespace MSCLoader
                 ModConsole.Print("Loading core assets...");
                 Instance.StartCoroutine(Instance.LoadSkin());
                 ModConsole.Print("Lodading core assets completed!");
+               
             }
         }
 
@@ -314,21 +315,40 @@ namespace MSCLoader
 		}
 
         private static void LoadDLL(string file)
-		{
+        {
             try
             {
                 // Assembly asm = Assembly.LoadFrom(file);
                 Assembly asm = Assembly.Load(File.ReadAllBytes(file)); //test for now
                 bool isMod = false;
                 // Look through all public classes
+                AssemblyName[] list = asm.GetReferencedAssemblies();
                 foreach (Type type in asm.GetTypes())
                 {
+                    string msVer = null;
                     // Check if class inherits Mod
                     //if (type.IsSubclassOf(typeof(Mod)))
                     if (typeof(Mod).IsAssignableFrom(type))
                     {
+                        for (int i = 0; i < list.Length; i++)
+                        {
+                            if (list[i].Name == "MSCLoader")
+                            {
+                                string[] verparse = list[i].Version.ToString().Split('.');
+                                if (list[i].Version.ToString() == "1.0.0.0")
+                                    msVer = "0.1";
+                                else
+                                {
+                                    if (verparse[2] == "0")
+                                        msVer = string.Format("{0}.{1}", verparse[0], verparse[1]);
+                                    else
+                                        msVer = string.Format("{0}.{1}.{2}", verparse[0], verparse[1], verparse[2]);
+                                }
+                                break;
+                            }
+                        }
                         isMod = true;
-                        LoadMod((Mod)Activator.CreateInstance(type));
+                        LoadMod((Mod)Activator.CreateInstance(type), msVer);
                         break;
                     }
                     else
@@ -350,7 +370,7 @@ namespace MSCLoader
 
         }
         
-		private static void LoadMod(Mod mod)
+		private static void LoadMod(Mod mod, string msver)
 		{
             // Check if mod already exists
             if (!LoadedMods.Contains(mod))
@@ -360,7 +380,7 @@ namespace MSCLoader
                 {
                     Directory.CreateDirectory(ConfigFolder + mod.ID);
                 }
-                if(mod.UseAssetsFolder)
+                if (mod.UseAssetsFolder)
                 {
                     if (!Directory.Exists(AssetsFolder + mod.ID))
                     {
@@ -373,8 +393,8 @@ namespace MSCLoader
                     ModSettings.LoadBinds();
                     //  ModConsole.Print(string.Format("<color=lime><b>Mod Loaded:</b></color><color=orange><b>{0}</b> ({1}ms)</color>", mod.ID, s.ElapsedMilliseconds));
                 }
-              
-               LoadedMods.Add(mod);
+                mod.compiledVersion = msver;
+                LoadedMods.Add(mod);
             }
             else
             {
@@ -417,15 +437,25 @@ namespace MSCLoader
         /// </summary>
         private void Update()
         {
-           /* if (Input.GetKeyDown(KeyCode.F10)) //debug
+            if (Input.GetKeyDown(KeyCode.F10)) //debug
             {
-                IsDoneLoading = false;
+               /* IsDoneLoading = false;
                 IsModsDoneLoading = false;
                 Keybind.Keybinds = new List<Keybind>();
                 Keybind.DefaultKeybinds = new List<Keybind>();
                 MSCUnloaderInstance.reset = false;
-                MSCUnloaderInstance.MSCLoaderReset();
-            }*/
+                MSCUnloaderInstance.MSCLoaderReset();*/
+              /*  try
+                {
+                    Steamworks.SteamAPI.Init();
+                    ModConsole.Print(Steamworks.SteamUser.GetSteamID());
+                }
+                catch(Exception e)
+                {
+                    ModConsole.Error(e.Message);
+                }*/
+                
+            }
             // Call update for loaded mods
             foreach (Mod mod in LoadedMods)
 			{
