@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -29,6 +30,7 @@ namespace MSCPatcher
 
         private string gfPath = "?";
 
+        private string modPath = "";
         private static Dictionary<string, AssemblyDefinition> mLoadedAssemblies = new Dictionary<string, AssemblyDefinition>();
 
         private bool isgameUpdated = false; //game updated, remove backup and patch new Assembly-CSharp.dll
@@ -309,10 +311,10 @@ namespace MSCPatcher
                 Log("Copying new file.....MSCLoader.dll");
             }
             var cSharpAssembly = LoadAssembly(AssemblyFullPath);
-            var mscLoader = LoadAssembly("MSCLoader.dll");          
-            var coreLibrary = 
+            var mscLoader = LoadAssembly("MSCLoader.dll");
+            var coreLibrary =
                 cSharpAssembly.MainModule.AssemblyResolver.Resolve(
-                    (AssemblyNameReference)cSharpAssembly.MainModule.TypeSystem.Corlib);       
+                    (AssemblyNameReference)cSharpAssembly.MainModule.TypeSystem.Corlib);
 
             mLoadedAssemblies.Add("Assembly-CSharp", cSharpAssembly);
             mLoadedAssemblies.Add("MSCPatcher", mscLoader);
@@ -333,6 +335,32 @@ namespace MSCPatcher
             GetAssembly("Assembly-CSharp").Write(AssemblyFullPath);
 
             Log("Finished Writing");
+            Log("Copying Core Assets.....MSCLoader_Core");
+            if (!Directory.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Core")))
+            {
+                Directory.CreateDirectory(Path.Combine(modPath, @"Assets\MSCLoader_Core"));
+                File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Core", "guiskin.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Core\guiskin.unity3d"));
+            }
+            else
+            {
+                if (File.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Core\guiskin.unity3d")))
+                    File.Delete(Path.Combine(modPath, @"Assets\MSCLoader_Core\guiskin.unity3d"));
+                File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Core", "guiskin.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Core\guiskin.unity3d"));
+            }
+
+            Log("Copying Core Assets.....MSCLoader_Settings");
+            if (!Directory.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Settings")))
+            {
+                Directory.CreateDirectory(Path.Combine(modPath, @"Assets\MSCLoader_Settings"));
+                File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Settings", "settingsui.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Settings\settingsui.unity3d"));
+            }
+            else
+            {
+                if (File.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Settings\settingsui.unity3d")))
+                    File.Delete(Path.Combine(modPath, @"Assets\MSCLoader_Settings\settingsui.unity3d"));
+                File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Settings", "settingsui.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Settings\settingsui.unity3d"));
+            }
+            Log("Copying Core Assets Completed!");
             Log("=================");
             Log("Patching successfull!");
             Log("");
@@ -478,12 +506,13 @@ namespace MSCPatcher
                     ModificationsXmlPath = "MSCPatcher.Modifications_MD.xml";
                     try
                     {
+                        modPath = mdPath;
                         PatchCheck();
                         if (!Directory.Exists(mdPath))
                         {
                             //if mods folder not exists, create it.
                             Directory.CreateDirectory(mdPath);
-                        }
+                        }                      
                     }
                     catch(Exception ex)
                     {
@@ -495,12 +524,13 @@ namespace MSCPatcher
                     ModificationsXmlPath = "MSCPatcher.Modifications_GF.xml";
                     try
                     {
+                        modPath = gfPath;
                         PatchCheck();
                         if (!Directory.Exists(gfPath))
                         {
                             //if mods folder not exists, create it.
                             Directory.CreateDirectory(gfPath);
-                        }
+                        }                     
                     }
                     catch (Exception ex)
                     {
@@ -512,12 +542,13 @@ namespace MSCPatcher
                     ModificationsXmlPath = "MSCPatcher.Modifications_AD.xml";
                     try
                     {
+                        modPath = adPath;
                         PatchCheck();
                         if (!Directory.Exists(adPath))
                         {
                             //if mods folder not exists, create it.
                             Directory.CreateDirectory(adPath);
-                        }
+                        }                       
                     }
                     catch (Exception ex)
                     {
