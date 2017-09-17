@@ -9,7 +9,7 @@ namespace MSCLoader
 #pragma warning disable CS1591
     public class ModUI : MonoBehaviour
     {
-
+        //canvas for UI
         public static void CreateCanvas()
         {
             GameObject canvasGO = new GameObject();
@@ -32,7 +32,7 @@ namespace MSCLoader
             DontDestroyOnLoad(evSys);
         }
 
-        // Create base gameObject for your UI.
+        [System.Obsolete("ModUI is deprecated, please use AssetBundles instead.")]
         public static GameObject CreateUIBase(string name, GameObject parent)
         {
             GameObject createWindow = new GameObject();
@@ -43,8 +43,8 @@ namespace MSCLoader
             return createWindow;
         }
 
-        
-        // Create parent gameObject for UI on canvas.
+
+        [System.Obsolete("ModUI is deprecated, please use AssetBundles instead.")]
         public static GameObject CreateParent(string name, bool draggable)
         {
             GameObject createWindow = CreateUIBase(name, GameObject.Find("MSCLoader Canvas"));
@@ -53,6 +53,7 @@ namespace MSCLoader
             return createWindow;
         }
 
+        [System.Obsolete("ModUI is deprecated, please use AssetBundles instead.")]
         public static void Separator(GameObject parent, string text = null)
         {
 
@@ -70,7 +71,7 @@ namespace MSCLoader
             }
         }
 
-        // Creates Text on canvas or any other selected parent
+        [System.Obsolete("ModUI is deprecated, please use AssetBundles instead.")]
         public static GameObject CreateTextBlock(string name, string text, GameObject parent, TextAnchor alignment = TextAnchor.MiddleLeft, Color? color =  null, bool outline = false)
         {
             GameObject textBlock = CreateUIBase(name, parent);
@@ -84,8 +85,8 @@ namespace MSCLoader
             }
             return textBlock;
         }
-     
-        // Creates Input Field
+
+        [System.Obsolete("ModUI is deprecated, please use AssetBundles instead.")]
         public static GameObject CreateInputField(string name, string placeholderText, GameObject parent, float width, float height)
         {
             GameObject inputField = CreateUIBase(name, parent);
@@ -112,7 +113,7 @@ namespace MSCLoader
             return inputField;
         }
 
-        // Creates Button
+        [System.Obsolete("ModUI is deprecated, please use AssetBundles instead.")]
         public static GameObject CreateButton(string name, string text, GameObject parent, float width, float height)
         {
             GameObject Btn = CreateUIBase(name, parent);
@@ -128,6 +129,8 @@ namespace MSCLoader
 
             return Btn;
         }
+
+        [System.Obsolete("ModUI is deprecated, please use AssetBundles instead.")]
         public static GameObject CreateScrollbar(GameObject parent, float width, float height, Scrollbar.Direction direction)
         {
             GameObject scrollbar = CreateUIBase("Scrollbar", parent);

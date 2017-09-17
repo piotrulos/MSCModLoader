@@ -19,9 +19,7 @@ namespace MSCLoader
         {
             AssetBundle ab = new AssetBundle();
             yield return StartCoroutine(ModLoader.loadAssets.LoadBundle(new ModSettings(), "settingsui.unity3d", value => ab = value));
-            foreach (var s in ab.GetAllAssetNames())
-                ModConsole.Print(s);
-
+           
             ms.UI = ab.LoadAsset("MSCLoader Settings.prefab") as GameObject;
 
             ms.ModButton = ab.LoadAsset("ModButton.prefab") as GameObject;
@@ -36,11 +34,12 @@ namespace MSCLoader
             ms.PluginDisabled = ab.LoadAsset("PluginDisabled.prefab") as GameObject;
             ms.InMenu = ab.LoadAsset("InMenu.prefab") as GameObject;
 
-            ModConsole.Print("Load set UI Complete"); //test
+            //exit coroutine
             ms.CreateSettingsUI();
+
+            //freeup memory
             ab.Unload(false);
             Destroy(gameObject);
-
         }
     }
     public class ModSettings : Mod
