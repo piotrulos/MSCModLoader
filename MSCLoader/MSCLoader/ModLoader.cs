@@ -60,7 +60,7 @@ namespace MSCLoader
         public static string Version = "0.2.3";
 
         /// <summary>
-        /// non-public field, please use <c>GetModConfigFolder</c> or <c>GetModAssetsFolder</c> instead
+        /// non-public field, please use <c>GetModConfigFolder</c> or <c>GetModAssetsFolder</c> instead, to keep mods folder clean.
         /// </summary>
         static string ModsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"MySummerCar\Mods");
         static string ConfigFolder = Path.Combine(ModsFolder, @"Config\");

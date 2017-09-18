@@ -1,3 +1,7 @@
+[![](https://img.shields.io/github/release/piotrulos/MSCModLoader.svg?style=flat-square)]() 
+[![](https://img.shields.io/badge/experimental-v0.3-yellow.svg?style=flat-square)]() 
+[![](https://img.shields.io/github/downloads/piotrulos/MSCModLoader/total.svg?style=flat-square)]() 
+
 # MSCLoader
 A mod loader for My Summer Car 
 

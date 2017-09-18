@@ -19,7 +19,7 @@ namespace MSCLoader
         /// <example><code source="Examples.cs" region="LoadTexture" lang="C#" 
         /// title="Example for change texture when we press key" /></example>
         /// <param name="mod">Mod instance.</param>
-        /// <param name="fileName">File name to load (for example "texture.dds")</param>
+        /// <param name="fileName">File name to load from assets folder (for example "texture.dds")</param>
         /// <param name="normalMap">Normal mapping (default false)</param>
         /// <returns>Returns unity Texture2D</returns>
         public static Texture2D LoadTexture(Mod mod, string fileName, bool normalMap = false)
@@ -65,7 +65,7 @@ namespace MSCLoader
         /// Load (*.obj) file from mod assets folder
         /// </summary>
         /// <param name="mod">Mod instance.</param>
-        /// <param name="fileName">File name to load (for example "beer.obj")</param>
+        /// <param name="fileName">File name to load from assets folder (for example "beer.obj")</param>
         /// <returns>Returns unity GameObject</returns>
         public static GameObject LoadOBJ(Mod mod, string fileName)
         {
