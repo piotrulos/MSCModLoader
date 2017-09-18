@@ -258,8 +258,8 @@ namespace MSCLoader
         {
             try
             {
-                GameObject test = new GameObject();
-                ModSettingsUI ui = test.AddComponent<ModSettingsUI>();
+                GameObject go = new GameObject();
+                ModSettingsUI ui = go.AddComponent<ModSettingsUI>();
                 ui.ms = this;
                 ui.LoadUI();
             }

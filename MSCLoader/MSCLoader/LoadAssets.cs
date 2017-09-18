@@ -16,7 +16,8 @@ namespace MSCLoader
         /// <summary>
         /// Load texture (*.dds, *.jpg, *.png, *.tga) from mod assets folder
         /// </summary>
-        /// <example><code source="Examples.cs" region="LoadTexture" lang="C#" 
+        /// <example>
+        /// You need to enter file name from your mod's asset folder.<code source="Examples.cs" region="LoadTexture" lang="C#" 
         /// title="Example for change texture when we press key" /></example>
         /// <param name="mod">Mod instance.</param>
         /// <param name="fileName">File name to load from assets folder (for example "texture.dds")</param>
@@ -83,17 +84,16 @@ namespace MSCLoader
             return null;
         }
 
-
-        /* IEnumerator Testing(Mod mod, string bundleName)
-         {
-             AssetBundle ab = new AssetBundle();
-             yield return StartCoroutine(LoadBundle(mod, bundleName, value => ab = value));
-
-         }*/
-
         /// <summary>
         /// A Coroutine for Loading AssetBundles (prefered to call from another Corountine)
         /// </summary>
+        /// <example>
+        /// You need to enter file name from your mod's asset folder.
+        /// <note type="important">
+        /// Only coroutine waits for other coroutine to finish. Starting this coroutine from function will always return null.
+        /// </note>
+        /// Example based on loading settings assets.
+        /// <code source="Examples.cs" region="LoadBundle" lang="C#"/></example>
         /// <param name="mod">Mod instance.</param>
         /// <param name="bundleName">File name to load (for example "something.unity3d")</param>
         /// <param name="ab">Returned AssetBundle</param>
