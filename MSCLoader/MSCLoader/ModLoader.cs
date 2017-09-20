@@ -73,6 +73,7 @@ namespace MSCLoader
         /// </summary>
         /// <returns>Path to your mod config folder</returns>
         /// <param name="mod">Your mod Class.</param>
+        /// <example>Same as GetModAssetsFolder.</example>
         public static string GetModConfigFolder(Mod mod)
         {
             return Path.Combine(ConfigFolder, mod.ID);
@@ -83,10 +84,11 @@ namespace MSCLoader
         /// </summary>
         /// <returns>Path to your mod assets folder</returns>
         /// <param name="mod">Your mod Class.</param>
-        /// <example><code source="Examples.cs" region="GetModAssetsFolder" lang="C#" 
-        /// title="Example Code in Mod subclass" />
-        /// <code source="Examples.cs" region="GetModAssetsFolder2" lang="C#" 
-        /// title="Example Code" /></example> 
+        /// <example>Example Code in Mod subclass.
+        /// <code source="Examples.cs" region="GetModAssetsFolder" lang="C#" />
+        /// Example from other than Mod subclass.
+        /// <code source="Examples.cs" region="GetModAssetsFolder2" lang="C#" />
+        /// </example> 
         public static string GetModAssetsFolder(Mod mod)
         {
             return Path.Combine(AssetsFolder, mod.ID);
