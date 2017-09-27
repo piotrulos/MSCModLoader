@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using UnityEngine;
@@ -34,6 +35,7 @@ namespace MSCLoader
         /// A list of all loaded mods.
         /// </summary>
         public static List<Mod> LoadedMods;
+        static string mods;
       
         /// <summary>
         /// A list of invalid mod files (like random dll in Mods Folder that isn't a mod).
@@ -57,7 +59,8 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static string Version = "0.2.3";
+        public static readonly string Version = "0.2.3";
+
 
         /// <summary>
         /// non-public field, please use <c>GetModConfigFolder</c> or <c>GetModAssetsFolder</c> instead, to keep mods folder clean.
@@ -66,7 +69,13 @@ namespace MSCLoader
         static string ConfigFolder = Path.Combine(ModsFolder, @"Config\");
         static string AssetsFolder = Path.Combine(ModsFolder, @"Assets\");
 
-        static bool experimental = true; //Is this build is experimental
+        static bool experimental = false; //Is this build is experimental
+        static bool modStats = false;
+      
+        /// <summary>
+        /// Get user steamID (read-only)
+        /// </summary>
+        public static string steamID { get; private set; }
 
         /// <summary>
         /// Mod config folder, use this if you want save something. 
@@ -217,10 +226,23 @@ namespace MSCLoader
                 ModConsole.Print(string.Format("<color=green>ModLoader <b>v{0}</b> ready</color>", Version));
                 PreLoadMods();
                 ModConsole.Print(string.Format("<color=orange>Found <color=green><b>{0}</b></color> mods!</color>", LoadedMods.Count - 2));
+                try
+                {
+                    Steamworks.SteamAPI.Init();
+                    steamID = Steamworks.SteamUser.GetSteamID().ToString();
+                    ModConsole.Print(string.Format("<color=orange>Hello <color=green><b>{0}</b></color>!</color>", Steamworks.SteamFriends.GetPersonaName()));
+                    if (!modStats)
+                    {
+                        ModStats();
+                        modStats = true;
+                    }
+                }
+                catch (Exception e)
+                {
+                    ModConsole.Error("Steam not detected, only steam version is supported.");
+                }
                 ModConsole.Print("Loading core assets...");
-                Instance.StartCoroutine(Instance.LoadSkin());
-                ModConsole.Print("Lodading core assets completed!");
-               
+                Instance.StartCoroutine(Instance.LoadSkin());              
             }
         }
 
@@ -229,6 +251,7 @@ namespace MSCLoader
             AssetBundle ab = new AssetBundle();
             yield return StartCoroutine(loadAssets.LoadBundle(new ModCore(), "guiskin.unity3d", value => ab = value));
             guiskin = ab.LoadAsset("MSCLoader.guiskin") as GUISkin;
+            ModConsole.Print("Lodading core assets completed!");
         }
 
         /// <summary>
@@ -251,8 +274,11 @@ namespace MSCLoader
                     string version;
                     using (WebClient client = new WebClient())
                     {
-                        version = client.DownloadString("http://my-summer-car.ml/version.txt");
+                        client.QueryString.Add("core", "stable");
+                        version = client.DownloadString("http://my-summer-car.ml/ver.php");                     
                     }
+                    if (version.Trim().Length > 8)
+                        throw new Exception("Parse Error, please report that problem!");
                     int i = Version.CompareTo(version.Trim());
                     if (i != 0)
                         ModUI.CreateTextBlock("MSCLoader Info Text", string.Format("Mod Loader MCSLoader v{0} is ready! (<color=orange>New version available: <b>v{1}</b></color>)", Version, version.Trim()), modInfo, TextAnchor.MiddleLeft, Color.white, true).GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;
@@ -314,6 +340,23 @@ namespace MSCLoader
 			}
 		}
 
+        static void ModStats()
+        {
+            mods = string.Join(",", LoadedMods.Select(s => s.ID).Where(x => !x.StartsWith("MSCLoader_")).ToArray());
+            try
+            {
+                WebClient webClient = new WebClient();
+                webClient.QueryString.Add("sid", steamID);
+                webClient.QueryString.Add("mods", mods);
+                webClient.QueryString.Add("ver", Version);
+                string result = webClient.DownloadString("http://my-summer-car.ml/mody.php");
+            }
+            catch(Exception e)
+            {
+                ModConsole.Error(string.Format("Connection to server failed: {0}", e.Message));
+            }
+        }
+
         private static void LoadDLL(string file)
         {
             try
@@ -369,9 +412,9 @@ namespace MSCLoader
             }
 
         }
-        
-		private static void LoadMod(Mod mod, string msver)
-		{
+
+        private static void LoadMod(Mod mod, string msver)
+        {
             // Check if mod already exists
             if (!LoadedMods.Contains(mod))
             {
@@ -400,7 +443,7 @@ namespace MSCLoader
             {
                 ModConsole.Print(string.Format("<color=orange><b>Mod already loaded (or duplicated ID):</b></color><color=red><b>{0}</b></color>", mod.ID));
             }
-		}
+        }
 
 		/// <summary>
 		/// Call Unity OnGUI() function, for each loaded mods.
