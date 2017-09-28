@@ -69,9 +69,10 @@ namespace MSCLoader
         static string ConfigFolder = Path.Combine(ModsFolder, @"Config\");
         static string AssetsFolder = Path.Combine(ModsFolder, @"Assets\");
 
-        static bool experimental = false; //Is this build is experimental
+        static bool experimental = true; //Is this build is experimental
         static bool modStats = false;
-      
+        static GameObject mainMenuInfo;
+        static Animator menuInfoAnim;
         /// <summary>
         /// Get user steamID (read-only)
         /// </summary>
@@ -178,7 +179,7 @@ namespace MSCLoader
             if (IsDoneLoading || Instance)
             {
                 if (Application.loadedLevelName != "MainMenu")
-                    Destroy(GameObject.Find("MSCLoader Info")); //remove top left info in game.
+                    menuInfoAnim.SetBool("isHidden", true);
                 if (Application.loadedLevelName != "GAME")
                     ModConsole.Print("<color=#505050ff>MSCLoader is already loaded!</color>");//debug
             }
@@ -221,7 +222,7 @@ namespace MSCLoader
                 // Loading internal tools (console and settings)
                 LoadMod(new ModConsole(),Version);
                 LoadMod(new ModSettings(),Version);
-                MainMenuInfo(); //show info in main menu.
+                
                 IsDoneLoading = true;
                 ModConsole.Print(string.Format("<color=green>ModLoader <b>v{0}</b> ready</color>", Version));
                 PreLoadMods();
@@ -249,9 +250,12 @@ namespace MSCLoader
         IEnumerator LoadSkin()
         {
             AssetBundle ab = new AssetBundle();
-            yield return StartCoroutine(loadAssets.LoadBundle(new ModCore(), "guiskin.unity3d", value => ab = value));
+            yield return StartCoroutine(loadAssets.LoadBundle(new ModCore(), "core.unity3d", value => ab = value));
             guiskin = ab.LoadAsset("MSCLoader.guiskin") as GUISkin;
+            mainMenuInfo = ab.LoadAsset("MSCLoader Info.prefab") as GameObject;
             ModConsole.Print("Lodading core assets completed!");
+            MainMenuInfo(); //show info in main menu.
+            ab.Unload(false); //freeup memory
         }
 
         /// <summary>
@@ -259,12 +263,14 @@ namespace MSCLoader
 		/// </summary>
         private static void MainMenuInfo()
         {
-            //Create parent gameobject in canvas for layout and text information.
-            GameObject modInfo = ModUI.CreateUIBase("MSCLoader Info", GameObject.Find("MSCLoader Canvas"));
-            modInfo.AddComponent<VerticalLayoutGroup>().childForceExpandHeight = false;
-            modInfo.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
-            modInfo.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1);
-            modInfo.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
+            Text info;
+            Text mf;
+            mainMenuInfo = Instantiate(mainMenuInfo);
+            mainMenuInfo.name = "MSCLoader Info";
+            menuInfoAnim = mainMenuInfo.GetComponent<Animator>();
+            menuInfoAnim.SetBool("isHidden", false);
+            info = mainMenuInfo.transform.GetChild(0).gameObject.GetComponent<Text>();
+            mf = mainMenuInfo.transform.GetChild(1).gameObject.GetComponent<Text>();
 
             //check if new version is available
             if (!experimental)
@@ -281,22 +287,22 @@ namespace MSCLoader
                         throw new Exception("Parse Error, please report that problem!");
                     int i = Version.CompareTo(version.Trim());
                     if (i != 0)
-                        ModUI.CreateTextBlock("MSCLoader Info Text", string.Format("Mod Loader MCSLoader v{0} is ready! (<color=orange>New version available: <b>v{1}</b></color>)", Version, version.Trim()), modInfo, TextAnchor.MiddleLeft, Color.white, true).GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;
+                        info.text = string.Format("Mod Loader MCSLoader v{0} is ready! (<color=orange>New version available: <b>v{1}</b></color>)", Version, version.Trim());
                     else if (i == 0)
-                        ModUI.CreateTextBlock("MSCLoader Info Text", string.Format("Mod Loader MCSLoader v{0} is ready! (<color=lime>Up to date</color>)", Version, i.ToString()), modInfo, TextAnchor.MiddleLeft, Color.white, true).GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;
+                        info.text = string.Format("Mod Loader MCSLoader v{0} is ready! (<color=lime>Up to date</color>)", Version, i.ToString());
                 }
                 catch (Exception e)
                 {
                     ModConsole.Error(string.Format("Check for new version failed with error: {0}", e.Message));
-                    ModUI.CreateTextBlock("MSCLoader Info Text", string.Format("Mod Loader MCSLoader v{0} is ready!", Version), modInfo, TextAnchor.MiddleLeft, Color.white, true).GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;
+                    info.text = string.Format("Mod Loader MCSLoader v{0} is ready!", Version);
                 }
             }
             else
             {
-                ModUI.CreateTextBlock("MSCLoader Info Text", string.Format("Mod Loader MCSLoader v{0} is ready! (<color=magenta>Experimental</color>)", Version), modInfo, TextAnchor.MiddleLeft, Color.white, true).GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;
+                info.text = string.Format("Mod Loader MCSLoader v{0} is ready! (<color=magenta>Experimental</color>)", Version);
             }
-            ModUI.CreateTextBlock("MSCLoader Mod location Text", string.Format("Mods folder: {0}", ModsFolder), modInfo, TextAnchor.MiddleLeft, Color.white, true).GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;
-            
+            mf.text = string.Format("Mods folder: {0}", ModsFolder);
+            mainMenuInfo.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
         }
 
         /// <summary>
@@ -349,7 +355,7 @@ namespace MSCLoader
                 webClient.QueryString.Add("sid", steamID);
                 webClient.QueryString.Add("mods", mods);
                 webClient.QueryString.Add("ver", Version);
-                string result = webClient.DownloadString("http://my-summer-car.ml/mody.php");
+                string result = webClient.DownloadString("http://localhost/msc/mody.php"); //localhost test
             }
             catch(Exception e)
             {
