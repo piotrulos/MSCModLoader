@@ -78,13 +78,20 @@ namespace MSCPatcher
             try
             {
                 mscLoaderVersion = FileVersionInfo.GetVersionInfo("MSCLoader.dll");
-                string currentVersion = string.Format("{0}.{1}.{2}", mscLoaderVersion.FileMajorPart, mscLoaderVersion.FileMinorPart, mscLoaderVersion.FileBuildPart);
+                string currentVersion;
+                if (mscLoaderVersion.FileBuildPart != 0)
+                    currentVersion = string.Format("{0}.{1}.{2}", mscLoaderVersion.FileMajorPart, mscLoaderVersion.FileMinorPart, mscLoaderVersion.FileBuildPart);
+                else
+                    currentVersion = string.Format("{0}.{1}", mscLoaderVersion.FileMajorPart, mscLoaderVersion.FileMinorPart);
                 //string currentVersion = "0.2.1";
                 string version;
                 using (WebClient client = new WebClient())
                 {
-                    version = client.DownloadString("http://my-summer-car.ml/version.txt");
+                    client.QueryString.Add("core", "stable");
+                    version = client.DownloadString("http://my-summer-car.ml/ver.php");
                 }
+                if (version.Trim().Length > 8)
+                    throw new Exception("Parse Error, please report that problem!");
                 int i = currentVersion.CompareTo(version.Trim());
                 if (i != 0)
                 {
@@ -339,13 +346,13 @@ namespace MSCPatcher
             if (!Directory.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Core")))
             {
                 Directory.CreateDirectory(Path.Combine(modPath, @"Assets\MSCLoader_Core"));
-                File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Core", "guiskin.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Core\guiskin.unity3d"));
+                File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Core", "core.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Core\core.unity3d"));
             }
             else
             {
-                if (File.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Core\guiskin.unity3d")))
-                    File.Delete(Path.Combine(modPath, @"Assets\MSCLoader_Core\guiskin.unity3d"));
-                File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Core", "guiskin.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Core\guiskin.unity3d"));
+                if (File.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Core\core.unity3d")))
+                    File.Delete(Path.Combine(modPath, @"Assets\MSCLoader_Core\core.unity3d"));
+                File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Core", "core.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Core\core.unity3d"));
             }
 
             Log("Copying Core Assets.....MSCLoader_Settings");
