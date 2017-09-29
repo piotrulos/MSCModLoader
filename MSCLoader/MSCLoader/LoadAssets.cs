@@ -104,7 +104,7 @@ namespace MSCLoader
             {
                 while (www.progress < 1)
                 {
-                    ModConsole.Print(string.Format("Progress - {0}%.", www.progress * 100));//replace 
+                    ModConsole.Print(string.Format("Loading Asset: {0}...",bundleName)); //TODO: replace with UI progressbar
                     yield return new WaitForSeconds(.1f);
                 }
                 yield return www;

@@ -356,6 +356,31 @@ namespace MSCLoader
                 webClient.QueryString.Add("mods", mods);
                 webClient.QueryString.Add("ver", Version);
                 string result = webClient.DownloadString("http://localhost/msc/mody.php"); //localhost test
+                if (result != string.Empty)
+                {
+                    if (result == "error")
+                        throw new Exception("Error");
+                    string[] lines = result.Split('\n');
+                    for (int i = 0; i < lines.Length; i++)
+                    {
+                        string[] values = lines[i].Trim().Split(',');
+                        foreach (Mod mod in LoadedMods)
+                        {
+                            if(mod.ID == values[0])
+                            {
+                                int v = mod.Version.CompareTo(values[1].Trim());
+                                if (v != 0)
+                                    mod.hasUpdate = true;
+                                if(values[2] == "1")
+                                {
+                                    mod.isDisabled = true;
+                                    ModConsole.Error(string.Format("Mod <b>{0}</b> has been disabled. Reason: {1}", mod.Name, values[3]));
+                                }
+                            }
+                        }
+                    }
+
+                }
             }
             catch(Exception e)
             {

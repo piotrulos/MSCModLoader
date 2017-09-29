@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -29,6 +30,7 @@ namespace MSCLoader
         public GameObject PluginOk;
         public GameObject PluginDisabled;
         public GameObject InMenu;
+        public GameObject update;
 
         public Text IDtxt;
         public Text Nametxt;
@@ -99,6 +101,11 @@ namespace MSCLoader
             modButton.transform.GetChild(1).GetComponent<Text>().text = version;
             modButton.transform.GetChild(2).GetComponent<Text>().text = author;
             modButton.transform.SetParent(modView.transform, false);
+            if(mod.hasUpdate)
+            {
+                GameObject hasupdate = Instantiate(update);
+                hasupdate.transform.SetParent(modButton.transform.GetChild(3), false); //Add Update Icon
+            }
             if (mod.UseAssetsFolder)
             {
                 GameObject hasAssets = Instantiate(HasAssets);
@@ -174,7 +181,13 @@ namespace MSCLoader
             if(core)
                 Versiontxt.text = string.Format("Version: <b>{0}</b>", selected.Version);
             else
-                Versiontxt.text = string.Format("Version: <b>{0}</b> (compiled for <b>v{1}</b>)", selected.Version, selected.compiledVersion);
+            {
+                if(selected.hasUpdate)
+                Versiontxt.text = string.Format("Version: <b>{0}</b> (<color=lime>Update available</color>){2}(compiled for <b>v{1}</b>)", selected.Version, selected.compiledVersion, Environment.NewLine);
+                else
+                    Versiontxt.text = string.Format("Version: <b>{0}</b>{2}(compiled for <b>v{1}</b>)", selected.Version, selected.compiledVersion, Environment.NewLine);
+
+            }
             Authortxt.text = string.Format("Author: <b>{0}</b>", selected.Author);
             if (Application.loadedLevelName == "MainMenu" && !core)
                 DisableMod.interactable = true;

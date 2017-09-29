@@ -8,11 +8,18 @@
     public abstract class Mod
 	{
         bool disabled = false;
+        bool update = false;
         string compiledVer = null;
+
         /// <summary>
         /// If true, mod will never call OnLoad (used only by settings)
         /// </summary>
         public virtual bool isDisabled { get => disabled; set => disabled = value; }
+
+        /// <summary>
+        /// If true, mod will indicate that there is update available.
+        /// </summary>
+        public virtual bool hasUpdate { get => update; set => update = value; }
 
         /// <summary>
         /// Load this mod in Main Menu (in most cases should be false).
