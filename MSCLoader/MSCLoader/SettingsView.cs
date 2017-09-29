@@ -151,8 +151,10 @@ namespace MSCLoader
         }
         public void goBack()
         {
-            modList.SetActive(true);
-            modSettings.SetActive(false);
+            Animator anim = settingViewContainer.GetComponent<Animator>();
+            modSettings.GetComponent<ScrollRect>().enabled = false;
+            modList.GetComponent<ScrollRect>().enabled = true;
+            anim.SetBool("goSetting", false);
             goBackBtn.SetActive(false);
         }
         public void disableMod(bool ischecked)
@@ -174,8 +176,9 @@ namespace MSCLoader
             if (selected.ID.StartsWith("MSCLoader_"))
                 core = true; //can't disable core components
             goBackBtn.SetActive(true);
-            modList.SetActive(false);
-            modSettings.SetActive(true);
+            Animator anim = settingViewContainer.GetComponent<Animator>();
+            modList.GetComponent<ScrollRect>().enabled = false;
+            modSettings.GetComponent<ScrollRect>().enabled = true;
             IDtxt.text = string.Format("ID: <b>{0}</b>", selected.ID);
             Nametxt.text = string.Format("Name: <b>{0}</b>", selected.Name);
             if(core)
@@ -206,6 +209,7 @@ namespace MSCLoader
                     //no keybinds
                 }
             }
+            anim.SetBool("goSetting", true);
             //ModConsole.Print(EventSystem.current.currentSelectedGameObject.GetComponent<ModInfo>().mod.ID); //debug
         }
         public void toggleVisibility()
@@ -261,6 +265,8 @@ namespace MSCLoader
             }
             else
             {
+                modSettings.GetComponent<ScrollRect>().enabled = false;
+                modList.GetComponent<ScrollRect>().enabled = true;
                 setVisibility(!settingViewContainer.activeSelf);
             }
         }
