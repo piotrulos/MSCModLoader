@@ -33,6 +33,7 @@ namespace MSCLoader
             ms.PluginOk = ab.LoadAsset("PluginOK.prefab") as GameObject;
             ms.PluginDisabled = ab.LoadAsset("PluginDisabled.prefab") as GameObject;
             ms.InMenu = ab.LoadAsset("InMenu.prefab") as GameObject;
+            ms.update = ab.LoadAsset("Update.prefab") as GameObject;
 
             //exit coroutine
             ms.CreateSettingsUI();
@@ -66,6 +67,7 @@ namespace MSCLoader
         public GameObject PluginOk;
         public GameObject PluginDisabled;
         public GameObject InMenu;
+        public GameObject update;
 
         private Keybind menuKey = new Keybind("Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
         public SettingsView settings;
@@ -99,6 +101,7 @@ namespace MSCLoader
             UI.GetComponent<SettingsView>().PluginOk = PluginOk;
             UI.GetComponent<SettingsView>().PluginDisabled = PluginDisabled;
             UI.GetComponent<SettingsView>().InMenu = InMenu;
+            UI.GetComponent<SettingsView>().update = update;
 
             UI.GetComponent<SettingsView>().IDtxt = UI.GetComponent<SettingsView>().ModSettingsView.transform.GetChild(0).GetComponent<Text>();
             UI.GetComponent<SettingsView>().Nametxt = UI.GetComponent<SettingsView>().ModSettingsView.transform.GetChild(1).GetComponent<Text>();
