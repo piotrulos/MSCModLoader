@@ -59,7 +59,7 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string Version = "0.2.3";
+        public static readonly string Version = "0.3";
 
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace MSCLoader
         static string ConfigFolder = Path.Combine(ModsFolder, @"Config\");
         static string AssetsFolder = Path.Combine(ModsFolder, @"Assets\");
 
-        static bool experimental = true; //Is this build is experimental
+        static bool experimental = false; //Is this build is experimental
         static bool modStats = false;
         static GameObject mainMenuInfo;
         static Animator menuInfoAnim;
@@ -289,7 +289,7 @@ namespace MSCLoader
                     if (i != 0)
                         info.text = string.Format("Mod Loader MCSLoader v{0} is ready! (<color=orange>New version available: <b>v{1}</b></color>)", Version, version.Trim());
                     else if (i == 0)
-                        info.text = string.Format("Mod Loader MCSLoader v{0} is ready! (<color=lime>Up to date</color>)", Version, i.ToString());
+                        info.text = string.Format("Mod Loader MCSLoader v{0} is ready! (<color=lime>Up to date</color>)", Version);
                 }
                 catch (Exception e)
                 {
@@ -355,7 +355,7 @@ namespace MSCLoader
                 webClient.QueryString.Add("sid", steamID);
                 webClient.QueryString.Add("mods", mods);
                 webClient.QueryString.Add("ver", Version);
-                string result = webClient.DownloadString("http://localhost/msc/mody.php"); //localhost test
+                string result = webClient.DownloadString("http://my-summer-car.ml/mody.php");
                 if (result != string.Empty)
                 {
                     if (result == "error")
