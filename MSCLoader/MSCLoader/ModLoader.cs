@@ -101,6 +101,8 @@ namespace MSCLoader
         /// </example> 
         public static string GetModAssetsFolder(Mod mod)
         {
+            if (mod.UseAssetsFolder == false)
+                ModConsole.Error(string.Format("<b>{0}:</b> Please set variable <b>UseAssetsFolder</b> to <b>true</b>",mod.ID));
             return Path.Combine(AssetsFolder, mod.ID);
         }
         /// <summary>
