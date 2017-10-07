@@ -285,6 +285,32 @@ namespace MSCPatcher
                     File.Copy(Path.GetFullPath(Path.Combine("System.Xml.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll"));
                     Log("Copying new file.....System.Xml.dll");
                 }
+                Log("Copying Core Assets.....MSCLoader_Core");
+                if (!Directory.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Core")))
+                {
+                    Directory.CreateDirectory(Path.Combine(modPath, @"Assets\MSCLoader_Core"));
+                    File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Core", "core.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Core\core.unity3d"));
+                }
+                else
+                {
+                    if (File.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Core\core.unity3d")))
+                        File.Delete(Path.Combine(modPath, @"Assets\MSCLoader_Core\core.unity3d"));
+                    File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Core", "core.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Core\core.unity3d"));
+                }
+
+                Log("Copying Core Assets.....MSCLoader_Settings");
+                if (!Directory.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Settings")))
+                {
+                    Directory.CreateDirectory(Path.Combine(modPath, @"Assets\MSCLoader_Settings"));
+                    File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Settings", "settingsui.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Settings\settingsui.unity3d"));
+                }
+                else
+                {
+                    if (File.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Settings\settingsui.unity3d")))
+                        File.Delete(Path.Combine(modPath, @"Assets\MSCLoader_Settings\settingsui.unity3d"));
+                    File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Settings", "settingsui.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Settings\settingsui.unity3d"));
+                }
+                Log("Copying Core Assets Completed!");
                 Log("=================");
                 Log("MSCLoader.dll update successful!");
                 Log("");

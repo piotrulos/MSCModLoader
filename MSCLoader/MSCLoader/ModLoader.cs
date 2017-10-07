@@ -59,7 +59,7 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string Version = "0.3";
+        public static readonly string Version = "0.3.1";
 
 
         /// <summary>
@@ -73,6 +73,9 @@ namespace MSCLoader
         static bool modStats = false;
         static GameObject mainMenuInfo;
         static Animator menuInfoAnim;
+        
+        static int numOfUpdates;
+        static bool isModUpdates = false;
         /// <summary>
         /// Get user steamID (read-only)
         /// </summary>
@@ -265,14 +268,14 @@ namespace MSCLoader
 		/// </summary>
         private static void MainMenuInfo()
         {
-            Text info;
-            Text mf;
+            Text info, mf, modUpdates;
             mainMenuInfo = Instantiate(mainMenuInfo);
             mainMenuInfo.name = "MSCLoader Info";
             menuInfoAnim = mainMenuInfo.GetComponent<Animator>();
             menuInfoAnim.SetBool("isHidden", false);
             info = mainMenuInfo.transform.GetChild(0).gameObject.GetComponent<Text>();
             mf = mainMenuInfo.transform.GetChild(1).gameObject.GetComponent<Text>();
+            modUpdates = mainMenuInfo.transform.GetChild(2).gameObject.GetComponent<Text>();
 
             //check if new version is available
             if (!experimental)
@@ -304,6 +307,10 @@ namespace MSCLoader
                 info.text = string.Format("Mod Loader MCSLoader v{0} is ready! (<color=magenta>Experimental</color>)", Version);
             }
             mf.text = string.Format("Mods folder: {0}", ModsFolder);
+            if (isModUpdates)
+                modUpdates.text = string.Format("<color=lime><b>{0}</b></color> <color=orange>mods has a new version available!</color>", numOfUpdates);
+            else
+                modUpdates.text = string.Empty;
             mainMenuInfo.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
         }
 
@@ -350,43 +357,51 @@ namespace MSCLoader
 
         static void ModStats()
         {
-            mods = string.Join(",", LoadedMods.Select(s => s.ID).Where(x => !x.StartsWith("MSCLoader_")).ToArray());
-            try
+            if (LoadedMods.Count - 2 > 0)
             {
-                WebClient webClient = new WebClient();
-                webClient.QueryString.Add("sid", steamID);
-                webClient.QueryString.Add("mods", mods);
-                webClient.QueryString.Add("ver", Version);
-                string result = webClient.DownloadString("http://my-summer-car.ml/mody.php");
-                if (result != string.Empty)
+                numOfUpdates = 0;
+                mods = string.Join(",", LoadedMods.Select(s => s.ID).Where(x => !x.StartsWith("MSCLoader_")).ToArray());
+                try
                 {
-                    if (result == "error")
-                        throw new Exception("Error");
-                    string[] lines = result.Split('\n');
-                    for (int i = 0; i < lines.Length; i++)
+                    WebClient webClient = new WebClient();
+                    webClient.QueryString.Add("sid", steamID);
+                    webClient.QueryString.Add("mods", mods);
+                    webClient.QueryString.Add("ver", Version);
+                    string result = webClient.DownloadString("http://my-summer-car.ml/mody.php");
+                    if (result != string.Empty)
                     {
-                        string[] values = lines[i].Trim().Split(',');
-                        foreach (Mod mod in LoadedMods)
+                        if (result == "error")
+                            throw new Exception("Error");
+                        string[] lines = result.Split('\n');
+                        for (int i = 0; i < lines.Length; i++)
                         {
-                            if(mod.ID == values[0])
+                            string[] values = lines[i].Trim().Split(',');
+                            foreach (Mod mod in LoadedMods)
                             {
-                                int v = mod.Version.CompareTo(values[1].Trim());
-                                if (v != 0)
-                                    mod.hasUpdate = true;
-                                if(values[2] == "1")
+                                if (mod.ID == values[0])
                                 {
-                                    mod.isDisabled = true;
-                                    ModConsole.Error(string.Format("Mod <b>{0}</b> has been disabled. Reason: {1}", mod.Name, values[3]));
+                                    int v = mod.Version.CompareTo(values[1].Trim());
+                                    if (v != 0)
+                                    {
+                                        mod.hasUpdate = true;
+                                        isModUpdates = true;
+                                        numOfUpdates++;
+                                    }
+                                    if (values[2] == "1")
+                                    {
+                                        mod.isDisabled = true;
+                                        ModConsole.Error(string.Format("Mod <b>{0}</b> has been disabled. Reason: {1}", mod.Name, values[3]));
+                                    }
                                 }
                             }
                         }
-                    }
 
+                    }
                 }
-            }
-            catch(Exception e)
-            {
-                ModConsole.Error(string.Format("Connection to server failed: {0}", e.Message));
+                catch (Exception e)
+                {
+                    ModConsole.Error(string.Format("Connection to server failed: {0}", e.Message));
+                }
             }
         }
 

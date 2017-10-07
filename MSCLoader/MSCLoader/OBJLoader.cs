@@ -7,433 +7,246 @@ using System.Linq;
 namespace MSCLoader
 {
 #pragma warning disable CS1591
-    public class OBJLoader 
+    public class OBJLoader
     {
-        public static bool splitByMaterial = false;
-        public static string[] searchPaths = new string[] { "", "%FileName%_Textures" + Path.DirectorySeparatorChar };
-        //structures
-        struct OBJFace
+        private struct meshStruct
         {
-            public string materialName;
-            public string meshName;
-            public int[] indexes;
+            public Vector3[] vertices;
+            public Vector3[] normals;
+            public Vector2[] uv;
+            public Vector2[] uv1;
+            public Vector2[] uv2;
+            public int[] triangles;
+            public int[] faceVerts;
+            public int[] faceUVs;
+            public Vector3[] faceData;
+            public string name;
+            public string fileName;
         }
 
-        public static Vector3 ParseVectorFromCMPS(string[] cmps)
+        // Use this for initialization
+        public Mesh ImportFile(string filePath)
         {
-            float x = float.Parse(cmps[1]);
-            float y = float.Parse(cmps[2]);
-            if (cmps.Length == 4)
-            {
-                float z = float.Parse(cmps[3]);
-                return new Vector3(x, y, z);
-            }
-            return new Vector2(x, y);
-        }
-        public static Color ParseColorFromCMPS(string[] cmps, float scalar = 1.0f)
-        {
-            float Kr = float.Parse(cmps[1]) * scalar;
-            float Kg = float.Parse(cmps[2]) * scalar;
-            float Kb = float.Parse(cmps[3]) * scalar;
-            return new Color(Kr, Kg, Kb);
-        }
+            meshStruct newMesh = createMeshStruct(filePath);
+            populateMeshStruct(ref newMesh);
 
-        public static string OBJGetFilePath(string path, string basePath, string fileName)
-        {
-            foreach (string sp in searchPaths)
+            Vector3[] newVerts = new Vector3[newMesh.faceData.Length];
+            Vector2[] newUVs = new Vector2[newMesh.faceData.Length];
+            Vector3[] newNormals = new Vector3[newMesh.faceData.Length];
+            int i = 0;
+            /* The following foreach loops through the facedata and assigns the appropriate vertex, uv, or normal
+             * for the appropriate Unity mesh array.
+             */
+            foreach (Vector3 v in newMesh.faceData)
             {
-                string s = sp.Replace("%FileName%", fileName);
-                if (File.Exists(basePath + s + path))
-                {
-                    return basePath + s + path;
-                }
-                else if (File.Exists(path))
-                {
-                    return path;
-                }
+                newVerts[i] = newMesh.vertices[(int)v.x - 1];
+                if (v.y >= 1)
+                    newUVs[i] = newMesh.uv[(int)v.y - 1];
+
+                if (v.z >= 1)
+                    newNormals[i] = newMesh.normals[(int)v.z - 1];
+                i++;
             }
 
-            return null;
-        }
-        public static Material[] LoadMTLFile(string fn, Mod mod)
-        {
-            Material currentMaterial = null;
-            List<Material> matlList = new List<Material>();
-            FileInfo mtlFileInfo = new FileInfo(fn);
-            string baseFileName = Path.GetFileNameWithoutExtension(fn);
-            string mtlFileDirectory = mtlFileInfo.Directory.FullName + Path.DirectorySeparatorChar;
-            foreach (string ln in File.ReadAllLines(fn))
-            {
-                string l = ln.Trim().Replace("  ", " ");
-                string[] cmps = l.Split(' ');
-                string data = l.Remove(0, l.IndexOf(' ') + 1);
+            Mesh mesh = new Mesh();
 
-                if (cmps[0] == "newmtl")
-                {
-                    if (currentMaterial != null)
-                    {
-                        matlList.Add(currentMaterial);
-                    }
-                    currentMaterial = new Material(Shader.Find("Standard (Specular setup)"));
-                    currentMaterial.name = data;
-                }
-                else if (cmps[0] == "Kd")
-                {
-                    currentMaterial.SetColor("_Color", ParseColorFromCMPS(cmps));
-                }
-                else if (cmps[0] == "map_Kd")
-                {
-                    //TEXTURE
-                    string fpth = OBJGetFilePath(data, mtlFileDirectory, baseFileName);
-                    if (fpth != null)
-                        currentMaterial.SetTexture("_MainTex", LoadAssets.LoadTexture(mod, fpth));
-                }
-                else if (cmps[0] == "map_Bump")
-                {
-                    //TEXTURE
-                    string fpth = OBJGetFilePath(data, mtlFileDirectory, baseFileName);
-                    if (fpth != null)
-                    {
-                        currentMaterial.SetTexture("_BumpMap", LoadAssets.LoadTexture(mod, fpth, true));
-                        currentMaterial.EnableKeyword("_NORMALMAP");
-                    }
-                }
-                else if (cmps[0] == "Ks")
-                {
-                    currentMaterial.SetColor("_SpecColor", ParseColorFromCMPS(cmps));
-                }
-                else if (cmps[0] == "Ka")
-                {
-                    currentMaterial.SetColor("_EmissionColor", ParseColorFromCMPS(cmps, 0.05f));
-                    currentMaterial.EnableKeyword("_EMISSION");
-                }
-                else if (cmps[0] == "d")
-                {
-                    float visibility = float.Parse(cmps[1]);
-                    if (visibility < 1)
-                    {
-                        Color temp = currentMaterial.color;
+            mesh.vertices = newVerts;
+            mesh.uv = newUVs;
+            mesh.normals = newNormals;
+            mesh.triangles = newMesh.triangles;
 
-                        temp.a = visibility;
-                        currentMaterial.SetColor("_Color", temp);
+            mesh.RecalculateBounds();
+            mesh.Optimize();
 
-                        //TRANSPARENCY ENABLER
-                        currentMaterial.SetFloat("_Mode", 3);
-                        currentMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                        currentMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                        currentMaterial.SetInt("_ZWrite", 0);
-                        currentMaterial.DisableKeyword("_ALPHATEST_ON");
-                        currentMaterial.EnableKeyword("_ALPHABLEND_ON");
-                        currentMaterial.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-                        currentMaterial.renderQueue = 3000;
-                    }
-
-                }
-                else if (cmps[0] == "Ns")
-                {
-                    float Ns = float.Parse(cmps[1]);
-                    Ns = (Ns / 1000);
-                    currentMaterial.SetFloat("_Glossiness", Ns);
-
-                }
-            }
-            if (currentMaterial != null)
-            {
-                matlList.Add(currentMaterial);
-            }
-            return matlList.ToArray();
+            return mesh;
         }
 
-        public static GameObject LoadOBJFile(Mod mod, string fn)
+        private static meshStruct createMeshStruct(string filename)
         {
-
-            string meshName = Path.GetFileNameWithoutExtension(fn);
-
-            bool hasNormals = false;
-            //OBJ LISTS
-            List<Vector3> vertices = new List<Vector3>();
-            List<Vector3> normals = new List<Vector3>();
-            List<Vector2> uvs = new List<Vector2>();
-            //UMESH LISTS
-            List<Vector3> uvertices = new List<Vector3>();
-            List<Vector3> unormals = new List<Vector3>();
-            List<Vector2> uuvs = new List<Vector2>();
-            //MESH CONSTRUCTION
-            List<string> materialNames = new List<string>();
-            List<string> objectNames = new List<string>();
-            Dictionary<string, int> hashtable = new Dictionary<string, int>();
-            List<OBJFace> faceList = new List<OBJFace>();
-            string cmaterial = "";
-            string cmesh = "default";
-            //CACHE
-            Material[] materialCache = null;
-            //save this info for later
-            FileInfo OBJFileInfo = new FileInfo(fn);
-
-            foreach (string ln in File.ReadAllLines(fn))
+            int triangles = 0;
+            int vertices = 0;
+            int vt = 0;
+            int vn = 0;
+            int face = 0;
+            meshStruct mesh = new meshStruct();
+            mesh.fileName = filename;
+            StreamReader stream = File.OpenText(filename);
+            string entireText = stream.ReadToEnd();
+            stream.Close();
+            using (StringReader reader = new StringReader(entireText))
             {
-                if (ln.Length > 0 && ln[0] != '#')
+                string currentText = reader.ReadLine();
+                char[] splitIdentifier = { ' ' };
+                string[] brokenString;
+                while (currentText != null)
                 {
-                    string l = ln.Trim().Replace("  ", " ");
-                    string[] cmps = l.Split(' ');
-                    string data = l.Remove(0, l.IndexOf(' ') + 1);
-
-                    if (cmps[0] == "mtllib")
+                    if (!currentText.StartsWith("f ") && !currentText.StartsWith("v ") && !currentText.StartsWith("vt ")
+                        && !currentText.StartsWith("vn "))
                     {
-                        //load cache
-                        string pth = OBJGetFilePath(data, OBJFileInfo.Directory.FullName + Path.DirectorySeparatorChar, meshName);
-                        if (pth != null)
-                            materialCache = LoadMTLFile(pth,mod);
-
-                    }
-                    else if ((cmps[0] == "g" || cmps[0] == "o") && splitByMaterial == false)
-                    {
-                        cmesh = data;
-                        if (!objectNames.Contains(cmesh))
+                        currentText = reader.ReadLine();
+                        if (currentText != null)
                         {
-                            objectNames.Add(cmesh);
+                            currentText = currentText.Replace("  ", " ");
                         }
-                    }
-                    else if (cmps[0] == "usemtl")
-                    {
-                        cmaterial = data;
-                        if (!materialNames.Contains(cmaterial))
-                        {
-                            materialNames.Add(cmaterial);
-                        }
-
-                        if (splitByMaterial)
-                        {
-                            if (!objectNames.Contains(cmaterial))
-                            {
-                                objectNames.Add(cmaterial);
-                            }
-                        }
-                    }
-                    else if (cmps[0] == "v")
-                    {
-                        //VERTEX
-                        vertices.Add(ParseVectorFromCMPS(cmps));
-                    }
-                    else if (cmps[0] == "vn")
-                    {
-                        //VERTEX NORMAL
-                        normals.Add(ParseVectorFromCMPS(cmps));
-                    }
-                    else if (cmps[0] == "vt")
-                    {
-                        //VERTEX UV
-                        uvs.Add(ParseVectorFromCMPS(cmps));
-                    }
-                    else if (cmps[0] == "f")
-                    {
-                        int[] indexes = new int[cmps.Length - 1];
-                        for (int i = 1; i < cmps.Length; i++)
-                        {
-                            string felement = cmps[i];
-                            int vertexIndex = -1;
-                            int normalIndex = -1;
-                            int uvIndex = -1;
-                            if (felement.Contains("//"))
-                            {
-                                //doubleslash, no UVS.
-                                string[] elementComps = felement.Split('/');
-                                vertexIndex = int.Parse(elementComps[0]) - 1;
-                                normalIndex = int.Parse(elementComps[2]) - 1;
-                            }
-                            else if (felement.Count(x => x == '/') == 2)
-                            {
-                                //contains everything
-                                string[] elementComps = felement.Split('/');
-                                vertexIndex = int.Parse(elementComps[0]) - 1;
-                                uvIndex = int.Parse(elementComps[1]) - 1;
-                                normalIndex = int.Parse(elementComps[2]) - 1;
-                            }
-                            else if (!felement.Contains("/"))
-                            {
-                                //just vertex inedx
-                                vertexIndex = int.Parse(felement) - 1;
-                            }
-                            else
-                            {
-                                //vertex and uv
-                                string[] elementComps = felement.Split('/');
-                                vertexIndex = int.Parse(elementComps[0]) - 1;
-                                uvIndex = int.Parse(elementComps[1]) - 1;
-                            }
-                            string hashEntry = vertexIndex + "|" + normalIndex + "|" + uvIndex;
-                            if (hashtable.ContainsKey(hashEntry))
-                            {
-                                indexes[i - 1] = hashtable[hashEntry];
-                            }
-                            else
-                            {
-                                //create a new hash entry
-                                indexes[i - 1] = hashtable.Count;
-                                hashtable[hashEntry] = hashtable.Count;
-                                uvertices.Add(vertices[vertexIndex]);
-                                if (normalIndex < 0 || (normalIndex > (normals.Count - 1)))
-                                {
-                                    unormals.Add(Vector3.zero);
-                                }
-                                else
-                                {
-                                    hasNormals = true;
-                                    unormals.Add(normals[normalIndex]);
-                                }
-                                if (uvIndex < 0 || (uvIndex > (uvs.Count - 1)))
-                                {
-                                    uuvs.Add(Vector2.zero);
-                                }
-                                else
-                                {
-                                    uuvs.Add(uvs[uvIndex]);
-                                }
-
-                            }
-                        }
-                        if (indexes.Length < 5 && indexes.Length >= 3)
-                        {
-                            OBJFace f1 = new OBJFace();
-                            f1.materialName = cmaterial;
-                            f1.indexes = new int[] { indexes[0], indexes[1], indexes[2] };
-                            f1.meshName = (splitByMaterial) ? cmaterial : cmesh;
-                            faceList.Add(f1);
-                            if (indexes.Length > 3)
-                            {
-
-                                OBJFace f2 = new OBJFace();
-                                f2.materialName = cmaterial;
-                                f2.meshName = (splitByMaterial) ? cmaterial : cmesh;
-                                f2.indexes = new int[] { indexes[2], indexes[3], indexes[0] };
-                                faceList.Add(f2);
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (objectNames.Count == 0)
-                objectNames.Add("default");
-
-            //build objects
-            GameObject parentObject = new GameObject(meshName);
-
-
-            foreach (string obj in objectNames)
-            {
-                GameObject subObject = new GameObject(obj);
-                subObject.transform.parent = parentObject.transform;
-                subObject.transform.localScale = new Vector3(-1, 1, 1);
-                //Create mesh
-                Mesh m = new Mesh();
-                m.name = obj;
-                //LISTS FOR REORDERING
-                List<Vector3> processedVertices = new List<Vector3>();
-                List<Vector3> processedNormals = new List<Vector3>();
-                List<Vector2> processedUVs = new List<Vector2>();
-                List<int[]> processedIndexes = new List<int[]>();
-                Dictionary<int, int> remapTable = new Dictionary<int, int>();
-                //POPULATE MESH
-                List<string> meshMaterialNames = new List<string>();
-
-                OBJFace[] ofaces = faceList.Where(x => x.meshName == obj).ToArray();
-                foreach (string mn in materialNames)
-                {
-                    OBJFace[] faces = ofaces.Where(x => x.materialName == mn).ToArray();
-                    if (faces.Length > 0)
-                    {
-                        int[] indexes = new int[0];
-                        foreach (OBJFace f in faces)
-                        {
-                            int l = indexes.Length;
-                            System.Array.Resize(ref indexes, l + f.indexes.Length);
-                            System.Array.Copy(f.indexes, 0, indexes, l, f.indexes.Length);
-                        }
-                        meshMaterialNames.Add(mn);
-                        if (m.subMeshCount != meshMaterialNames.Count)
-                            m.subMeshCount = meshMaterialNames.Count;
-
-                        for (int i = 0; i < indexes.Length; i++)
-                        {
-                            int idx = indexes[i];
-                            //build remap table
-                            if (remapTable.ContainsKey(idx))
-                            {
-                                //ezpz
-                                indexes[i] = remapTable[idx];
-                            }
-                            else
-                            {
-                                processedVertices.Add(uvertices[idx]);
-                                processedNormals.Add(unormals[idx]);
-                                processedUVs.Add(uuvs[idx]);
-                                remapTable[idx] = processedVertices.Count - 1;
-                                indexes[i] = remapTable[idx];
-                            }
-                        }
-
-                        processedIndexes.Add(indexes);
                     }
                     else
                     {
-
+                        currentText = currentText.Trim();                           //Trim the current line
+                        brokenString = currentText.Split(splitIdentifier, 50);      //Split the line into an array, separating the original line by blank spaces
+                        switch (brokenString[0])
+                        {
+                            case "v":
+                                vertices++;
+                                break;
+                            case "vt":
+                                vt++;
+                                break;
+                            case "vn":
+                                vn++;
+                                break;
+                            case "f":
+                                face = face + brokenString.Length - 1;
+                                triangles = triangles + 3 * (brokenString.Length - 2); /*brokenString.Length is 3 or greater since a face must have at least
+                                                                                     3 vertices.  For each additional vertice, there is an additional
+                                                                                     triangle in the mesh (hence this formula).*/
+                                break;
+                        }
+                        currentText = reader.ReadLine();
+                        if (currentText != null)
+                        {
+                            currentText = currentText.Replace("  ", " ");
+                        }
                     }
                 }
+            }
+            mesh.triangles = new int[triangles];
+            mesh.vertices = new Vector3[vertices];
+            mesh.uv = new Vector2[vt];
+            mesh.normals = new Vector3[vn];
+            mesh.faceData = new Vector3[face];
+            return mesh;
+        }
 
-                //apply stuff
-                m.vertices = processedVertices.ToArray();
-                m.normals = processedNormals.ToArray();
-                m.uv = processedUVs.ToArray();
+        private static void populateMeshStruct(ref meshStruct mesh)
+        {
+            StreamReader stream = File.OpenText(mesh.fileName);
+            string entireText = stream.ReadToEnd();
+            stream.Close();
+            using (StringReader reader = new StringReader(entireText))
+            {
+                string currentText = reader.ReadLine();
 
-                for (int i = 0; i < processedIndexes.Count; i++)
+                char[] splitIdentifier = { ' ' };
+                char[] splitIdentifier2 = { '/' };
+                string[] brokenString;
+                string[] brokenBrokenString;
+                int f = 0;
+                int f2 = 0;
+                int v = 0;
+                int vn = 0;
+                int vt = 0;
+                int vt1 = 0;
+                int vt2 = 0;
+                while (currentText != null)
                 {
-                    m.SetTriangles(processedIndexes[i], i);
-                }
-
-                if (!hasNormals)
-                {
-                    m.RecalculateNormals();
-                }
-                m.RecalculateBounds();
-                m.Optimize();
-
-                MeshFilter mf = subObject.AddComponent<MeshFilter>();
-                MeshRenderer mr = subObject.AddComponent<MeshRenderer>();
-                MeshCollider mc = subObject.AddComponent<MeshCollider>();
-                Material[] processedMaterials = new Material[meshMaterialNames.Count];
-                for (int i = 0; i < meshMaterialNames.Count; i++)
-                {
-
-                    if (materialCache == null)
+                    if (!currentText.StartsWith("f ") && !currentText.StartsWith("v ") && !currentText.StartsWith("vt ") &&
+                        !currentText.StartsWith("vn ") && !currentText.StartsWith("g ") && !currentText.StartsWith("usemtl ") &&
+                        !currentText.StartsWith("mtllib ") && !currentText.StartsWith("vt1 ") && !currentText.StartsWith("vt2 ") &&
+                        !currentText.StartsWith("vc ") && !currentText.StartsWith("usemap "))
                     {
-                        processedMaterials[i] = new Material(Shader.Find("Standard (Specular setup)"));
+                        currentText = reader.ReadLine();
+                        if (currentText != null)
+                        {
+                            currentText = currentText.Replace("  ", " ");
+                        }
                     }
                     else
                     {
-                        Material mfn = Array.Find(materialCache, x => x.name == meshMaterialNames[i]); ;
-                        if (mfn == null)
+                        currentText = currentText.Trim();
+                        brokenString = currentText.Split(splitIdentifier, 50);
+                        switch (brokenString[0])
                         {
-                            processedMaterials[i] = new Material(Shader.Find("Standard (Specular setup)"));
-                        }
-                        else
-                        {
-                            processedMaterials[i] = mfn;
-                        }
+                            case "g":
+                                break;
+                            case "usemtl":
+                                break;
+                            case "usemap":
+                                break;
+                            case "mtllib":
+                                break;
+                            case "v":
+                                mesh.vertices[v] = new Vector3(System.Convert.ToSingle(brokenString[1]), System.Convert.ToSingle(brokenString[2]),
+                                                         System.Convert.ToSingle(brokenString[3]));
+                                v++;
+                                break;
+                            case "vt":
+                                mesh.uv[vt] = new Vector2(System.Convert.ToSingle(brokenString[1]), System.Convert.ToSingle(brokenString[2]));
+                                vt++;
+                                break;
+                            case "vt1":
+                                mesh.uv[vt1] = new Vector2(System.Convert.ToSingle(brokenString[1]), System.Convert.ToSingle(brokenString[2]));
+                                vt1++;
+                                break;
+                            case "vt2":
+                                mesh.uv[vt2] = new Vector2(System.Convert.ToSingle(brokenString[1]), System.Convert.ToSingle(brokenString[2]));
+                                vt2++;
+                                break;
+                            case "vn":
+                                mesh.normals[vn] = new Vector3(System.Convert.ToSingle(brokenString[1]), System.Convert.ToSingle(brokenString[2]),
+                                                        System.Convert.ToSingle(brokenString[3]));
+                                vn++;
+                                break;
+                            case "vc":
+                                break;
+                            case "f":
 
+                                int j = 1;
+                                List<int> intArray = new List<int>();
+                                while (j < brokenString.Length && ("" + brokenString[j]).Length > 0)
+                                {
+                                    Vector3 temp = new Vector3();
+                                    brokenBrokenString = brokenString[j].Split(splitIdentifier2, 3);    //Separate the face into individual components (vert, uv, normal)
+                                    temp.x = System.Convert.ToInt32(brokenBrokenString[0]);
+                                    if (brokenBrokenString.Length > 1)                                  //Some .obj files skip UV and normal
+                                    {
+                                        if (brokenBrokenString[1] != "")                                    //Some .obj files skip the uv and not the normal
+                                        {
+                                            temp.y = System.Convert.ToInt32(brokenBrokenString[1]);
+                                        }
+                                        temp.z = System.Convert.ToInt32(brokenBrokenString[2]);
+                                    }
+                                    j++;
+
+                                    mesh.faceData[f2] = temp;
+                                    intArray.Add(f2);
+                                    f2++;
+                                }
+                                j = 1;
+                                while (j + 2 < brokenString.Length)     //Create triangles out of the face data.  There will generally be more than 1 triangle per face.
+                                {
+                                    mesh.triangles[f] = intArray[0];
+                                    f++;
+                                    mesh.triangles[f] = intArray[j];
+                                    f++;
+                                    mesh.triangles[f] = intArray[j + 1];
+                                    f++;
+
+                                    j++;
+                                }
+                                break;
+                        }
+                        currentText = reader.ReadLine();
+                        if (currentText != null)
+                        {
+                            currentText = currentText.Replace("  ", " ");       //Some .obj files insert double spaces, this removes them.
+                        }
                     }
-                    processedMaterials[i].name = meshMaterialNames[i];
                 }
-
-                mr.materials = processedMaterials;
-                mf.mesh = m;
-                mc.sharedMesh = m;
-
             }
-
-            return parentObject;
         }
     }
+}
+        
 #pragma warning restore CS1591
 
-}
+
