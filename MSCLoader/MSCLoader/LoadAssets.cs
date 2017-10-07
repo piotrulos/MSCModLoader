@@ -63,12 +63,43 @@ namespace MSCLoader
         }
 
         /// <summary>
-        /// Load (*.obj) file from mod assets folder
+        /// Load (*.obj) file from mod assets folder and return as GameObject
         /// </summary>
         /// <param name="mod">Mod instance.</param>
         /// <param name="fileName">File name to load from assets folder (for example "beer.obj")</param>
+        /// <param name="collider">Apply mesh collider to object</param>
+        /// <param name="rigidbody">Apply rigidbody to object to affect gravity (don't do it without collider)</param>
         /// <returns>Returns unity GameObject</returns>
-        public static GameObject LoadOBJ(Mod mod, string fileName)
+        public static GameObject LoadOBJ(Mod mod, string fileName, bool collider = true, bool rigidbody = false)
+        {
+            Mesh mesh = LoadOBJMesh(mod, fileName);
+            if (mesh != null)
+            {
+                GameObject obj = new GameObject();
+                obj.AddComponent<MeshFilter>().mesh = mesh;
+                obj.AddComponent<MeshRenderer>();
+                if (rigidbody)
+                    obj.AddComponent<Rigidbody>();
+                if (collider)
+                {
+                    if (rigidbody)
+                        obj.AddComponent<MeshCollider>().convex = true;
+                    else
+                        obj.AddComponent<MeshCollider>();
+                }                              
+                return obj;
+            }
+            else
+                return null;
+        }
+
+        /// <summary>
+        /// Load (*.obj) file from mod assets folder and return as Mesh
+        /// </summary>
+        /// <param name="mod">Mod instance.</param>
+        /// <param name="fileName">File name to load from assets folder (for example "beer.obj")</param>
+        /// <returns>Returns unity Mesh</returns>
+        public static Mesh LoadOBJMesh(Mod mod, string fileName)
         {
             string fn = Path.Combine(ModLoader.GetModAssetsFolder(mod), fileName);
             if (!File.Exists(fn))
@@ -78,12 +109,15 @@ namespace MSCLoader
             }
             string ext = Path.GetExtension(fn).ToLower();
             if (ext == ".obj")
-                return OBJLoader.LoadOBJFile(mod, fn);
+            {
+                OBJLoader obj = new OBJLoader();
+                Mesh mesh = obj.ImportFile(Path.Combine(ModLoader.GetModAssetsFolder(mod), fileName));
+                return mesh;
+            }
             else
                 ModConsole.Error(string.Format("<b>LoadOBJ() Error:</b>{0}Only (*.obj) files are supported", Environment.NewLine));
             return null;
         }
-
         /// <summary>
         /// A Coroutine for Loading AssetBundles (prefered to call from another Corountine)
         /// </summary>
