@@ -18,7 +18,7 @@ namespace MSCLoader
         IEnumerator LoadUIc()
         {
             AssetBundle ab = new AssetBundle();
-            yield return StartCoroutine(ModLoader.loadAssets.LoadBundle(new ModSettings(), "settingsui.unity3d", value => ab = value));
+            yield return StartCoroutine(ModLoader.loadAssets.LoadBundleAsync(new ModSettings(), "settingsui.unity3d", value => ab = value));
            
             ms.UI = ab.LoadAsset("MSCLoader Settings.prefab") as GameObject;
 
