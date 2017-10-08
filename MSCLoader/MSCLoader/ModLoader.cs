@@ -69,7 +69,7 @@ namespace MSCLoader
         static string ConfigFolder = Path.Combine(ModsFolder, @"Config\");
         static string AssetsFolder = Path.Combine(ModsFolder, @"Assets\");
 
-        static bool experimental = false; //Is this build is experimental
+        static bool experimental = true; //Is this build is experimental
         static bool modStats = false;
         static GameObject mainMenuInfo;
         static Animator menuInfoAnim;
@@ -86,7 +86,11 @@ namespace MSCLoader
         /// </summary>
         /// <returns>Path to your mod config folder</returns>
         /// <param name="mod">Your mod Class.</param>
-        /// <example>Same as GetModAssetsFolder.</example>
+        /// <example>Example Code in Mod subclass.
+        /// <code source="Examples.cs" region="GetModConfigFolder" lang="C#" />
+        /// Example from other than Mod subclass.
+        /// <code source="Examples.cs" region="GetModConfigFolder2" lang="C#" />
+        /// </example>
         public static string GetModConfigFolder(Mod mod)
         {
             return Path.Combine(ConfigFolder, mod.ID);
@@ -243,7 +247,7 @@ namespace MSCLoader
                         modStats = true;
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     ModConsole.Error("Steam not detected, only steam version is supported.");
                 }
@@ -255,7 +259,7 @@ namespace MSCLoader
         IEnumerator LoadSkin()
         {
             AssetBundle ab = new AssetBundle();
-            yield return StartCoroutine(loadAssets.LoadBundle(new ModCore(), "core.unity3d", value => ab = value));
+            yield return StartCoroutine(loadAssets.LoadBundleAsync(new ModCore(), "core.unity3d", value => ab = value));
             guiskin = ab.LoadAsset("MSCLoader.guiskin") as GUISkin;
             mainMenuInfo = ab.LoadAsset("MSCLoader Info.prefab") as GameObject;
             ModConsole.Print("Lodading core assets completed!");

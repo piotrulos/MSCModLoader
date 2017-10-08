@@ -70,6 +70,9 @@ namespace MSCLoader
         /// <param name="collider">Apply mesh collider to object</param>
         /// <param name="rigidbody">Apply rigidbody to object to affect gravity (don't do it without collider)</param>
         /// <returns>Returns unity GameObject</returns>
+        /// <example>Example Code
+        /// <code source="Examples.cs" region="LoadOBJ" lang="C#" />
+        /// </example>
         public static GameObject LoadOBJ(Mod mod, string fileName, bool collider = true, bool rigidbody = false)
         {
             Mesh mesh = LoadOBJMesh(mod, fileName);
@@ -99,6 +102,9 @@ namespace MSCLoader
         /// <param name="mod">Mod instance.</param>
         /// <param name="fileName">File name to load from assets folder (for example "beer.obj")</param>
         /// <returns>Returns unity Mesh</returns>
+        /// <example>Example Code
+        /// <code source="Examples.cs" region="LoadOBJMesh" lang="C#" />
+        /// </example>
         public static Mesh LoadOBJMesh(Mod mod, string fileName)
         {
             string fn = Path.Combine(ModLoader.GetModAssetsFolder(mod), fileName);
@@ -118,8 +124,35 @@ namespace MSCLoader
                 ModConsole.Error(string.Format("<b>LoadOBJ() Error:</b>{0}Only (*.obj) files are supported", Environment.NewLine));
             return null;
         }
+
+
         /// <summary>
-        /// A Coroutine for Loading AssetBundles (prefered to call from another Corountine)
+        /// A function for Loading AssetBundles Synchronously (without coroutines)
+        /// </summary>
+        /// <note>
+        /// Not recomended for big files, may increase loading times.
+        /// </note> 
+        /// <example> Example based on loading settings assets.
+        /// <code source="Examples.cs" region="LoadBundle" lang="C#"/></example>
+        /// <param name="mod">Mod instance.</param>
+        /// <param name="bundleName">File name to load (for example "something.unity3d")</param>
+        public static AssetBundle LoadBundle(Mod mod, string bundleName)
+        {
+            string bundle = Path.Combine(ModLoader.GetModAssetsFolder(mod), bundleName);
+            if(File.Exists(bundle))
+            {
+                return AssetBundle.CreateFromMemoryImmediate(File.ReadAllBytes(bundle));
+            }
+            else
+            {
+                ModConsole.Error(string.Format("<b>LoadBundle() Error:</b>{1}File not found: {0}", bundleName, Environment.NewLine));
+                return null;
+            }
+        }
+
+
+        /// <summary>
+        /// A Coroutine for Loading AssetBundles asynchronously (prefered to call from another Corountine)
         /// </summary>
         /// <example>
         /// You need to enter file name from your mod's asset folder.
@@ -127,12 +160,12 @@ namespace MSCLoader
         /// Only coroutine waits for other coroutine to finish. Starting this coroutine from function will always return null.
         /// </note>
         /// Example based on loading settings assets.
-        /// <code source="Examples.cs" region="LoadBundle" lang="C#"/></example>
+        /// <code source="Examples.cs" region="LoadBundleAsync" lang="C#"/></example>
         /// <param name="mod">Mod instance.</param>
         /// <param name="bundleName">File name to load (for example "something.unity3d")</param>
         /// <param name="ab">Returned AssetBundle</param>
         /// <returns>Returns AssetBundle to your coroutine</returns>
-        public IEnumerator LoadBundle(Mod mod, string bundleName, Action<AssetBundle> ab)
+        public IEnumerator LoadBundleAsync(Mod mod, string bundleName, Action<AssetBundle> ab)
         {
             using (WWW www = new WWW("file:///" + Path.Combine(ModLoader.GetModAssetsFolder(mod), bundleName)))
             {
