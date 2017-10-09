@@ -262,7 +262,7 @@ namespace MSCLoader
             yield return StartCoroutine(loadAssets.LoadBundleAsync(new ModCore(), "core.unity3d", value => ab = value));
             guiskin = ab.LoadAsset("MSCLoader.guiskin") as GUISkin;
             mainMenuInfo = ab.LoadAsset("MSCLoader Info.prefab") as GameObject;
-            ModConsole.Print("Lodading core assets completed!");
+            ModConsole.Print("Loading core assets completed!");
             MainMenuInfo(); //show info in main menu.
             ab.Unload(false); //freeup memory
         }
@@ -296,19 +296,19 @@ namespace MSCLoader
                         throw new Exception("Parse Error, please report that problem!");
                     int i = Version.CompareTo(version.Trim());
                     if (i != 0)
-                        info.text = string.Format("Mod Loader MCSLoader v{0} is ready! (<color=orange>New version available: <b>v{1}</b></color>)", Version, version.Trim());
+                        info.text = string.Format("Mod Loader MSCLoader v{0} is ready! (<color=orange>New version available: <b>v{1}</b></color>)", Version, version.Trim());
                     else if (i == 0)
-                        info.text = string.Format("Mod Loader MCSLoader v{0} is ready! (<color=lime>Up to date</color>)", Version);
+                        info.text = string.Format("Mod Loader MSCLoader v{0} is ready! (<color=lime>Up to date</color>)", Version);
                 }
                 catch (Exception e)
                 {
                     ModConsole.Error(string.Format("Check for new version failed with error: {0}", e.Message));
-                    info.text = string.Format("Mod Loader MCSLoader v{0} is ready!", Version);
+                    info.text = string.Format("Mod Loader MSCLoader v{0} is ready!", Version);
                 }
             }
             else
             {
-                info.text = string.Format("Mod Loader MCSLoader v{0} is ready! (<color=magenta>Experimental</color>)", Version);
+                info.text = string.Format("Mod Loader MSCLoader v{0} is ready! (<color=magenta>Experimental</color>)", Version);
             }
             mf.text = string.Format("Mods folder: {0}", ModsFolder);
             if (isModUpdates)
