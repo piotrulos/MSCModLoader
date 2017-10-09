@@ -118,6 +118,7 @@ namespace MSCLoader
             {
                 OBJLoader obj = new OBJLoader();
                 Mesh mesh = obj.ImportFile(Path.Combine(ModLoader.GetModAssetsFolder(mod), fileName));
+                mesh.name = Path.GetFileNameWithoutExtension(fn);
                 return mesh;
             }
             else
@@ -136,6 +137,7 @@ namespace MSCLoader
         /// <code source="Examples.cs" region="LoadBundle" lang="C#"/></example>
         /// <param name="mod">Mod instance.</param>
         /// <param name="bundleName">File name to load (for example "something.unity3d")</param>
+        /// <returns>Returns unity AssetBundle</returns>
         public static AssetBundle LoadBundle(Mod mod, string bundleName)
         {
             string bundle = Path.Combine(ModLoader.GetModAssetsFolder(mod), bundleName);
