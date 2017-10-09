@@ -23,7 +23,7 @@ namespace MSCLoader
 
         public static ConsoleView console;
         private Keybind consoleKey = new Keybind("Open", "Open console", KeyCode.BackQuote);
-        private Keybind consoleSizeKey = new Keybind("Console_size", "Make console bigger/smaller", KeyCode.BackQuote, KeyCode.LeftControl);
+        //private Keybind consoleSizeKey = new Keybind("Console_size", "Make console bigger/smaller", KeyCode.BackQuote, KeyCode.LeftControl);
         GameObject UI;
         //GameObject consoleObj, logView, scrollbar;
         public void CreateConsoleUI()
@@ -51,7 +51,6 @@ namespace MSCLoader
             entry.eventID = EventTriggerType.PointerExit;
             entry.callback.AddListener((eventData) => { UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().OnMouseExit(); });
             trigger.delegates.Add(entry);
-
             UI.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
         }
         /* int conSizeStep = 0;
@@ -83,25 +82,26 @@ namespace MSCLoader
 
         public override void Update()
         {
-            if (consoleKey.IsDown() && !consoleSizeKey.IsDown())
+            if (consoleKey.IsDown()/* && !consoleSizeKey.IsDown()*/)
             {
                 console.toggleVisibility();
             }
 
-            if (consoleSizeKey.IsDown())
+            /*if (consoleSizeKey.IsDown())
             {
-               // ChangeConsoleSize();
-            }
+                ChangeConsoleSize();
+            }*/
         }
 
         public override void OnLoad()
         {
             Keybind.Add(this, consoleKey);
-            Keybind.Add(this, consoleSizeKey);
+            //Keybind.Add(this, consoleSizeKey);
             CreateConsoleUI();
             console.console = new ConsoleController();
             ConsoleCommand.cc = console.console;
             console.setVisibility(false);
+            UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().LoadConsoleSize();
             ConsoleCommand.Add(new CommandClear());
             ConsoleCommand.Add(new CommandHelp());
             ConsoleCommand.Add(new CommandLogAll());
