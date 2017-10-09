@@ -31,6 +31,10 @@ namespace MSCLoader
 
         public void toggleVisibility()
         {
+            if(viewContainer.activeSelf)
+            {
+                viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().SaveConsoleSize();
+            }
             setVisibility(!viewContainer.activeSelf);
         }
 

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Globalization;
+using System.IO;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -29,12 +31,6 @@ namespace MSCLoader
         {
             if (m_transform.anchoredPosition.y < -60)
             {
-                /*m_transform.anchoredPosition = new Vector2(0f, -60f);
-                m_transform.position = m_transform.position;
-                m_logview.position = m_logview.position;
-                m_scrollbar.position = m_scrollbar.position;
-                m_logview.sizeDelta = m_logview.sizeDelta;
-                m_scrollbar.sizeDelta = m_scrollbar.sizeDelta;*/
                 if (eventData.delta.y > 0)
                 {
                     m_transform.position += new Vector3(0f, eventData.delta.y);
@@ -53,8 +49,6 @@ namespace MSCLoader
                 m_logview.sizeDelta = new Vector2(333f, 120 + m_logview.anchoredPosition.y);
                 m_scrollbar.sizeDelta = new Vector2(13f, 120 + m_scrollbar.anchoredPosition.y);
             }
-            //Debug.Log(m_logview.anchoredPosition.y);
-            //m_logview.sizeDelta.Set(0, m_logview.sizeDelta.y + eventData.delta.y);
         }
         public void OnMouseEnter()
         {
@@ -64,6 +58,29 @@ namespace MSCLoader
         public void OnMouseExit()
         {
             Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+        }
+        public void LoadConsoleSize()
+        {
+            string path = ModLoader.GetModConfigFolder(new ModConsole());
+            if (File.Exists(Path.Combine(path, "console.data")))
+            {
+                m_transform = GetComponent<RectTransform>();
+                m_logview = logview.GetComponent<RectTransform>();
+                m_scrollbar = scrollbar.GetComponent<RectTransform>();
+                string data = File.ReadAllText(Path.Combine(path, "console.data"));
+                string[] values = data.Trim().Split(',');
+                m_transform.anchoredPosition = new Vector3(0f, float.Parse(values[0], CultureInfo.InvariantCulture));
+                m_logview.anchoredPosition = new Vector3(0f, float.Parse(values[1], CultureInfo.InvariantCulture));
+                m_scrollbar.anchoredPosition = new Vector3(0f, float.Parse(values[2], CultureInfo.InvariantCulture));
+                m_logview.sizeDelta = new Vector2(333f, float.Parse(values[3], CultureInfo.InvariantCulture));
+                m_scrollbar.sizeDelta = new Vector2(13f, float.Parse(values[4], CultureInfo.InvariantCulture));
+            }
+        }
+        public void SaveConsoleSize()
+        {
+            string path = ModLoader.GetModConfigFolder(new ModConsole());
+            string data = string.Format("{0},{1},{2},{3},{4}", m_transform.anchoredPosition.y, m_logview.anchoredPosition.y, m_scrollbar.anchoredPosition.y, m_logview.sizeDelta.y, m_scrollbar.sizeDelta.y);
+            File.WriteAllText(Path.Combine(path, "console.data"), data);
         }
 #pragma warning restore CS1591
     }
