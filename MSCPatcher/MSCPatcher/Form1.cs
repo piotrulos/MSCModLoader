@@ -310,6 +310,19 @@ namespace MSCPatcher
                         File.Delete(Path.Combine(modPath, @"Assets\MSCLoader_Settings\settingsui.unity3d"));
                     File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Settings", "settingsui.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Settings\settingsui.unity3d"));
                 }
+
+                Log("Copying Core Assets.....MSCLoader_Console");
+                if (!Directory.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Console")))
+                {
+                    Directory.CreateDirectory(Path.Combine(modPath, @"Assets\MSCLoader_Console"));
+                    File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Console", "console.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Console\console.unity3d"));
+                }
+                else
+                {
+                    if (File.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Console\console.unity3d")))
+                        File.Delete(Path.Combine(modPath, @"Assets\MSCLoader_Console\console.unity3d"));
+                    File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Console", "console.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Console\console.unity3d"));
+                }
                 Log("Copying Core Assets Completed!");
                 Log("=================");
                 Log("MSCLoader.dll update successful!");
@@ -392,6 +405,19 @@ namespace MSCPatcher
                 if (File.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Settings\settingsui.unity3d")))
                     File.Delete(Path.Combine(modPath, @"Assets\MSCLoader_Settings\settingsui.unity3d"));
                 File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Settings", "settingsui.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Settings\settingsui.unity3d"));
+            }
+
+            Log("Copying Core Assets.....MSCLoader_Console");
+            if (!Directory.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Console")))
+            {
+                Directory.CreateDirectory(Path.Combine(modPath, @"Assets\MSCLoader_Console"));
+                File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Console", "console.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Console\console.unity3d"));
+            }
+            else
+            {
+                if (File.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Console\console.unity3d")))
+                    File.Delete(Path.Combine(modPath, @"Assets\MSCLoader_Console\console.unity3d"));
+                File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Console", "console.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Console\console.unity3d"));
             }
             Log("Copying Core Assets Completed!");
             Log("=================");
