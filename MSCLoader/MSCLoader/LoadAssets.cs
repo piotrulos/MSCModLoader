@@ -141,6 +141,7 @@ namespace MSCLoader
             string bundle = Path.Combine(ModLoader.GetModAssetsFolder(mod), bundleName);
             if(File.Exists(bundle))
             {
+                ModConsole.Print(string.Format("Loading Asset: {0}...", bundleName));
                 return AssetBundle.CreateFromMemoryImmediate(File.ReadAllBytes(bundle));
             }
             else
