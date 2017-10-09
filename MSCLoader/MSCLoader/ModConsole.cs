@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using MSCLoader.Commands;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 namespace MSCLoader
 {
@@ -15,111 +16,71 @@ namespace MSCLoader
         public override string Name => "Console";
         public override string Version => ModLoader.Version;
         public override string Author => "piotrulos";
-        //public override bool UseAssetsFolder => true;
+
+        public override bool UseAssetsFolder => true;
 
         public static bool IsOpen { get; private set; }
 
         public static ConsoleView console;
         private Keybind consoleKey = new Keybind("Open", "Open console", KeyCode.BackQuote);
         private Keybind consoleSizeKey = new Keybind("Console_size", "Make console bigger/smaller", KeyCode.BackQuote, KeyCode.LeftControl);
-
-        GameObject consoleObj, logView, scrollbar;
+        GameObject UI;
+        //GameObject consoleObj, logView, scrollbar;
         public void CreateConsoleUI()
         {
-            //Create parent gameobject for console.
-            consoleObj = ModUI.CreateParent("MSCLoader Console", false);
-            consoleObj.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
-            consoleObj.GetComponent<RectTransform>().anchorMax = new Vector2(0, 0);
-            consoleObj.GetComponent<RectTransform>().pivot = new Vector2(0, 0);
-            consoleObj.GetComponent<RectTransform>().sizeDelta = new Vector2(346, 150);
-            console = consoleObj.AddComponent<ConsoleView>();
+            AssetBundle ab = LoadAssets.LoadBundle(this, "console.unity3d");
+            UI = ab.LoadAsset("MSCLoader Console.prefab") as GameObject;
+            Texture2D cursor = ab.LoadAsset("resizeCur.png") as Texture2D;
+            ab.Unload(false);
+            UI = Object.Instantiate(UI);
+            console = UI.AddComponent<ConsoleView>();
+            UI.GetComponent<ConsoleView>().viewContainer = UI.transform.GetChild(0).gameObject;
+            UI.GetComponent<ConsoleView>().inputField = UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(0).gameObject.GetComponent<InputField>();
+            UI.GetComponent<ConsoleView>().inputField.onEndEdit.AddListener(delegate { UI.GetComponent<ConsoleView>().runCommand(); });
+            UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(1).gameObject.GetComponent<Button>().onClick.AddListener(() => UI.GetComponent<ConsoleView>().runCommand());
+            UI.GetComponent<ConsoleView>().logTextArea = UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(2).GetChild(0).gameObject.GetComponent<Text>();
+            UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(4).gameObject.AddComponent<ConsoleUIResizer>().logview = UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(2).gameObject;
+            UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().scrollbar = UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(3).gameObject;
+            UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().cursor = cursor;
+            EventTrigger trigger = UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(4).gameObject.GetComponent<EventTrigger>();
+            EventTrigger.Entry entry = new EventTrigger.Entry();
+            entry.eventID = EventTriggerType.PointerEnter;
+            entry.callback.AddListener((eventData) => { UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().OnMouseEnter(); });
+            trigger.delegates.Add(entry);
+            entry = new EventTrigger.Entry();
+            entry.eventID = EventTriggerType.PointerExit;
+            entry.callback.AddListener((eventData) => { UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().OnMouseExit(); });
+            trigger.delegates.Add(entry);
 
-            //Create console container
-            GameObject consoleObjc = ModUI.CreateUIBase("MSCLoader ConsoleContainer", consoleObj);
-            consoleObjc.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
-            consoleObjc.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
-            consoleObjc.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
-            consoleObjc.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 0);
-
-            consoleObj.GetComponent<ConsoleView>().viewContainer = consoleObjc; //set viewContainer in ConsoleView.cs
-            //console = consoleObj.GetComponent<ConsoleView>();
-
-            //Create input field
-            GameObject consoleInput = ModUI.CreateInputField("InputField", "Enter command...", consoleObjc, 322, 30);
-            consoleInput.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
-            consoleInput.GetComponent<RectTransform>().anchorMax = new Vector2(0, 0);
-            consoleInput.GetComponent<RectTransform>().pivot = new Vector2(0, 0);
-            consoleInput.GetComponent<InputField>().onEndEdit.AddListener(delegate { consoleObj.GetComponent<ConsoleView>().runCommand(); });
-
-            consoleObj.GetComponent<ConsoleView>().inputField = consoleInput.GetComponent<InputField>();
-          
-            //Submit button
-            GameObject enterBtn = ModUI.CreateButton("SubmitBtn",">",consoleObjc,24,30);
-            enterBtn.GetComponent<RectTransform>().anchorMin = new Vector2(1, 0);
-            enterBtn.GetComponent<RectTransform>().anchorMax = new Vector2(1, 0);
-            enterBtn.GetComponent<RectTransform>().pivot = new Vector2(1, 0);
-            enterBtn.GetComponent<Button>().onClick.AddListener(() => consoleObj.GetComponent<ConsoleView>().runCommand());
-
-            //Log view text
-            logView = ModUI.CreateUIBase("LogView",consoleObjc);
-            logView.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
-            logView.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1);
-            logView.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
-            logView.GetComponent<RectTransform>().sizeDelta = new Vector2(333, 120);
-            logView.AddComponent<Image>().color = Color.black;
-            logView.AddComponent<Mask>().showMaskGraphic = true;
-
-            GameObject logViewTxt = ModUI.CreateTextBlock("LogText",">", logView, TextAnchor.LowerLeft, Color.white,false);
-            logViewTxt.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
-            logViewTxt.GetComponent<RectTransform>().anchorMax = new Vector2(1, 0);
-            logViewTxt.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0);
-            logViewTxt.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 1425);
-            logViewTxt.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-
-            consoleObj.GetComponent<ConsoleView>().logTextArea = logViewTxt.GetComponent<Text>();
-            logView.AddComponent<ScrollRect>().content = logViewTxt.GetComponent<RectTransform>();
-            logView.GetComponent<ScrollRect>().horizontal = false;
-            logView.GetComponent<ScrollRect>().inertia = false;
-            logView.GetComponent<ScrollRect>().movementType = ScrollRect.MovementType.Clamped;
-            logView.GetComponent<ScrollRect>().scrollSensitivity = 30f;
-
-            //Scrollbar
-            scrollbar = ModUI.CreateScrollbar(consoleObjc,13,120,Scrollbar.Direction.BottomToTop);
-            scrollbar.GetComponent<RectTransform>().anchorMin = new Vector2(1, 1);
-            scrollbar.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
-            scrollbar.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
-            scrollbar.GetComponent<RectTransform>().anchoredPosition = new Vector2(-13, 0);
-
-            logView.GetComponent<ScrollRect>().verticalScrollbar = scrollbar.GetComponent<Scrollbar>();
-
+            UI.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
         }
-        int conSizeStep = 0;
-        public void ChangeConsoleSize() //change to dynamic scale later
-        {
-            conSizeStep++;
-            switch(conSizeStep)
-            {
-                case 1:
-                    consoleObj.GetComponent<RectTransform>().sizeDelta = new Vector2(346, 400);
-                    logView.GetComponent<RectTransform>().sizeDelta = new Vector2(333, 370);
-                    scrollbar.GetComponent<RectTransform>().sizeDelta = new Vector2(13, 370);
-                    break;
-                case 2:
-                    consoleObj.GetComponent<RectTransform>().sizeDelta = new Vector2(346, 500);
-                    logView.GetComponent<RectTransform>().sizeDelta = new Vector2(333, 470);
-                    scrollbar.GetComponent<RectTransform>().sizeDelta = new Vector2(13, 470);
-                    break;
-                default:
-                    consoleObj.GetComponent<RectTransform>().sizeDelta = new Vector2(346, 150);
-                    logView.GetComponent<RectTransform>().sizeDelta = new Vector2(333, 120);
-                    scrollbar.GetComponent<RectTransform>().sizeDelta = new Vector2(13, 120);
-                    conSizeStep = 0;
-                    break;
+        /* int conSizeStep = 0;
+         public void ChangeConsoleSize() //change to dynamic scale later
+         {
+             conSizeStep++;
+             switch(conSizeStep)
+             {
+                 case 1:
+                     consoleObj.GetComponent<RectTransform>().sizeDelta = new Vector2(346, 400);
+                     logView.GetComponent<RectTransform>().sizeDelta = new Vector2(333, 370);
+                     scrollbar.GetComponent<RectTransform>().sizeDelta = new Vector2(13, 370);
+                     break;
+                 case 2:
+                     consoleObj.GetComponent<RectTransform>().sizeDelta = new Vector2(346, 500);
+                     logView.GetComponent<RectTransform>().sizeDelta = new Vector2(333, 470);
+                     scrollbar.GetComponent<RectTransform>().sizeDelta = new Vector2(13, 470);
+                     break;
+                 default:
+                     consoleObj.GetComponent<RectTransform>().sizeDelta = new Vector2(346, 150);
+                     logView.GetComponent<RectTransform>().sizeDelta = new Vector2(333, 120);
+                     scrollbar.GetComponent<RectTransform>().sizeDelta = new Vector2(13, 120);
+                     conSizeStep = 0;
+                     break;
 
-            }
+             }
 
-        }
-        
+         }*/
+
         public override void Update()
         {
             if (consoleKey.IsDown() && !consoleSizeKey.IsDown())
@@ -129,7 +90,7 @@ namespace MSCLoader
 
             if (consoleSizeKey.IsDown())
             {
-                ChangeConsoleSize();
+               // ChangeConsoleSize();
             }
         }
 
