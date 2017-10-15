@@ -69,7 +69,7 @@ namespace MSCLoader
         static string ConfigFolder = Path.Combine(ModsFolder, @"Config\");
         static string AssetsFolder = Path.Combine(ModsFolder, @"Assets\");
 
-        static bool experimental = false; //Is this build is experimental
+        static bool experimental = true; //Is this build is experimental
         static bool modStats = false;
         static GameObject mainMenuInfo;
         static Animator menuInfoAnim;
@@ -510,7 +510,7 @@ namespace MSCLoader
                 {
                     if (mod.LoadInMenu)
                         mod.OnGUI();
-                    else if (Application.loadedLevelName == "GAME")
+                    else if (Application.loadedLevelName == "GAME" && !mod.isDisabled)
                         mod.OnGUI();
                 }
                 catch (Exception e)
@@ -558,7 +558,7 @@ namespace MSCLoader
                 {
                     if(mod.LoadInMenu)
                         mod.Update();
-                    else if(Application.loadedLevelName == "GAME")
+                    else if(Application.loadedLevelName == "GAME" && !mod.isDisabled)
                         mod.Update();
                 }
                 catch (Exception e)
