@@ -198,15 +198,33 @@ namespace MSCLoader
                 DisableMod.interactable = false;
             DisableMod.isOn = selected.isDisabled;
             RemoveChildren(keybindsList.transform);
+            bool hasKeybinds = false;
             foreach (Keybind key in Keybind.Keybinds)
             {
                 if (key.Mod == selected)
                 {
-                    KeyBindsList(key.Name, key.Modifier, key.Key, key.ID);
+                    hasKeybinds = true;
+                    KeyBindsList(key.Name, key.Modifier, key.Key, key.ID);                  
+                }
+            }
+            if(!hasKeybinds)
+            {
+                //no keybinds
+                if (Application.loadedLevelName == "MainMenu" && !selected.LoadInMenu)
+                {
+                    GameObject modViewLabel = Instantiate(ModViewLabel);
+                    modViewLabel.GetComponent<Text>().text = "This mod is not loaded or disabled.";
+                    modViewLabel.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
+                    modViewLabel.GetComponent<Text>().fontStyle = FontStyle.Italic; 
+                    modViewLabel.transform.SetParent(keybindsList.transform, false);
                 }
                 else
                 {
-                    //no keybinds
+                    GameObject modViewLabel = Instantiate(ModViewLabel);
+                    modViewLabel.GetComponent<Text>().text = "This mod has no defined keybinds.";
+                    modViewLabel.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
+                    modViewLabel.GetComponent<Text>().fontStyle = FontStyle.Italic;
+                    modViewLabel.transform.SetParent(keybindsList.transform, false);
                 }
             }
             anim.SetBool("goSetting", true);
