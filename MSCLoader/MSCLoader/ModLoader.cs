@@ -36,7 +36,7 @@ namespace MSCLoader
         /// </summary>
         public static List<Mod> LoadedMods;
         static string mods;
-      
+        static string mods_ver;
         /// <summary>
         /// A list of invalid mod files (like random dll in Mods Folder that isn't a mod).
         /// </summary>
@@ -59,7 +59,7 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string Version = "0.3.2";
+        public static readonly string Version = "0.3.3";
 
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace MSCLoader
         static string ConfigFolder = Path.Combine(ModsFolder, @"Config\");
         static string AssetsFolder = Path.Combine(ModsFolder, @"Assets\");
 
-        static bool experimental = true; //Is this build is experimental
+        static bool experimental = false; //Is this build is experimental
         static bool modStats = false;
         static GameObject mainMenuInfo;
         static Animator menuInfoAnim;
@@ -365,13 +365,16 @@ namespace MSCLoader
             {
                 numOfUpdates = 0;
                 mods = string.Join(",", LoadedMods.Select(s => s.ID).Where(x => !x.StartsWith("MSCLoader_")).ToArray());
+                mods_ver = string.Join(",", LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")).Select(s => s.Version).ToArray());
                 try
                 {
                     WebClient webClient = new WebClient();
                     webClient.QueryString.Add("sid", steamID);
                     webClient.QueryString.Add("mods", mods);
                     webClient.QueryString.Add("ver", Version);
+                    webClient.QueryString.Add("mods_ver", mods_ver);
                     string result = webClient.DownloadString("http://my-summer-car.ml/mody.php");
+                    //string result = webClient.DownloadString("http://localhost/msc/mody.php");
                     if (result != string.Empty)
                     {
                         if (result == "error")
