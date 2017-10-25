@@ -115,7 +115,7 @@ namespace MSCLoader
 				return Input.GetKey(Modifier) && Input.GetKey(Key);
 			}
 
-			return Input.GetKeyDown(Key);
+			return Input.GetKey(Key);
 		}
 
 		/// <summary>
