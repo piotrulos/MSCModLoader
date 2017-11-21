@@ -59,7 +59,7 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string Version = "0.3.3";
+        public static readonly string Version = "0.3.4";
 
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace MSCLoader
         static string ConfigFolder = Path.Combine(ModsFolder, @"Config\");
         static string AssetsFolder = Path.Combine(ModsFolder, @"Assets\");
 
-        static bool experimental = true; //Is this build is experimental
+        static bool experimental = false; //Is this build is experimental
         static bool modStats = false;
         static GameObject mainMenuInfo;
         static Animator menuInfoAnim;

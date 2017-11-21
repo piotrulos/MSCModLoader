@@ -285,6 +285,11 @@ namespace MSCPatcher
                     File.Copy(Path.GetFullPath(Path.Combine("System.Xml.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll"));
                     Log("Copying new file.....System.Xml.dll");
                 }
+                if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\uAudio.dll")))
+                {
+                    File.Copy(Path.GetFullPath(Path.Combine("uAudio.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\uAudio.dll"));
+                    Log("Copying new file.....uAudio.dll");
+                }
                 Log("Copying Core Assets.....MSCLoader_Core");
                 if (!Directory.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Core")))
                 {
@@ -350,6 +355,11 @@ namespace MSCPatcher
             {
                 File.Copy(Path.GetFullPath(Path.Combine("System.Xml.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll"));
                 Log("Copying new file.....System.Xml.dll");
+            }
+            if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\uAudio.dll")))
+            {
+                File.Copy(Path.GetFullPath(Path.Combine("uAudio.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\uAudio.dll"));
+                Log("Copying new file.....uAudio.dll");
             }
             if (File.Exists(Path.GetFullPath(Path.Combine("MSCLoader.dll", ""))))
             {
@@ -772,6 +782,16 @@ namespace MSCPatcher
                         {
                             File.Delete(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll"));
                             Log("Removing.....MSCLoader.dll");
+                        }
+                        if (File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\uAudio.dll")))
+                        {
+                            File.Delete(Path.Combine(mscPath, @"mysummercar_Data\Managed\uAudio.dll"));
+                            Log("Removing.....uAudio.dll");
+                        }
+                        if (File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll")))
+                        {
+                            File.Delete(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll"));
+                            Log("Removing.....System.Xml.dll");
                         }
                         Log("=================");
                         Log("MSCLoader removed successfully!");
