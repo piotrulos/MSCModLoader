@@ -37,6 +37,7 @@ namespace MSCLoader
                 Keybind.Keybinds = new List<Keybind>();
                 Keybind.DefaultKeybinds = new List<Keybind>();
                 Application.LoadLevel(Application.loadedLevelName);
+                PlayMakerGlobals.Instance.Variables.FindFsmBool("SongImported").Value = false; //stupid variable name.
                 doReset = false;
             }
         }
