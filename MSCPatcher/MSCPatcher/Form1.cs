@@ -20,7 +20,8 @@ namespace MSCPatcher
     public partial class Form1 : Form
     {
         private static string mscPath = "(unknown)";
-        private string AssemblyPath = @"mysummercar_Data\Managed\Assembly-CSharp.dll";
+        private static char pathSeparator = System.IO.Path.DirectorySeparatorChar;
+        private string AssemblyPath = @(string.format("mysummercar_Data{0}Managed{0}Assembly-CSharp.dll", pathSeparator));
         private string AssemblyFullPath = null;
         private string ModificationsXmlPath = "MSCPatcher.Modifications_MD.xml";
 
