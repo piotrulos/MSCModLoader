@@ -25,36 +25,36 @@ namespace MSCPatcher
         private string AssemblyFullPath = null;
         private string ModificationsXmlPath = "MSCPatcher.Modifications_MD.xml";
 
-        private string mdPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"MySummerCar\Mods");
+        string managedFolder = string.format("mysummercar_Data{0}Managed", pathSeparator);
+        string[] oldfiles = new string[] {
+            "Assembly-CSharp.original.dll",
+            "Mono.Cecil.dll",
+            "Mono.Cecil.Rocks.dll",
+            "MSCLoader.dll",
+            "MSCPatcher.exe",
+            "System.Xml.dll"
+        };
 
-        private string adPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"..\LocalLow\Amistech\My Summer Car\Mods"));
+        private string mdPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @(string.format("MySummerCar{0}Mods", pathSeparator));
+
+        private string adPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @(string.format("..{0}LocalLow{0}Amistech{0}My Summer Car{0}Mods"))));
 
         private string gfPath = "?";
 
         private string modPath = "";
         private static Dictionary<string, AssemblyDefinition> mLoadedAssemblies = new Dictionary<string, AssemblyDefinition>();
 
-        private bool isgameUpdated = false; //game updated, remove backup and patch new Assembly-CSharp.dll
-        private bool oldPatchFound = false; //0.1 patch found, recover and patch Assembly-CSharp.original.dll and cleanup unused files
-        private bool oldFilesFound = false; //0.1 files found, but no patch, cleanup files and patch new Assembly-CSharp.dll
+        private bool isgameUpdated   = false; //game updated, remove backup and patch new Assembly-CSharp.dll
+        private bool oldPatchFound   = false; //0.1 patch found, recover and patch Assembly-CSharp.original.dll and cleanup unused files
+        private bool oldFilesFound   = false; //0.1 files found, but no patch, cleanup files and patch new Assembly-CSharp.dll
         private bool mscloaderUpdate = false; //new MSCLoader.dll found, but no new patch needed.
         FileVersionInfo mscLoaderVersion;
         private XElement mModifications;
         public Form1()
         {
             InitializeComponent();
-            if (File.Exists("Assembly-CSharp.dll") || File.Exists("UnityEngine.dll")) //check if idiot unpacked this to managed folder.
-            {
-                if (MessageBox.Show("Did you read the instructions? (Readme.txt)", "Question for you!", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                {
-                    MessageBox.Show(string.Format("Why are you lying?{0}Or maybe you can't read?{0}If you could read, you would know what you did wrong.",Environment.NewLine),"You are a liar", MessageBoxButtons.OK,MessageBoxIcon.Error);
-                }
-                else
-                {
-                    MessageBox.Show(string.Format("Yes I see.{0}Go back to readme and you will know what you did wrong.", Environment.NewLine), "You are a liar", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-                Environment.Exit(0);
-            }
+            //check if idiot unpacked this to managed folder.
+            if (File.Exists("Assembly-CSharp.dll") || File.Exists("UnityEngine.dll")) QuestionUsersDiscipline();
             if (File.Exists("MSCFolder.txt"))
             {
                 mscPath = File.ReadAllText("MSCFolder.txt");
@@ -96,8 +96,9 @@ namespace MSCPatcher
                 int i = currentVersion.CompareTo(version.Trim());
                 if (i != 0)
                 {
-                    Log(string.Format("{2}MCSLoader v{0}, New version available: v{1}", currentVersion, version.Trim(), Environment.NewLine));
-                    if(MessageBox.Show(string.Format("New version is available: v{0}, wanna check it out?", version.Trim()), "MCSLoader v"+ currentVersion,MessageBoxButtons.YesNo,MessageBoxIcon.Information) == DialogResult.Yes)
+                    Log("");
+                    Log(string.Format("MCSLoader v{0}, New version available: v{1}", currentVersion, version.Trim()));
+                    if(MessageBox.Show(string.Format("New version is available: v{0}, wanna check it out?", version.Trim()), "MCSLoader v" + currentVersion,MessageBoxButtons.YesNo,MessageBoxIcon.Information) == DialogResult.Yes)
                     {
                         try
                         {
@@ -112,7 +113,8 @@ namespace MSCPatcher
                     }
                 }
                 else if (i == 0)
-                    Log(string.Format("{1}MCSLoader v{0} is up to date, no new version found.", currentVersion,Environment.NewLine));
+                    Log("");
+                    Log(string.Format("{1}MCSLoader v{0} is up to date, no new version found.", currentVersion));
             }
             catch (Exception e)
             {
@@ -145,124 +147,46 @@ namespace MSCPatcher
             logBox.AppendText(string.Format("{0}{1}", log, Environment.NewLine));
         }
         public void PatchCheck()
-        {
-            if (oldFilesFound)
-            {
-                Log("");
-                Log("Cleaning old files!");
-                Log("=================");
-                //Remove old 0.1 unused files and patch game
-                if (File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\Assembly-CSharp.original.dll")))
-                {
-                    File.Delete(Path.Combine(mscPath, @"mysummercar_Data\Managed\Assembly-CSharp.original.dll"));
-                    Log("Removing.....Assembly-CSharp.original.dll");
-                }
-                if (File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\Mono.Cecil.dll")))
-                {
-                    File.Delete(Path.Combine(mscPath, @"mysummercar_Data\Managed\Mono.Cecil.dll"));
-                    Log("Removing.....Mono.Cecil.dll");
-                }
-                if (File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\Mono.Cecil.Rocks.dll")))
-                {
-                    File.Delete(Path.Combine(mscPath, @"mysummercar_Data\Managed\Mono.Cecil.Rocks.dll"));
-                    Log("Removing.....Mono.Cecil.Rocks.dll");
-                }
-                if (File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll")))
-                {
-                    File.Delete(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll"));
-                    Log("Removing.....MSCLoader.dll");
-                }
-                if (File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCPatcher.exe")))
-                {
-                    File.Delete(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCPatcher.exe"));
-                    Log("Removing.....MSCPatcher.exe");
-                }
-                if (File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll")))
-                {
-                    File.Delete(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll"));
-                    Log("Removing.....System.Xml.dll");
-                }
-                Log("");
-                Log("Start patching files!");
-                Log("=================");
-                PatchThis();
-            }
+        { //dolan, pls, return a number
+            if(oldFilesFound) RemoveOldFiles();
             else if (isgameUpdated)
             {
                 //Remove old backup and patch new game file.
                 Log("");
                 Log("Removing old backup!");
                 Log("=================");
-                if (File.Exists(String.Format("{0}.backup", AssemblyFullPath)))
+                if (File.Exists(string.Format("{0}.backup", AssemblyFullPath)))
                 {
-                    File.Delete(String.Format("{0}.backup", AssemblyFullPath));
+                    File.Delete(string.Format("{0}.backup", AssemblyFullPath));
                     Log("Removing.....Assembly-CSharp.dll.backup");
-                    
                 }
-                Log("");
-                Log("Start patching files!");
-                Log("=================");
-                PatchThis();
             }
             else if (oldPatchFound)
             {
-                if (File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\Assembly-CSharp.original.dll")))
+                if (File.Exists(Path.Combine(mscPath, managedFolder, "Assembly-CSharp.original.dll"), pathSeparator))
                 {
-                    if (File.Exists(AssemblyFullPath))
-                    {
-                        Log("");
-                        Log("Recovering backup file!");
-                        Log("=================");
+                    Log("");
+                    Log("Recovering backup file!");
+                    Log("=================");
+                    if (File.Exists(AssemblyFullPath)) {
                         File.Delete(AssemblyFullPath);
                         Log("Removing.....Assembly-CSharp.dll");
-                        File.Move(Path.Combine(mscPath, @"mysummercar_Data\Managed\Assembly-CSharp.original.dll"), AssemblyFullPath);
-                        Log("Recovering.....Assembly-CSharp.original.dll");
                     }
-                    else
-                    {
-                        Log("");
-                        Log("Recovering backup file!");
-                        Log("=================");
-                        File.Move(Path.Combine(mscPath, @"mysummercar_Data\Managed\Assembly-CSharp.original.dll"), AssemblyFullPath);
-                        Log("Recovering.....Assembly-CSharp.original.dll");
-                    }
-                    //Removing old files
-                    Log("");
-                    Log("Cleaning old files!");
-                    Log("=================");
-                    if (File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\Mono.Cecil.dll")))
-                    {
-                        File.Delete(Path.Combine(mscPath, @"mysummercar_Data\Managed\Mono.Cecil.dll"));
-                        Log("Removing.....Mono.Cecil.dll");
-                    }
-                    if (File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\Mono.Cecil.Rocks.dll")))
-                    {
-                        File.Delete(Path.Combine(mscPath, @"mysummercar_Data\Managed\Mono.Cecil.Rocks.dll"));
-                        Log("Removing.....Mono.Cecil.Rocks.dll");
-                    }
-                    if (File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll")))
-                    {
-                        File.Delete(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll"));
-                        Log("Removing.....MSCLoader.dll");
-                    }
-                    if (File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCPatcher.exe")))
-                    {
-                        File.Delete(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCPatcher.exe"));
-                        Log("Removing.....MSCPatcher.exe");
-                    }
-                    if (File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll")))
-                    {
-                        File.Delete(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll"));
-                        Log("Removing.....System.Xml.dll");
-                    }
-                    Log("");
-                    Log("Start patching files!");
-                    Log("=================");
+                    File.Move(Path.Combine(mscPath, managedFolder, "Assembly-CSharp.original.dll"), AssemblyFullPath);
+                    Log("Recovering.....Assembly-CSharp.original.dll");
+
+                    RemoveOldFiles();
                     PatchThis();
                 }
                 else
                 {
-                    MessageBox.Show(string.Format("0.1 backup file not found in:{1}{0}{1}Can't continue with upgrade{1}{1}Please check integrity files in steam, to recover original file.", Path.Combine(mscPath, @"mysummercar_Data\Managed\Assembly-CSharp.original.dll"),Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(string.Format(
+                            "0.1 backup file not found in:{1}{0}{1}Can't continue with upgrade{1}{1}Please check integrity files in steam, to recover original file.",
+                            Path.Combine(mscPath, managedFolder, "Assembly-CSharp.original.dll"), Environment.NewLine),
+                            "Error!",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error
+                    );
                     Log("Error!");
                 }
             }
@@ -347,6 +271,9 @@ namespace MSCPatcher
         }
         public void PatchThis()
         {
+            Log("");
+            Log("Start patching files!");
+            Log("=================");
             if (File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll")))
             {
                 Log("Removing.....MSCLoader.dll");
@@ -436,6 +363,21 @@ namespace MSCPatcher
             Log("");
             MessageBox.Show("Patching successfull!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             checkPatchStatus();
+        }
+
+        //We can make this more generic, but i'm done with this
+        void RemoveOldFiles() {
+            Log("");
+            Log("Cleaning old files!");
+            Log("=================");
+            //Remove old 0.1 unused files
+            foreach (string i in oldfiles) {
+                if (File.Exists(Path.Combine(mscPath, prefix, i)))
+                {
+                    File.Delete(Path.Combine(mscPath, prefix, i));
+                    Log(string.format("Removing.....{0}", i));
+                }
+            }
         }
 
         public static AssemblyDefinition GetAssembly(string name)
@@ -826,6 +768,35 @@ namespace MSCPatcher
                 MessageBox.Show(string.Format("Failed to run MSC, is steam installed correctly?{1}{1}Error details:{1}{0}", ex.Message, Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        void QuestionUsersDiscipline() {
+            DialogResult response = MessageBox.Show(
+                    "Did you read the instructions? (Readme.txt)", 
+                    "Question for you!",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question
+            );
+            if (response == DialogResult.Yes)
+            {
+                MessageBox.Show(string.Format(
+                    "Why are you lying?{0}Or maybe you can't read?{0}If you could read, you would know what you did wrong.", Environment.NewLine),
+                    "You are a liar",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+            }
+            else
+            {
+                MessageBox.Show(string.Format(
+                    "Yes I see.{0}Go back to readme and you will know what you did wrong.", Environment.NewLine),
+                    "RTFM!",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
+            }
+            Environment.Exit(0);
+        }
+
         private void button4_Click(object sender, EventArgs e)
         {
             LaunchMSCsruSteam();
