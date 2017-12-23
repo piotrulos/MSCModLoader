@@ -20,24 +20,36 @@ namespace MSCPatcher
     public partial class Form1 : Form
     {
         private static string mscPath = "(unknown)";
+        // TODO: make 'managedFolder' an absolute path
+        private static string managedFolder = Path.Combine("mysummercar_Data", "Managed");
         private static char pathSeparator = System.IO.Path.DirectorySeparatorChar;
-        private string AssemblyPath = @(string.format("mysummercar_Data{0}Managed{0}Assembly-CSharp.dll", pathSeparator));
+        private string AssemblyPath = Path.Combine(managedFolder, "Assembly-CSharp.dll");
         private string AssemblyFullPath = null;
         private string ModificationsXmlPath = "MSCPatcher.Modifications_MD.xml";
 
-        string managedFolder = string.format("mysummercar_Data{0}Managed", pathSeparator);
-        string[] oldfiles = new string[] {
+        private static string[] filenames = new string[] {
             "Assembly-CSharp.original.dll",
             "Mono.Cecil.dll",
             "Mono.Cecil.Rocks.dll",
             "MSCLoader.dll",
             "MSCPatcher.exe",
-            "System.Xml.dll"
+            "System.Xml.dll",
+            "uAudio.dll"
         };
 
-        private string mdPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @(string.format("MySummerCar{0}Mods", pathSeparator));
+        // TODO: move these to a config file
+        private static int[] oldfiles    = new int[] { 0, 1, 2, 3, 4, 5 }; //Files to delete if 0.1 is found
+        private static int[] patchfiles  = new int[] { 3, 5, 6 };        //Files to install the loader
+        private static int[] updatefiles = patchfiles;                 //Files to update the loader
+        private static int[] removefiles = patchfiles;               //Files to uninstall the loader
 
-        private string adPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @(string.format("..{0}LocalLow{0}Amistech{0}My Summer Car{0}Mods"))));
+        private string mdPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+            Path.Combine("MySummerCar", "Mods"));
+
+        private string adPath = Path.GetFullPath(
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            string.Format("..{0}LocalLow{0}Amistech{0}My Summer Car{0}Mods", pathSeparator)));
 
         private string gfPath = "?";
 
@@ -53,7 +65,7 @@ namespace MSCPatcher
         public Form1()
         {
             InitializeComponent();
-            //check if idiot unpacked this to managed folder.
+            //check if idiot/user unpacked this to managed folder.
             if (File.Exists("Assembly-CSharp.dll") || File.Exists("UnityEngine.dll")) QuestionUsersDiscipline();
             if (File.Exists("MSCFolder.txt"))
             {
@@ -147,7 +159,7 @@ namespace MSCPatcher
             logBox.AppendText(string.Format("{0}{1}", log, Environment.NewLine));
         }
         public void PatchCheck()
-        { //dolan, pls, return a number
+        {
             if(oldFilesFound) RemoveOldFiles();
             else if (isgameUpdated)
             {
@@ -155,23 +167,17 @@ namespace MSCPatcher
                 Log("");
                 Log("Removing old backup!");
                 Log("=================");
-                if (File.Exists(string.Format("{0}.backup", AssemblyFullPath)))
-                {
-                    File.Delete(string.Format("{0}.backup", AssemblyFullPath));
-                    Log("Removing.....Assembly-CSharp.dll.backup");
-                }
+                RemoveIfExists(string.Format("{0}.backup", AssemblyFullPath));
             }
             else if (oldPatchFound)
             {
-                if (File.Exists(Path.Combine(mscPath, managedFolder, "Assembly-CSharp.original.dll"), pathSeparator))
+                if (File.Exists(Path.Combine(mscPath, managedFolder, "Assembly-CSharp.original.dll")))
                 {
                     Log("");
                     Log("Recovering backup file!");
                     Log("=================");
-                    if (File.Exists(AssemblyFullPath)) {
-                        File.Delete(AssemblyFullPath);
-                        Log("Removing.....Assembly-CSharp.dll");
-                    }
+
+                    RemoveIfExists(AssemblyFullPath);
                     File.Move(Path.Combine(mscPath, managedFolder, "Assembly-CSharp.original.dll"), AssemblyFullPath);
                     Log("Recovering.....Assembly-CSharp.original.dll");
 
@@ -195,105 +201,44 @@ namespace MSCPatcher
                 Log("");
                 Log("MSCLoader.dll update!");
                 Log("=================");
-                if (File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll")))
+
+                foreach (int i in updatefiles)
                 {
-                    File.Delete(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll"));
-                    Log("Removing.....MSCLoader.dll");
-                }
-                if (File.Exists(Path.GetFullPath(Path.Combine("MSCLoader.dll", ""))))
-                {
-                    File.Copy(Path.GetFullPath(Path.Combine("MSCLoader.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll"));
-                    Log("Copying new file.....MSCLoader.dll");
-                }
-                if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll")))
-                {
-                    File.Copy(Path.GetFullPath(Path.Combine("System.Xml.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll"));
-                    Log("Copying new file.....System.Xml.dll");
-                }
-                if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\uAudio.dll")))
-                {
-                    File.Copy(Path.GetFullPath(Path.Combine("uAudio.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\uAudio.dll"));
-                    Log("Copying new file.....uAudio.dll");
-                }
-                Log("Copying Core Assets.....MSCLoader_Core");
-                if (!Directory.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Core")))
-                {
-                    Directory.CreateDirectory(Path.Combine(modPath, @"Assets\MSCLoader_Core"));
-                    File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Core", "core.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Core\core.unity3d"));
-                }
-                else
-                {
-                    if (File.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Core\core.unity3d")))
-                        File.Delete(Path.Combine(modPath, @"Assets\MSCLoader_Core\core.unity3d"));
-                    File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Core", "core.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Core\core.unity3d"));
+                    string currentFile = filenames[i];
+                    RemoveIfExists(Path.Combine(mscPath, managedFolder, currentFile));
                 }
 
-                Log("Copying Core Assets.....MSCLoader_Settings");
-                if (!Directory.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Settings")))
-                {
-                    Directory.CreateDirectory(Path.Combine(modPath, @"Assets\MSCLoader_Settings"));
-                    File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Settings", "settingsui.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Settings\settingsui.unity3d"));
-                }
-                else
-                {
-                    if (File.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Settings\settingsui.unity3d")))
-                        File.Delete(Path.Combine(modPath, @"Assets\MSCLoader_Settings\settingsui.unity3d"));
-                    File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Settings", "settingsui.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Settings\settingsui.unity3d"));
-                }
+                CopyCoreAssets();
 
-                Log("Copying Core Assets.....MSCLoader_Console");
-                if (!Directory.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Console")))
-                {
-                    Directory.CreateDirectory(Path.Combine(modPath, @"Assets\MSCLoader_Console"));
-                    File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Console", "console.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Console\console.unity3d"));
-                }
-                else
-                {
-                    if (File.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Console\console.unity3d")))
-                        File.Delete(Path.Combine(modPath, @"Assets\MSCLoader_Console\console.unity3d"));
-                    File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Console", "console.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Console\console.unity3d"));
-                }
-                Log("Copying Core Assets Completed!");
-                Log("=================");
                 Log("MSCLoader.dll update successful!");
                 Log("");
-                MessageBox.Show("Update successfull!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(
+                    "Update successfull!",
+                    "Success",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information
+                );
                 checkPatchStatus();
             }
             else
             {
-                Log("");
-                Log("Start patching files!");
-                Log("=================");
                 PatchThis();
             }
 
         }
+
         public void PatchThis()
         {
             Log("");
             Log("Start patching files!");
             Log("=================");
-            if (File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll")))
-            {
-                Log("Removing.....MSCLoader.dll");
-                File.Delete(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll"));
+            
+            RemoveIfExists(Path.Combine(mscPath, managedFolder, "MSCLoader.dll"));
+            foreach (int i in patchfiles) {
+                string currentFile = filenames[i];
+                CopyIfDoesntExist(currentFile, Path.Combine(mscPath, managedFolder));
             }
-            if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll")))
-            {
-                File.Copy(Path.GetFullPath(Path.Combine("System.Xml.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll"));
-                Log("Copying new file.....System.Xml.dll");
-            }
-            if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\uAudio.dll")))
-            {
-                File.Copy(Path.GetFullPath(Path.Combine("uAudio.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\uAudio.dll"));
-                Log("Copying new file.....uAudio.dll");
-            }
-            if (File.Exists(Path.GetFullPath(Path.Combine("MSCLoader.dll", ""))))
-            {
-                File.Copy(Path.GetFullPath(Path.Combine("MSCLoader.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll"));
-                Log("Copying new file.....MSCLoader.dll");
-            }
+
             var cSharpAssembly = LoadAssembly(AssemblyFullPath);
             var mscLoader = LoadAssembly("MSCLoader.dll");
             var coreLibrary =
@@ -319,46 +264,9 @@ namespace MSCPatcher
             GetAssembly("Assembly-CSharp").Write(AssemblyFullPath);
 
             Log("Finished Writing");
-            Log("Copying Core Assets.....MSCLoader_Core");
-            if (!Directory.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Core")))
-            {
-                Directory.CreateDirectory(Path.Combine(modPath, @"Assets\MSCLoader_Core"));
-                File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Core", "core.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Core\core.unity3d"));
-            }
-            else
-            {
-                if (File.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Core\core.unity3d")))
-                    File.Delete(Path.Combine(modPath, @"Assets\MSCLoader_Core\core.unity3d"));
-                File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Core", "core.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Core\core.unity3d"));
-            }
 
-            Log("Copying Core Assets.....MSCLoader_Settings");
-            if (!Directory.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Settings")))
-            {
-                Directory.CreateDirectory(Path.Combine(modPath, @"Assets\MSCLoader_Settings"));
-                File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Settings", "settingsui.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Settings\settingsui.unity3d"));
-            }
-            else
-            {
-                if (File.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Settings\settingsui.unity3d")))
-                    File.Delete(Path.Combine(modPath, @"Assets\MSCLoader_Settings\settingsui.unity3d"));
-                File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Settings", "settingsui.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Settings\settingsui.unity3d"));
-            }
+            CopyCoreAssets();
 
-            Log("Copying Core Assets.....MSCLoader_Console");
-            if (!Directory.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Console")))
-            {
-                Directory.CreateDirectory(Path.Combine(modPath, @"Assets\MSCLoader_Console"));
-                File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Console", "console.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Console\console.unity3d"));
-            }
-            else
-            {
-                if (File.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Console\console.unity3d")))
-                    File.Delete(Path.Combine(modPath, @"Assets\MSCLoader_Console\console.unity3d"));
-                File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Console", "console.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Console\console.unity3d"));
-            }
-            Log("Copying Core Assets Completed!");
-            Log("=================");
             Log("Patching successfull!");
             Log("");
             MessageBox.Show("Patching successfull!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -371,13 +279,69 @@ namespace MSCPatcher
             Log("Cleaning old files!");
             Log("=================");
             //Remove old 0.1 unused files
-            foreach (string i in oldfiles) {
-                if (File.Exists(Path.Combine(mscPath, prefix, i)))
-                {
-                    File.Delete(Path.Combine(mscPath, prefix, i));
-                    Log(string.format("Removing.....{0}", i));
-                }
+            foreach (int i in oldfiles) {
+                RemoveIfExists(Path.Combine(mscPath, managedFolder, filenames[i]));
             }
+        }
+
+        bool RemoveIfExists(string filename) {
+            if (File.Exists(filename))
+            {
+                File.Delete(filename);
+                Log(string.Format("Removing.....{0}", filename));
+                return true;
+            }  return false;
+        }
+
+        void CopyIfDoesntExist(string filename, string target) {
+            if(!File.Exists(Path.Combine(target, filename)))
+            {
+                Log(string.Format("Copying new file.....{0}", filename));
+                File.Copy(
+                    Path.GetFullPath(Path.Combine(filename, "")),
+                    Path.Combine(target, filename)
+                );
+            }
+        }
+
+        void CopyCoreAssets() {
+            Log("Copying Core Assets.....MSCLoader_Core");
+            string AssetsLoaderCore = Path.Combine("Assets", "MSCLoader_Core");
+            if (!Directory.Exists(Path.Combine(modPath, AssetsLoaderCore)))
+            {
+                Directory.CreateDirectory(Path.Combine(modPath, AssetsLoaderCore));
+            }
+            RemoveIfExists(Path.Combine(modPath, AssetsLoaderCore, "core.unity3d"));
+            File.Copy(
+                Path.GetFullPath(Path.Combine(AssetsLoaderCore, "core.unity3d")),
+                Path.Combine(modPath, AssetsLoaderCore, "core.unity3d")
+            );
+
+            Log("Copying Core Assets.....MSCLoader_Settings");
+            string AssetsLoaderSettings = Path.Combine("Assets", "MSCLoader_Settings");
+            if (!Directory.Exists(Path.Combine(modPath, AssetsLoaderSettings)))
+            {
+                Directory.CreateDirectory(Path.Combine(modPath, AssetsLoaderSettings));
+            }
+            RemoveIfExists(Path.Combine(modPath, AssetsLoaderSettings, "settingsui.unity3d"));
+            File.Copy(
+                Path.GetFullPath(Path.Combine(AssetsLoaderSettings, "settingsui.unity3d")),
+                Path.Combine(modPath, AssetsLoaderSettings, "settingsui.unity3d")
+            );
+
+            Log("Copying Core Assets.....MSCLoader_Console");
+            string AssetsLoaderConsole = Path.Combine("Assets", "MCSLoader_Console");
+            if (!Directory.Exists(Path.Combine(modPath, AssetsLoaderConsole)))
+            {
+                Directory.CreateDirectory(Path.Combine(modPath, AssetsLoaderConsole));
+            }
+            RemoveIfExists(Path.Combine(modPath, AssetsLoaderConsole, "console.unity3d"));
+            File.Copy(
+                Path.GetFullPath(Path.Combine(AssetsLoaderConsole, "console.unity3d")),
+                Path.Combine(modPath, AssetsLoaderConsole, "console.unity3d")
+            );
+            Log("Copying Core Assets Completed!");
+            Log("=================");
         }
 
         public static AssemblyDefinition GetAssembly(string name)
@@ -611,46 +575,44 @@ namespace MSCPatcher
             MethodDefinition methodToPatch = typeToPatch.Methods.FirstOrDefault(m => m.Name == "Awake");
             Mono.Cecil.Cil.MethodBody methodBody = methodToPatch.Body;
             // MessageBox.Show(methodBody.CodeSize.ToString()); //debug
-            if (methodBody.CodeSize == 24)
-            {
-                //not patched
+
+            // TODO: store these code length magic numbers in a config file
+            
+            // patch not found
+            if (methodBody.CodeSize == 24) 
                 newpatchfound = false;
-            }
-            else if (methodBody.CodeSize == 29)
-            {
-                //patch found
+            // patch found
+            else if (methodBody.CodeSize == 29) 
                 newpatchfound = true;
-            }
+
             if (!newpatchfound)
             {
                 TypeDefinition typeToPatch2 = AssemblyDefinition.ReadAssembly(AssemblyFullPath).MainModule.Types.FirstOrDefault(t => t.Name == "StartGame");
                 MethodDefinition methodToPatch2 = typeToPatch2.Methods.FirstOrDefault(m => m.Name == ".ctor");
                 Mono.Cecil.Cil.MethodBody methodBody2 = methodToPatch2.Body;
+
+                // not patched
                 if (methodBody2.CodeSize == 18)
-                {
-                    //not patched
                     oldpatchfound = false;
-                }
+                // 0.1 patch found
                 else if (methodBody2.CodeSize == 23)
-                {
-                    //0.1 patch found
                     oldpatchfound = true;
-                }
             }
             if (!newpatchfound && !oldpatchfound)
             {
-                if (File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\Assembly-CSharp.original.dll")))
+                if (File.Exists(Path.Combine(mscPath, managedFolder, "Assembly-CSharp.original.dll")))
                 {
                     statusLabelText.Text = "Not patched, but MSCLoader 0.1 found (probably there was game update)";
-                    Log("Patch not found, but MSCLoader 0.1 files found (probably there was game update)");
+                    Log(statusLabelText.Text);
                     button1.Text = "Install MSCLoader";
                     button1.Enabled = true;
                     oldFilesFound = true;
                 }
-                else if (File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll")) && File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\Assembly-CSharp.dll.backup")))
+                else if (File.Exists(Path.Combine(mscPath, managedFolder, "MSCLoader.dll")) 
+                      && File.Exists(Path.Combine(mscPath, managedFolder, "Assembly-CSharp.dll.backup")))
                 {
                     statusLabelText.Text = "Not patched, but MSCLoader found (probably there was game update)";
-                    Log("Patch not found, but MSCLoader files found (looks like there was game update)");
+                    Log(statusLabelText.Text);
                     button1.Text = "Install MSCLoader";
                     button1.Enabled = true;
                     isgameUpdated = true;
@@ -667,7 +629,8 @@ namespace MSCPatcher
             }
             else if (newpatchfound)
             {
-                if (MD5HashFile(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll")) == MD5HashFile(Path.GetFullPath(Path.Combine("MSCLoader.dll", ""))))
+                if (MD5HashFile(Path.Combine(mscPath, managedFolder, "MSCLoader.dll"))
+                 == MD5HashFile(Path.GetFullPath(Path.Combine("MSCLoader.dll", ""))))
                 {
                     statusLabelText.Text = "Installed, MSCLoader.dll is up to date.";
                     Log("Newest patch found, no need to patch again");
@@ -704,54 +667,39 @@ namespace MSCPatcher
         }
         private void button3_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Do you want to remove MSCLoader from game?", "Remove?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (MessageBox.Show(
+                        "Do you want to remove MSCLoader from game?",
+                        "Remove?",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question)
+                == DialogResult.Yes)
             {
-                try
+                button3.Enabled = false;
+                Log("");
+                Log("Removing MSCLoader from game");
+                Log("=================");
+                if (File.Exists(string.Format("{0}.backup", AssemblyFullPath)))
                 {
-                    button3.Enabled = false;
-                    Log("");
-                    Log("Removing MSCLoader from game");
-                    Log("=================");
-                    if (File.Exists(String.Format("{0}.backup", AssemblyFullPath)))
-                    {
-                        if (File.Exists(AssemblyFullPath))
-                        {
-                            File.Delete(AssemblyFullPath);
-                            Log("Removing.....Assembly-CSharp.dll");
-                            File.Move(String.Format("{0}.backup", AssemblyFullPath), AssemblyFullPath);
-                            Log("Recovering.....Assembly-CSharp.dll.backup");
-                        }
-                        if (File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll")))
-                        {
-                            File.Delete(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll"));
-                            Log("Removing.....MSCLoader.dll");
-                        }
-                        if (File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\uAudio.dll")))
-                        {
-                            File.Delete(Path.Combine(mscPath, @"mysummercar_Data\Managed\uAudio.dll"));
-                            Log("Removing.....uAudio.dll");
-                        }
-                        if (File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll")))
-                        {
-                            File.Delete(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll"));
-                            Log("Removing.....System.Xml.dll");
-                        }
-                        Log("=================");
-                        Log("MSCLoader removed successfully!");
-                        Log("");
-                        MessageBox.Show("MSCLoader removed successfully!", "Success!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    else
-                    {
-                        Log("Error! Backup file not found");
-                        MessageBox.Show(string.Format("Backup file not found in:{1}{0}{1}Can't continue{1}{1}Please check integrity files in steam, to recover original file.", String.Format("{0}.backup", AssemblyFullPath), Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    RemoveIfExists(AssemblyFullPath);
+                    File.Move(string.Format("{0}.backup", AssemblyFullPath), AssemblyFullPath);
 
+                    foreach (int i in removefiles) {
+                        string currentFile = filenames[i];
+                        RemoveIfExists(Path.Combine(mscPath, managedFolder, currentFile));
                     }
-                    checkPatchStatus();
-                }catch(Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    Log("=================");
+                    Log("MSCLoader removed successfully!");
+                    Log("");
+                    MessageBox.Show("MSCLoader removed successfully!", "Success!", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
+                else
+                {
+                    Log("Error! Backup file not found");
+                    MessageBox.Show(string.Format("Backup file not found in:{1}{0}{1}Can't continue{1}{1}Please check integrity files in steam, to recover original file.", String.Format("{0}.backup", AssemblyFullPath), Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                }
+                checkPatchStatus();
             }
         }
         void LaunchMSCsruSteam()
