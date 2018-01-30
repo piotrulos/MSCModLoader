@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.button1 = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -56,6 +57,7 @@
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.statusBarLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.folderPage.SuspendLayout();
@@ -201,7 +203,7 @@
             this.logPage.Location = new System.Drawing.Point(4, 22);
             this.logPage.Name = "logPage";
             this.logPage.Padding = new System.Windows.Forms.Padding(3);
-            this.logPage.Size = new System.Drawing.Size(439, 135);
+            this.logPage.Size = new System.Drawing.Size(439, 137);
             this.logPage.TabIndex = 1;
             this.logPage.Text = "Log";
             this.logPage.UseVisualStyleBackColor = true;
@@ -293,7 +295,7 @@
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox3.Location = new System.Drawing.Point(3, 3);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(433, 129);
+            this.groupBox3.Size = new System.Drawing.Size(433, 131);
             this.groupBox3.TabIndex = 5;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Log";
@@ -305,7 +307,7 @@
             this.logBox.Multiline = true;
             this.logBox.Name = "logBox";
             this.logBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.logBox.Size = new System.Drawing.Size(427, 110);
+            this.logBox.Size = new System.Drawing.Size(427, 112);
             this.logBox.TabIndex = 0;
             // 
             // settingPage
@@ -314,7 +316,7 @@
             this.settingPage.Location = new System.Drawing.Point(4, 22);
             this.settingPage.Name = "settingPage";
             this.settingPage.Padding = new System.Windows.Forms.Padding(3);
-            this.settingPage.Size = new System.Drawing.Size(439, 135);
+            this.settingPage.Size = new System.Drawing.Size(439, 137);
             this.settingPage.TabIndex = 2;
             this.settingPage.Text = "Settings";
             this.settingPage.ToolTipText = "Enable output_log.txt useful for debugging and troubleshooting";
@@ -324,9 +326,9 @@
             // 
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Size = new System.Drawing.Size(439, 135);
+            this.tabPage1.Size = new System.Drawing.Size(439, 137);
             this.tabPage1.TabIndex = 3;
-            this.tabPage1.Text = "tabPage1";
+            this.tabPage1.Text = "64-bit patch";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // checkBox1
@@ -339,6 +341,8 @@
             this.checkBox1.Size = new System.Drawing.Size(126, 17);
             this.checkBox1.TabIndex = 0;
             this.checkBox1.Text = "Enable output_log.txt";
+            this.toolTip1.SetToolTip(this.checkBox1, "Enables unity output_log.txt\r\nThis file is helpfull with debugging and troublesho" +
+        "oting\r\n\r\nRecomended to turn this on.");
             this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // statusStrip1
@@ -417,6 +421,7 @@
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel statusBarLabel;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
 
