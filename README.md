@@ -1,5 +1,5 @@
 [![](https://img.shields.io/github/release/piotrulos/MSCModLoader.svg?style=flat-square)]() 
-[![](https://img.shields.io/badge/experimental-v0.3.4-yellow.svg?style=flat-square)]() 
+[![](https://img.shields.io/badge/experimental-v0.4-yellow.svg?style=flat-square)]() 
 [![](https://img.shields.io/github/downloads/piotrulos/MSCModLoader/total.svg?style=flat-square)]() 
 
 # MSCLoader
@@ -26,7 +26,7 @@ A documentation for MSCLoader is avaliable [here](https://github.com/piotrulos/M
 If you want you can buy me a beer :)   
 Paypal: [Paypal.me](https://www.paypal.me/piotrulos/0eur)  
 Patreon: [Monkeys :)](https://www.patreon.com/monkeys)  
-BTC/BCC: 1NLRvUXHLhuLz5erVWyXdY7i8KmfCSjJgP  
+BTC/BCH: 1NLRvUXHLhuLz5erVWyXdY7i8KmfCSjJgP  
 Thanks for all donations, even small ammount helps.
 
 #### Credit
