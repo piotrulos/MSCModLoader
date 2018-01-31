@@ -18,6 +18,7 @@ namespace MSCPatcher
 {
     public partial class Form1 : Form
     {
+        static Form1 form1;
         private static string mscPath = "(unknown)";
         private string AssemblyPath = @"mysummercar_Data\Managed\Assembly-CSharp.dll";
         private string AssemblyFullPath = null;
@@ -42,6 +43,7 @@ namespace MSCPatcher
 
         public Form1()
         {
+            form1 = this;
             InitializeComponent();
             Log.logBox = logBox;
             if (File.Exists("Assembly-CSharp.dll") || File.Exists("UnityEngine.dll")) //check if idiot unpacked this to managed folder.
@@ -111,9 +113,13 @@ namespace MSCPatcher
                             MessageBox.Show(string.Format("Failed to open url!{1}{1}Error details:{1}{0}", ex.Message, Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
+                    statusBarLabel.Text = string.Format("New version available: v{0}", version.Trim());
                 }
                 else if (i == 0)
+                {
                     Log.Write(string.Format("{1}MCSLoader v{0} is up to date, no new version found.", currentVersion, Environment.NewLine));
+                    statusBarLabel.Text = "MSCPatcher Ready!";
+                }
             }
             catch (Exception e)
             {
@@ -135,6 +141,11 @@ namespace MSCPatcher
                 }
                 Log.Write(string.Format("Game folder set to: {0}{1}", mscPath, Environment.NewLine));
                 checkPatchStatus();
+            }
+            if(!Environment.Is64BitOperatingSystem)
+            {
+                status64.Text = "You are not running 64-bit Windows.";
+                status64.ForeColor = Color.Red;
             }
         }
 
@@ -194,7 +205,7 @@ namespace MSCPatcher
                 else
                 {
                     MessageBox.Show(string.Format("0.1 backup file not found in:{1}{0}{1}Can't continue with upgrade{1}{1}Please check integrity files in steam, to recover original file.", Path.Combine(mscPath, @"mysummercar_Data\Managed\Assembly-CSharp.original.dll"), Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Log.Write("Error!");
+                    statusBarLabel.Text = "Error!";
                 }
             }
             else if (mscloaderUpdate)
@@ -223,6 +234,7 @@ namespace MSCPatcher
                 Log.Write("MSCLoader.dll update successful!");
                 Log.Write("");
                 MessageBox.Show("Update successfull!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                statusBarLabel.Text = "Update successfull!";
                 checkPatchStatus();
             }
             else
@@ -281,6 +293,7 @@ namespace MSCPatcher
             Log.Write("Patching successfull!");
             Log.Write("");
             MessageBox.Show("Patching successfull!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            statusBarLabel.Text = "Patching successfull!";
             checkPatchStatus();
         }
 
@@ -318,11 +331,13 @@ namespace MSCPatcher
                 catch (Exception e)
                 {
                     MessageBox.Show(string.Format("Couldn't load assembly {0}{1}{2}", path, Environment.NewLine, e.Message), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    form1.statusBarLabel.Text = string.Format("Couldn't load assembly {0}", Path.GetFileName(path));
                 }
             }
             else
             {
-                MessageBox.Show("Assembly " + path + " doesn't exist", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(string.Format("Assembly {0} doesn't exist", path), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                form1.statusBarLabel.Text = string.Format("Assembly {0} doesn't exist", Path.GetFileName(path));
             }
 
             return null;
@@ -338,7 +353,7 @@ namespace MSCPatcher
 
                 if (typeToPatch == null)
                 {
-                    MessageBox.Show("Couldn't find type/class named" + nameTypeToPatch, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(string.Format("Couldn't find type/class named {0}", nameTypeToPatch), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     continue;
                 }
 
@@ -349,7 +364,7 @@ namespace MSCPatcher
 
                     if (methodToPatch == null)
                     {
-                        MessageBox.Show("Couldn't find method named" + nameMethodTopatch, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(string.Format("Couldn't find method named {0}", nameMethodTopatch), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         continue;
                     }
 
@@ -431,7 +446,7 @@ namespace MSCPatcher
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.Message + Environment.NewLine + "Please restart patcher!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(string.Format("Error:{1}{0}{1}{1}Please restart patcher!", ex.Message, Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 else if (GFradio.Checked)
@@ -449,7 +464,7 @@ namespace MSCPatcher
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.Message + Environment.NewLine + "Please restart patcher!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(string.Format("Error:{1}{0}{1}{1}Please restart patcher!", ex.Message, Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 else if (ADradio.Checked)
@@ -467,7 +482,7 @@ namespace MSCPatcher
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.Message + Environment.NewLine + "Please restart patcher!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(string.Format("Error:{1}{0}{1}{1}Please restart patcher!", ex.Message, Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
 
@@ -628,6 +643,7 @@ namespace MSCPatcher
                         Log.Write("MSCLoader removed successfully!");
                         Log.Write("");
                         MessageBox.Show("MSCLoader removed successfully!", "Success!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        statusBarLabel.Text = "MSCLoader removed successfully!";
                     }
                     else
                     {
@@ -640,6 +656,7 @@ namespace MSCPatcher
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    statusBarLabel.Text = "Error: " + ex.Message;
                 }
             }
         }
@@ -650,6 +667,7 @@ namespace MSCPatcher
                 Log.Write("Starting game on steam", true, false);
                 ProcessStartInfo mscSteamUrl = new ProcessStartInfo("steam://rungameid/516750");
                 Process.Start(mscSteamUrl);
+                Environment.Exit(0);
             }
             catch (Exception ex)
             {
