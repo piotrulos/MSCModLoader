@@ -69,7 +69,7 @@ namespace MSCLoader
         static string ConfigFolder = Path.Combine(ModsFolder, @"Config\");
         static string AssetsFolder = Path.Combine(ModsFolder, @"Assets\");
 
-        static bool experimental = false; //Is this build is experimental
+        static bool experimental = true; //Is this build is experimental
         static bool modStats = false;
         static GameObject mainMenuInfo;
         static Animator menuInfoAnim;
@@ -416,11 +416,27 @@ namespace MSCLoader
         {
             try
             {
-                // Assembly asm = Assembly.LoadFrom(file);
-                Assembly asm = Assembly.Load(File.ReadAllBytes(file)); //test for now
+                Assembly asm = null;
+                
+                //STILL TESTING - Loading for proper debug
+                asm = Assembly.LoadFrom(file);               
+                /*   byte[] asmFile = File.ReadAllBytes(file);
+                if (File.Exists(Path.ChangeExtension(file, "pdb")))
+                {
+                    byte[] pdbFile = File.ReadAllBytes(Path.ChangeExtension(file, "pdb"));
+                    asm = AppDomain.CurrentDomain.Load(asmFile, pdbFile);
+                    Assembly[] ass = AppDomain.CurrentDomain.GetAssemblies();
+                    ModConsole.Print(AppDomain.CurrentDomain.GetAssemblies());
+                }
+                else
+                {
+                    asm = AppDomain.CurrentDomain.Load(asmFile);
+                }*/
+                //Assembly asm = Assembly.Load(File.ReadAllBytes(file)); //test for now
                 bool isMod = false;
                 // Look through all public classes
                 AssemblyName[] list = asm.GetReferencedAssemblies();
+                
                 foreach (Type type in asm.GetTypes())
                 {
                     string msVer = null;

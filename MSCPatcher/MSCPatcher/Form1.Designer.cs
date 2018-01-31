@@ -54,10 +54,12 @@
             this.logBox = new System.Windows.Forms.TextBox();
             this.settingPage = new System.Windows.Forms.TabPage();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.enOutputlog = new System.Windows.Forms.CheckBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.statusBarLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.status64 = new System.Windows.Forms.Label();
+            this.OutputlogLabel = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.folderPage.SuspendLayout();
@@ -65,6 +67,7 @@
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.settingPage.SuspendLayout();
+            this.tabPage1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -312,7 +315,8 @@
             // 
             // settingPage
             // 
-            this.settingPage.Controls.Add(this.checkBox1);
+            this.settingPage.Controls.Add(this.OutputlogLabel);
+            this.settingPage.Controls.Add(this.enOutputlog);
             this.settingPage.Location = new System.Drawing.Point(4, 22);
             this.settingPage.Name = "settingPage";
             this.settingPage.Padding = new System.Windows.Forms.Padding(3);
@@ -324,6 +328,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.status64);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Size = new System.Drawing.Size(439, 137);
@@ -331,19 +336,19 @@
             this.tabPage1.Text = "64-bit patch";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // checkBox1
+            // enOutputlog
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Checked = true;
-            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox1.Location = new System.Drawing.Point(7, 7);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(126, 17);
-            this.checkBox1.TabIndex = 0;
-            this.checkBox1.Text = "Enable output_log.txt";
-            this.toolTip1.SetToolTip(this.checkBox1, "Enables unity output_log.txt\r\nThis file is helpfull with debugging and troublesho" +
+            this.enOutputlog.AutoSize = true;
+            this.enOutputlog.Checked = true;
+            this.enOutputlog.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.enOutputlog.Location = new System.Drawing.Point(7, 7);
+            this.enOutputlog.Name = "enOutputlog";
+            this.enOutputlog.Size = new System.Drawing.Size(126, 30);
+            this.enOutputlog.TabIndex = 0;
+            this.enOutputlog.Text = "Enable output_log.txt\r\n ";
+            this.toolTip1.SetToolTip(this.enOutputlog, "Enables unity output_log.txt\r\nThis file is helpfull with debugging and troublesho" +
         "oting\r\n\r\nRecomended to turn this on.");
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.enOutputlog.UseVisualStyleBackColor = true;
             // 
             // statusStrip1
             // 
@@ -361,6 +366,26 @@
             this.statusBarLabel.Name = "statusBarLabel";
             this.statusBarLabel.Size = new System.Drawing.Size(38, 17);
             this.statusBarLabel.Text = "status";
+            // 
+            // status64
+            // 
+            this.status64.AutoSize = true;
+            this.status64.Location = new System.Drawing.Point(5, 4);
+            this.status64.Name = "status64";
+            this.status64.Size = new System.Drawing.Size(12, 13);
+            this.status64.TabIndex = 0;
+            this.status64.Text = "s";
+            // 
+            // OutputlogLabel
+            // 
+            this.OutputlogLabel.AutoSize = true;
+            this.OutputlogLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.OutputlogLabel.ForeColor = System.Drawing.Color.Orange;
+            this.OutputlogLabel.Location = new System.Drawing.Point(23, 24);
+            this.OutputlogLabel.Name = "OutputlogLabel";
+            this.OutputlogLabel.Size = new System.Drawing.Size(14, 13);
+            this.OutputlogLabel.TabIndex = 28;
+            this.OutputlogLabel.Text = "?";
             // 
             // Form1
             // 
@@ -385,6 +410,8 @@
             this.groupBox3.PerformLayout();
             this.settingPage.ResumeLayout(false);
             this.settingPage.PerformLayout();
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -417,11 +444,13 @@
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.TextBox logBox;
         private System.Windows.Forms.TabPage settingPage;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox enOutputlog;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel statusBarLabel;
         private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.Label status64;
+        private System.Windows.Forms.Label OutputlogLabel;
     }
 }
 
