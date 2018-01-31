@@ -43,12 +43,14 @@ namespace MSCLoader
 		public Mod Mod { get; set; }
 
 
-		/// <summary>
-		/// Add a keybind.
-		/// </summary>
-		/// <param name="mod">The instance of your mod.</param>
-		/// <param name="key">The Keybind to add.</param>
-		public static void Add(Mod mod, Keybind key)
+        /// <summary>
+        /// Add a keybind.
+        /// </summary>
+        /// <param name="mod">The instance of your mod.</param>
+        /// <param name="key">The Keybind to add.</param>
+        /// <example><code source="Examples.cs" region="KeyBindAdd" lang="C#" 
+        /// title="Keybind Add" /></example>
+        public static void Add(Mod mod, Keybind key)
 		{
 			key.Mod = mod;
 			Keybinds.Add(key);
@@ -75,13 +77,15 @@ namespace MSCLoader
 			return DefaultKeybinds.FindAll(x => x.Mod == mod);
 		}
 
-		/// <summary>
-		/// Constructor for Keybind
-		/// </summary>
-		/// <param name="id">The ID of the Keybind.</param>
-		/// <param name="name">The name of the Keybind.</param>
-		/// <param name="key">The KeyCode the user will press.</param>
-		public Keybind(string id, string name, KeyCode key)
+        /// <summary>
+        /// Constructor for Keybind without modifier
+        /// </summary>
+        /// <param name="id">The ID of the Keybind.</param>
+        /// <param name="name">The name of the Keybind.</param>
+        /// <param name="key">The KeyCode the user will press.</param>
+        /// <example><code source="Examples.cs" region="KeyBind1" lang="C#" 
+        /// title="Keybind without modifier" /></example>
+        public Keybind(string id, string name, KeyCode key)
 		{
 			ID = id;
 			Name = name;
@@ -89,14 +93,16 @@ namespace MSCLoader
 			Modifier = KeyCode.None;
 		}
 
-		/// <summary>
-		/// Constructor for Keybind
-		/// </summary>
-		/// <param name="id">The ID of the Keybind (Used only once in your mod).</param>
-		/// <param name="name">The name of the Keybind that will be displayed.</param>
-		/// <param name="key">The KeyCode the user will press.</param>
-		/// <param name="modifier">The modifier KeyCode the user will have to press.</param>
-		public Keybind(string id, string name, KeyCode key, KeyCode modifier)
+        /// <summary>
+        /// Constructor for Keybind
+        /// </summary>
+        /// <param name="id">The ID of the Keybind (Used only once in your mod).</param>
+        /// <param name="name">The name of the Keybind that will be displayed.</param>
+        /// <param name="key">The KeyCode the user will press.</param>
+        /// <param name="modifier">The modifier KeyCode the user will have to press.</param>
+        /// <example><code source="Examples.cs" region="KeyBind2" lang="C#" 
+        /// title="Keybind and modifier" /></example>
+        public Keybind(string id, string name, KeyCode key, KeyCode modifier)
 		{
 			ID = id;
 			Name = name;
@@ -104,11 +110,13 @@ namespace MSCLoader
 			Modifier = modifier;
 		}
 
-		/// <summary>
-		/// Checks if the Keybind is being held down.
-		/// </summary>
-		/// <returns>If the Keybind is being held down.</returns>
-		public bool IsPressed()
+        /// <summary>
+        /// Checks if the Keybind is being held down.
+        /// </summary>
+        /// <returns>If the Keybind is being held down.</returns>
+        /// <example><code source="Examples.cs" region="KeyBindPress" lang="C#" 
+        /// title="Keybind and modifier" /></example>
+        public bool IsPressed()
 		{
 			if (Modifier != KeyCode.None)
 			{
@@ -118,11 +126,13 @@ namespace MSCLoader
 			return Input.GetKey(Key);
 		}
 
-		/// <summary>
-		/// Checks if the Keybind was just pressed.
-		/// </summary>
-		/// <returns>If the Keybind is being pressed.</returns>
-		public bool IsDown()
+        /// <summary>
+        /// Checks if the Keybind was just pressed.
+        /// </summary>
+        /// <returns>If the Keybind is being pressed.</returns>
+        /// <example><code source="Examples.cs" region="KeyBindDown" lang="C#" 
+        /// title="Keybind and modifier" /></example>
+        public bool IsDown()
 		{
 			if (Modifier != KeyCode.None)
 			{
