@@ -69,6 +69,7 @@
         /// <summary>
         /// Standard unity OnGUI().
         /// </summary>
+        /// <example>see https://docs.unity3d.com/500/Documentation/Manual/GUIScriptingGuide.html</example>
         public virtual void OnGUI() { }
 
 		/// <summary>
