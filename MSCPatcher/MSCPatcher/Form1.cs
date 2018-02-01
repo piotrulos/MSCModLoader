@@ -18,8 +18,8 @@ namespace MSCPatcher
 {
     public partial class Form1 : Form
     {
-        static Form1 form1;
-        private static string mscPath = "(unknown)";
+        public static Form1 form1;
+        public static string mscPath = "(unknown)";
         private string AssemblyPath = @"mysummercar_Data\Managed\Assembly-CSharp.dll";
         private string AssemblyFullPath = null;
         private string ModificationsXmlPath = "MSCPatcher.Modifications_MD.xml";
@@ -140,6 +140,7 @@ namespace MSCPatcher
                     GFradio.Checked = true;
                 }
                 Log.Write(string.Format("Game folder set to: {0}{1}", mscPath, Environment.NewLine));
+                MainData.loadMainData(OutputlogLabel);
                 checkPatchStatus();
             }
             if(!Environment.Is64BitOperatingSystem)
@@ -511,6 +512,7 @@ namespace MSCPatcher
                 Log.Write(string.Format("Game folder set to: {0}", mscPath));
                 File.WriteAllText("MSCFolder.txt", mscPath);
                 Log.Write(string.Format("Game folder is saved as: {0}{1}", mscPath, Environment.NewLine));
+                MainData.loadMainData(OutputlogLabel);
                 checkPatchStatus();
             }
 
@@ -677,6 +679,11 @@ namespace MSCPatcher
         private void button4_Click(object sender, EventArgs e)
         {
             LaunchMSCsruSteam();
+        }
+
+        private void engineButton_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
