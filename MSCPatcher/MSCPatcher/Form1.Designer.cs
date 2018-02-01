@@ -42,7 +42,6 @@
             this.selectPathToMSC = new System.Windows.Forms.OpenFileDialog();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.folderPage = new System.Windows.Forms.TabPage();
-            this.logPage = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.ADlabel = new System.Windows.Forms.Label();
             this.GFlabel = new System.Windows.Forms.Label();
@@ -50,25 +49,30 @@
             this.ADradio = new System.Windows.Forms.RadioButton();
             this.GFradio = new System.Windows.Forms.RadioButton();
             this.MDradio = new System.Windows.Forms.RadioButton();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.logBox = new System.Windows.Forms.TextBox();
             this.settingPage = new System.Windows.Forms.TabPage();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.enOutputlog = new System.Windows.Forms.CheckBox();
+            this.status64 = new System.Windows.Forms.Label();
+            this.logPage = new System.Windows.Forms.TabPage();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.logBox = new System.Windows.Forms.TextBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.statusBarLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.status64 = new System.Windows.Forms.Label();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.OutputlogLabel = new System.Windows.Forms.Label();
+            this.enOutputlog = new System.Windows.Forms.CheckBox();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.engineButton = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.folderPage.SuspendLayout();
-            this.logPage.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            this.groupBox3.SuspendLayout();
             this.settingPage.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.logPage.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.statusStrip1.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
@@ -186,7 +190,7 @@
             this.tabControl1.Location = new System.Drawing.Point(12, 96);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(447, 163);
+            this.tabControl1.Size = new System.Drawing.Size(447, 162);
             this.tabControl1.TabIndex = 5;
             // 
             // folderPage
@@ -195,21 +199,10 @@
             this.folderPage.Location = new System.Drawing.Point(4, 22);
             this.folderPage.Name = "folderPage";
             this.folderPage.Padding = new System.Windows.Forms.Padding(3);
-            this.folderPage.Size = new System.Drawing.Size(439, 137);
+            this.folderPage.Size = new System.Drawing.Size(439, 136);
             this.folderPage.TabIndex = 0;
             this.folderPage.Text = "Mods folder";
             this.folderPage.UseVisualStyleBackColor = true;
-            // 
-            // logPage
-            // 
-            this.logPage.Controls.Add(this.groupBox3);
-            this.logPage.Location = new System.Drawing.Point(4, 22);
-            this.logPage.Name = "logPage";
-            this.logPage.Padding = new System.Windows.Forms.Padding(3);
-            this.logPage.Size = new System.Drawing.Size(439, 137);
-            this.logPage.TabIndex = 1;
-            this.logPage.Text = "Log";
-            this.logPage.UseVisualStyleBackColor = true;
             // 
             // groupBox2
             // 
@@ -222,7 +215,7 @@
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(3, 3);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(433, 131);
+            this.groupBox2.Size = new System.Drawing.Size(433, 130);
             this.groupBox2.TabIndex = 4;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Select mod folder";
@@ -292,6 +285,49 @@
             this.MDradio.Text = "My Documents \r\n ";
             this.MDradio.UseVisualStyleBackColor = true;
             // 
+            // settingPage
+            // 
+            this.settingPage.Controls.Add(this.groupBox5);
+            this.settingPage.Controls.Add(this.groupBox4);
+            this.settingPage.Location = new System.Drawing.Point(4, 22);
+            this.settingPage.Name = "settingPage";
+            this.settingPage.Padding = new System.Windows.Forms.Padding(3);
+            this.settingPage.Size = new System.Drawing.Size(439, 136);
+            this.settingPage.TabIndex = 2;
+            this.settingPage.Text = "Settings";
+            this.settingPage.ToolTipText = "Enable output_log.txt useful for debugging and troubleshooting";
+            this.settingPage.UseVisualStyleBackColor = true;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.status64);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Size = new System.Drawing.Size(439, 137);
+            this.tabPage1.TabIndex = 3;
+            this.tabPage1.Text = "64-bit patch";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // status64
+            // 
+            this.status64.AutoSize = true;
+            this.status64.Location = new System.Drawing.Point(5, 4);
+            this.status64.Name = "status64";
+            this.status64.Size = new System.Drawing.Size(12, 13);
+            this.status64.TabIndex = 0;
+            this.status64.Text = "s";
+            // 
+            // logPage
+            // 
+            this.logPage.Controls.Add(this.groupBox3);
+            this.logPage.Location = new System.Drawing.Point(4, 22);
+            this.logPage.Name = "logPage";
+            this.logPage.Padding = new System.Windows.Forms.Padding(3);
+            this.logPage.Size = new System.Drawing.Size(439, 137);
+            this.logPage.TabIndex = 1;
+            this.logPage.Text = "Log";
+            this.logPage.UseVisualStyleBackColor = true;
+            // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.logBox);
@@ -313,48 +349,11 @@
             this.logBox.Size = new System.Drawing.Size(427, 112);
             this.logBox.TabIndex = 0;
             // 
-            // settingPage
-            // 
-            this.settingPage.Controls.Add(this.OutputlogLabel);
-            this.settingPage.Controls.Add(this.enOutputlog);
-            this.settingPage.Location = new System.Drawing.Point(4, 22);
-            this.settingPage.Name = "settingPage";
-            this.settingPage.Padding = new System.Windows.Forms.Padding(3);
-            this.settingPage.Size = new System.Drawing.Size(439, 137);
-            this.settingPage.TabIndex = 2;
-            this.settingPage.Text = "Settings";
-            this.settingPage.ToolTipText = "Enable output_log.txt useful for debugging and troubleshooting";
-            this.settingPage.UseVisualStyleBackColor = true;
-            // 
-            // tabPage1
-            // 
-            this.tabPage1.Controls.Add(this.status64);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Size = new System.Drawing.Size(439, 137);
-            this.tabPage1.TabIndex = 3;
-            this.tabPage1.Text = "64-bit patch";
-            this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // enOutputlog
-            // 
-            this.enOutputlog.AutoSize = true;
-            this.enOutputlog.Checked = true;
-            this.enOutputlog.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.enOutputlog.Location = new System.Drawing.Point(7, 7);
-            this.enOutputlog.Name = "enOutputlog";
-            this.enOutputlog.Size = new System.Drawing.Size(126, 30);
-            this.enOutputlog.TabIndex = 0;
-            this.enOutputlog.Text = "Enable output_log.txt\r\n ";
-            this.toolTip1.SetToolTip(this.enOutputlog, "Enables unity output_log.txt\r\nThis file is helpfull with debugging and troublesho" +
-        "oting\r\n\r\nRecomended to turn this on.");
-            this.enOutputlog.UseVisualStyleBackColor = true;
-            // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.statusBarLabel});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 262);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 261);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(471, 22);
             this.statusStrip1.SizingGrip = false;
@@ -367,31 +366,74 @@
             this.statusBarLabel.Size = new System.Drawing.Size(38, 17);
             this.statusBarLabel.Text = "status";
             // 
-            // status64
+            // groupBox4
             // 
-            this.status64.AutoSize = true;
-            this.status64.Location = new System.Drawing.Point(5, 4);
-            this.status64.Name = "status64";
-            this.status64.Size = new System.Drawing.Size(12, 13);
-            this.status64.TabIndex = 0;
-            this.status64.Text = "s";
+            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox4.Controls.Add(this.engineButton);
+            this.groupBox4.Controls.Add(this.OutputlogLabel);
+            this.groupBox4.Controls.Add(this.enOutputlog);
+            this.groupBox4.Location = new System.Drawing.Point(5, 6);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(153, 124);
+            this.groupBox4.TabIndex = 29;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Settings";
             // 
             // OutputlogLabel
             // 
             this.OutputlogLabel.AutoSize = true;
             this.OutputlogLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.OutputlogLabel.ForeColor = System.Drawing.Color.Orange;
-            this.OutputlogLabel.Location = new System.Drawing.Point(23, 24);
+            this.OutputlogLabel.Location = new System.Drawing.Point(22, 36);
             this.OutputlogLabel.Name = "OutputlogLabel";
             this.OutputlogLabel.Size = new System.Drawing.Size(14, 13);
-            this.OutputlogLabel.TabIndex = 28;
+            this.OutputlogLabel.TabIndex = 30;
             this.OutputlogLabel.Text = "?";
+            // 
+            // enOutputlog
+            // 
+            this.enOutputlog.AutoSize = true;
+            this.enOutputlog.Checked = true;
+            this.enOutputlog.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.enOutputlog.Location = new System.Drawing.Point(6, 19);
+            this.enOutputlog.Name = "enOutputlog";
+            this.enOutputlog.Size = new System.Drawing.Size(126, 30);
+            this.enOutputlog.TabIndex = 29;
+            this.enOutputlog.Text = "Enable output_log.txt\r\n ";
+            this.toolTip1.SetToolTip(this.enOutputlog, "Enables unity output_log.txt\r\nThis file is helpfull with debugging and troublesho" +
+        "oting\r\n\r\nRecomended to turn this on.");
+            this.enOutputlog.UseVisualStyleBackColor = true;
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox5.Location = new System.Drawing.Point(162, 6);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(278, 124);
+            this.groupBox5.TabIndex = 30;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Debug Stuff";
+            // 
+            // engineButton
+            // 
+            this.engineButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.engineButton.Location = new System.Drawing.Point(6, 95);
+            this.engineButton.Name = "engineButton";
+            this.engineButton.Size = new System.Drawing.Size(141, 23);
+            this.engineButton.TabIndex = 31;
+            this.engineButton.Text = "Apply these settings";
+            this.engineButton.UseVisualStyleBackColor = true;
+            this.engineButton.Click += new System.EventHandler(this.engineButton_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(471, 284);
+            this.ClientSize = new System.Drawing.Size(471, 283);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.groupBox1);
@@ -403,17 +445,18 @@
             this.groupBox1.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.folderPage.ResumeLayout(false);
-            this.logPage.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
             this.settingPage.ResumeLayout(false);
-            this.settingPage.PerformLayout();
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
+            this.logPage.ResumeLayout(false);
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -444,13 +487,16 @@
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.TextBox logBox;
         private System.Windows.Forms.TabPage settingPage;
-        private System.Windows.Forms.CheckBox enOutputlog;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel statusBarLabel;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.Label status64;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Label OutputlogLabel;
+        private System.Windows.Forms.CheckBox enOutputlog;
+        private System.Windows.Forms.Button engineButton;
     }
 }
 

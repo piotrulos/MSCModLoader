@@ -417,26 +417,14 @@ namespace MSCLoader
             try
             {
                 Assembly asm = null;
-                
+
                 //STILL TESTING - Loading for proper debug
                 asm = Assembly.LoadFrom(file);               
-                /*   byte[] asmFile = File.ReadAllBytes(file);
-                if (File.Exists(Path.ChangeExtension(file, "pdb")))
-                {
-                    byte[] pdbFile = File.ReadAllBytes(Path.ChangeExtension(file, "pdb"));
-                    asm = AppDomain.CurrentDomain.Load(asmFile, pdbFile);
-                    Assembly[] ass = AppDomain.CurrentDomain.GetAssemblies();
-                    ModConsole.Print(AppDomain.CurrentDomain.GetAssemblies());
-                }
-                else
-                {
-                    asm = AppDomain.CurrentDomain.Load(asmFile);
-                }*/
-                //Assembly asm = Assembly.Load(File.ReadAllBytes(file)); //test for now
                 bool isMod = false;
-                // Look through all public classes
+
                 AssemblyName[] list = asm.GetReferencedAssemblies();
-                
+      
+                // Look through all public classes                
                 foreach (Type type in asm.GetTypes())
                 {
                     string msVer = null;
@@ -482,6 +470,11 @@ namespace MSCLoader
                 InvalidMods.Add(Path.GetFileName(file));
             }
 
+        }
+
+        private static void ModLoader_AssemblyLoad(object sender, AssemblyLoadEventArgs args)
+        {
+            throw new NotImplementedException();
         }
 
         private static void LoadMod(Mod mod, string msver)
