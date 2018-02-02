@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,15 +10,6 @@ namespace MSCPatcher
 {
     class DebugStuff
     {
-        /*
-         * mono.dll MD5 hashes:
-         * 
-         * 971E42FED544A21FAE4448DBC3F5FE9D (32-bit, normal)
-         * 62629B5CA9C1BBE3C97A3E8C91D05D3A (32-bit, debug)
-         * F190C7ECFE414FB407137C1D95AC310E (64-bit, normal)
-         * 3EE5C3BD42B61AE820A028AF35DF99C0 (64-bit, debug)
-         * 
-         */
 
         static string monoPath = null;
 
@@ -28,13 +20,13 @@ namespace MSCPatcher
                 monoPath = Path.Combine(Form1.mscPath, @"mysummercar_Data\Mono\mono.dll");
                 switch(Form1.MD5HashFile(monoPath))
                 {
-                    case "971E42FED544A21FAE4448DBC3F5FE9D":
+                    case MD5FileHashes.mono32normal:
                         return 1;
-                    case "62629B5CA9C1BBE3C97A3E8C91D05D3A":
+                    case MD5FileHashes.mono32debug:
                         return 2;
-                    case "F190C7ECFE414FB407137C1D95AC310E":
+                    case MD5FileHashes.mono64normal:
                         return 3;
-                    case "3EE5C3BD42B61AE820A028AF35DF99C0":
+                    case MD5FileHashes.mono64debug:
                         return 4;
                     default:
                         return 0;
@@ -42,6 +34,36 @@ namespace MSCPatcher
                 
             }
             return 0;
+        }
+
+        public static void EnableDebugging(bool is64, string modpath)
+        {
+            Patcher.DeleteIfExists(String.Format("{0}.normal", monoPath));
+            File.Move(monoPath, String.Format("{0}.normal", monoPath));
+            if(is64)
+                File.Copy(Path.GetFullPath(Path.Combine(@"Debug\64", "mono.dll")), monoPath, true);
+            else
+                File.Copy(Path.GetFullPath(Path.Combine(@"Debug\32", "mono.dll")), monoPath, true);
+            Log.Write("Copying debug file.....mono.dll");
+            File.Copy(Path.GetFullPath(Path.Combine("Debug", "pdb2mdb.exe")), Path.Combine(modpath, "pdb2mdb.exe"), true);
+            Log.Write("Copying debug file.....pdb2mdb.exe");
+            File.Copy(Path.GetFullPath(Path.Combine("Debug", "debug.bat")), Path.Combine(modpath,"debug.bat"), true);
+            Log.Write("Copying debug file.....debug.bat");
+            ProcessStartInfo startInfo = new ProcessStartInfo(Path.Combine("Debug", "en_debugger.bat"));
+            startInfo.Verb = "runas";
+            Process en_debug = Process.Start(startInfo);
+            en_debug.WaitForExit();
+            if (Environment.GetEnvironmentVariable("DNSPY_UNITY_DBG", EnvironmentVariableTarget.Machine) != null)
+                MessageBox.Show("Debugging Enabled successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            else
+                MessageBox.Show("Failed to set debug variable!", "Failed!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+        public static void DisableDebugging()
+        {
+            Patcher.DeleteIfExists(monoPath);
+            File.Move(String.Format("{0}.normal", monoPath), monoPath);
+            Log.Write("Recovering backup.....mono.dll");
+            MessageBox.Show("Debugging Disabled successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

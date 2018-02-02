@@ -33,7 +33,7 @@ namespace MSCPatcher
         private string modPath = "";
 
         private static Dictionary<string, AssemblyDefinition> mLoadedAssemblies = new Dictionary<string, AssemblyDefinition>();
-
+        private bool is64bin = false;
         private bool isgameUpdated = false; //game updated, remove backup and patch new Assembly-CSharp.dll
         private bool oldPatchFound = false; //0.1 patch found, recover and patch Assembly-CSharp.original.dll and cleanup unused files
         private bool oldFilesFound = false; //0.1 files found, but no patch, cleanup files and patch new Assembly-CSharp.dll
@@ -71,6 +71,7 @@ namespace MSCPatcher
                 Log.Write(string.Format("Found mods folder in: {0}", mdPath));
                 MDlabel.ForeColor = Color.Green;
                 MDradio.Checked = true;
+                modPath = mdPath;
             }
             ADlabel.Text = adPath;
             if (Directory.Exists(adPath))
@@ -78,6 +79,7 @@ namespace MSCPatcher
                 Log.Write(string.Format("Found mods folder in: {0}", adPath));
                 ADlabel.ForeColor = Color.Green;
                 ADradio.Checked = true;
+                modPath = adPath;
             }
             try
             {
@@ -139,6 +141,7 @@ namespace MSCPatcher
                     Log.Write(string.Format("Found mods folder in: {0}", gfPath));
                     GFlabel.ForeColor = Color.Green;
                     GFradio.Checked = true;
+                    modPath = gfPath;
                 }
                 Log.Write(string.Format("Game folder set to: {0}{1}", mscPath, Environment.NewLine));
 
@@ -167,6 +170,7 @@ namespace MSCPatcher
                     debugStatus2.ForeColor = Color.Green;
                     debugStatus2.Text = "You can enable debugging!";
                     enDebug.Enabled = true;
+                    is64bin = false;
                     break;
                 case 2: //32 debug
                     debugStatus.ForeColor = Color.Green;
@@ -174,6 +178,7 @@ namespace MSCPatcher
                     debugStatus2.ForeColor = Color.Green;
                     debugStatus2.Text = "You can debug your mods!";
                     disDebug.Enabled = true;
+                    is64bin = false;
                     break;
                 case 3: //64 normal
                     debugStatus.ForeColor = Color.Red;
@@ -181,6 +186,7 @@ namespace MSCPatcher
                     debugStatus2.ForeColor = Color.Green;
                     debugStatus2.Text = "You can enable debugging!";
                     enDebug.Enabled = true;
+                    is64bin = true;
                     break;
                 case 4: //64 debug
                     debugStatus.ForeColor = Color.Green;
@@ -188,6 +194,7 @@ namespace MSCPatcher
                     debugStatus2.ForeColor = Color.Green;
                     debugStatus2.Text = "You can debug your mods!";
                     disDebug.Enabled = true;
+                    is64bin = true;
                     break;
                 default: //unknown mono detected (updated unity?)
                     debugStatus.ForeColor = Color.Red;
@@ -555,6 +562,7 @@ namespace MSCPatcher
                     Log.Write(string.Format("Found mods folder in: {0}", gfPath));
                     GFlabel.ForeColor = Color.Green;
                     GFradio.Checked = true;
+                    modPath = gfPath;
                 }
                 Log.Write(string.Format("Game folder set to: {0}", mscPath));
                 File.WriteAllText("MSCFolder.txt", mscPath);
@@ -735,6 +743,26 @@ namespace MSCPatcher
 
             //check if everything is ok
             MainData.loadMainData(OutputlogLabel, resDialogLabel, resDialogCheck);
+
+        }
+
+        private void enDebug_Click(object sender, EventArgs e)
+        {
+            if(debugCheckbox.Checked)
+            {
+                DebugStuff.EnableDebugging(is64bin, modPath);
+                debugStatusInfo();
+            }
+            else
+            {
+                MessageBox.Show("Please select that you understand what debugging is.", "Read info first", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void disDebug_Click(object sender, EventArgs e)
+        {
+            DebugStuff.DisableDebugging();
+            debugStatusInfo();
         }
     }
 }
