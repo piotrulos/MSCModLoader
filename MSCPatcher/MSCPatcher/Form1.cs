@@ -124,6 +124,7 @@ namespace MSCPatcher
             catch (Exception e)
             {
                 Log.Write(string.Format("Check for new version failed with error: {0}", e.Message));
+                statusBarLabel.Text = "MSCPatcher Ready!";
             }
             Log.Write("MSCPatcher ready!", true, true);
 
@@ -140,7 +141,7 @@ namespace MSCPatcher
                     GFradio.Checked = true;
                 }
                 Log.Write(string.Format("Game folder set to: {0}{1}", mscPath, Environment.NewLine));
-                MainData.loadMainData(OutputlogLabel);
+                MainData.loadMainData(OutputlogLabel, resDialogLabel, resDialogCheck);
                 checkPatchStatus();
             }
             if(!Environment.Is64BitOperatingSystem)
@@ -512,7 +513,7 @@ namespace MSCPatcher
                 Log.Write(string.Format("Game folder set to: {0}", mscPath));
                 File.WriteAllText("MSCFolder.txt", mscPath);
                 Log.Write(string.Format("Game folder is saved as: {0}{1}", mscPath, Environment.NewLine));
-                MainData.loadMainData(OutputlogLabel);
+                MainData.loadMainData(OutputlogLabel, resDialogLabel, resDialogCheck);
                 checkPatchStatus();
             }
 
@@ -683,7 +684,11 @@ namespace MSCPatcher
 
         private void engineButton_Click(object sender, EventArgs e)
         {
+            //Apply changes to mainData 
+            MainData.ApplyChanges(enOutputlog.Checked, resDialogCheck.Checked);
 
+            //check if everything is ok
+            MainData.loadMainData(OutputlogLabel, resDialogLabel, resDialogCheck);
         }
     }
 }
