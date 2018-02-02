@@ -141,9 +141,13 @@ namespace MSCPatcher
                     GFradio.Checked = true;
                 }
                 Log.Write(string.Format("Game folder set to: {0}{1}", mscPath, Environment.NewLine));
+
                 MainData.loadMainData(OutputlogLabel, resDialogLabel, resDialogCheck);
+
+                debugStatusInfo();
                 checkPatchStatus();
             }
+
             if(!Environment.Is64BitOperatingSystem)
             {
                 status64.Text = "You are not running 64-bit Windows.";
@@ -151,6 +155,48 @@ namespace MSCPatcher
             }
         }
 
+        void debugStatusInfo()
+        {
+            enDebug.Enabled = false;
+            disDebug.Enabled = false;
+            switch(DebugStuff.checkDebugStatus())
+            {
+                case 1: //32 normal
+                    debugStatus.ForeColor = Color.Red;
+                    debugStatus.Text = "Debugging is disabled (32-bit)";
+                    debugStatus2.ForeColor = Color.Green;
+                    debugStatus2.Text = "You can enable debugging!";
+                    enDebug.Enabled = true;
+                    break;
+                case 2: //32 debug
+                    debugStatus.ForeColor = Color.Green;
+                    debugStatus.Text = "Debugging is enabled (32-bit)";
+                    debugStatus2.ForeColor = Color.Green;
+                    debugStatus2.Text = "You can debug your mods!";
+                    disDebug.Enabled = true;
+                    break;
+                case 3: //64 normal
+                    debugStatus.ForeColor = Color.Red;
+                    debugStatus.Text = "Debugging is disabled (64-bit)";
+                    debugStatus2.ForeColor = Color.Green;
+                    debugStatus2.Text = "You can enable debugging!";
+                    enDebug.Enabled = true;
+                    break;
+                case 4: //64 debug
+                    debugStatus.ForeColor = Color.Green;
+                    debugStatus.Text = "Debugging is enabled (64-bit)";
+                    debugStatus2.ForeColor = Color.Green;
+                    debugStatus2.Text = "You can debug your mods!";
+                    disDebug.Enabled = true;
+                    break;
+                default: //unknown mono detected (updated unity?)
+                    debugStatus.ForeColor = Color.Red;
+                    debugStatus.Text = "Unknown files detected!";
+                    debugStatus2.ForeColor = Color.Red;
+                    debugStatus2.Text = "Cannot enable debugging!";
+                    break;
+            }
+        }
         public void PatchCheck()
         {
             if (oldFilesFound)
@@ -618,7 +664,7 @@ namespace MSCPatcher
                 oldPatchFound = true;
             }
         }
-        public string MD5HashFile(string fn)
+        public static string MD5HashFile(string fn)
         {
             byte[] hash = MD5.Create().ComputeHash(File.ReadAllBytes(fn));
             return BitConverter.ToString(hash).Replace("-", "");
