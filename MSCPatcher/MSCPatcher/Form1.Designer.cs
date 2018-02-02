@@ -70,6 +70,7 @@
             this.disDebug = new System.Windows.Forms.Button();
             this.resDialogCheck = new System.Windows.Forms.CheckBox();
             this.resDialogLabel = new System.Windows.Forms.Label();
+            this.debugStatus2 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.folderPage.SuspendLayout();
@@ -311,6 +312,7 @@
             this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox5.Controls.Add(this.debugStatus2);
             this.groupBox5.Controls.Add(this.disDebug);
             this.groupBox5.Controls.Add(this.enDebug);
             this.groupBox5.Controls.Add(this.debugStatus);
@@ -467,14 +469,17 @@
             // debugStatus
             // 
             this.debugStatus.AutoSize = true;
+            this.debugStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.debugStatus.ForeColor = System.Drawing.Color.Orange;
             this.debugStatus.Location = new System.Drawing.Point(6, 55);
             this.debugStatus.Name = "debugStatus";
-            this.debugStatus.Size = new System.Drawing.Size(35, 13);
+            this.debugStatus.Size = new System.Drawing.Size(14, 13);
             this.debugStatus.TabIndex = 33;
-            this.debugStatus.Text = "status";
+            this.debugStatus.Text = "?";
             // 
             // enDebug
             // 
+            this.enDebug.Enabled = false;
             this.enDebug.Location = new System.Drawing.Point(9, 95);
             this.enDebug.Name = "enDebug";
             this.enDebug.Size = new System.Drawing.Size(121, 23);
@@ -484,6 +489,7 @@
             // 
             // disDebug
             // 
+            this.disDebug.Enabled = false;
             this.disDebug.Location = new System.Drawing.Point(136, 95);
             this.disDebug.Name = "disDebug";
             this.disDebug.Size = new System.Drawing.Size(135, 23);
@@ -513,6 +519,17 @@
             this.resDialogLabel.Size = new System.Drawing.Size(14, 13);
             this.resDialogLabel.TabIndex = 33;
             this.resDialogLabel.Text = "?";
+            // 
+            // debugStatus2
+            // 
+            this.debugStatus2.AutoSize = true;
+            this.debugStatus2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.debugStatus2.ForeColor = System.Drawing.Color.Orange;
+            this.debugStatus2.Location = new System.Drawing.Point(6, 69);
+            this.debugStatus2.Name = "debugStatus2";
+            this.debugStatus2.Size = new System.Drawing.Size(14, 13);
+            this.debugStatus2.TabIndex = 36;
+            this.debugStatus2.Text = "?";
             // 
             // Form1
             // 
@@ -591,6 +608,7 @@
         private System.Windows.Forms.Button disDebug;
         private System.Windows.Forms.CheckBox resDialogCheck;
         private System.Windows.Forms.Label resDialogLabel;
+        private System.Windows.Forms.Label debugStatus2;
     }
 }
 
