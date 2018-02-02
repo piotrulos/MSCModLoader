@@ -86,6 +86,7 @@ namespace MSCPatcher
 
                         stream.Close();
                     }
+                    MessageBox.Show("Changes saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception e)
                 {

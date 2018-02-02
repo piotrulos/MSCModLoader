@@ -51,7 +51,15 @@
             this.MDradio = new System.Windows.Forms.RadioButton();
             this.settingPage = new System.Windows.Forms.TabPage();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.debugStatus2 = new System.Windows.Forms.Label();
+            this.disDebug = new System.Windows.Forms.Button();
+            this.enDebug = new System.Windows.Forms.Button();
+            this.debugStatus = new System.Windows.Forms.Label();
+            this.debugCheckbox = new System.Windows.Forms.CheckBox();
+            this.linkDebug = new System.Windows.Forms.LinkLabel();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.resDialogLabel = new System.Windows.Forms.Label();
+            this.resDialogCheck = new System.Windows.Forms.CheckBox();
             this.engineButton = new System.Windows.Forms.Button();
             this.OutputlogLabel = new System.Windows.Forms.Label();
             this.enOutputlog = new System.Windows.Forms.CheckBox();
@@ -63,14 +71,6 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.statusBarLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.linkDebug = new System.Windows.Forms.LinkLabel();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.debugStatus = new System.Windows.Forms.Label();
-            this.enDebug = new System.Windows.Forms.Button();
-            this.disDebug = new System.Windows.Forms.Button();
-            this.resDialogCheck = new System.Windows.Forms.CheckBox();
-            this.resDialogLabel = new System.Windows.Forms.Label();
-            this.debugStatus2 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.folderPage.SuspendLayout();
@@ -316,7 +316,7 @@
             this.groupBox5.Controls.Add(this.disDebug);
             this.groupBox5.Controls.Add(this.enDebug);
             this.groupBox5.Controls.Add(this.debugStatus);
-            this.groupBox5.Controls.Add(this.checkBox1);
+            this.groupBox5.Controls.Add(this.debugCheckbox);
             this.groupBox5.Controls.Add(this.linkDebug);
             this.groupBox5.Location = new System.Drawing.Point(162, 6);
             this.groupBox5.Name = "groupBox5";
@@ -324,6 +324,70 @@
             this.groupBox5.TabIndex = 30;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Debug Stuff";
+            // 
+            // debugStatus2
+            // 
+            this.debugStatus2.AutoSize = true;
+            this.debugStatus2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.debugStatus2.ForeColor = System.Drawing.Color.Orange;
+            this.debugStatus2.Location = new System.Drawing.Point(6, 69);
+            this.debugStatus2.Name = "debugStatus2";
+            this.debugStatus2.Size = new System.Drawing.Size(14, 13);
+            this.debugStatus2.TabIndex = 36;
+            this.debugStatus2.Text = "?";
+            // 
+            // disDebug
+            // 
+            this.disDebug.Enabled = false;
+            this.disDebug.Location = new System.Drawing.Point(136, 95);
+            this.disDebug.Name = "disDebug";
+            this.disDebug.Size = new System.Drawing.Size(135, 23);
+            this.disDebug.TabIndex = 35;
+            this.disDebug.Text = "Disable Debugging";
+            this.disDebug.UseVisualStyleBackColor = true;
+            this.disDebug.Click += new System.EventHandler(this.disDebug_Click);
+            // 
+            // enDebug
+            // 
+            this.enDebug.Enabled = false;
+            this.enDebug.Location = new System.Drawing.Point(9, 95);
+            this.enDebug.Name = "enDebug";
+            this.enDebug.Size = new System.Drawing.Size(121, 23);
+            this.enDebug.TabIndex = 34;
+            this.enDebug.Text = "Enable Debugging";
+            this.enDebug.UseVisualStyleBackColor = true;
+            this.enDebug.Click += new System.EventHandler(this.enDebug_Click);
+            // 
+            // debugStatus
+            // 
+            this.debugStatus.AutoSize = true;
+            this.debugStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.debugStatus.ForeColor = System.Drawing.Color.Orange;
+            this.debugStatus.Location = new System.Drawing.Point(6, 55);
+            this.debugStatus.Name = "debugStatus";
+            this.debugStatus.Size = new System.Drawing.Size(14, 13);
+            this.debugStatus.TabIndex = 33;
+            this.debugStatus.Text = "?";
+            // 
+            // debugCheckbox
+            // 
+            this.debugCheckbox.AutoSize = true;
+            this.debugCheckbox.Location = new System.Drawing.Point(9, 35);
+            this.debugCheckbox.Name = "debugCheckbox";
+            this.debugCheckbox.Size = new System.Drawing.Size(140, 17);
+            this.debugCheckbox.TabIndex = 32;
+            this.debugCheckbox.Text = "I understand what is this";
+            this.debugCheckbox.UseVisualStyleBackColor = true;
+            // 
+            // linkDebug
+            // 
+            this.linkDebug.AutoSize = true;
+            this.linkDebug.Location = new System.Drawing.Point(6, 16);
+            this.linkDebug.Name = "linkDebug";
+            this.linkDebug.Size = new System.Drawing.Size(224, 13);
+            this.linkDebug.TabIndex = 31;
+            this.linkDebug.TabStop = true;
+            this.linkDebug.Text = "Click here to read more info about Debugging!";
             // 
             // groupBox4
             // 
@@ -340,6 +404,29 @@
             this.groupBox4.TabIndex = 29;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Settings";
+            // 
+            // resDialogLabel
+            // 
+            this.resDialogLabel.AutoSize = true;
+            this.resDialogLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.resDialogLabel.ForeColor = System.Drawing.Color.Orange;
+            this.resDialogLabel.Location = new System.Drawing.Point(22, 69);
+            this.resDialogLabel.Name = "resDialogLabel";
+            this.resDialogLabel.Size = new System.Drawing.Size(14, 13);
+            this.resDialogLabel.TabIndex = 33;
+            this.resDialogLabel.Text = "?";
+            // 
+            // resDialogCheck
+            // 
+            this.resDialogCheck.AutoSize = true;
+            this.resDialogCheck.Location = new System.Drawing.Point(6, 52);
+            this.resDialogCheck.Name = "resDialogCheck";
+            this.resDialogCheck.Size = new System.Drawing.Size(140, 30);
+            this.resDialogCheck.TabIndex = 32;
+            this.resDialogCheck.Text = "Disable resolution dialog\r\n ";
+            this.toolTip1.SetToolTip(this.resDialogCheck, "If checked it disables resolution dialog.\r\nGame will run directly without showing" +
+        " \"resolution dialog\"");
+            this.resDialogCheck.UseVisualStyleBackColor = true;
             // 
             // engineButton
             // 
@@ -391,11 +478,13 @@
             // status64
             // 
             this.status64.AutoSize = true;
-            this.status64.Location = new System.Drawing.Point(5, 4);
+            this.status64.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.status64.ForeColor = System.Drawing.Color.Orange;
+            this.status64.Location = new System.Drawing.Point(14, 15);
             this.status64.Name = "status64";
-            this.status64.Size = new System.Drawing.Size(12, 13);
+            this.status64.Size = new System.Drawing.Size(14, 13);
             this.status64.TabIndex = 0;
-            this.status64.Text = "s";
+            this.status64.Text = "?";
             // 
             // logPage
             // 
@@ -445,91 +534,6 @@
             this.statusBarLabel.Name = "statusBarLabel";
             this.statusBarLabel.Size = new System.Drawing.Size(38, 17);
             this.statusBarLabel.Text = "status";
-            // 
-            // linkDebug
-            // 
-            this.linkDebug.AutoSize = true;
-            this.linkDebug.Location = new System.Drawing.Point(6, 16);
-            this.linkDebug.Name = "linkDebug";
-            this.linkDebug.Size = new System.Drawing.Size(224, 13);
-            this.linkDebug.TabIndex = 31;
-            this.linkDebug.TabStop = true;
-            this.linkDebug.Text = "Click here to read more info about Debugging!";
-            // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(9, 35);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(140, 17);
-            this.checkBox1.TabIndex = 32;
-            this.checkBox1.Text = "I understand what is this";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            // 
-            // debugStatus
-            // 
-            this.debugStatus.AutoSize = true;
-            this.debugStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.debugStatus.ForeColor = System.Drawing.Color.Orange;
-            this.debugStatus.Location = new System.Drawing.Point(6, 55);
-            this.debugStatus.Name = "debugStatus";
-            this.debugStatus.Size = new System.Drawing.Size(14, 13);
-            this.debugStatus.TabIndex = 33;
-            this.debugStatus.Text = "?";
-            // 
-            // enDebug
-            // 
-            this.enDebug.Enabled = false;
-            this.enDebug.Location = new System.Drawing.Point(9, 95);
-            this.enDebug.Name = "enDebug";
-            this.enDebug.Size = new System.Drawing.Size(121, 23);
-            this.enDebug.TabIndex = 34;
-            this.enDebug.Text = "Enable Debugging";
-            this.enDebug.UseVisualStyleBackColor = true;
-            // 
-            // disDebug
-            // 
-            this.disDebug.Enabled = false;
-            this.disDebug.Location = new System.Drawing.Point(136, 95);
-            this.disDebug.Name = "disDebug";
-            this.disDebug.Size = new System.Drawing.Size(135, 23);
-            this.disDebug.TabIndex = 35;
-            this.disDebug.Text = "Disable Debugging";
-            this.disDebug.UseVisualStyleBackColor = true;
-            // 
-            // resDialogCheck
-            // 
-            this.resDialogCheck.AutoSize = true;
-            this.resDialogCheck.Location = new System.Drawing.Point(6, 52);
-            this.resDialogCheck.Name = "resDialogCheck";
-            this.resDialogCheck.Size = new System.Drawing.Size(140, 30);
-            this.resDialogCheck.TabIndex = 32;
-            this.resDialogCheck.Text = "Disable resolution dialog\r\n ";
-            this.toolTip1.SetToolTip(this.resDialogCheck, "If checked it disables resolution dialog.\r\nGame will run directly without showing" +
-        " \"resolution dialog\"");
-            this.resDialogCheck.UseVisualStyleBackColor = true;
-            // 
-            // resDialogLabel
-            // 
-            this.resDialogLabel.AutoSize = true;
-            this.resDialogLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.resDialogLabel.ForeColor = System.Drawing.Color.Orange;
-            this.resDialogLabel.Location = new System.Drawing.Point(22, 69);
-            this.resDialogLabel.Name = "resDialogLabel";
-            this.resDialogLabel.Size = new System.Drawing.Size(14, 13);
-            this.resDialogLabel.TabIndex = 33;
-            this.resDialogLabel.Text = "?";
-            // 
-            // debugStatus2
-            // 
-            this.debugStatus2.AutoSize = true;
-            this.debugStatus2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.debugStatus2.ForeColor = System.Drawing.Color.Orange;
-            this.debugStatus2.Location = new System.Drawing.Point(6, 69);
-            this.debugStatus2.Name = "debugStatus2";
-            this.debugStatus2.Size = new System.Drawing.Size(14, 13);
-            this.debugStatus2.TabIndex = 36;
-            this.debugStatus2.Text = "?";
             // 
             // Form1
             // 
@@ -603,7 +607,7 @@
         private System.Windows.Forms.Button engineButton;
         private System.Windows.Forms.LinkLabel linkDebug;
         private System.Windows.Forms.Label debugStatus;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox debugCheckbox;
         private System.Windows.Forms.Button enDebug;
         private System.Windows.Forms.Button disDebug;
         private System.Windows.Forms.CheckBox resDialogCheck;
