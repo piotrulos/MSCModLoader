@@ -12,46 +12,85 @@ namespace MSCPatcher
         static long offset = 0;
         static string mainDataPath = null;
 
-        public static void loadMainData(Label outputlog)
+        public static void loadMainData(Label outputlog, Label resDialog, CheckBox resDialogCheck)
         {
             if (Form1.mscPath != "(unknown)")
             {
                 mainDataPath = Path.Combine(Form1.mscPath, @"mysummercar_Data\mainData");
                 offset = FindBytes(mainDataPath, data);
-                using (var stream = new FileStream(mainDataPath, FileMode.Open, FileAccess.ReadWrite))
+                try
                 {
-                    //output_log.txt
-                    stream.Position = offset + 115;
-                    if(stream.ReadByte() == 1)
+                    using (FileStream stream = File.OpenRead(mainDataPath))
+                    //using (var stream = new FileStream(mainDataPath, FileMode.Open, FileAccess.ReadWrite))
                     {
-                        outputlog.ForeColor = Color.Green;
-                        outputlog.Text = "Enabled";
+                        //output_log.txt
+                        stream.Position = offset + 115;
+                        if (stream.ReadByte() == 1)
+                        {
+                            outputlog.ForeColor = Color.Green;
+                            outputlog.Text = "Enabled";
+                        }
+                        else
+                        {
+                            outputlog.ForeColor = Color.Red;
+                            outputlog.Text = "Disabled";
+                        }
+
+                        //resolution dialog
+                        stream.Position = offset + 96;
+                        if (stream.ReadByte() == 1)
+                        {
+                            resDialog.ForeColor = Color.Green;
+                            resDialog.Text = "Enabled";
+                            resDialogCheck.Checked = false;
+                        }
+                        else
+                        {
+                            resDialog.ForeColor = Color.Red;
+                            resDialog.Text = "Disabled";
+                            resDialogCheck.Checked = true;
+
+                        }
+
+                        stream.Close();
                     }
-                    else
-                    {
-                        outputlog.ForeColor = Color.Red;
-                        outputlog.Text = "Disabled";
-                    }
-                    // stream.WriteByte(0x04);
-                    stream.Close();
+                }
+                catch(Exception e)
+                {
+                    MessageBox.Show(string.Format("Failed to read data from file.{1}{1}Error details:{1}{0}", e.Message, Environment.NewLine), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
-        public static void ApplyChanges(bool output_log)
+        public static void ApplyChanges(bool output_log, bool resDialog)
         {
             if(mainDataPath != null)
             {
-                using (var stream = new FileStream(mainDataPath, FileMode.Open, FileAccess.ReadWrite))
+                try
                 {
-                    //output_log.txt
-                    stream.Position = offset + 115;
+                    using (var stream = new FileStream(mainDataPath, FileMode.Open, FileAccess.ReadWrite))
+                    {
+                        //output_log.txt
+                        stream.Position = offset + 115;
 
-                    if (output_log)
-                        stream.WriteByte(0x01);
-                    else
-                        stream.WriteByte(0x00);
+                        if (output_log)
+                            stream.WriteByte(0x01);
+                        else
+                            stream.WriteByte(0x00);
 
-                    stream.Close();
+                        //resolution dialog
+                        stream.Position = offset + 96;
+                        if (!resDialog)
+                            stream.WriteByte(0x01);
+                        else
+                            stream.WriteByte(0x00);
+
+                        stream.Close();
+                    }
+                }
+                catch (Exception e)
+                {
+                    //thrown when file is in use in other app (like game is running)
+                    MessageBox.Show(string.Format("Failed to write data to file.{1}{1}Error details:{1}{0}", e.Message, Environment.NewLine), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
