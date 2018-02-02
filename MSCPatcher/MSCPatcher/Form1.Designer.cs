@@ -388,6 +388,7 @@
             this.linkDebug.TabIndex = 31;
             this.linkDebug.TabStop = true;
             this.linkDebug.Text = "Click here to read more info about Debugging!";
+            this.linkDebug.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkDebug_LinkClicked);
             // 
             // groupBox4
             // 

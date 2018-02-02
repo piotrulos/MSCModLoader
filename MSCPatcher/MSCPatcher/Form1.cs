@@ -106,8 +106,7 @@ namespace MSCPatcher
                     {
                         try
                         {
-                            ProcessStartInfo updateURL = new ProcessStartInfo("https://github.com/piotrulos/MSCModLoader/releases");
-                            Process.Start(updateURL);
+                            Process.Start("https://github.com/piotrulos/MSCModLoader/releases");
                             Environment.Exit(0);
                         }
                         catch (Exception ex)
@@ -722,8 +721,7 @@ namespace MSCPatcher
             try
             {
                 Log.Write("Starting game on steam", true, false);
-                ProcessStartInfo mscSteamUrl = new ProcessStartInfo("steam://rungameid/516750");
-                Process.Start(mscSteamUrl);
+                Process.Start("steam://rungameid/516750");
                 Environment.Exit(0);
             }
             catch (Exception ex)
@@ -763,6 +761,18 @@ namespace MSCPatcher
         {
             DebugStuff.DisableDebugging();
             debugStatusInfo();
+        }
+
+        private void linkDebug_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            try
+            {
+                Process.Start("https://github.com/piotrulos/MSCModLoader/wiki/Debugging-your-mods-in-Visual-Studio");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(string.Format("Failed to open url!{1}{1}Error details:{1}{0}", ex.Message, Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
