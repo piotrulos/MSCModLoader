@@ -44,7 +44,7 @@ namespace MSCLoader
         const int scrollbackSize = 150;
 
         Queue<string> scrollback = new Queue<string>(scrollbackSize);
-        List<string> commandHistory = new List<string>();
+        public List<string> commandHistory = new List<string>();
         Dictionary<string, CommandRegistration> commands = new Dictionary<string, CommandRegistration>();
 
         public string[] log { get; private set; } //Copy of scrollback as an array for easier use by ConsoleView

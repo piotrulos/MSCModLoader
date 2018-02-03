@@ -12,7 +12,8 @@ namespace MSCLoader
         public GameObject viewContainer; //Container for console view, should be a child of this GameObject
         public Text logTextArea;
         public InputField inputField;
-
+        bool wasFocused;
+        int commands, pos;
         void Start()
         {
             if (console != null)
@@ -36,6 +37,7 @@ namespace MSCLoader
                 viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().SaveConsoleSize();
             }
             setVisibility(!viewContainer.activeSelf);
+            inputField.text = string.Empty;
         }
 
         public void setVisibility(bool visible)
@@ -69,7 +71,62 @@ namespace MSCLoader
         public void runCommand()
         {
             console.runCommandString(inputField.text);
-            inputField.text = "";
+            inputField.text = string.Empty;
+            //keep active input field
+            inputField.ActivateInputField();
+            inputField.Select();
+        }
+        private void FixedUpdate()
+        {
+            if (inputField.text.Length > 0 && Input.GetKey(KeyCode.Return))
+            {
+                runCommand();
+            }
+        }
+        private void Update()
+        {
+            if (inputField.isFocused)
+            {
+                
+                if (!wasFocused)
+                {
+                    wasFocused = true;
+                    commands = console.commandHistory.Count;
+                    pos = commands;
+                }
+                if (Input.GetKeyDown(KeyCode.UpArrow))
+                {
+                    //if any command was entered before
+                    if (commands != 0)
+                    {
+                        if (pos != 0) 
+                            pos--;
+                        inputField.text = console.commandHistory[pos];
+                        inputField.MoveTextEnd(false);
+                    }
+                }
+                if (Input.GetKeyDown(KeyCode.DownArrow))
+                {
+                    if (commands != 0)
+                    {
+                        pos++;
+                        if (pos != commands)
+                        {
+                            inputField.text = console.commandHistory[pos];
+                            inputField.MoveTextEnd(false);
+                        }
+                        else
+                        {
+                            pos--;
+                        }
+                        
+                    }
+                }
+            }
+            else
+            {
+                wasFocused = false;
+            }
         }
 
     }

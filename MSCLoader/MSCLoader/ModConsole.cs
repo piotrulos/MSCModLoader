@@ -23,9 +23,7 @@ namespace MSCLoader
 
         public static ConsoleView console;
         private Keybind consoleKey = new Keybind("Open", "Open console", KeyCode.BackQuote);
-        //private Keybind consoleSizeKey = new Keybind("Console_size", "Make console bigger/smaller", KeyCode.BackQuote, KeyCode.LeftControl);
         GameObject UI;
-        //GameObject consoleObj, logView, scrollbar;
         public void CreateConsoleUI()
         {
             AssetBundle ab = LoadAssets.LoadBundle(this, "console.unity3d");
@@ -36,7 +34,7 @@ namespace MSCLoader
             console = UI.AddComponent<ConsoleView>();
             UI.GetComponent<ConsoleView>().viewContainer = UI.transform.GetChild(0).gameObject;
             UI.GetComponent<ConsoleView>().inputField = UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(0).gameObject.GetComponent<InputField>();
-            UI.GetComponent<ConsoleView>().inputField.onEndEdit.AddListener(delegate { UI.GetComponent<ConsoleView>().runCommand(); });
+            //UI.GetComponent<ConsoleView>().inputField.onEndEdit.AddListener(delegate { UI.GetComponent<ConsoleView>().runCommand(); });
             UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(1).gameObject.GetComponent<Button>().onClick.AddListener(() => UI.GetComponent<ConsoleView>().runCommand());
             UI.GetComponent<ConsoleView>().logTextArea = UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(2).GetChild(0).gameObject.GetComponent<Text>();
             UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(4).gameObject.AddComponent<ConsoleUIResizer>().logview = UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(2).gameObject;
@@ -51,46 +49,16 @@ namespace MSCLoader
             entry.eventID = EventTriggerType.PointerExit;
             entry.callback.AddListener((eventData) => { UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().OnMouseExit(); });
             trigger.delegates.Add(entry);
+
             UI.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
         }
-        /* int conSizeStep = 0;
-         public void ChangeConsoleSize() //change to dynamic scale later
-         {
-             conSizeStep++;
-             switch(conSizeStep)
-             {
-                 case 1:
-                     consoleObj.GetComponent<RectTransform>().sizeDelta = new Vector2(346, 400);
-                     logView.GetComponent<RectTransform>().sizeDelta = new Vector2(333, 370);
-                     scrollbar.GetComponent<RectTransform>().sizeDelta = new Vector2(13, 370);
-                     break;
-                 case 2:
-                     consoleObj.GetComponent<RectTransform>().sizeDelta = new Vector2(346, 500);
-                     logView.GetComponent<RectTransform>().sizeDelta = new Vector2(333, 470);
-                     scrollbar.GetComponent<RectTransform>().sizeDelta = new Vector2(13, 470);
-                     break;
-                 default:
-                     consoleObj.GetComponent<RectTransform>().sizeDelta = new Vector2(346, 150);
-                     logView.GetComponent<RectTransform>().sizeDelta = new Vector2(333, 120);
-                     scrollbar.GetComponent<RectTransform>().sizeDelta = new Vector2(13, 120);
-                     conSizeStep = 0;
-                     break;
-
-             }
-
-         }*/
 
         public override void Update()
         {
-            if (consoleKey.IsDown()/* && !consoleSizeKey.IsDown()*/)
+            if (consoleKey.IsDown())
             {
                 console.toggleVisibility();
             }
-
-            /*if (consoleSizeKey.IsDown())
-            {
-                ChangeConsoleSize();
-            }*/
         }
 
         public override void OnLoad()
