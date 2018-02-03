@@ -92,6 +92,7 @@
     <Compile Include="Log.cs" />
     <Compile Include="MainData.cs" />
     <Compile Include="MD5FileHashes.cs" />
+    <Compile Include="Patch64.cs" />
     <Compile Include="Patcher.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

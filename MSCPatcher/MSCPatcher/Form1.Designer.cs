@@ -64,6 +64,11 @@
             this.OutputlogLabel = new System.Windows.Forms.Label();
             this.enOutputlog = new System.Windows.Forms.CheckBox();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.remove64 = new System.Windows.Forms.Button();
+            this.install64 = new System.Windows.Forms.Button();
+            this.status64g = new System.Windows.Forms.Label();
             this.status64 = new System.Windows.Forms.Label();
             this.logPage = new System.Windows.Forms.TabPage();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -79,6 +84,7 @@
             this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.groupBox6.SuspendLayout();
             this.logPage.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -199,7 +205,7 @@
             this.tabControl1.Location = new System.Drawing.Point(12, 96);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(447, 162);
+            this.tabControl1.Size = new System.Drawing.Size(447, 165);
             this.tabControl1.TabIndex = 5;
             // 
             // folderPage
@@ -208,7 +214,7 @@
             this.folderPage.Location = new System.Drawing.Point(4, 22);
             this.folderPage.Name = "folderPage";
             this.folderPage.Padding = new System.Windows.Forms.Padding(3);
-            this.folderPage.Size = new System.Drawing.Size(439, 136);
+            this.folderPage.Size = new System.Drawing.Size(439, 139);
             this.folderPage.TabIndex = 0;
             this.folderPage.Text = "Mods folder";
             this.folderPage.UseVisualStyleBackColor = true;
@@ -224,7 +230,7 @@
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(3, 3);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(433, 130);
+            this.groupBox2.Size = new System.Drawing.Size(433, 133);
             this.groupBox2.TabIndex = 4;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Select mod folder";
@@ -301,7 +307,7 @@
             this.settingPage.Location = new System.Drawing.Point(4, 22);
             this.settingPage.Name = "settingPage";
             this.settingPage.Padding = new System.Windows.Forms.Padding(3);
-            this.settingPage.Size = new System.Drawing.Size(439, 136);
+            this.settingPage.Size = new System.Drawing.Size(439, 139);
             this.settingPage.TabIndex = 2;
             this.settingPage.Text = "Settings";
             this.settingPage.ToolTipText = "Enable output_log.txt useful for debugging and troubleshooting";
@@ -320,7 +326,7 @@
             this.groupBox5.Controls.Add(this.linkDebug);
             this.groupBox5.Location = new System.Drawing.Point(162, 6);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(278, 124);
+            this.groupBox5.Size = new System.Drawing.Size(278, 127);
             this.groupBox5.TabIndex = 30;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Debug Stuff";
@@ -339,7 +345,7 @@
             // disDebug
             // 
             this.disDebug.Enabled = false;
-            this.disDebug.Location = new System.Drawing.Point(136, 95);
+            this.disDebug.Location = new System.Drawing.Point(136, 98);
             this.disDebug.Name = "disDebug";
             this.disDebug.Size = new System.Drawing.Size(135, 23);
             this.disDebug.TabIndex = 35;
@@ -350,7 +356,7 @@
             // enDebug
             // 
             this.enDebug.Enabled = false;
-            this.enDebug.Location = new System.Drawing.Point(9, 95);
+            this.enDebug.Location = new System.Drawing.Point(9, 98);
             this.enDebug.Name = "enDebug";
             this.enDebug.Size = new System.Drawing.Size(121, 23);
             this.enDebug.TabIndex = 34;
@@ -401,7 +407,7 @@
             this.groupBox4.Controls.Add(this.enOutputlog);
             this.groupBox4.Location = new System.Drawing.Point(5, 6);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(153, 124);
+            this.groupBox4.Size = new System.Drawing.Size(153, 127);
             this.groupBox4.TabIndex = 29;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Settings";
@@ -433,7 +439,7 @@
             // 
             this.engineButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.engineButton.Location = new System.Drawing.Point(6, 95);
+            this.engineButton.Location = new System.Drawing.Point(6, 98);
             this.engineButton.Name = "engineButton";
             this.engineButton.Size = new System.Drawing.Size(141, 23);
             this.engineButton.TabIndex = 31;
@@ -468,23 +474,83 @@
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.status64);
+            this.tabPage1.Controls.Add(this.groupBox6);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Size = new System.Drawing.Size(439, 136);
+            this.tabPage1.Size = new System.Drawing.Size(439, 139);
             this.tabPage1.TabIndex = 3;
             this.tabPage1.Text = "64-bit patch";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // groupBox6
+            // 
+            this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox6.Controls.Add(this.label1);
+            this.groupBox6.Controls.Add(this.remove64);
+            this.groupBox6.Controls.Add(this.install64);
+            this.groupBox6.Controls.Add(this.status64g);
+            this.groupBox6.Controls.Add(this.status64);
+            this.groupBox6.Location = new System.Drawing.Point(5, 3);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(428, 133);
+            this.groupBox6.TabIndex = 1;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "64-bit game patch";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(2, 16);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(317, 26);
+            this.label1.TabIndex = 5;
+            this.label1.Text = "64-bit patch will allow game to run in native 64-bit mode.\r\nThis will remove 3GB " +
+    "RAM limit, 64-bit doesn\'t affect performance.";
+            // 
+            // remove64
+            // 
+            this.remove64.Enabled = false;
+            this.remove64.Location = new System.Drawing.Point(6, 107);
+            this.remove64.Name = "remove64";
+            this.remove64.Size = new System.Drawing.Size(152, 23);
+            this.remove64.TabIndex = 4;
+            this.remove64.Text = "Restore 32-bit version ";
+            this.remove64.UseVisualStyleBackColor = true;
+            this.remove64.Click += new System.EventHandler(this.remove64_Click);
+            // 
+            // install64
+            // 
+            this.install64.Enabled = false;
+            this.install64.Location = new System.Drawing.Point(6, 78);
+            this.install64.Name = "install64";
+            this.install64.Size = new System.Drawing.Size(152, 23);
+            this.install64.TabIndex = 3;
+            this.install64.Text = "Install 64-bit patch to MSC";
+            this.install64.UseVisualStyleBackColor = true;
+            this.install64.Click += new System.EventHandler(this.install64_Click);
+            // 
+            // status64g
+            // 
+            this.status64g.AutoSize = true;
+            this.status64g.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.status64g.ForeColor = System.Drawing.Color.Orange;
+            this.status64g.Location = new System.Drawing.Point(5, 61);
+            this.status64g.Name = "status64g";
+            this.status64g.Size = new System.Drawing.Size(14, 13);
+            this.status64g.TabIndex = 2;
+            this.status64g.Text = "?";
             // 
             // status64
             // 
             this.status64.AutoSize = true;
             this.status64.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.status64.ForeColor = System.Drawing.Color.Orange;
-            this.status64.Location = new System.Drawing.Point(14, 15);
+            this.status64.Location = new System.Drawing.Point(5, 48);
             this.status64.Name = "status64";
             this.status64.Size = new System.Drawing.Size(14, 13);
-            this.status64.TabIndex = 0;
+            this.status64.TabIndex = 1;
             this.status64.Text = "?";
             // 
             // logPage
@@ -493,7 +559,7 @@
             this.logPage.Location = new System.Drawing.Point(4, 22);
             this.logPage.Name = "logPage";
             this.logPage.Padding = new System.Windows.Forms.Padding(3);
-            this.logPage.Size = new System.Drawing.Size(439, 136);
+            this.logPage.Size = new System.Drawing.Size(439, 139);
             this.logPage.TabIndex = 1;
             this.logPage.Text = "Log";
             this.logPage.UseVisualStyleBackColor = true;
@@ -504,7 +570,7 @@
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox3.Location = new System.Drawing.Point(3, 3);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(433, 130);
+            this.groupBox3.Size = new System.Drawing.Size(433, 133);
             this.groupBox3.TabIndex = 5;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Log";
@@ -516,14 +582,14 @@
             this.logBox.Multiline = true;
             this.logBox.Name = "logBox";
             this.logBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.logBox.Size = new System.Drawing.Size(427, 111);
+            this.logBox.Size = new System.Drawing.Size(427, 114);
             this.logBox.TabIndex = 0;
             // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.statusBarLabel});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 261);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 264);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(471, 22);
             this.statusStrip1.SizingGrip = false;
@@ -540,7 +606,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(471, 283);
+            this.ClientSize = new System.Drawing.Size(471, 286);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.groupBox1);
@@ -560,7 +626,8 @@
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
+            this.groupBox6.ResumeLayout(false);
+            this.groupBox6.PerformLayout();
             this.logPage.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
@@ -600,7 +667,6 @@
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel statusBarLabel;
         private System.Windows.Forms.ToolTip toolTip1;
-        private System.Windows.Forms.Label status64;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Label OutputlogLabel;
@@ -614,6 +680,12 @@
         private System.Windows.Forms.CheckBox resDialogCheck;
         private System.Windows.Forms.Label resDialogLabel;
         private System.Windows.Forms.Label debugStatus2;
+        private System.Windows.Forms.GroupBox groupBox6;
+        private System.Windows.Forms.Label status64;
+        private System.Windows.Forms.Label status64g;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button remove64;
+        private System.Windows.Forms.Button install64;
     }
 }
 

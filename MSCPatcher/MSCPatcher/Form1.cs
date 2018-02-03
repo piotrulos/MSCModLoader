@@ -154,9 +154,38 @@ namespace MSCPatcher
             {
                 status64.Text = "You are not running 64-bit Windows.";
                 status64.ForeColor = Color.Red;
+                status64g.Text = "64-bit patch cannot be installed.";
+                status64g.ForeColor = Color.Red;
+            }
+            else
+            {
+                status64.Text = "You are running 64-bit Windows.";
+                status64.ForeColor = Color.Green;
+                check64Info();
             }
         }
-
+        void check64Info()
+        {
+            install64.Enabled = false;
+            remove64.Enabled = false;
+            switch(Patch64.check64status())
+            {
+                case 1:
+                    status64g.ForeColor = Color.Red;
+                    status64g.Text = "64-bit patch is not installed";
+                    install64.Enabled = true;
+                    break;
+                case 2:
+                    status64g.ForeColor = Color.Green;
+                    status64g.Text = "64-bit patch is installed!";
+                    remove64.Enabled = true;
+                    break;
+                default:
+                    status64g.ForeColor = Color.Red;
+                    status64g.Text = "Unknown mysummercar.exe detected.";
+                    break;
+            }
+        }
         void debugStatusInfo()
         {
             enDebug.Enabled = false;
@@ -773,6 +802,20 @@ namespace MSCPatcher
             {
                 MessageBox.Show(string.Format("Failed to open url!{1}{1}Error details:{1}{0}", ex.Message, Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void install64_Click(object sender, EventArgs e)
+        {
+            Patch64.install64();
+            check64Info();
+            debugStatusInfo();
+        }
+
+        private void remove64_Click(object sender, EventArgs e)
+        {
+            Patch64.remove64();
+            check64Info();
+            debugStatusInfo();
         }
     }
 }
