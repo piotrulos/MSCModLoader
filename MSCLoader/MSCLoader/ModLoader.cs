@@ -234,6 +234,7 @@ namespace MSCLoader
                 
                 IsDoneLoading = true;
                 ModConsole.Print(string.Format("<color=green>ModLoader <b>v{0}</b> ready</color>", Version));
+                LoadReferences();
                 PreLoadMods();
                 ModConsole.Print(string.Format("<color=orange>Found <color=green><b>{0}</b></color> mods!</color>", LoadedMods.Count - 2));
                 try
@@ -255,7 +256,17 @@ namespace MSCLoader
                 Instance.StartCoroutine(Instance.LoadSkin());              
             }
         }
-
+        static void LoadReferences()
+        {
+            if (Directory.Exists(Path.Combine(ModsFolder, "References")))
+            {
+                string[] files = Directory.GetFiles(Path.Combine(ModsFolder, "References"), "*.dll");
+                foreach (var file in files)
+                {
+                    Assembly.LoadFrom(file);
+                }
+            }
+        }
         IEnumerator LoadSkin()
         {
             AssetBundle ab = new AssetBundle();
@@ -544,28 +555,31 @@ namespace MSCLoader
         /// </summary>
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.F10)) //debug
+
+           if (Input.GetKeyDown(KeyCode.F10)) //debug
             {
-               /* IsDoneLoading = false;
-                IsModsDoneLoading = false;
-                Keybind.Keybinds = new List<Keybind>();
-                Keybind.DefaultKeybinds = new List<Keybind>();
-                MSCUnloaderInstance.reset = false;
-                MSCUnloaderInstance.MSCLoaderReset();*/
-              /*  try
+        /*         try
                 {
-                    Steamworks.SteamAPI.Init();
-                    ModConsole.Print(Steamworks.SteamUser.GetSteamID());
+                    //System.Windows.Forms.MessageBox.Show("test", "SAS");
+                    form1 = new System.Windows.Forms.Form();
+                    label = new System.Windows.Forms.Label();
+                    label.Name = "sceneName";
+                    label.Text = "SES";
+                    //label.Location = new Point(10, 10);
+                    form1.Controls.Add(label);
+                    form1.Show();
                 }
-                catch(Exception e)
+                catch(Exception ex)
                 {
-                    ModConsole.Error(e.Message);
+                    ModConsole.Error(ex.ToString());
                 }*/
                 
             }
+           
             // Call update for loaded mods
             foreach (Mod mod in LoadedMods)
 			{
+                
                 try
                 {
                     if(mod.LoadInMenu)
