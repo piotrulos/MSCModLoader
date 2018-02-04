@@ -88,10 +88,14 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetPath) "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
+    <PostBuildEvent>if "$(ConfigurationName)" == "Debug" (
+copy $(TargetPath) "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
 copy "$(TargetDir)$(TargetName).pdb" "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
 cd "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\"
 call "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\debug.bat"
+) ELSE (
+copy $(TargetPath) "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
+)
 </PostBuildEvent>
   </PropertyGroup>
 </Project>
