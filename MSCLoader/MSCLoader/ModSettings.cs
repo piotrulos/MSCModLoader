@@ -212,7 +212,7 @@ namespace MSCLoader
             }
         }
 
-        public override void OnLoad()
+        public override void OnMenuLoad()
         {
             try
             {

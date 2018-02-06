@@ -229,9 +229,9 @@ namespace MSCLoader
                     Directory.CreateDirectory(AssetsFolder);
                 }
                 // Loading internal tools (console and settings)
-                LoadMod(new ModConsole(),Version);
-                LoadMod(new ModSettings(),Version);
-                
+                LoadMod(new ModConsole(), Version);
+                LoadMod(new ModSettings(), Version);
+
                 IsDoneLoading = true;
                 ModConsole.Print(string.Format("<color=green>ModLoader <b>v{0}</b> ready</color>", Version));
                 LoadReferences();
@@ -253,7 +253,7 @@ namespace MSCLoader
                     ModConsole.Error("Steam not detected, only steam version is supported.");
                 }
                 ModConsole.Print("Loading core assets...");
-                Instance.StartCoroutine(Instance.LoadSkin());              
+                Instance.StartCoroutine(Instance.LoadSkin());
             }
         }
         static void LoadReferences()
@@ -340,7 +340,7 @@ namespace MSCLoader
             {
                 try
                 {                    
-                    if(!mod.LoadInMenu && !mod.isDisabled)
+                    if(!mod.isDisabled)
                        mod.OnLoad();                  
                 }
                 catch (Exception e)
@@ -475,9 +475,10 @@ namespace MSCLoader
                     InvalidMods.Add(Path.GetFileName(file));
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 ModConsole.Error(string.Format("<b>{0}</b> - doesn't look like a mod, remove this file from mods folder!", Path.GetFileName(file)));
+                //ModConsole.Error(e.ToString());
                 InvalidMods.Add(Path.GetFileName(file));
             }
 
@@ -507,9 +508,8 @@ namespace MSCLoader
                 }
                 if (mod.LoadInMenu)
                 {
-                    mod.OnLoad();
+                    mod.OnMenuLoad();
                     ModSettings.LoadBinds();
-                    //  ModConsole.Print(string.Format("<color=lime><b>Mod Loaded:</b></color><color=orange><b>{0}</b> ({1}ms)</color>", mod.ID, s.ElapsedMilliseconds));
                 }
                 mod.compiledVersion = msver;
                 LoadedMods.Add(mod);
