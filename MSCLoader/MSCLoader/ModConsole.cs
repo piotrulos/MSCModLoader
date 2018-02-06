@@ -61,7 +61,7 @@ namespace MSCLoader
             }
         }
 
-        public override void OnLoad()
+        public override void OnMenuLoad()
         {
             Keybind.Add(this, consoleKey);
             //Keybind.Add(this, consoleSizeKey);

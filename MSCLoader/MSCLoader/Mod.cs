@@ -56,15 +56,22 @@
 
         /// <summary>
         /// Author of the mod
-        /// (Enter your nickname)
+        /// (Enter your nickname in this variable)
         /// </summary>
         public abstract string Author { get; }
 
+        /// <summary>
+        /// Called once, when the mod is loaded in MainMenu scene (only when LoadInMenu is true).
+        /// </summary>
+        public virtual void OnMenuLoad() {
+            if (LoadInMenu)
+                ModConsole.Error(string.Format("<b>LoadInMenu</b> is set to <b>true</b> for mod: <b>{0}</b> but <b>OnMenuLoad()</b> is empty.",ID));
+        }
 
-		/// <summary>
-		/// Called once, when the mod is loaded during game.
-		/// </summary>
-		public virtual void OnLoad() { }
+        /// <summary>
+        /// Called once, when the mod is loaded in GAME scene.
+        /// </summary>
+        public virtual void OnLoad() { }
 
         /// <summary>
         /// Standard unity OnGUI().
