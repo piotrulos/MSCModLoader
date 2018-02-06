@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.IO;
-using System.Xml;
+//using System.Xml;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -155,40 +156,23 @@ namespace MSCLoader
         public static void SaveModBinds(Mod mod)
         {
 
-
-            string path = Path.Combine(ModLoader.GetModConfigFolder(mod), "keybinds.xml");
-
-            // Clear file
-            File.WriteAllText(path, "");
-
-
-            // Write XML
-            XmlDocument doc = new XmlDocument();
-            XmlElement keybinds = doc.CreateElement(string.Empty, "Keybinds", string.Empty);
-
-
+            KeybindList list = new KeybindList();
+            string path = Path.Combine(ModLoader.GetModConfigFolder(mod), "keybinds.json");
+            
             foreach (Keybind bind in Keybind.Get(mod))
             {
-                XmlElement keybind = doc.CreateElement(string.Empty, "Keybind", string.Empty);
+                Keybinds keybinds = new Keybinds
+                {
+                    ID = bind.ID,
+                    Key = bind.Key,
+                    Modifier = bind.Modifier
+                };
 
-                XmlElement name = doc.CreateElement(string.Empty, "ID", string.Empty);
-                name.AppendChild(doc.CreateTextNode(bind.ID));
-                keybind.AppendChild(name);
-
-                XmlElement key = doc.CreateElement(string.Empty, "Key", string.Empty);
-                key.AppendChild(doc.CreateTextNode(bind.Key.ToString()));
-                keybind.AppendChild(key);
-
-                XmlElement modifier = doc.CreateElement(string.Empty, "Modifier", string.Empty);
-                modifier.AppendChild(doc.CreateTextNode(bind.Modifier.ToString()));
-                keybind.AppendChild(modifier);
-
-                keybinds.AppendChild(keybind);
-
+                list.keybinds.Add(keybinds);
             }
 
-            doc.AppendChild(keybinds);
-            doc.Save(path);
+            string serializedData = JsonConvert.SerializeObject(list);
+            File.WriteAllText(path, serializedData);
 
         }
 
@@ -198,65 +182,36 @@ namespace MSCLoader
         {
             foreach (Mod mod in ModLoader.LoadedMods)
             {
-                // Check if there are custom keybinds
+                //delete old xml file (if exists)
                 string path = Path.Combine(ModLoader.GetModConfigFolder(mod), "keybinds.xml");
+                if (File.Exists(path))
+                    File.Delete(path);
 
+                // Check if there is custom keybinds file (if not, create)
+                path = Path.Combine(ModLoader.GetModConfigFolder(mod), "keybinds.json");
                 if (!File.Exists(path))
                 {
                     SaveModBinds(mod);
                     continue;
                 }
 
-                // Load XML
-                XmlDocument doc = new XmlDocument();
-                doc.Load(path);
-
-                foreach (XmlNode keybind in doc.GetElementsByTagName("Keybind"))
+                //Load and deserialize 
+                KeybindList keybinds = new KeybindList();
+                string serializedData = File.ReadAllText(path);
+                keybinds = JsonConvert.DeserializeObject<KeybindList>(serializedData);
+                if (keybinds.keybinds.Count == 0)
+                    continue;
+                foreach(var kb in keybinds.keybinds)
                 {
-                    XmlNode id = keybind.SelectSingleNode("ID");
-                    XmlNode key = keybind.SelectSingleNode("Key");
-                    XmlNode modifier = keybind.SelectSingleNode("Modifier");
-
-                    // Check if its valid and fetch
-                    if (id == null || key == null || modifier == null)
-                    {
-                        continue;
-                    }
-
-                    Keybind bind = Keybind.Keybinds.Find(x => x.Mod == mod && x.ID == id.InnerText);
-
+                    Keybind bind = Keybind.Keybinds.Find(x => x.Mod == mod && x.ID == kb.ID);
                     if (bind == null)
-                    {
                         continue;
-                    }
-
-                    // Set bind
-                    try
-                    {
-                        KeyCode code = (KeyCode)Enum.Parse(typeof(KeyCode), key.InnerText);
-                        bind.Key = code;
-                    }
-                    catch (Exception e)
-                    {
-                        bind.Key = KeyCode.None;
-                        ModConsole.Error(e.Message);
-                    }
-
-                    try
-                    {
-                        KeyCode code = (KeyCode)Enum.Parse(typeof(KeyCode), modifier.InnerText);
-                        bind.Modifier = code;
-                    }
-                    catch (Exception e)
-                    {
-                        bind.Modifier = KeyCode.None;
-                        ModConsole.Error(e.Message);
-                    }
+                    bind.Key = kb.Key;
+                    bind.Modifier = kb.Modifier;
                 }
             }
         }
 
-        // Load the keybinds.
         public override void OnLoad()
         {
             try
@@ -271,6 +226,7 @@ namespace MSCLoader
                 ModConsole.Print(e.Message); //debug only
             }
             Keybind.Add(this, menuKey);
+            // Load the keybinds.
             LoadBinds();
         }
 
