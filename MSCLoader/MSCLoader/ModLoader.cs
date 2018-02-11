@@ -484,11 +484,6 @@ namespace MSCLoader
 
         }
 
-        private static void ModLoader_AssemblyLoad(object sender, AssemblyLoadEventArgs args)
-        {
-            throw new NotImplementedException();
-        }
-
         private static void LoadMod(Mod mod, string msver)
         {
             // Check if mod already exists
