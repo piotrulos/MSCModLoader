@@ -247,6 +247,14 @@ namespace MSCLoader
                         ModStats();
                         modStats = true;
                     }
+
+                    string Name;
+                    bool ret = Steamworks.SteamApps.GetCurrentBetaName(out Name, 128);
+                    if (ret)
+                    {
+                        //show this better way.
+                        ModConsole.Error(string.Format("You are using beta build: <b>{0}</b>{1}Remember that some mods may not work correctly.", Name, Environment.NewLine));
+                    }
                 }
                 catch (Exception)
                 {
