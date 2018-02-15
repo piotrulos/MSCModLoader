@@ -30,6 +30,11 @@ namespace MSCLoader
         /// When true, all mods is loaded.
         /// </summary>
         public static bool IsModsDoneLoading = false;
+   
+        /// <summary>
+        /// When true, game scene is fully loaded.
+        /// </summary>
+        public static bool fullyLoaded = false;
 
         /// <summary>
         /// A list of all loaded mods.
@@ -142,6 +147,7 @@ namespace MSCLoader
         /// </summary>
         public static GUISkin guiskin;
 
+
         /// <summary>
         /// Main function to initialize the ModLoader
         /// </summary>
@@ -164,7 +170,7 @@ namespace MSCLoader
                 MSCUnloaderInstance.reset = false;
                 MSCUnloaderInstance.MSCLoaderReset();
             }
-            if (!IsModsDoneLoading && Application.loadedLevelName == "GAME")
+            if (!IsModsDoneLoading && Application.loadedLevelName == "GAME" && fullyLoaded)
             {
                 // Load all mods
                 ModConsole.Print("Loading mods...");
@@ -558,27 +564,22 @@ namespace MSCLoader
         /// </summary>
         private void Update()
         {
-
-           if (Input.GetKeyDown(KeyCode.F10)) //debug
+            if (!fullyLoaded)
             {
-        /*         try
+                //check if camera is active.
+                if (GameObject.Find("PLAYER/Pivot/Camera/FPSCamera") != null)
                 {
-                    //System.Windows.Forms.MessageBox.Show("test", "SAS");
-                    form1 = new System.Windows.Forms.Form();
-                    label = new System.Windows.Forms.Label();
-                    label.Name = "sceneName";
-                    label.Text = "SES";
-                    //label.Location = new Point(10, 10);
-                    form1.Controls.Add(label);
-                    form1.Show();
+                    //load mods
+                    fullyLoaded = true;
+                    Init();
                 }
-                catch(Exception ex)
-                {
-                    ModConsole.Error(ex.ToString());
-                }*/
+            }
+
+            if (Input.GetKeyDown(KeyCode.F10)) //debug
+            {
                 
             }
-           
+
             // Call update for loaded mods
             foreach (Mod mod in LoadedMods)
 			{
