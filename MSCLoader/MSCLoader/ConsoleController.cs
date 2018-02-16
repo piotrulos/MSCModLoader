@@ -74,8 +74,6 @@ namespace MSCLoader
 
         public void appendLogLine(string line)
         {
-            //Debug.Log(line);
-
             if (scrollback.Count >= scrollbackSize)
             {
                 scrollback.Dequeue();
@@ -93,7 +91,7 @@ namespace MSCLoader
         {
             if (!string.IsNullOrEmpty(commandString))
             {
-                appendLogLine("> " + commandString);
+                appendLogLine(string.Format("> {0}", commandString));
 
                 string[] commandSplit = parseArguments(commandString);
                 string[] args = new string[0];
@@ -239,7 +237,7 @@ namespace MSCLoader
         {
             appendLogLine(string.Format("Unity: <b>{0}</b>", Application.unityVersion));
             //appendLogLine(string.Format("MSC: <b>{0}</b>",Application.version)); //Shows just 1.0
-            appendLogLine(string.Format("MSCLoader: <b>{0}</b>", MSCLoader.ModLoader.Version));
+            appendLogLine(string.Format("MSCLoader: <b>{0}</b>", ModLoader.Version));
         }
 
         #endregion

@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace MSCLoader
 {
-    #pragma warning disable CS1591
+#pragma warning disable CS1591
     public class ConsoleView : MonoBehaviour
     {
 
@@ -32,12 +32,15 @@ namespace MSCLoader
 
         public void toggleVisibility()
         {
-            if(viewContainer.activeSelf)
-            {
+            if (viewContainer.activeSelf)
                 viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().SaveConsoleSize();
-            }
             setVisibility(!viewContainer.activeSelf);
             inputField.text = string.Empty;
+            if (viewContainer.activeSelf)
+            {
+                inputField.ActivateInputField();
+                inputField.Select();
+            }
         }
 
         public void setVisibility(bool visible)
@@ -87,7 +90,7 @@ namespace MSCLoader
         {
             if (inputField.isFocused)
             {
-                
+
                 if (!wasFocused)
                 {
                     wasFocused = true;
@@ -99,7 +102,7 @@ namespace MSCLoader
                     //if any command was entered before
                     if (commands != 0)
                     {
-                        if (pos != 0) 
+                        if (pos != 0)
                             pos--;
                         inputField.text = console.commandHistory[pos];
                         inputField.MoveTextEnd(false);
@@ -119,7 +122,7 @@ namespace MSCLoader
                         {
                             pos--;
                         }
-                        
+
                     }
                 }
             }
@@ -130,5 +133,5 @@ namespace MSCLoader
         }
 
     }
-    #pragma warning restore CS1591
+#pragma warning restore CS1591
 }
