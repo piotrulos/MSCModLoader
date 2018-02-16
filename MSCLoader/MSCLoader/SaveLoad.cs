@@ -1,5 +1,4 @@
-﻿using MSCLoader;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -12,6 +11,7 @@ namespace MSCLoader
     }
     public class SaveDataList
     {
+        public string name;
         public Vector3 pos;
         public float rotX, rotY, rotZ;
     }
@@ -26,6 +26,7 @@ namespace MSCLoader
             SaveData save = new SaveData();
             SaveDataList s = new SaveDataList
             {
+                name = g.name,
                 pos = g.transform.position,
                 rotX = g.transform.localEulerAngles.x,
                 rotY = g.transform.localEulerAngles.y,
@@ -46,6 +47,7 @@ namespace MSCLoader
             {
                 SaveDataList s = new SaveDataList
                 {
+                    name = g.name,
                     pos = g.transform.position,
                     rotX = g.transform.localEulerAngles.x,
                     rotY = g.transform.localEulerAngles.y,

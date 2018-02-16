@@ -9,21 +9,23 @@ namespace MSCLoader
     /// The console for MSCLoader.
     /// </summary>
     public class ModConsole : Mod
-	{
-    #pragma warning disable CS1591
-        public override bool LoadInMenu => true;
+    {
+#pragma warning disable CS1591
+
         public override string ID => "MSCLoader_Console";
         public override string Name => "Console";
         public override string Version => ModLoader.Version;
         public override string Author => "piotrulos";
 
         public override bool UseAssetsFolder => true;
+        public override bool LoadInMenu => true;
 
         public static bool IsOpen { get; private set; }
 
         public static ConsoleView console;
         private Keybind consoleKey = new Keybind("Open", "Open console", KeyCode.BackQuote);
         GameObject UI;
+
         public void CreateConsoleUI()
         {
             AssetBundle ab = LoadAssets.LoadBundle(this, "console.unity3d");
@@ -83,8 +85,8 @@ namespace MSCLoader
         /// title="Example Code" /></example>
         public static void Print(string str)
         {
-             console.console.appendLogLine(str);
-		}
+            console.console.appendLogLine(str);
+        }
         /// <summary>
         /// OBSOLETE: For compatibility with 0.1 plugins, please use string str overload!
         /// </summary>
@@ -102,18 +104,18 @@ namespace MSCLoader
         /// <example><code source="Examples.cs" region="ModConsoleError" lang="C#" 
         /// title="Example Code" /></example>
         public static void Error(string str)
-		{          
+        {
             console.setVisibility(true);
             console.console.appendLogLine(string.Format("<color=red><b>Error: </b>{0}</color>", str));
         }
 
-		/// <summary>
-		/// Clear the console.
-		/// </summary>
-		public static void Clear()
-		{
+        /// <summary>
+        /// Clear the console.
+        /// </summary>
+        public static void Clear()
+        {
             console.console.clearConsole();
-		}
+        }
 
-	}
+    }
 }
