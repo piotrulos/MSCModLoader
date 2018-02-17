@@ -353,9 +353,12 @@ namespace MSCLoader
             foreach (Mod mod in LoadedMods)
             {
                 try
-                {                    
-                    if(!mod.isDisabled)
-                       mod.OnLoad();                  
+                {
+                    if (!mod.isDisabled)
+                    {
+                        mod.OnLoad();
+                        FsmHook.FsmInject(GameObject.Find("ITEMS"), "Save game", mod.OnSave);
+                    }
                 }
                 catch (Exception e)
                 {

@@ -74,6 +74,11 @@
         public virtual void OnLoad() { }
 
         /// <summary>
+        /// Called once, when save and quit.
+        /// </summary>
+        public virtual void OnSave() { }
+
+        /// <summary>
         /// Standard unity OnGUI().
         /// </summary>
         /// <example>see https://docs.unity3d.com/500/Documentation/Manual/GUIScriptingGuide.html</example>
