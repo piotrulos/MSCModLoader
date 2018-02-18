@@ -22,7 +22,8 @@ namespace MSCPatcher
          * mysummercar.exe
          * 
          * E9F1D7E11359DA995881B9280E1726B3 (32-bit)
-         * 0B782168216B6B614D6C63485DAE20B0 (64-bit)
+         * 0B782168216B6B614D6C63485DAE20B0 (64-bit unity default)
+         * 3C3F1460A074993E7F483F08318A2015 (64-bit from beta branch)
          * 
          * CSteamworks.dll
          * 
@@ -32,6 +33,7 @@ namespace MSCPatcher
 
         public const string exe32 = "E9F1D7E11359DA995881B9280E1726B3";
         public const string exe64 = "0B782168216B6B614D6C63485DAE20B0";
+        public const string exe64o = "3C3F1460A074993E7F483F08318A2015";
         public const string steam32 = "4802608A59A9D268EF94A5C0727EC777";
         public const string steam64 = "B7F58E5AD108BFEDC1F90CD3525AD29A";
 
