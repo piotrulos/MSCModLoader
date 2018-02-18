@@ -39,7 +39,7 @@
         /// title="ConsoleCommand Add" /></example>
         public static void Add(ConsoleCommand cmd)
 		{
-            cc.registerCommand(cmd.Name, cmd.Run, cmd.Help);
+            cc.registerCommand(cmd.Name.ToLower(), cmd.Run, cmd.Help);
         }
 	}
 }
