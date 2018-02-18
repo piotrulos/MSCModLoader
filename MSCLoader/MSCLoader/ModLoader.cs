@@ -358,6 +358,7 @@ namespace MSCLoader
                     {
                         mod.OnLoad();
                         FsmHook.FsmInject(GameObject.Find("ITEMS"), "Save game", mod.OnSave);
+                        
                     }
                 }
                 catch (Exception e)

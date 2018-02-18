@@ -19,7 +19,7 @@ namespace MSCLoader
     public class SaveLoad
     {
 
-        //save position and rotation of one gameobject
+        //save position and rotation of single gameobject to file
         public static void SaveGameObject(Mod mod, GameObject g, string fileName)
         {
             string path = Path.Combine(ModLoader.GetModConfigFolder(mod), fileName);
@@ -38,25 +38,13 @@ namespace MSCLoader
            
         }
 
-        //save position and rotation of list of gameobjects
-        public static void SaveGameObjects(Mod mod, List<GameObject> go, string fileName)
+        //load position and rotation of single gameobject to file
+        public static void LoadGameObject(Mod mod, string fileName)
         {
-            string path = Path.Combine(ModLoader.GetModConfigFolder(mod), fileName);
-            SaveData save = new SaveData();
-            foreach(var g in go)
-            {
-                SaveDataList s = new SaveDataList
-                {
-                    name = g.name,
-                    pos = g.transform.position,
-                    rotX = g.transform.localEulerAngles.x,
-                    rotY = g.transform.localEulerAngles.y,
-                    rotZ = g.transform.localEulerAngles.z
-                };
-                save.save.Add(s);
-            }
-            string serializedData = JsonConvert.SerializeObject(save);
-            File.WriteAllText(path, serializedData);
+            SaveData data = DeserializeSaveFile<SaveData>(mod, fileName);
+            GameObject go = GameObject.Find(data.save[0].name);
+            go.transform.position = data.save[0].pos;
+            go.transform.rotation = Quaternion.Euler(data.save[0].rotX, data.save[0].rotY, data.save[0].rotZ);
         }
 
         //serialize custom save class
@@ -73,8 +61,12 @@ namespace MSCLoader
         public static T DeserializeSaveFile<T>(Mod mod, string fileName) where T : new()
         {
             string path = Path.Combine(ModLoader.GetModConfigFolder(mod), fileName);
-            string serializedData = File.ReadAllText(path);
-            return JsonConvert.DeserializeObject<T>(serializedData);
+            if (File.Exists(path))
+            {
+                string serializedData = File.ReadAllText(path);
+                return JsonConvert.DeserializeObject<T>(serializedData);
+            }
+            return default(T);
         }
     }
 }
