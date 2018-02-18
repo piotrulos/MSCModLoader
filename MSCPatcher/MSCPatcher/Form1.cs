@@ -294,26 +294,11 @@ namespace MSCPatcher
             else if (mscloaderUpdate)
             {
                 Log.Write("MSCLoader.dll update!", true, true);
-                    Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll"));
 
-                if (File.Exists(Path.GetFullPath(Path.Combine("MSCLoader.dll", ""))))
-                {
-                    File.Copy(Path.GetFullPath(Path.Combine("MSCLoader.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll"));
-                    Log.Write("Copying new file.....MSCLoader.dll");
-                }
-                if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll")))
-                {
-                    File.Copy(Path.GetFullPath(Path.Combine("System.Xml.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll"));
-                    Log.Write("Copying new file.....System.Xml.dll");
-                }
-                if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\uAudio.dll")))
-                {
-                    File.Copy(Path.GetFullPath(Path.Combine("uAudio.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\uAudio.dll"));
-                    Log.Write("Copying new file.....uAudio.dll");
-                }
+                Patcher.CopyReferences(mscPath);
 
                 Patcher.CopyCoreAssets(modPath);
-                
+
                 Log.Write("MSCLoader.dll update successful!");
                 Log.Write("");
                 MessageBox.Show("Update successfull!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -329,22 +314,9 @@ namespace MSCPatcher
         public void PatchThis()
         {
             Log.Write("Start patching files!", true, true);
-                Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll"));
-            if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll")))
-            {
-                File.Copy(Path.GetFullPath(Path.Combine("System.Xml.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll"));
-                Log.Write("Copying new file.....System.Xml.dll");
-            }
-            if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\uAudio.dll")))
-            {
-                File.Copy(Path.GetFullPath(Path.Combine("uAudio.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\uAudio.dll"));
-                Log.Write("Copying new file.....uAudio.dll");
-            }
-            if (File.Exists(Path.GetFullPath(Path.Combine("MSCLoader.dll", ""))))
-            {
-                File.Copy(Path.GetFullPath(Path.Combine("MSCLoader.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll"));
-                Log.Write("Copying new file.....MSCLoader.dll");
-            }
+
+            Patcher.CopyReferences(mscPath);
+
             var cSharpAssembly = LoadAssembly(AssemblyFullPath);
             var mscLoader = LoadAssembly("MSCLoader.dll");
             var coreLibrary =

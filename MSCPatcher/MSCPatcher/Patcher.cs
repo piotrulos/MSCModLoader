@@ -13,6 +13,42 @@ namespace MSCPatcher
             }
         }
 
+        public static void CopyReferences(string mscPath)
+        {
+            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll"));
+            if (File.Exists(Path.GetFullPath(Path.Combine("MSCLoader.dll", ""))))
+            {
+                File.Copy(Path.GetFullPath(Path.Combine("MSCLoader.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll"));
+                Log.Write("Copying new file.....MSCLoader.dll");
+            }
+
+            if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll")))
+            {
+                File.Copy(Path.GetFullPath(Path.Combine("System.Xml.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll"));
+                Log.Write("Copying new file.....System.Xml.dll");
+            }
+            if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\uAudio.dll")))
+            {
+                File.Copy(Path.GetFullPath(Path.Combine("uAudio.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\uAudio.dll"));
+                Log.Write("Copying new file.....uAudio.dll");
+            }
+            if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\Newtonsoft.Json.dll")))
+            {
+                File.Copy(Path.GetFullPath(Path.Combine("Newtonsoft.Json.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\Newtonsoft.Json.dll"));
+                Log.Write("Copying new file.....Newtonsoft.Json.dll");
+            }
+            if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Data.dll")))
+            {
+                File.Copy(Path.GetFullPath(Path.Combine("System.Data.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Data.dll"));
+                Log.Write("Copying new file.....System.Data.dll");
+            }
+            if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Runtime.Serialization.dll")))
+            {
+                File.Copy(Path.GetFullPath(Path.Combine("System.Runtime.Serialization.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Runtime.Serialization.dll"));
+                Log.Write("Copying new file.....System.Runtime.Serialization.dll");
+            }
+        }
+
         public static void CopyCoreAssets(string modPath)
         {
             Log.Write("Copying Core Assets.....MSCLoader_Core");

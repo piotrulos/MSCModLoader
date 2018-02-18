@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace MSCPatcher
@@ -21,6 +18,7 @@ namespace MSCPatcher
                     case MD5FileHashes.exe32:
                         return 1;
                     case MD5FileHashes.exe64:
+                    case MD5FileHashes.exe64o:
                         return 2;
                     default:
                         return 0;
@@ -45,7 +43,8 @@ namespace MSCPatcher
                     File.Move(Path.Combine(Form1.mscPath, @"mysummercar_Data\Mono\mono.dll"), String.Format("{0}.32", Path.Combine(Form1.mscPath, @"mysummercar_Data\Mono\mono.dll")));
                 }
                 File.Move(Path.Combine(Form1.mscPath, @"mysummercar_Data\Plugins\CSteamworks.dll"), String.Format("{0}.32", Path.Combine(Form1.mscPath, @"mysummercar_Data\Plugins\CSteamworks.dll")));
-
+                File.Move(Path.Combine(Form1.mscPath, @"mysummercar_Data\Plugins\UnityForceFeedback.dll"), String.Format("{0}.32", Path.Combine(Form1.mscPath, @"mysummercar_Data\Plugins\UnityForceFeedback.dll")));
+                
                 //copy
                 File.Copy(Path.GetFullPath(Path.Combine("64bit", "mysummercar.exe")), Path.Combine(Form1.mscPath, "mysummercar.exe"), true);
                 Log.Write("Copying file.....mysummercar.exe");
@@ -55,6 +54,9 @@ namespace MSCPatcher
                 Log.Write("Copying file.....mono.dll");
                 File.Copy(Path.GetFullPath(Path.Combine("64bit", @"mysummercar_Data\Plugins\CSteamworks.dll")), Path.Combine(Form1.mscPath, @"mysummercar_Data\Plugins\CSteamworks.dll"), true);
                 Log.Write("Copying file.....CSteamworks.dll");
+                File.Copy(Path.GetFullPath(Path.Combine("64bit", @"mysummercar_Data\Plugins\UnityForceFeedback.dll")), Path.Combine(Form1.mscPath, @"mysummercar_Data\Plugins\UnityForceFeedback.dll"), true);
+                Log.Write("Copying file.....UnityForceFeedback.dll");
+
                 MessageBox.Show("64-bit patch installed successfully!", "Success!", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
@@ -84,6 +86,14 @@ namespace MSCPatcher
                     {
                         Patcher.DeleteIfExists(Path.Combine(Form1.mscPath, @"mysummercar_Data\Plugins\CSteamworks.dll"));
                         File.Move(Path.Combine(Form1.mscPath, @"mysummercar_Data\Plugins\CSteamworks.dll.32"), Path.Combine(Form1.mscPath, @"mysummercar_Data\Plugins\CSteamworks.dll"));
+                    }
+                    else
+                        throw new Exception("Backup file not found. Please verify file integrity on steam before continue!");
+
+                    if (File.Exists(Path.Combine(Form1.mscPath, @"mysummercar_Data\Plugins\UnityForceFeedback.dll.32")))
+                    {
+                        Patcher.DeleteIfExists(Path.Combine(Form1.mscPath, @"mysummercar_Data\Plugins\UnityForceFeedback.dll"));
+                        File.Move(Path.Combine(Form1.mscPath, @"mysummercar_Data\Plugins\UnityForceFeedback.dll.32"), Path.Combine(Form1.mscPath, @"mysummercar_Data\Plugins\UnityForceFeedback.dll"));
                     }
                     else
                         throw new Exception("Backup file not found. Please verify file integrity on steam before continue!");
