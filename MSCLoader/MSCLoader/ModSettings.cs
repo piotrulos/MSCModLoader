@@ -29,7 +29,7 @@ namespace MSCLoader
         GameObject KeyBind;
 
         //icons for SettinsView
-        public GameObject HasAssets;
+        GameObject HasAssets;
         GameObject PluginOk;
         GameObject PluginDisabled;
         GameObject InMenu;

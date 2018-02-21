@@ -103,8 +103,7 @@ namespace MSCLoader
             modButton.transform.SetParent(modView.transform, false);
             if(mod.hasUpdate)
             {
-                GameObject hasupdate = Instantiate(update);
-                hasupdate.transform.SetParent(modButton.transform.GetChild(3), false); //Add Update Icon
+                Instantiate(update).transform.SetParent(modButton.transform.GetChild(3), false); //Add Update Icon
             }
             if (mod.UseAssetsFolder)
             {
@@ -112,18 +111,15 @@ namespace MSCLoader
             }
             if (mod.isDisabled)
             {
-                GameObject pluginDisabled = Instantiate(PluginDisabled);
-                pluginDisabled.transform.SetParent(modButton.transform.GetChild(3), false); //Add plugin Disabled icon
+                Instantiate(PluginDisabled).transform.SetParent(modButton.transform.GetChild(3), false); //Add plugin Disabled icon
             }
             else
             {
-                GameObject pluginOK = Instantiate(PluginOk);
-                pluginOK.transform.SetParent(modButton.transform.GetChild(3), false); //Add plugin OK icon
+                Instantiate(PluginOk).transform.SetParent(modButton.transform.GetChild(3), false); //Add plugin OK icon
             }
             if (mod.LoadInMenu)
             {
-                GameObject inMenu = Instantiate(InMenu);
-                inMenu.transform.SetParent(modButton.transform.GetChild(3), false); //Add Menu Icon
+                Instantiate(InMenu).transform.SetParent(modButton.transform.GetChild(3), false); //Add Menu Icon
             }
 
         }
