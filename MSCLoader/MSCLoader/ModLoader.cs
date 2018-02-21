@@ -195,8 +195,8 @@ namespace MSCLoader
             {
                 if (Application.loadedLevelName != "MainMenu")
                     menuInfoAnim.SetBool("isHidden", true);
-                if (Application.loadedLevelName != "GAME")
-                    ModConsole.Print("<color=#505050ff>MSCLoader is already loaded!</color>");//debug
+                //if (Application.loadedLevelName != "GAME")
+                //    ModConsole.Print("<color=#505050ff>MSCLoader is already loaded!</color>");//debug
             }
             else
             {
@@ -266,8 +266,7 @@ namespace MSCLoader
                 {
                     ModConsole.Error("Steam not detected, only steam version is supported.");
                 }
-                ModConsole.Print("Loading core assets...");
-                Instance.StartCoroutine(Instance.LoadSkin());
+                LoadCoreAssets();
             }
         }
         static void LoadReferences()
@@ -281,10 +280,10 @@ namespace MSCLoader
                 }
             }
         }
-        IEnumerator LoadSkin()
+        static void LoadCoreAssets()
         {
-            AssetBundle ab = new AssetBundle();
-            yield return StartCoroutine(loadAssets.LoadBundleAsync(new ModCore(), "core.unity3d", value => ab = value));
+            ModConsole.Print("Loading core assets...");
+            AssetBundle ab = LoadAssets.LoadBundle(new ModCore(), "core.unity3d");
             guiskin = ab.LoadAsset("MSCLoader.guiskin") as GUISkin;
             mainMenuInfo = ab.LoadAsset("MSCLoader Info.prefab") as GameObject;
             ModConsole.Print("Loading core assets completed!");
@@ -358,7 +357,6 @@ namespace MSCLoader
                     {
                         mod.OnLoad();
                         FsmHook.FsmInject(GameObject.Find("ITEMS"), "Save game", mod.OnSave);
-                        
                     }
                 }
                 catch (Exception e)

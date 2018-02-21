@@ -108,8 +108,7 @@ namespace MSCLoader
             }
             if (mod.UseAssetsFolder)
             {
-                GameObject hasAssets = Instantiate(HasAssets);
-                hasAssets.transform.SetParent(modButton.transform.GetChild(3), false); //Add assets icon
+                Instantiate(HasAssets).transform.SetParent(modButton.transform.GetChild(3), false); //Add assets icon
             }
             if (mod.isDisabled)
             {
