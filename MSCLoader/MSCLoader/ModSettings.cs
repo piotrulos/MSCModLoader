@@ -9,41 +9,6 @@ using UnityEngine.UI;
 namespace MSCLoader
 {
 #pragma warning disable CS1591
-    public class ModSettingsUI : MonoBehaviour
-    {
-        public ModSettings ms = null;
-        public void LoadUI()
-        {
-            StartCoroutine(LoadUIc());
-        }
-        IEnumerator LoadUIc()
-        {
-            AssetBundle ab = new AssetBundle();
-            yield return StartCoroutine(ModLoader.loadAssets.LoadBundleAsync(new ModSettings(), "settingsui.unity3d", value => ab = value));
-           
-            ms.UI = ab.LoadAsset("MSCLoader Settings.prefab") as GameObject;
-
-            ms.ModButton = ab.LoadAsset("ModButton.prefab") as GameObject;
-            ms.ModButton_Pre = ab.LoadAsset("ModButton_Pre.prefab") as GameObject;
-            ms.ModButton_Invalid = ab.LoadAsset("ModButton_Invalid.prefab") as GameObject;
-            ms.ModViewLabel = ab.LoadAsset("ModViewLabel.prefab") as GameObject;
-
-            ms.KeyBind = ab.LoadAsset("KeyBind.prefab") as GameObject;
-
-            ms.HasAssets = ab.LoadAsset("HasAssets.prefab") as GameObject;
-            ms.PluginOk = ab.LoadAsset("PluginOK.prefab") as GameObject;
-            ms.PluginDisabled = ab.LoadAsset("PluginDisabled.prefab") as GameObject;
-            ms.InMenu = ab.LoadAsset("InMenu.prefab") as GameObject;
-            ms.update = ab.LoadAsset("Update.prefab") as GameObject;
-
-            //exit coroutine
-            ms.CreateSettingsUI();
-
-            //freeup memory
-            ab.Unload(false);
-            Destroy(gameObject);
-        }
-    }
     public class ModSettings : Mod
     {
 
@@ -56,25 +21,42 @@ namespace MSCLoader
 
         private static Mod selectedMod = null;
 
-        public GameObject UI;
-        public GameObject ModButton;
-        public GameObject ModButton_Pre;
-        public GameObject ModButton_Invalid;
-        public GameObject ModViewLabel;
-        public GameObject KeyBind;
+        GameObject UI;
+        GameObject ModButton;
+        GameObject ModButton_Pre;
+        GameObject ModButton_Invalid;
+        GameObject ModViewLabel;
+        GameObject KeyBind;
 
         //icons for SettinsView
         public GameObject HasAssets;
-        public GameObject PluginOk;
-        public GameObject PluginDisabled;
-        public GameObject InMenu;
-        public GameObject update;
+        GameObject PluginOk;
+        GameObject PluginDisabled;
+        GameObject InMenu;
+        GameObject update;
 
         private Keybind menuKey = new Keybind("Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
         public SettingsView settings;
 
         public void CreateSettingsUI()
         {
+            AssetBundle ab = LoadAssets.LoadBundle(this, "settingsui.unity3d");
+
+            UI = ab.LoadAsset("MSCLoader Settings.prefab") as GameObject;
+
+            ModButton = ab.LoadAsset("ModButton.prefab") as GameObject;
+            ModButton_Pre = ab.LoadAsset("ModButton_Pre.prefab") as GameObject;
+            ModButton_Invalid = ab.LoadAsset("ModButton_Invalid.prefab") as GameObject;
+            ModViewLabel = ab.LoadAsset("ModViewLabel.prefab") as GameObject;
+
+            KeyBind = ab.LoadAsset("KeyBind.prefab") as GameObject;
+
+            HasAssets = ab.LoadAsset("HasAssets.prefab") as GameObject;
+            PluginOk = ab.LoadAsset("PluginOK.prefab") as GameObject;
+            PluginDisabled = ab.LoadAsset("PluginDisabled.prefab") as GameObject;
+            InMenu = ab.LoadAsset("InMenu.prefab") as GameObject;
+            update = ab.LoadAsset("Update.prefab") as GameObject;
+            
 
             //ModConsole.Print(UI.name);
             UI = GameObject.Instantiate(UI);
@@ -97,7 +79,7 @@ namespace MSCLoader
             UI.GetComponent<SettingsView>().ModButton_Invalid = ModButton_Invalid;
             UI.GetComponent<SettingsView>().ModViewLabel = ModViewLabel;
             UI.GetComponent<SettingsView>().KeyBind = KeyBind;
-
+            
             UI.GetComponent<SettingsView>().HasAssets = HasAssets;
             UI.GetComponent<SettingsView>().PluginOk = PluginOk;
             UI.GetComponent<SettingsView>().PluginDisabled = PluginDisabled;
@@ -111,6 +93,7 @@ namespace MSCLoader
 
             UI.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
             settings.setVisibility(false);
+            ab.Unload(false);
         }
 
         // Reset keybinds
@@ -214,17 +197,18 @@ namespace MSCLoader
 
         public override void OnMenuLoad()
         {
-            try
-            {
-                GameObject go = new GameObject();
-                ModSettingsUI ui = go.AddComponent<ModSettingsUI>();
-                ui.ms = this;
-                ui.LoadUI();
-            }
-            catch (Exception e)
-            {
-                ModConsole.Print(e.Message); //debug only
-            }
+            /*  try
+              {
+                  GameObject go = new GameObject();
+                  ModSettingsUI ui = go.AddComponent<ModSettingsUI>();
+                  ui.ms = this;
+                  ui.LoadUI();
+              }
+              catch (Exception e)
+              {
+                  ModConsole.Print(e.Message); //debug only
+              }*/
+            CreateSettingsUI();
             Keybind.Add(this, menuKey);
             // Load the keybinds.
             LoadBinds();
