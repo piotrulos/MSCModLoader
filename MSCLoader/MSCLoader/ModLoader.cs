@@ -269,6 +269,7 @@ namespace MSCLoader
                 LoadCoreAssets();
             }
         }
+
         static void LoadReferences()
         {
             if (Directory.Exists(Path.Combine(ModsFolder, "References")))
@@ -285,6 +286,7 @@ namespace MSCLoader
             ModConsole.Print("Loading core assets...");
             AssetBundle ab = LoadAssets.LoadBundle(new ModCore(), "core.unity3d");
             guiskin = ab.LoadAsset("MSCLoader.guiskin") as GUISkin;
+            ModUI.messageBox = ab.LoadAsset("MSCLoader MB.prefab") as GameObject;
             mainMenuInfo = ab.LoadAsset("MSCLoader Info.prefab") as GameObject;
             ModConsole.Print("Loading core assets completed!");
             MainMenuInfo(); //show info in main menu.
@@ -579,7 +581,7 @@ namespace MSCLoader
 
             if (Input.GetKeyDown(KeyCode.F10)) //debug
             {
-                
+
             }
 
             // Call update for loaded mods
