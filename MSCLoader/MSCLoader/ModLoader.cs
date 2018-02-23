@@ -237,7 +237,7 @@ namespace MSCLoader
                 // Loading internal tools (console and settings)
                 LoadMod(new ModConsole(), Version);
                 LoadMod(new ModSettings(), Version);
-
+                LoadCoreAssets();
                 IsDoneLoading = true;
                 ModConsole.Print(string.Format("<color=green>ModLoader <b>v{0}</b> ready</color>", Version));
                 LoadReferences();
@@ -258,15 +258,14 @@ namespace MSCLoader
                     bool ret = Steamworks.SteamApps.GetCurrentBetaName(out Name, 128);
                     if (ret)
                     {
-                        //show this better way.
-                        ModConsole.Error(string.Format("You are using beta build: <b>{0}</b>{1}Remember that some mods may not work correctly.", Name, Environment.NewLine));
+                        ModUI.ShowMessage(string.Format("<color=orange><b>Warning:</b></color>{1}You are using beta build: <color=orange><b>{0}</b></color>{1}{1}Remember that some mods may not work correctly on beta branches.", Name, Environment.NewLine),"Experimental build warning");
                     }
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     ModConsole.Error("Steam not detected, only steam version is supported.");
                 }
-                LoadCoreAssets();
+                
             }
         }
 
