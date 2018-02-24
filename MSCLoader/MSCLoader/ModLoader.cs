@@ -385,7 +385,19 @@ namespace MSCLoader
 					LoadDLL(file);
 				}
 			}
-		}
+
+            foreach (string dir in Directory.GetDirectories(ConfigFolder))
+            {
+                if (!LoadedMods.Exists(x => x.ID == new DirectoryInfo(dir).Name))
+                    Directory.Delete(dir, true);
+            }
+            foreach (string dir in Directory.GetDirectories(AssetsFolder))
+            {
+                if (!LoadedMods.Exists(x => x.ID == new DirectoryInfo(dir).Name) && new DirectoryInfo(dir).Name != "MSCLoader_Core")
+                    Directory.Delete(dir, true);
+            }
+
+        }
 
         static void ModStats()
         {
