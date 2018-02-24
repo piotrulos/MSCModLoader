@@ -69,7 +69,7 @@
         }
 
         /// <summary>
-        /// Called once, when the mod is loaded in GAME scene.
+        /// Called once, after GAME scene is fully loaded.
         /// </summary>
         public virtual void OnLoad() { }
 
@@ -88,5 +88,10 @@
 		/// Called once every frame (standard unity Update()).
 		/// </summary>
 		public virtual void Update() { }
-	}
+
+        /// <summary>
+        /// Called once every fixed frame (standard unity FixedUpdate()).
+        /// </summary>
+        public virtual void FixedUpdate() { }
+    }
 }

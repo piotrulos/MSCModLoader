@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -15,12 +14,12 @@ namespace MSCLoader
     /// This is main Mod Loader class.
     /// </summary>
     public class ModLoader : MonoBehaviour
-	{
+    {
         /// <summary>
         /// When true, it prints all errors from Update() and OnGUI() class.
         /// </summary>
         public static bool LogAllErrors = false;
- 
+
         /// <summary>
         /// When true, modLoader is ready.
         /// </summary>
@@ -30,7 +29,7 @@ namespace MSCLoader
         /// When true, all mods is loaded.
         /// </summary>
         public static bool IsModsDoneLoading = false;
-   
+
         /// <summary>
         /// When true, game scene is fully loaded.
         /// </summary>
@@ -78,7 +77,7 @@ namespace MSCLoader
         static bool modStats = false;
         static GameObject mainMenuInfo;
         static Animator menuInfoAnim;
-        
+
         static int numOfUpdates;
         static bool isModUpdates = false;
         /// <summary>
@@ -114,7 +113,7 @@ namespace MSCLoader
         public static string GetModAssetsFolder(Mod mod)
         {
             if (mod.UseAssetsFolder == false)
-                ModConsole.Error(string.Format("<b>{0}:</b> Please set variable <b>UseAssetsFolder</b> to <b>true</b>",mod.ID));
+                ModConsole.Error(string.Format("<b>{0}:</b> Please set variable <b>UseAssetsFolder</b> to <b>true</b>", mod.ID));
             return Path.Combine(AssetsFolder, mod.ID);
         }
         /// <summary>
@@ -258,14 +257,14 @@ namespace MSCLoader
                     bool ret = Steamworks.SteamApps.GetCurrentBetaName(out Name, 128);
                     if (ret)
                     {
-                        ModUI.ShowMessage(string.Format("<color=orange><b>Warning:</b></color>{1}You are using beta build: <color=orange><b>{0}</b></color>{1}{1}Remember that some mods may not work correctly on beta branches.", Name, Environment.NewLine),"Experimental build warning");
+                        ModUI.ShowMessage(string.Format("<color=orange><b>Warning:</b></color>{1}You are using beta build: <color=orange><b>{0}</b></color>{1}{1}Remember that some mods may not work correctly on beta branches.", Name, Environment.NewLine), "Experimental build warning");
                     }
                 }
                 catch (Exception e)
                 {
                     ModConsole.Error("Steam not detected, only steam version is supported.");
                 }
-                
+
             }
         }
 
@@ -315,7 +314,7 @@ namespace MSCLoader
                     using (WebClient client = new WebClient())
                     {
                         client.QueryString.Add("core", "stable");
-                        version = client.DownloadString("http://my-summer-car.ml/ver.php");                     
+                        version = client.DownloadString("http://my-summer-car.ml/ver.php");
                     }
                     if (version.Trim().Length > 8)
                         throw new Exception("Parse Error, please report that problem!");
@@ -376,15 +375,15 @@ namespace MSCLoader
         /// Load all mods from "mods" folder, but don't call OnLoad()
         /// </summary>
         private static void PreLoadMods()
-		{
-			// Load .dll files
-			foreach (string file in Directory.GetFiles(ModsFolder))
-			{
-				if (file.EndsWith(".dll"))
-				{
-					LoadDLL(file);
-				}
-			}
+        {
+            // Load .dll files
+            foreach (string file in Directory.GetFiles(ModsFolder))
+            {
+                if (file.EndsWith(".dll"))
+                {
+                    LoadDLL(file);
+                }
+            }
 
             foreach (string dir in Directory.GetDirectories(ConfigFolder))
             {
@@ -459,11 +458,11 @@ namespace MSCLoader
                 Assembly asm = null;
 
                 //STILL TESTING - Loading for proper debug
-                asm = Assembly.LoadFrom(file);               
+                asm = Assembly.LoadFrom(file);
                 bool isMod = false;
 
                 AssemblyName[] list = asm.GetReferencedAssemblies();
-      
+
                 // Look through all public classes                
                 foreach (Type type in asm.GetTypes())
                 {
@@ -544,15 +543,15 @@ namespace MSCLoader
             }
         }
 
-		/// <summary>
-		/// Call Unity OnGUI() function, for each loaded mods.
-		/// </summary>
-		private void OnGUI()
-		{
+        /// <summary>
+        /// Call Unity OnGUI() function, for each loaded mods.
+        /// </summary>
+        private void OnGUI()
+        {
             GUI.skin = guiskin;
-			// Call OnGUI for loaded mods
-			foreach (Mod mod in LoadedMods)
-			{
+            // Call OnGUI for loaded mods
+            foreach (Mod mod in LoadedMods)
+            {
                 try
                 {
                     if (mod.LoadInMenu)
@@ -572,7 +571,7 @@ namespace MSCLoader
                     }
                 }
             }
-		}
+        }
 
         /// <summary>
         /// Call Unity Update() function, for each loaded mods.
@@ -597,13 +596,13 @@ namespace MSCLoader
 
             // Call update for loaded mods
             foreach (Mod mod in LoadedMods)
-			{
-                
+            {
+
                 try
                 {
-                    if(mod.LoadInMenu)
+                    if (mod.LoadInMenu)
                         mod.Update();
-                    else if(Application.loadedLevelName == "GAME" && !mod.isDisabled)
+                    else if (Application.loadedLevelName == "GAME" && !mod.isDisabled)
                         mod.Update();
                 }
                 catch (Exception e)
@@ -618,6 +617,35 @@ namespace MSCLoader
                     }
                 }
             }
-		}
-	}
+        }
+        /// <summary>
+        /// Call Unity FixedUpdate() function, for each loaded mods.
+        /// </summary>
+        private void FixedUpdate()
+        {
+            // Call FixedUpdate for loaded mods
+            foreach (Mod mod in LoadedMods)
+            {
+
+                try
+                {
+                    if (mod.LoadInMenu)
+                        mod.FixedUpdate();
+                    else if (Application.loadedLevelName == "GAME" && !mod.isDisabled)
+                        mod.FixedUpdate();
+                }
+                catch (Exception e)
+                {
+                    if (LogAllErrors)
+                    {
+                        var st = new StackTrace(e, true);
+                        var frame = st.GetFrame(0);
+
+                        string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
+                        ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
+                    }
+                }
+            }
+        }
+    }
 }
