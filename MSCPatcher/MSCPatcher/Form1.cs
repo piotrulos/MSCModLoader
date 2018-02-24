@@ -540,6 +540,11 @@ namespace MSCPatcher
                         MessageBox.Show(string.Format("Error:{1}{0}{1}{1}Please restart patcher!", ex.Message, Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
+                //Apply changes to mainData 
+                MainData.ApplyChanges(enOutputlog.Checked, resDialogCheck.Checked, false);
+
+                //check if everything is ok
+                MainData.loadMainData(OutputlogLabel, resDialogLabel, resDialogCheck);
 
             }
             else

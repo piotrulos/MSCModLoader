@@ -61,7 +61,7 @@ namespace MSCPatcher
                 }
             }
         }
-        public static void ApplyChanges(bool output_log, bool resDialog)
+        public static void ApplyChanges(bool output_log, bool resDialog, bool mb = true)
         {
             if(mainDataPath != null)
             {
@@ -86,7 +86,8 @@ namespace MSCPatcher
 
                         stream.Close();
                     }
-                    MessageBox.Show("Changes saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    if(mb)
+                        MessageBox.Show("Changes saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception e)
                 {
