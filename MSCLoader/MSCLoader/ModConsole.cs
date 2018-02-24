@@ -2,6 +2,7 @@
 using MSCLoader.Commands;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.Text.RegularExpressions;
 
 namespace MSCLoader
 {
@@ -86,6 +87,7 @@ namespace MSCLoader
         public static void Print(string str)
         {
             console.console.appendLogLine(str);
+            Debug.Log(string.Format("MSCLoader Message: {0}", Regex.Replace(str, "<.*?>", string.Empty)));
         }
         /// <summary>
         /// OBSOLETE: For compatibility with 0.1 plugins, please use string str overload!
@@ -96,6 +98,7 @@ namespace MSCLoader
         public static void Print(object obj)
         {
             console.console.appendLogLine(obj.ToString());
+            Debug.Log(string.Format("MSCLoader Message: {0}", obj));
         }
         /// <summary>
         /// Print an error to the console.
@@ -107,6 +110,7 @@ namespace MSCLoader
         {
             console.setVisibility(true);
             console.console.appendLogLine(string.Format("<color=red><b>Error: </b>{0}</color>", str));
+            Debug.Log(string.Format("MSCLoader ERROR: {0}", Regex.Replace(str, "<.*?>", string.Empty)));
         }
 
         /// <summary>

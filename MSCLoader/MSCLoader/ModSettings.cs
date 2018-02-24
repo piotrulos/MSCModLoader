@@ -1,8 +1,5 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections;
 using System.IO;
-//using System.Xml;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -197,17 +194,6 @@ namespace MSCLoader
 
         public override void OnMenuLoad()
         {
-            /*  try
-              {
-                  GameObject go = new GameObject();
-                  ModSettingsUI ui = go.AddComponent<ModSettingsUI>();
-                  ui.ms = this;
-                  ui.LoadUI();
-              }
-              catch (Exception e)
-              {
-                  ModConsole.Print(e.Message); //debug only
-              }*/
             CreateSettingsUI();
             Keybind.Add(this, menuKey);
             // Load the keybinds.
