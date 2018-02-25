@@ -20,17 +20,9 @@ namespace MSCLoader
 
         GameObject UI;
         GameObject ModButton;
-        GameObject ModButton_Pre;
         GameObject ModButton_Invalid;
         GameObject ModViewLabel;
         GameObject KeyBind;
-
-        //icons for SettinsView
-        GameObject HasAssets;
-        GameObject PluginOk;
-        GameObject PluginDisabled;
-        GameObject InMenu;
-        GameObject update;
 
         private Keybind menuKey = new Keybind("Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
         public SettingsView settings;
@@ -42,18 +34,10 @@ namespace MSCLoader
             UI = ab.LoadAsset("MSCLoader Settings.prefab") as GameObject;
 
             ModButton = ab.LoadAsset("ModButton.prefab") as GameObject;
-            ModButton_Pre = ab.LoadAsset("ModButton_Pre.prefab") as GameObject;
             ModButton_Invalid = ab.LoadAsset("ModButton_Invalid.prefab") as GameObject;
             ModViewLabel = ab.LoadAsset("ModViewLabel.prefab") as GameObject;
 
-            KeyBind = ab.LoadAsset("KeyBind.prefab") as GameObject;
-
-            HasAssets = ab.LoadAsset("HasAssets.prefab") as GameObject;
-            PluginOk = ab.LoadAsset("PluginOK.prefab") as GameObject;
-            PluginDisabled = ab.LoadAsset("PluginDisabled.prefab") as GameObject;
-            InMenu = ab.LoadAsset("InMenu.prefab") as GameObject;
-            update = ab.LoadAsset("Update.prefab") as GameObject;
-            
+            KeyBind = ab.LoadAsset("KeyBind.prefab") as GameObject;        
 
             //ModConsole.Print(UI.name);
             UI = GameObject.Instantiate(UI);
@@ -72,16 +56,9 @@ namespace MSCLoader
             UI.GetComponent<SettingsView>().DisableMod.onValueChanged.AddListener(UI.GetComponent<SettingsView>().disableMod);
 
             UI.GetComponent<SettingsView>().ModButton = ModButton;
-            UI.GetComponent<SettingsView>().ModButton_Pre = ModButton_Pre;
             UI.GetComponent<SettingsView>().ModButton_Invalid = ModButton_Invalid;
             UI.GetComponent<SettingsView>().ModViewLabel = ModViewLabel;
             UI.GetComponent<SettingsView>().KeyBind = KeyBind;
-            
-            UI.GetComponent<SettingsView>().HasAssets = HasAssets;
-            UI.GetComponent<SettingsView>().PluginOk = PluginOk;
-            UI.GetComponent<SettingsView>().PluginDisabled = PluginDisabled;
-            UI.GetComponent<SettingsView>().InMenu = InMenu;
-            UI.GetComponent<SettingsView>().update = update;
 
             UI.GetComponent<SettingsView>().IDtxt = UI.GetComponent<SettingsView>().ModSettingsView.transform.GetChild(0).GetComponent<Text>();
             UI.GetComponent<SettingsView>().Nametxt = UI.GetComponent<SettingsView>().ModSettingsView.transform.GetChild(1).GetComponent<Text>();

@@ -19,18 +19,10 @@ namespace MSCLoader
 
         //from AssetBundle
         public GameObject ModButton;
-        public GameObject ModButton_Pre;
         public GameObject ModButton_Invalid;
         public GameObject ModViewLabel;
         public Toggle DisableMod;
         public GameObject KeyBind;
-
-        //icons
-        public GameObject HasAssets;
-        public GameObject PluginOk;
-        public GameObject PluginDisabled;
-        public GameObject InMenu;
-        public GameObject update;
 
         public Text IDtxt;
         public Text Nametxt;
@@ -74,7 +66,12 @@ namespace MSCLoader
                         preloadedLabel = true;
                     }                   
                 }
-                modButton = Instantiate(ModButton_Pre);
+                //blue background, yellow title
+                modButton = Instantiate(ModButton);
+                ColorBlock cb = modButton.GetComponent<Button>().colors;
+                cb.normalColor = new Color32(0, 0, 255, 100);
+                modButton.GetComponent<Button>().colors = cb;
+                modButton.transform.GetChild(0).GetComponent<Text>().color = Color.yellow;
             }
             else
             {
@@ -87,14 +84,19 @@ namespace MSCLoader
                         modViewLabel.transform.SetParent(modView.transform, false);
                         disabledLabel = true;
                     }
-                    modButton = Instantiate(ModButton_Pre);
+                    //blue background, red title
+                    modButton = Instantiate(ModButton);
+                    ColorBlock cb = modButton.GetComponent<Button>().colors;
+                    cb.normalColor = new Color32(0, 0, 255, 100);
+                    modButton.GetComponent<Button>().colors = cb;
+                    modButton.transform.GetChild(0).GetComponent<Text>().color = Color.red;
                 }
                 else
                 {
                     modButton = Instantiate(ModButton);
                 }
-            }              
-            //ModButton = Instantiate(ModButton);
+            }
+
             modButton.AddComponent<ModInfo>().mod = mod;
             modButton.GetComponent<Button>().onClick.AddListener(() => settingView.GetComponent<SettingsView>().selectMod());
             modButton.transform.GetChild(0).GetComponent<Text>().text = name;
@@ -103,23 +105,24 @@ namespace MSCLoader
             modButton.transform.SetParent(modView.transform, false);
             if(mod.hasUpdate)
             {
-                Instantiate(update).transform.SetParent(modButton.transform.GetChild(3), false); //Add Update Icon
+                modButton.transform.GetChild(3).GetChild(0).gameObject.SetActive(true); //Add Update Icon
             }
             if (mod.UseAssetsFolder)
             {
-                Instantiate(HasAssets).transform.SetParent(modButton.transform.GetChild(3), false); //Add assets icon
+                modButton.transform.GetChild(3).GetChild(1).gameObject.SetActive(true); //Add assets icon
             }
             if (mod.isDisabled)
             {
-                Instantiate(PluginDisabled).transform.SetParent(modButton.transform.GetChild(3), false); //Add plugin Disabled icon
+                modButton.transform.GetChild(3).GetChild(2).gameObject.SetActive(true); //Add plugin Disabled icon
+                modButton.transform.GetChild(3).GetChild(2).GetComponent<Image>().color = Color.red;
             }
             else
             {
-                Instantiate(PluginOk).transform.SetParent(modButton.transform.GetChild(3), false); //Add plugin OK icon
+                modButton.transform.GetChild(3).GetChild(2).gameObject.SetActive(true); //Add plugin OK icon
             }
             if (mod.LoadInMenu)
             {
-                Instantiate(InMenu).transform.SetParent(modButton.transform.GetChild(3), false); //Add Menu Icon
+                modButton.transform.GetChild(3).GetChild(3).gameObject.SetActive(true);//Add Menu Icon
             }
 
         }
@@ -267,7 +270,7 @@ namespace MSCLoader
                     if (!invalidLabel)
                     {
                         GameObject modViewLabel = Instantiate(ModViewLabel);
-                        modViewLabel.GetComponent<Text>().text = "Invalid Mods:";
+                        modViewLabel.GetComponent<Text>().text = "Invalid/Broken Mods:";
                         modViewLabel.transform.SetParent(modView.transform, false);
                         invalidLabel = true;
                     }
