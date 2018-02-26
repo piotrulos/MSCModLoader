@@ -12,10 +12,14 @@ namespace MSCLoader
         public GameObject settingViewContainer;
         public GameObject modList;
         public GameObject modView;
+        public GameObject modInfo;
+        public GameObject ModKeyBinds;
         public GameObject modSettings;
-        public GameObject ModSettingsView;
+
         public GameObject goBackBtn;
         public GameObject keybindsList;
+        public GameObject modSettingsList;
+
 
         //from AssetBundle
         public GameObject ModButton;
@@ -28,6 +32,8 @@ namespace MSCLoader
         public Text Nametxt;
         public Text Versiontxt;
         public Text Authortxt;
+
+        int page = 0;
 
         Mod selected;
         bool loadedLabel = false;
@@ -150,10 +156,71 @@ namespace MSCLoader
         public void goBack()
         {
             Animator anim = settingViewContainer.GetComponent<Animator>();
-            modSettings.GetComponent<ScrollRect>().enabled = false;
-            modList.GetComponent<ScrollRect>().enabled = true;
-            anim.SetBool("goSetting", false);
-            goBackBtn.SetActive(false);
+            switch (page)
+            {
+                case 0:
+                    break;
+                case 1:
+                    page = 0;
+                    SetScrollRect();
+                    CreateList();
+                    anim.SetBool("goSetting", false);
+                    goBackBtn.SetActive(false);
+                    break;
+                case 2:
+                    page = 1;
+                    SetScrollRect();
+                    anim.SetBool("goKeybind", false);
+                    break;
+                case 3:
+                    page = 1;
+                    SetScrollRect();
+                    anim.SetBool("goModSetting", false);
+                    break;
+            }
+
+        }
+        void SetScrollRect()
+        {
+            switch (page)
+            {
+                case 0:
+                    modSettings.GetComponent<ScrollRect>().enabled = false;
+                    ModKeyBinds.GetComponent<ScrollRect>().enabled = false;
+                    modInfo.GetComponent<ScrollRect>().enabled = false;
+                    modList.GetComponent<ScrollRect>().enabled = true;
+                    break;
+                case 1:
+                    modSettings.GetComponent<ScrollRect>().enabled = false;
+                    ModKeyBinds.GetComponent<ScrollRect>().enabled = false;
+                    modInfo.GetComponent<ScrollRect>().enabled = true;
+                    modList.GetComponent<ScrollRect>().enabled = false;
+                    break;
+                case 2:
+                    modSettings.GetComponent<ScrollRect>().enabled = false;
+                    ModKeyBinds.GetComponent<ScrollRect>().enabled = true;
+                    modInfo.GetComponent<ScrollRect>().enabled = false;
+                    modList.GetComponent<ScrollRect>().enabled = false;
+                    break;
+                case 3:
+                    modSettings.GetComponent<ScrollRect>().enabled = true;
+                    ModKeyBinds.GetComponent<ScrollRect>().enabled = false;
+                    modInfo.GetComponent<ScrollRect>().enabled = false;
+                    modList.GetComponent<ScrollRect>().enabled = false;
+                    break;
+            }
+        }
+        public void goToKeybinds()
+        {
+            settingViewContainer.GetComponent<Animator>().SetBool("goKeybind", true);
+            page = 2;
+            SetScrollRect();
+        }
+        public void goToSettings()
+        {
+            settingViewContainer.GetComponent<Animator>().SetBool("goModSetting", true);
+            page = 3;
+            SetScrollRect();
         }
         public void disableMod(bool ischecked)
         {
@@ -174,9 +241,6 @@ namespace MSCLoader
             if (selected.ID.StartsWith("MSCLoader_"))
                 core = true; //can't disable core components
             goBackBtn.SetActive(true);
-            Animator anim = settingViewContainer.GetComponent<Animator>();
-            modList.GetComponent<ScrollRect>().enabled = false;
-            modSettings.GetComponent<ScrollRect>().enabled = true;
             IDtxt.text = string.Format("ID: <b>{0}</b>", selected.ID);
             Nametxt.text = string.Format("Name: <b>{0}</b>", selected.Name);
             if(core)
@@ -225,63 +289,71 @@ namespace MSCLoader
                     modViewLabel.transform.SetParent(keybindsList.transform, false);
                 }
             }
-            anim.SetBool("goSetting", true);
+            settingViewContainer.GetComponent<Animator>().SetBool("goSetting", true);
+            page = 1;
+            SetScrollRect();
             //ModConsole.Print(EventSystem.current.currentSelectedGameObject.GetComponent<ModInfo>().mod.ID); //debug
+        }
+
+        void CreateList()
+        {
+            loadedLabel = false;
+            preloadedLabel = false;
+            invalidLabel = false;
+            disabledLabel = false;
+            RemoveChildren(modView.transform);
+            if (Application.loadedLevelName == "MainMenu")
+            {
+                foreach (Mod mod in ModLoader.LoadedMods)
+                {
+                    if (mod.LoadInMenu)
+                        modButton(mod.Name, mod.Version, mod.Author, mod);
+                }
+                foreach (Mod mod in ModLoader.LoadedMods)
+                {
+                    if (!mod.LoadInMenu && !mod.isDisabled)
+                        modButton(mod.Name, mod.Version, mod.Author, mod);
+                }
+            }
+            else
+            {
+                foreach (Mod mod in ModLoader.LoadedMods)
+                {
+                    if (!mod.isDisabled)
+                        modButton(mod.Name, mod.Version, mod.Author, mod);
+                }
+            }
+
+            foreach (Mod mod in ModLoader.LoadedMods)
+            {
+                if (mod.isDisabled)
+                    modButton(mod.Name, mod.Version, mod.Author, mod);
+            }
+            foreach (string s in ModLoader.InvalidMods)
+            {
+                if (!invalidLabel)
+                {
+                    GameObject modViewLabel = Instantiate(ModViewLabel);
+                    modViewLabel.GetComponent<Text>().text = "Invalid/Broken Mods:";
+                    modViewLabel.transform.SetParent(modView.transform, false);
+                    invalidLabel = true;
+                }
+                GameObject invMod = Instantiate(ModButton_Invalid);
+                invMod.transform.GetChild(0).GetComponent<Text>().text = s;
+                invMod.transform.SetParent(modView.transform, false);
+            }
         }
         public void toggleVisibility()
         {
             if (!settingViewContainer.activeSelf)
             {
-                loadedLabel = false;
-                preloadedLabel = false;
-                invalidLabel = false;
-                disabledLabel = false;
-                RemoveChildren(modView.transform);
+                CreateList();
+                page = 0;
                 setVisibility(!settingViewContainer.activeSelf);
-                if (Application.loadedLevelName == "MainMenu")
-                {
-                    foreach (Mod mod in ModLoader.LoadedMods)
-                    {
-                        if (mod.LoadInMenu)
-                            modButton(mod.Name, mod.Version, mod.Author, mod);
-                    }
-                    foreach (Mod mod in ModLoader.LoadedMods)
-                    {
-                        if (!mod.LoadInMenu && !mod.isDisabled)
-                            modButton(mod.Name, mod.Version, mod.Author, mod);
-                    }
-                }
-                else
-                {
-                    foreach (Mod mod in ModLoader.LoadedMods)
-                    {
-                        if(!mod.isDisabled)
-                            modButton(mod.Name, mod.Version, mod.Author, mod);
-                    }
-                }
-
-                foreach (Mod mod in ModLoader.LoadedMods)
-                {
-                    if (mod.isDisabled)
-                        modButton(mod.Name, mod.Version, mod.Author, mod);
-                }
-                foreach (string s in ModLoader.InvalidMods)
-                {
-                    if (!invalidLabel)
-                    {
-                        GameObject modViewLabel = Instantiate(ModViewLabel);
-                        modViewLabel.GetComponent<Text>().text = "Invalid/Broken Mods:";
-                        modViewLabel.transform.SetParent(modView.transform, false);
-                        invalidLabel = true;
-                    }
-                    GameObject invMod = Instantiate(ModButton_Invalid);
-                    invMod.transform.GetChild(0).GetComponent<Text>().text = s;
-                    invMod.transform.SetParent(modView.transform, false);
-                }
             }
             else
             {
-                modSettings.GetComponent<ScrollRect>().enabled = false;
+                modInfo.GetComponent<ScrollRect>().enabled = false;
                 modList.GetComponent<ScrollRect>().enabled = true;
                 setVisibility(!settingViewContainer.activeSelf);
             }
