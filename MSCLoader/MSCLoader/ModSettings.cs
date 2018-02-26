@@ -45,25 +45,33 @@ namespace MSCLoader
             settings = UI.AddComponent<SettingsView>();
             UI.GetComponent<SettingsView>().settingView = UI;
             UI.GetComponent<SettingsView>().settingViewContainer = UI.transform.GetChild(0).gameObject;
-            UI.GetComponent<SettingsView>().modList = UI.GetComponent<SettingsView>().settingViewContainer.transform.GetChild(2).gameObject;
+
+            UI.GetComponent<SettingsView>().modList = UI.GetComponent<SettingsView>().settingViewContainer.transform.GetChild(3).gameObject;
             UI.GetComponent<SettingsView>().modView = UI.GetComponent<SettingsView>().modList.transform.GetChild(0).gameObject;
-            UI.GetComponent<SettingsView>().modSettings = UI.GetComponent<SettingsView>().settingViewContainer.transform.GetChild(1).gameObject;
-            UI.GetComponent<SettingsView>().ModSettingsView = UI.GetComponent<SettingsView>().modSettings.transform.GetChild(0).gameObject;
+            UI.GetComponent<SettingsView>().modInfo = UI.GetComponent<SettingsView>().settingViewContainer.transform.GetChild(2).gameObject;
+            GameObject ModSettingsView = UI.GetComponent<SettingsView>().modInfo.transform.GetChild(0).gameObject;
+            UI.GetComponent<SettingsView>().ModKeyBinds = UI.GetComponent<SettingsView>().settingViewContainer.transform.GetChild(1).gameObject;
+            UI.GetComponent<SettingsView>().keybindsList = UI.GetComponent<SettingsView>().ModKeyBinds.transform.GetChild(0).GetChild(4).gameObject;
+
+            UI.GetComponent<SettingsView>().modSettings = UI.GetComponent<SettingsView>().settingViewContainer.transform.GetChild(4).gameObject;
+            UI.GetComponent<SettingsView>().modSettingsList = UI.GetComponent<SettingsView>().modSettings.transform.GetChild(0).GetChild(4).gameObject;
+
             UI.GetComponent<SettingsView>().goBackBtn = UI.GetComponent<SettingsView>().settingViewContainer.transform.GetChild(0).GetChild(0).gameObject;
             UI.GetComponent<SettingsView>().goBackBtn.GetComponent<Button>().onClick.AddListener(() => UI.GetComponent<SettingsView>().goBack());
-            UI.GetComponent<SettingsView>().keybindsList = UI.GetComponent<SettingsView>().ModSettingsView.transform.GetChild(8).gameObject;
-            UI.GetComponent<SettingsView>().DisableMod = UI.GetComponent<SettingsView>().ModSettingsView.transform.GetChild(4).GetComponent<Toggle>();
+            UI.GetComponent<SettingsView>().DisableMod = ModSettingsView.transform.GetChild(5).GetComponent<Toggle>();
             UI.GetComponent<SettingsView>().DisableMod.onValueChanged.AddListener(UI.GetComponent<SettingsView>().disableMod);
+            ModSettingsView.transform.GetChild(7).GetComponent<Button>().onClick.AddListener(() => UI.GetComponent<SettingsView>().goToKeybinds());
+            ModSettingsView.transform.GetChild(9).GetComponent<Button>().onClick.AddListener(() => UI.GetComponent<SettingsView>().goToSettings());
 
             UI.GetComponent<SettingsView>().ModButton = ModButton;
             UI.GetComponent<SettingsView>().ModButton_Invalid = ModButton_Invalid;
             UI.GetComponent<SettingsView>().ModViewLabel = ModViewLabel;
             UI.GetComponent<SettingsView>().KeyBind = KeyBind;
 
-            UI.GetComponent<SettingsView>().IDtxt = UI.GetComponent<SettingsView>().ModSettingsView.transform.GetChild(0).GetComponent<Text>();
-            UI.GetComponent<SettingsView>().Nametxt = UI.GetComponent<SettingsView>().ModSettingsView.transform.GetChild(1).GetComponent<Text>();
-            UI.GetComponent<SettingsView>().Versiontxt = UI.GetComponent<SettingsView>().ModSettingsView.transform.GetChild(2).GetComponent<Text>();
-            UI.GetComponent<SettingsView>().Authortxt = UI.GetComponent<SettingsView>().ModSettingsView.transform.GetChild(3).GetComponent<Text>();
+            UI.GetComponent<SettingsView>().IDtxt = ModSettingsView.transform.GetChild(0).GetComponent<Text>();
+            UI.GetComponent<SettingsView>().Nametxt = ModSettingsView.transform.GetChild(1).GetComponent<Text>();
+            UI.GetComponent<SettingsView>().Versiontxt = ModSettingsView.transform.GetChild(2).GetComponent<Text>();
+            UI.GetComponent<SettingsView>().Authortxt = ModSettingsView.transform.GetChild(3).GetComponent<Text>();
 
             UI.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
             settings.setVisibility(false);
