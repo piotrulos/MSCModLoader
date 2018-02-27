@@ -18,23 +18,44 @@ namespace MSCLoader
 
         public object Value { get; set; }
 
-        public Action action { get; set; }
+        public Action DoAction { get; set; }
 
-        public Settings(string iD, string name, Mod mod)
+        //constructors
+
+        public Settings(string iD, string name, object value)
         {
             ID = iD;
             Name = name;
-            Mod = mod;
+            Value = value;
+            DoAction = null;
         }
 
-        public Settings(string iD, string name, Mod mod, Action action) : this(iD, name, mod)
+        public Settings(string iD, string name, Action doAction)
         {
-            this.action = action;
+            ID = iD;
+            Name = name;
+            Value = "DoAction";
+            DoAction = doAction;
         }
 
-        public static void AddCheckBox()
-        {
+        /// <summary>
+        /// Return all settings for mod.
+        /// </summary>
+        /// <param name="mod">The mod to get the settings for.</param>
+        /// <returns>List of Settings for the mod.</returns>
+        public static List<Settings> Get(Mod mod) => modSettings.FindAll(x => x.Mod == mod);
 
+        public static void AddCheckBox(Mod mod, Settings setting)
+        {
+            setting.Mod = mod;
+            if(setting.Value is bool)
+            {
+                modSettings.Add(setting);
+            }
+            else
+            {
+                ModConsole.Error("AddCheckBox: non-bool value.");
+            }
         }
 
         public static void AddButton()
@@ -42,9 +63,6 @@ namespace MSCLoader
 
         }
 
-        public static object ReturnValue()
-        {
-            return null; //Return whatever
-        }
+        public object ReturnValue() => Value; //Return whatever
     }
 }

@@ -265,6 +265,7 @@ namespace MSCLoader
                     ModConsole.Error("Steam not detected, only steam version is supported.");
                 }
 
+                LoadModsSettings();
             }
         }
 
@@ -385,6 +386,7 @@ namespace MSCLoader
                 }
             }
 
+            //cleanup files.
             foreach (string dir in Directory.GetDirectories(ConfigFolder))
             {
                 if (!LoadedMods.Exists(x => x.ID == new DirectoryInfo(dir).Name))
@@ -396,6 +398,21 @@ namespace MSCLoader
                     Directory.Delete(dir, true);
             }
 
+        }
+
+        static void LoadModsSettings()
+        {
+            foreach (Mod mod in LoadedMods)
+            {
+                try
+                {
+                    mod.ModSettings();
+                }
+                catch (Exception e)
+                {
+                    ModConsole.Error(string.Format("Settings error for mod <b>{0}</b>{2}<b>Details:</b> {1}", mod.ID, e.Message, Environment.NewLine));
+                }
+            }
         }
 
         static void ModStats()
