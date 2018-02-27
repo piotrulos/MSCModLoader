@@ -57,25 +57,19 @@ namespace MSCLoader
 			DefaultKeybinds.Add(new Keybind(key.ID, key.Name, key.Key, key.Modifier) { Mod = mod });
 		}
 
-		/// <summary>
-		/// Return all keybinds for mod.
-		/// </summary>
-		/// <param name="mod">The mod to get the Keybinds for.</param>
-		/// <returns>List of Keybinds for the mod.</returns>
-		public static List<Keybind> Get(Mod mod)
-		{
-			return Keybinds.FindAll(x => x.Mod == mod);
-		}
+        /// <summary>
+        /// Return all keybinds for mod.
+        /// </summary>
+        /// <param name="mod">The mod to get the Keybinds for.</param>
+        /// <returns>List of Keybinds for the mod.</returns>
+        public static List<Keybind> Get(Mod mod) => Keybinds.FindAll(x => x.Mod == mod);
 
-		/// <summary>
-		/// Return all default keybinds for mod.
-		/// </summary>
-		/// <param name="mod">The mod to get the keybinds for.</param>
-		/// <returns>List of default Keybinds for the mod.</returns>
-		public static List<Keybind> GetDefault(Mod mod)
-		{
-			return DefaultKeybinds.FindAll(x => x.Mod == mod);
-		}
+        /// <summary>
+        /// Return all default keybinds for mod.
+        /// </summary>
+        /// <param name="mod">The mod to get the keybinds for.</param>
+        /// <returns>List of default Keybinds for the mod.</returns>
+        public static List<Keybind> GetDefault(Mod mod) => DefaultKeybinds.FindAll(x => x.Mod == mod);
 
         /// <summary>
         /// Constructor for Keybind without modifier

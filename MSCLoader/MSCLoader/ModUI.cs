@@ -34,6 +34,7 @@ namespace MSCLoader
             evSys.AddComponent<StandaloneInputModule>();
             GameObject.DontDestroyOnLoad(evSys);
         }
+
         public static void ShowMessage(string message) => ShowMessage(message, "Message");
 
         public static void ShowMessage(string message, string title)

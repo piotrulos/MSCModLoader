@@ -27,6 +27,13 @@ namespace MSCLoader
         private Keybind consoleKey = new Keybind("Open", "Open console", KeyCode.BackQuote);
         GameObject UI;
 
+        //Testing this shish
+        Settings testBool = new Settings("Test", "Do some shit", false);
+        public override void ModSettings()
+        {
+            Settings.AddCheckBox(this, testBool);
+        }
+
         public void CreateConsoleUI()
         {
             AssetBundle ab = LoadAssets.LoadBundle(this, "console.unity3d");
@@ -61,6 +68,10 @@ namespace MSCLoader
             if (consoleKey.IsDown())
             {
                 console.toggleVisibility();
+            }
+            if(Input.GetKeyDown(KeyCode.F6))
+            {
+                ModConsole.Print(testBool.ReturnValue());
             }
         }
 

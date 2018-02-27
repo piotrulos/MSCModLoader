@@ -61,6 +61,11 @@
         public abstract string Author { get; }
 
         /// <summary>
+        /// Called once, after GAME scene is fully loaded.
+        /// </summary>
+        public virtual void ModSettings() { }
+
+        /// <summary>
         /// Called once, when the mod is loaded in MainMenu scene (only when LoadInMenu is true).
         /// </summary>
         public virtual void OnMenuLoad() {
