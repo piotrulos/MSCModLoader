@@ -159,6 +159,7 @@ namespace MSCLoader
             switch (page)
             {
                 case 0:
+                    //nothing.
                     break;
                 case 1:
                     page = 0;
@@ -292,7 +293,6 @@ namespace MSCLoader
             settingViewContainer.GetComponent<Animator>().SetBool("goSetting", true);
             page = 1;
             SetScrollRect();
-            //ModConsole.Print(EventSystem.current.currentSelectedGameObject.GetComponent<ModInfo>().mod.ID); //debug
         }
 
         void CreateList()
@@ -349,12 +349,11 @@ namespace MSCLoader
             {
                 CreateList();
                 page = 0;
+                SetScrollRect();
                 setVisibility(!settingViewContainer.activeSelf);
             }
             else
             {
-                modInfo.GetComponent<ScrollRect>().enabled = false;
-                modList.GetComponent<ScrollRect>().enabled = true;
                 setVisibility(!settingViewContainer.activeSelf);
             }
         }
