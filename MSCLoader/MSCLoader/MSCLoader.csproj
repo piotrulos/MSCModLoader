@@ -88,6 +88,7 @@
     <Compile Include="OBJLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SaveLoad.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="SettingsView.cs" />
     <Compile Include="uAudioPlayer.cs" />
   </ItemGroup>
