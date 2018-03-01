@@ -29,9 +29,12 @@ namespace MSCLoader
 
         //Testing this shish
         Settings testBool = new Settings("Test", "Do some shit", false);
+        Settings testBool2 = new Settings("Test2", "Do some shit 2", true);
+
         public override void ModSettings()
         {
             Settings.AddCheckBox(this, testBool);
+            Settings.AddCheckBox(this, testBool2);
         }
 
         public void CreateConsoleUI()

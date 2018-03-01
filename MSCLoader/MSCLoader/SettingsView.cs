@@ -27,6 +27,7 @@ namespace MSCLoader
         public GameObject ModViewLabel;
         public Toggle DisableMod;
         public GameObject KeyBind;
+        public GameObject Checkbox;
 
         public Text IDtxt;
         public Text Nametxt;
@@ -131,6 +132,20 @@ namespace MSCLoader
                 modButton.transform.GetChild(3).GetChild(3).gameObject.SetActive(true);//Add Menu Icon
             }
 
+        }
+
+        public void SettingsList(Settings setting)
+        {
+            switch (setting.type)
+            {
+                case SettingsType.CheckBox:
+                    GameObject checkbox = Instantiate(Checkbox);
+                    checkbox.transform.GetChild(1).GetComponent<Text>().text = setting.Name;
+                    checkbox.GetComponent<Toggle>().isOn = (bool)setting.Value;
+                    checkbox.GetComponent<Toggle>().onValueChanged.AddListener(delegate { setting.Value = checkbox.GetComponent<Toggle>().isOn; });
+                    checkbox.transform.SetParent(modSettingsList.transform, false);
+                    break;
+            }
         }
 
         public void KeyBindsList(string name, KeyCode modifier, KeyCode key, string ID)
@@ -261,6 +276,7 @@ namespace MSCLoader
                 DisableMod.interactable = false;
             DisableMod.isOn = selected.isDisabled;
             RemoveChildren(keybindsList.transform);
+            RemoveChildren(modSettingsList.transform);
             bool hasKeybinds = false;
             foreach (Keybind key in Keybind.Keybinds)
             {
@@ -291,6 +307,24 @@ namespace MSCLoader
                 }
             }
             settingViewContainer.GetComponent<Animator>().SetBool("goSetting", true);
+            bool hasSettings = false;
+
+            foreach (Settings set in Settings.modSettings)
+            {
+                if(set.Mod == selected)
+                {
+                    hasSettings = true;
+                    SettingsList(set);                    
+                }
+            }
+            if (!hasSettings)
+            {
+                GameObject modViewLabel = Instantiate(ModViewLabel);
+                modViewLabel.GetComponent<Text>().text = "This mod has no defined Settings.";
+                modViewLabel.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
+                modViewLabel.GetComponent<Text>().fontStyle = FontStyle.Italic;
+                modViewLabel.transform.SetParent(keybindsList.transform, false);
+            }
             page = 1;
             SetScrollRect();
         }

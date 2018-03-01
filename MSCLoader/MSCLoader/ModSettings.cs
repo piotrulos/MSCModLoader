@@ -23,6 +23,7 @@ namespace MSCLoader
         GameObject ModButton_Invalid;
         GameObject ModViewLabel;
         GameObject KeyBind;
+        GameObject Checkbox;
 
         private Keybind menuKey = new Keybind("Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
         public SettingsView settings;
@@ -37,7 +38,9 @@ namespace MSCLoader
             ModButton_Invalid = ab.LoadAsset("ModButton_Invalid.prefab") as GameObject;
             ModViewLabel = ab.LoadAsset("ModViewLabel.prefab") as GameObject;
 
-            KeyBind = ab.LoadAsset("KeyBind.prefab") as GameObject;        
+            KeyBind = ab.LoadAsset("KeyBind.prefab") as GameObject;
+
+            Checkbox = ab.LoadAsset("Checkbox.prefab") as GameObject;
 
             //ModConsole.Print(UI.name);
             UI = GameObject.Instantiate(UI);
@@ -67,6 +70,8 @@ namespace MSCLoader
             UI.GetComponent<SettingsView>().ModButton_Invalid = ModButton_Invalid;
             UI.GetComponent<SettingsView>().ModViewLabel = ModViewLabel;
             UI.GetComponent<SettingsView>().KeyBind = KeyBind;
+
+            UI.GetComponent<SettingsView>().Checkbox = Checkbox;
 
             UI.GetComponent<SettingsView>().IDtxt = ModSettingsView.transform.GetChild(0).GetComponent<Text>();
             UI.GetComponent<SettingsView>().Nametxt = ModSettingsView.transform.GetChild(1).GetComponent<Text>();
