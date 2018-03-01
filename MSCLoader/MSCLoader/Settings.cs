@@ -4,6 +4,12 @@ using System.Collections.Generic;
 
 namespace MSCLoader
 {
+    public enum SettingsType
+    {
+        CheckBox = 1,
+        Button = 2,
+        Slider = 3
+    }
     public class Settings
     {
         //Just testing (how to do this)
@@ -19,6 +25,8 @@ namespace MSCLoader
         public object Value { get; set; }
 
         public Action DoAction { get; set; }
+
+        public SettingsType type { get; set; }
 
         //constructors
 
@@ -38,6 +46,14 @@ namespace MSCLoader
             DoAction = doAction;
         }
 
+        public Settings(string iD, string name, object value, Action doAction)
+        {
+            ID = iD;
+            Name = name;
+            Value = value;
+            DoAction = doAction;
+        }
+
         /// <summary>
         /// Return all settings for mod.
         /// </summary>
@@ -50,6 +66,7 @@ namespace MSCLoader
             setting.Mod = mod;
             if(setting.Value is bool)
             {
+                setting.type = SettingsType.CheckBox;
                 modSettings.Add(setting);
             }
             else
