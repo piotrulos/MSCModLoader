@@ -104,4 +104,7 @@ copy $(TargetPath) "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Man
 )
 </PostBuildEvent>
   </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>call "$(SolutionDir)wsl.cmd"</PreBuildEvent>
+  </PropertyGroup>
 </Project>

@@ -33,7 +33,7 @@ namespace MSCLoader
                 rotZ = g.transform.localEulerAngles.z
             };
             save.save.Add(s);
-            string serializedData = JsonConvert.SerializeObject(save);
+            string serializedData = JsonConvert.SerializeObject(save, Formatting.Indented);
             File.WriteAllText(path, serializedData);
            
         }
@@ -52,6 +52,7 @@ namespace MSCLoader
         {
             var config = new JsonSerializerSettings();
             config.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            config.Formatting = Formatting.Indented;
             string path = Path.Combine(ModLoader.GetModConfigFolder(mod), fileName);
             string serializedData = JsonConvert.SerializeObject(saveDataClass, config);
             File.WriteAllText(path, serializedData);

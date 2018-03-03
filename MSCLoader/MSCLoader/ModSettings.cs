@@ -141,11 +141,33 @@ namespace MSCLoader
                 list.keybinds.Add(keybinds);
             }
 
-            string serializedData = JsonConvert.SerializeObject(list);
+            string serializedData = JsonConvert.SerializeObject(list, Formatting.Indented);
             File.WriteAllText(path, serializedData);
 
         }
+   
+        // Save keybind for a single mod to config file.
+        public static void SaveSettings(Mod mod)
+        {
 
+            SettingsList list = new SettingsList();
+            string path = Path.Combine(ModLoader.GetModConfigFolder(mod), "settings.json");
+
+            foreach (Settings set in Settings.Get(mod))
+            {
+                Setting sets = new Setting
+                {
+                    ID = set.ID,
+                    Value = set.Value
+                };
+
+                list.settings.Add(sets);
+            }
+
+            string serializedData = JsonConvert.SerializeObject(list, Formatting.Indented);
+            File.WriteAllText(path, serializedData);
+
+        }
 
         // Load all keybinds.
         public static void LoadBinds()
@@ -186,8 +208,6 @@ namespace MSCLoader
         {
             CreateSettingsUI();
             Keybind.Add(this, menuKey);
-            // Load the keybinds.
-            LoadBinds();
         }
 
 

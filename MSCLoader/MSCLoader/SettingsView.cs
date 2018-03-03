@@ -191,6 +191,7 @@ namespace MSCLoader
                 case 3:
                     page = 1;
                     SetScrollRect();
+                    ModSettings.SaveSettings(selected);
                     anim.SetBool("goModSetting", false);
                     break;
             }
@@ -323,7 +324,7 @@ namespace MSCLoader
                 modViewLabel.GetComponent<Text>().text = "This mod has no defined Settings.";
                 modViewLabel.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
                 modViewLabel.GetComponent<Text>().fontStyle = FontStyle.Italic;
-                modViewLabel.transform.SetParent(keybindsList.transform, false);
+                modViewLabel.transform.SetParent(modSettingsList.transform, false);
             }
             page = 1;
             SetScrollRect();
