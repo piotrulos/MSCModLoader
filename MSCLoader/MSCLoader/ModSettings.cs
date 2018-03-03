@@ -28,6 +28,12 @@ namespace MSCLoader
         private Keybind menuKey = new Keybind("Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
         public SettingsView settings;
 
+        public override void OnMenuLoad()
+        {
+            CreateSettingsUI();
+            Keybind.Add(this, menuKey);
+        }
+
         public void CreateSettingsUI()
         {
             AssetBundle ab = LoadAssets.LoadBundle(this, "settingsui.unity3d");
@@ -146,11 +152,12 @@ namespace MSCLoader
 
         }
    
-        // Save keybind for a single mod to config file.
+        // Save settings for a single mod to config file.
         public static void SaveSettings(Mod mod)
         {
 
             SettingsList list = new SettingsList();
+            list.isDisabled = mod.isDisabled;
             string path = Path.Combine(ModLoader.GetModConfigFolder(mod), "settings.json");
 
             foreach (Settings set in Settings.Get(mod))
@@ -204,12 +211,33 @@ namespace MSCLoader
             }
         }
 
-        public override void OnMenuLoad()
+        // Load all settings.
+        public static void LoadSettings()
         {
-            CreateSettingsUI();
-            Keybind.Add(this, menuKey);
-        }
+            foreach (Mod mod in ModLoader.LoadedMods)
+            {
+                // Check if there is custom settings file (if not, ignore)
+                string path = Path.Combine(ModLoader.GetModConfigFolder(mod), "settings.json");
+                if (!File.Exists(path))
+                    continue;
 
+                //Load and deserialize 
+                SettingsList settings = new SettingsList();
+                string serializedData = File.ReadAllText(path);
+                settings = JsonConvert.DeserializeObject<SettingsList>(serializedData);
+                mod.isDisabled = settings.isDisabled;
+                if (settings.settings.Count == 0)
+                    continue;
+
+                foreach (var kb in settings.settings)
+                {
+                    Settings set = Settings.modSettings.Find(x => x.Mod == mod && x.ID == kb.ID);
+                    if (set == null)
+                        continue;
+                    set.Value = kb.Value;
+                }
+            }
+        }
 
         // Open menu if the key is pressed.
         public override void Update()

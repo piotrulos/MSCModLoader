@@ -248,6 +248,7 @@ namespace MSCLoader
                     ModConsole.Print(string.Format("Mod <b><color=orange>{0}</color></b> is <color=red><b>Disabled</b></color>",selected.Name));
                 else
                     ModConsole.Print(string.Format("Mod <b><color=orange>{0}</color></b> is <color=green><b>Enabled</b></color>", selected.Name));
+                ModSettings.SaveSettings(selected);
             }
         }
 

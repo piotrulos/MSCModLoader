@@ -6,6 +6,7 @@ namespace MSCLoader
 {
     public class SettingsList
     {
+        public bool isDisabled { get; set; }
         public List<Setting> settings = new List<Setting>();
     }
     public class Setting
@@ -21,8 +22,6 @@ namespace MSCLoader
     }
     public class Settings
     {
-        //Just testing (how to do this)
-
         public static List<Settings> modSettings = new List<Settings>();
 
         public string ID { get; set; }
@@ -89,6 +88,6 @@ namespace MSCLoader
 
         }
 
-        public object ReturnValue() => Value; //Return whatever
+        public object ReturnValue() => Value; //Return whatever is there
     }
 }
