@@ -4,6 +4,15 @@ using System.Collections.Generic;
 
 namespace MSCLoader
 {
+    public class SettingsList
+    {
+        public List<Setting> settings = new List<Setting>();
+    }
+    public class Setting
+    {
+        public string ID { get; set; }
+        public object Value { get; set; }
+    }
     public enum SettingsType
     {
         CheckBox = 1,
