@@ -153,6 +153,25 @@ namespace MSCLoader
                     btn.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(setting.DoAction.Invoke);
                     btn.transform.SetParent(modSettingsList.transform, false);
                     break;
+                case SettingsType.Slider:
+                    GameObject modViewLabel = Instantiate(ModViewLabel);
+                    modViewLabel.GetComponent<Text>().text = setting.Name;
+                    modViewLabel.transform.SetParent(modSettingsList.transform, false);
+                    GameObject slidr = Instantiate(slider);
+                    slidr.transform.GetChild(1).GetComponent<Text>().text = setting.Value.ToString();
+                    slidr.transform.GetChild(0).GetComponent<Slider>().value = float.Parse(setting.Value.ToString());
+                    slidr.transform.GetChild(0).GetComponent<Slider>().minValue =  float.Parse(setting.Vals[0].ToString());
+                    slidr.transform.GetChild(0).GetComponent<Slider>().maxValue = float.Parse(setting.Vals[1].ToString());
+                    slidr.transform.GetChild(0).GetComponent<Slider>().wholeNumbers = (bool)setting.Vals[2];
+                    slidr.transform.GetChild(0).GetComponent<Slider>().onValueChanged.AddListener(delegate 
+                    {
+                        setting.Value = slidr.transform.GetChild(0).GetComponent<Slider>().value;
+                        slidr.transform.GetChild(1).GetComponent<Text>().text = setting.Value.ToString();
+                        if (setting.DoAction != null)
+                            setting.DoAction.Invoke();
+                    });
+                    slidr.transform.SetParent(modSettingsList.transform, false);
+                    break;
             }
         }
 
