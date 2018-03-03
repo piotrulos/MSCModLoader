@@ -27,7 +27,8 @@ namespace MSCLoader
         public GameObject ModViewLabel;
         public Toggle DisableMod;
         public GameObject KeyBind;
-        public GameObject Checkbox;
+        public GameObject Checkbox, setBtn, slider;
+
 
         public Text IDtxt;
         public Text Nametxt;
@@ -144,6 +145,13 @@ namespace MSCLoader
                     checkbox.GetComponent<Toggle>().isOn = (bool)setting.Value;
                     checkbox.GetComponent<Toggle>().onValueChanged.AddListener(delegate { setting.Value = checkbox.GetComponent<Toggle>().isOn; });
                     checkbox.transform.SetParent(modSettingsList.transform, false);
+                    break;
+                case SettingsType.Button:
+                    GameObject btn = Instantiate(setBtn);
+                    btn.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = setting.Name;
+                    btn.transform.GetChild(1).GetComponent<Text>().text = setting.Vals[0].ToString();
+                    btn.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(setting.DoAction.Invoke);
+                    btn.transform.SetParent(modSettingsList.transform, false);
                     break;
             }
         }

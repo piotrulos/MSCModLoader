@@ -36,6 +36,7 @@ namespace MSCLoader
 
         public SettingsType type { get; set; }
 
+        public object[] Vals { get; set; }
         //constructors
 
         public Settings(string iD, string name, object value)
@@ -83,11 +84,28 @@ namespace MSCLoader
             }
         }
 
-        public static void AddButton()
+        public static void AddButton(Mod mod, Settings setting, string description = null)
+        {
+            setting.Mod = mod;
+            setting.Vals = new object[1];
+
+            if (setting.DoAction != null)
+            {
+                setting.type = SettingsType.Button;
+                setting.Vals[0] = description;
+                modSettings.Add(setting);
+            }
+            else
+            {
+                ModConsole.Error("AddButton: Action cannot be null.");
+            }
+        }
+
+        public static void AddSlider(Mod mod, Settings setting, string title, int minValue, int maxValue)
         {
 
         }
 
-        public object ReturnValue() => Value; //Return whatever is there
+        public object GetValue() => Value; //Return whatever is there
     }
 }
