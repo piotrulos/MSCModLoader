@@ -30,13 +30,19 @@ namespace MSCLoader
         //Testing this shish
         Settings testBool = new Settings("Test", "Do some shit", false);
         Settings testBool2 = new Settings("Test2", "Do some shit 2", true);
-
+        Settings testButton = new Settings("button", "reset", testing);
         public override void ModSettings()
         {
             Settings.AddCheckBox(this, testBool);
             Settings.AddCheckBox(this, testBool2);
+            Settings.AddButton(this, testButton);
+            Settings.AddButton(this, testButton, "Do some fancy shit");
         }
 
+        public static void testing()
+        {
+            ModConsole.Print("OMG");
+        }
         public void CreateConsoleUI()
         {
             AssetBundle ab = LoadAssets.LoadBundle(this, "console.unity3d");
@@ -65,7 +71,7 @@ namespace MSCLoader
 
             UI.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
         }
-
+        
         public override void Update()
         {
             if (consoleKey.IsDown())
@@ -74,7 +80,7 @@ namespace MSCLoader
             }
             if(Input.GetKeyDown(KeyCode.F6))
             {
-                ModConsole.Print(testBool.ReturnValue());
+                ModConsole.Print(testBool.GetValue());
             }
         }
 
