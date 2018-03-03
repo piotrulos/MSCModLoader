@@ -406,13 +406,14 @@ namespace MSCLoader
             {
                 try
                 {
-                    mod.ModSettings();
+                    mod.ModSettings();                
                 }
                 catch (Exception e)
                 {
                     ModConsole.Error(string.Format("Settings error for mod <b>{0}</b>{2}<b>Details:</b> {1}", mod.ID, e.Message, Environment.NewLine));
                 }
             }
+            ModSettings.LoadSettings();
         }
 
         static void ModStats()
