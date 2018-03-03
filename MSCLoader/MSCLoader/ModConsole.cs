@@ -31,17 +31,26 @@ namespace MSCLoader
         Settings testBool = new Settings("Test", "Do some shit", false);
         Settings testBool2 = new Settings("Test2", "Do some shit 2", true);
         Settings testButton = new Settings("button", "reset", testing);
+        Settings testButton2 = new Settings("button2", "some text", testing);
+        static Settings testSlider = new Settings("slider", "test slider", 14,fontFun);
+
         public override void ModSettings()
         {
             Settings.AddCheckBox(this, testBool);
             Settings.AddCheckBox(this, testBool2);
-            Settings.AddButton(this, testButton);
+            Settings.AddButton(this, testButton2);
             Settings.AddButton(this, testButton, "Do some fancy shit");
+            Settings.AddSlider(this, testSlider, 10, 20);
         }
 
         public static void testing()
         {
             ModConsole.Print("OMG");
+        }
+
+        public static void fontFun()
+        {
+            console.logTextArea.fontSize = int.Parse(testSlider.GetValue().ToString());
         }
         public void CreateConsoleUI()
         {

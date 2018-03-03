@@ -88,6 +88,8 @@ namespace MSCLoader
         {
             setting.Mod = mod;
             setting.Vals = new object[1];
+            if (description == null)
+                description = string.Empty;
 
             if (setting.DoAction != null)
             {
@@ -101,9 +103,42 @@ namespace MSCLoader
             }
         }
 
-        public static void AddSlider(Mod mod, Settings setting, string title, int minValue, int maxValue)
+        public static void AddSlider(Mod mod, Settings setting, int minValue, int maxValue)
         {
+            setting.Mod = mod;
+            setting.Vals = new object[3];
 
+            if(setting.Value is int)
+            {
+                setting.type = SettingsType.Slider;
+                setting.Vals[0] = minValue;
+                setting.Vals[1] = maxValue;
+                setting.Vals[2] = true;
+                modSettings.Add(setting);
+            }
+            else
+            {
+                ModConsole.Error("AddSlider: only int allowed here");
+            }
+        }
+
+        public static void AddSlider(Mod mod, Settings setting, float minValue, float maxValue)
+        {
+            setting.Mod = mod;
+            setting.Vals = new object[3];
+
+            if (setting.Value is float)
+            {
+                setting.type = SettingsType.Slider;
+                setting.Vals[0] = minValue;
+                setting.Vals[1] = maxValue;
+                setting.Vals[2] = false;
+                modSettings.Add(setting);
+            }
+            else
+            {
+                ModConsole.Error("AddSlider: only float allowed here");
+            }
         }
 
         public object GetValue() => Value; //Return whatever is there
