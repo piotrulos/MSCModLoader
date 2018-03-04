@@ -263,6 +263,7 @@ namespace MSCLoader
                 catch (Exception e)
                 {
                     ModConsole.Error("Steam not detected, only steam version is supported.");
+                    UnityEngine.Debug.Log(e);
                 }
 
                 LoadModsSettings();
@@ -328,6 +329,7 @@ namespace MSCLoader
                 catch (Exception e)
                 {
                     ModConsole.Error(string.Format("Check for new version failed with error: {0}", e.Message));
+                    UnityEngine.Debug.Log(e);
                     info.text = string.Format("Mod Loader MSCLoader v{0} is ready!", Version);
                 }
             }
@@ -367,6 +369,7 @@ namespace MSCLoader
 
                     string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
                     ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
+                    UnityEngine.Debug.Log(e);
                 }
             }
             ModConsole.Print("</color>");
@@ -410,7 +413,8 @@ namespace MSCLoader
                 }
                 catch (Exception e)
                 {
-                    ModConsole.Error(string.Format("Settings error for mod <b>{0}</b>{2}<b>Details:</b> {1}", mod.ID, e, Environment.NewLine));
+                    ModConsole.Error(string.Format("Settings error for mod <b>{0}</b>{2}<b>Details:</b> {1}", mod.ID, e.Message, Environment.NewLine));
+                    UnityEngine.Debug.Log(e);
                 }
             }
             ModSettings.LoadSettings();
@@ -465,6 +469,7 @@ namespace MSCLoader
                 catch (Exception e)
                 {
                     ModConsole.Error(string.Format("Connection to server failed: {0}", e.Message));
+                    UnityEngine.Debug.Log(e);
                 }
             }
         }
@@ -524,7 +529,7 @@ namespace MSCLoader
             catch (Exception e)
             {
                 ModConsole.Error(string.Format("<b>{0}</b> - doesn't look like a mod, remove this file from mods folder!", Path.GetFileName(file)));
-                //ModConsole.Error(e.ToString());
+                UnityEngine.Debug.Log(e);
                 InvalidMods.Add(Path.GetFileName(file));
             }
 
@@ -586,6 +591,7 @@ namespace MSCLoader
 
                         string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
                         ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
+                        UnityEngine.Debug.Log(e);
                     }
                 }
             }
@@ -632,6 +638,7 @@ namespace MSCLoader
 
                         string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
                         ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
+                        UnityEngine.Debug.Log(e);
                     }
                 }
             }
@@ -661,6 +668,7 @@ namespace MSCLoader
 
                         string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
                         ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
+                        UnityEngine.Debug.Log(e);
                     }
                 }
             }

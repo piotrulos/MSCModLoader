@@ -282,7 +282,7 @@ namespace uAudio
 
                     try
                     {
-                       // LoadFile(targetFile);
+                        // LoadFile(targetFile);
                         SongDone = false;
                         flare_SongEnd = false;
                         UAudio.targetFile = targetFile;
@@ -308,15 +308,15 @@ namespace uAudio
                                 NLayer.MpegFile c = new NLayer.MpegFile(readFullyStream, true);
                                 //playbackDevice = m;
 
-                                if(startOff == TimeSpan.Zero)
-                                c.ReadSamples(buff, 0, buff.Length);
+                                if (startOff == TimeSpan.Zero)
+                                    c.ReadSamples(buff, 0, buff.Length);
 
                                 playbackDevice = c;
-                             //   UAudio.TotalTime
+                                //   UAudio.TotalTime
                                 //     song_sampleSize = playbackDevice.Length;// * playbackDevice.SampleRate;
                                 song_sampleSize = UAudio.SongLength;
-                             // hack
-                             // song_sampleSize = int.MaxValue;// need to better alocate this
+                                // hack
+                                // song_sampleSize = int.MaxValue;// need to better alocate this
 
                                 int setSongSize;
                                 if (song_sampleSize > int.MaxValue)
@@ -347,7 +347,7 @@ namespace uAudio
                                 }
                                 catch
                                 {
-                                   ModConsole.Error("theAudioStream_sendStartLoopPump");
+                                    ModConsole.Error("theAudioStream_sendStartLoopPump");
                                 }
                             }
                             else
@@ -362,15 +362,16 @@ namespace uAudio
                         {
                             if (!myAudioSource.isPlaying)
                                 myAudioSource.PlayDelayed(1f);
-                           // updateTime = true;
+                            // updateTime = true;
                         }
                         else
                             State = PlayBackState.Stopped;
                     }
                     catch (Exception ex)
                     {
-                       State = PlayBackState.Stopped;
-                       ModConsole.Error(ex.ToString());
+                        State = PlayBackState.Stopped;
+                        ModConsole.Error(ex.ToString());
+                        Debug.Log(ex);
                     }
                 }
             }
