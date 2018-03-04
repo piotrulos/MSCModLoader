@@ -146,6 +146,24 @@ namespace MSCLoader
                     checkbox.GetComponent<Toggle>().onValueChanged.AddListener(delegate { setting.Value = checkbox.GetComponent<Toggle>().isOn; });
                     checkbox.transform.SetParent(modSettingsList.transform, false);
                     break;
+                case SettingsType.CheckBoxGroup:
+                    GameObject group;
+                    if (modSettingsList.transform.FindChild(setting.Vals[0].ToString()) == null)
+                    {
+                        group = new GameObject();
+                        group.name = setting.Vals[0].ToString();
+                        group.AddComponent<ToggleGroup>();
+                        group.transform.SetParent(modSettingsList.transform, false);
+                    }
+                    else
+                        group = modSettingsList.transform.FindChild(setting.Vals[0].ToString()).gameObject;
+                    GameObject checkboxG = Instantiate(Checkbox);
+                    checkboxG.transform.GetChild(1).GetComponent<Text>().text = setting.Name;
+                    checkboxG.GetComponent<Toggle>().group = group.GetComponent<ToggleGroup>();
+                    checkboxG.GetComponent<Toggle>().isOn = (bool)setting.Value;
+                    checkboxG.GetComponent<Toggle>().onValueChanged.AddListener(delegate { setting.Value = checkboxG.GetComponent<Toggle>().isOn; });
+                    checkboxG.transform.SetParent(modSettingsList.transform, false);
+                    break;
                 case SettingsType.Button:
                     GameObject btn = Instantiate(setBtn);
                     btn.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = setting.Name;

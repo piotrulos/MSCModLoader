@@ -1,6 +1,7 @@
 ﻿using MSCLoader;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace MSCLoader
 {
@@ -16,9 +17,10 @@ namespace MSCLoader
     }
     public enum SettingsType
     {
-        CheckBox = 1,
-        Button = 2,
-        Slider = 3
+        CheckBoxGroup,
+        CheckBox,
+        Button,
+        Slider
     }
     public class Settings
     {
@@ -73,9 +75,27 @@ namespace MSCLoader
         public static void AddCheckBox(Mod mod, Settings setting)
         {
             setting.Mod = mod;
-            if(setting.Value is bool)
+
+            if (setting.Value is bool)
             {
                 setting.type = SettingsType.CheckBox;
+                modSettings.Add(setting);
+            }
+            else
+            {
+                ModConsole.Error("AddCheckBox: non-bool value.");
+            }
+        }
+
+        public static void AddCheckBox(Mod mod, Settings setting, string group)
+        {
+            setting.Mod = mod;
+            setting.Vals = new object[1];
+            
+            if (setting.Value is bool)
+            {
+                setting.type = SettingsType.CheckBoxGroup;
+                setting.Vals[0] = group;
                 modSettings.Add(setting);
             }
             else

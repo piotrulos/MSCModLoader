@@ -30,14 +30,19 @@ namespace MSCLoader
         //Testing this shish
         Settings testBool = new Settings("Test", "Do some shit", false);
         Settings testBool2 = new Settings("Test2", "Do some shit 2", true);
+        Settings testBool3 = new Settings("Test3", "Do some shit 3", true);
+        Settings testBool4 = new Settings("Test4", "Do some shit 4", true);
+
         Settings testButton = new Settings("button", "reset", testing);
         Settings testButton2 = new Settings("button2", "some text", testing);
         static Settings testSlider = new Settings("slider", "test slider", 14,fontFun);
 
         public override void ModSettings()
         {
-            Settings.AddCheckBox(this, testBool);
-            Settings.AddCheckBox(this, testBool2);
+            Settings.AddCheckBox(this, testBool, "group1");
+            Settings.AddCheckBox(this, testBool2, "group1");
+            Settings.AddCheckBox(this, testBool3, "group2");
+            Settings.AddCheckBox(this, testBool4, "group2");
             Settings.AddButton(this, testButton2);
             Settings.AddButton(this, testButton, "Do some fancy shit");
             Settings.AddSlider(this, testSlider, 10, 20);
