@@ -27,36 +27,19 @@ namespace MSCLoader
         private Keybind consoleKey = new Keybind("Open", "Open console", KeyCode.BackQuote);
         GameObject UI;
 
-        //Testing this shish
-        Settings testBool = new Settings("Test", "Do some shit", false);
-        Settings testBool2 = new Settings("Test2", "Do some shit 2", true);
-        Settings testBool3 = new Settings("Test3", "Do some shit 3", true);
-        Settings testBool4 = new Settings("Test4", "Do some shit 4", true);
-
-        Settings testButton = new Settings("button", "reset", testing);
-        Settings testButton2 = new Settings("button2", "some text", testing);
-        static Settings testSlider = new Settings("slider", "test slider", 14,fontFun);
+        static Settings ConsoleFontSize = new Settings("consoleFont", "Change console font size:", 14, ChangeFontSize);
 
         public override void ModSettings()
         {
-            Settings.AddCheckBox(this, testBool, "group1");
-            Settings.AddCheckBox(this, testBool2, "group1");
-            Settings.AddCheckBox(this, testBool3, "group2");
-            Settings.AddCheckBox(this, testBool4, "group2");
-            Settings.AddButton(this, testButton2);
-            Settings.AddButton(this, testButton, "Do some fancy shit");
-            Settings.AddSlider(this, testSlider, 10, 20);
+            Settings.AddSlider(this, ConsoleFontSize, 10, 20);
+            ChangeFontSize(); //When loading
         }
 
-        public static void testing()
+        public static void ChangeFontSize()
         {
-            ModConsole.Print("OMG");
+            console.logTextArea.fontSize = int.Parse(ConsoleFontSize.GetValue().ToString());
         }
 
-        public static void fontFun()
-        {
-            console.logTextArea.fontSize = int.Parse(testSlider.GetValue().ToString());
-        }
         public void CreateConsoleUI()
         {
             AssetBundle ab = LoadAssets.LoadBundle(this, "console.unity3d");
@@ -91,10 +74,6 @@ namespace MSCLoader
             if (consoleKey.IsDown())
             {
                 console.toggleVisibility();
-            }
-            if(Input.GetKeyDown(KeyCode.F6))
-            {
-                ModConsole.Print(testBool.GetValue());
             }
         }
 
