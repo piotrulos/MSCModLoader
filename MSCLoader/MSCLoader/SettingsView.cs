@@ -42,14 +42,28 @@ namespace MSCLoader
         bool preloadedLabel = false;
         bool invalidLabel = false;
         bool disabledLabel = false;
+        bool updateLabel = false;
         public void modButton(string name, string version, string author, Mod mod)
         {
-            if (!loadedLabel)
+            if (mod.hasUpdate)
             {
-                GameObject modViewLabel = Instantiate(ModViewLabel);
-                modViewLabel.GetComponent<Text>().text = "Loaded Mods:";
-                modViewLabel.transform.SetParent(modView.transform, false);
-                loadedLabel = true;
+                if (!updateLabel)
+                {
+                    GameObject modViewLabel = Instantiate(ModViewLabel);
+                    modViewLabel.GetComponent<Text>().text = "Updates available:";
+                    modViewLabel.transform.SetParent(modView.transform, false);
+                    updateLabel = true;
+                }
+            }
+            else
+            {
+                if (!loadedLabel)
+                {
+                    GameObject modViewLabel = Instantiate(ModViewLabel);
+                    modViewLabel.GetComponent<Text>().text = "Loaded Mods:";
+                    modViewLabel.transform.SetParent(modView.transform, false);
+                    loadedLabel = true;
+                }
             }
             GameObject modButton;
             if (!mod.LoadInMenu && Application.loadedLevelName == "MainMenu")
@@ -66,13 +80,16 @@ namespace MSCLoader
                 }
                 else
                 {
-                    if (!preloadedLabel)
+                    if (!mod.hasUpdate)
                     {
-                        GameObject modViewLabel = Instantiate(ModViewLabel);
-                        modViewLabel.GetComponent<Text>().text = "Ready to Load:";
-                        modViewLabel.transform.SetParent(modView.transform, false);
-                        preloadedLabel = true;
-                    }                   
+                        if (!preloadedLabel)
+                        {
+                            GameObject modViewLabel = Instantiate(ModViewLabel);
+                            modViewLabel.GetComponent<Text>().text = "Ready to Load:";
+                            modViewLabel.transform.SetParent(modView.transform, false);
+                            preloadedLabel = true;
+                        }
+                    }
                 }
                 //blue background, yellow title
                 modButton = Instantiate(ModButton);
@@ -382,7 +399,13 @@ namespace MSCLoader
             preloadedLabel = false;
             invalidLabel = false;
             disabledLabel = false;
+            updateLabel = false;
             RemoveChildren(modView.transform);
+            foreach (Mod mod in ModLoader.LoadedMods)
+            {
+                if (mod.hasUpdate && !mod.isDisabled)
+                    modButton(mod.Name, mod.Version, mod.Author, mod);
+            }
             if (Application.loadedLevelName == "MainMenu")
             {
                 foreach (Mod mod in ModLoader.LoadedMods)

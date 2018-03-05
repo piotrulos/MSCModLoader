@@ -265,7 +265,7 @@ namespace MSCLoader
                     ModConsole.Error("Steam not detected, only steam version is supported.");
                     UnityEngine.Debug.Log(e);
                 }
-
+                MainMenuInfo(); 
                 LoadModsSettings();
             }
         }
@@ -289,7 +289,6 @@ namespace MSCLoader
             ModUI.messageBox = ab.LoadAsset("MSCLoader MB.prefab") as GameObject;
             mainMenuInfo = ab.LoadAsset("MSCLoader Info.prefab") as GameObject;
             ModConsole.Print("Loading core assets completed!");
-            MainMenuInfo(); //show info in main menu.
             ab.Unload(false); //freeup memory
         }
 

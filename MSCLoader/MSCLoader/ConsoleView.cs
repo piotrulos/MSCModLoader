@@ -36,7 +36,7 @@ namespace MSCLoader
                 viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().SaveConsoleSize();
             setVisibility(!viewContainer.activeSelf);
             inputField.text = string.Empty;
-            if (viewContainer.activeSelf)
+            if (viewContainer.activeSelf && (bool)ModConsole.typing.GetValue())
             {
                 inputField.ActivateInputField();
                 inputField.Select();
