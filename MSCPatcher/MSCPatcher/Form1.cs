@@ -700,6 +700,12 @@ namespace MSCPatcher
                         Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll"));
                         Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\uAudio.dll"));
                         Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll"));
+                        Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\Newtonsoft.Json.dll"));
+                        Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Data.dll"));
+                        Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Runtime.Serialization.dll"));
+                        Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\NAudio.dll"));
+                        Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\AudioAddon.dll"));
+                        Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\NVorbis.dll"));
 
                         Log.Write("", false, true);
                         Log.Write("MSCLoader removed successfully!");
