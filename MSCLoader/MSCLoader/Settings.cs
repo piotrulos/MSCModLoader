@@ -1,7 +1,5 @@
-﻿using MSCLoader;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace MSCLoader
 {
@@ -139,6 +137,7 @@ namespace MSCLoader
             else
             {
                 ModConsole.Error("AddSlider: only int allowed here");
+                ModConsole.Print(setting.Value);
             }
         }
 

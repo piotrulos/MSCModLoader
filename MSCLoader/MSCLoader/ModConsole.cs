@@ -27,10 +27,14 @@ namespace MSCLoader
         private Keybind consoleKey = new Keybind("Open", "Open console", KeyCode.BackQuote);
         GameObject UI;
 
-        static Settings ConsoleFontSize = new Settings("consoleFont", "Change console font size:", 14, ChangeFontSize);
+        public static Settings typing = new Settings("typeConsole", "Start typing when you open console", false);
+        static Settings ConsoleFontSize;
 
         public override void ModSettings()
         {
+            ConsoleFontSize = new Settings("consoleFont", "Change console font size:", 14, ChangeFontSize);
+
+            Settings.AddCheckBox(this, typing);
             Settings.AddSlider(this, ConsoleFontSize, 10, 20);
             ChangeFontSize(); //When loading
         }
