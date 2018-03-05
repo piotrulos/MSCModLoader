@@ -1,0 +1,1 @@
+C:\Windows\Sysnative\bash.exe -c /root/mscpatcher.sh

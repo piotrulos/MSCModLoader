@@ -6,7 +6,6 @@ namespace MSCPatcher
 {
     class Patch64
     {
-
         public static int check64status()
         {
 
@@ -44,7 +43,7 @@ namespace MSCPatcher
                 }
                 File.Move(Path.Combine(Form1.mscPath, @"mysummercar_Data\Plugins\CSteamworks.dll"), String.Format("{0}.32", Path.Combine(Form1.mscPath, @"mysummercar_Data\Plugins\CSteamworks.dll")));
                 File.Move(Path.Combine(Form1.mscPath, @"mysummercar_Data\Plugins\UnityForceFeedback.dll"), String.Format("{0}.32", Path.Combine(Form1.mscPath, @"mysummercar_Data\Plugins\UnityForceFeedback.dll")));
-                
+
                 //copy
                 File.Copy(Path.GetFullPath(Path.Combine("64bit", "mysummercar.exe")), Path.Combine(Form1.mscPath, "mysummercar.exe"), true);
                 Log.Write("Copying file.....mysummercar.exe");

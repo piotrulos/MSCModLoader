@@ -21,7 +21,6 @@ namespace MSCPatcher
                 try
                 {
                     using (FileStream stream = File.OpenRead(mainDataPath))
-                    //using (var stream = new FileStream(mainDataPath, FileMode.Open, FileAccess.ReadWrite))
                     {
                         //output_log.txt
                         stream.Position = offset + 115;
@@ -55,7 +54,7 @@ namespace MSCPatcher
                         stream.Close();
                     }
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     MessageBox.Show(string.Format("Failed to read data from file.{1}{1}Error details:{1}{0}", e.Message, Environment.NewLine), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -63,7 +62,7 @@ namespace MSCPatcher
         }
         public static void ApplyChanges(bool output_log, bool resDialog, bool mb = true)
         {
-            if(mainDataPath != null)
+            if (mainDataPath != null)
             {
                 try
                 {
@@ -86,7 +85,7 @@ namespace MSCPatcher
 
                         stream.Close();
                     }
-                    if(mb)
+                    if (mb)
                         MessageBox.Show("Changes saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception e)
@@ -96,6 +95,7 @@ namespace MSCPatcher
                 }
             }
         }
+
         private static long FindBytes(string fileName, byte[] bytes)
         {
             long i, j;
