@@ -28,12 +28,10 @@ namespace MSCLoader
         GameObject UI;
 
         public static Settings typing = new Settings("typeConsole", "Start typing when you open console", false);
-        static Settings ConsoleFontSize;
+        static Settings ConsoleFontSize = new Settings("consoleFont", "Change console font size:", 14, ChangeFontSize);
 
         public override void ModSettings()
         {
-            ConsoleFontSize = new Settings("consoleFont", "Change console font size:", 14, ChangeFontSize);
-
             Settings.AddCheckBox(this, typing);
             Settings.AddSlider(this, ConsoleFontSize, 10, 20);
             ChangeFontSize(); //When loading
@@ -54,7 +52,6 @@ namespace MSCLoader
             console = UI.AddComponent<ConsoleView>();
             UI.GetComponent<ConsoleView>().viewContainer = UI.transform.GetChild(0).gameObject;
             UI.GetComponent<ConsoleView>().inputField = UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(0).gameObject.GetComponent<InputField>();
-            //UI.GetComponent<ConsoleView>().inputField.onEndEdit.AddListener(delegate { UI.GetComponent<ConsoleView>().runCommand(); });
             UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(1).gameObject.GetComponent<Button>().onClick.AddListener(() => UI.GetComponent<ConsoleView>().runCommand());
             UI.GetComponent<ConsoleView>().logTextArea = UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(2).GetChild(0).gameObject.GetComponent<Text>();
             UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(4).gameObject.AddComponent<ConsoleUIResizer>().logview = UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(2).gameObject;
@@ -84,7 +81,6 @@ namespace MSCLoader
         public override void OnMenuLoad()
         {
             Keybind.Add(this, consoleKey);
-            //Keybind.Add(this, consoleSizeKey);
             CreateConsoleUI();
             console.console = new ConsoleController();
             ConsoleCommand.cc = console.console;

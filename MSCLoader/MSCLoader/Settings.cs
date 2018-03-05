@@ -126,7 +126,8 @@ namespace MSCLoader
             setting.Mod = mod;
             setting.Vals = new object[3];
 
-            if(setting.Value is int)
+            //sometimes is double
+            if (setting.Value is int || setting.Value is double)
             {
                 setting.type = SettingsType.Slider;
                 setting.Vals[0] = minValue;
@@ -137,7 +138,6 @@ namespace MSCLoader
             else
             {
                 ModConsole.Error("AddSlider: only int allowed here");
-                ModConsole.Print(setting.Value);
             }
         }
 

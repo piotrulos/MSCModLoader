@@ -37,6 +37,9 @@
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="AudioAddon">
+      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\AudioAddon.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -51,9 +54,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml">
       <Private>False</Private>
-    </Reference>
-    <Reference Include="uAudio">
-      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\uAudio.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\UnityEngine.dll</HintPath>
@@ -77,6 +77,7 @@
     <Compile Include="KeyBinding.cs" />
     <Compile Include="LoadAssets.cs" />
     <Compile Include="Mod.cs" />
+    <Compile Include="ModAudio.cs" />
     <Compile Include="ModConsole.cs" />
     <Compile Include="ModCore.cs" />
     <Compile Include="ModInfo.cs" />
@@ -90,7 +91,6 @@
     <Compile Include="SaveLoad.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SettingsView.cs" />
-    <Compile Include="uAudioPlayer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

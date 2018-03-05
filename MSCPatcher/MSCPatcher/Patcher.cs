@@ -16,6 +16,8 @@ namespace MSCPatcher
         public static void CopyReferences(string mscPath)
         {
             DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll"));
+            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\uAudio.dll"));
+
             if (File.Exists(Path.GetFullPath(Path.Combine("MSCLoader.dll", ""))))
             {
                 File.Copy(Path.GetFullPath(Path.Combine("MSCLoader.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll"));
@@ -26,11 +28,6 @@ namespace MSCPatcher
             {
                 File.Copy(Path.GetFullPath(Path.Combine("System.Xml.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll"));
                 Log.Write("Copying new file.....System.Xml.dll");
-            }
-            if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\uAudio.dll")))
-            {
-                File.Copy(Path.GetFullPath(Path.Combine("uAudio.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\uAudio.dll"));
-                Log.Write("Copying new file.....uAudio.dll");
             }
             if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\Newtonsoft.Json.dll")))
             {
@@ -46,6 +43,21 @@ namespace MSCPatcher
             {
                 File.Copy(Path.GetFullPath(Path.Combine("System.Runtime.Serialization.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Runtime.Serialization.dll"));
                 Log.Write("Copying new file.....System.Runtime.Serialization.dll");
+            }
+            if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\NAudio.dll")))
+            {
+                File.Copy(Path.GetFullPath(Path.Combine("NAudio.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\NAudio.dll"));
+                Log.Write("Copying new file.....NAudio.dll");
+            }
+            if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\AudioAddon.dll")))
+            {
+                File.Copy(Path.GetFullPath(Path.Combine("AudioAddon.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\AudioAddon.dll"));
+                Log.Write("Copying new file.....AudioAddon.dll");
+            }
+            if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\NVorbis.dll")))
+            {
+                File.Copy(Path.GetFullPath(Path.Combine("NVorbis.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\NVorbis.dll"));
+                Log.Write("Copying new file.....NVorbis.dll");
             }
         }
 
