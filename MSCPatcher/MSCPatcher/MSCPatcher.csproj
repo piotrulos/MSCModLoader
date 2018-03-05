@@ -145,4 +145,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>call "$(SolutionDir)wsl.cmd"</PreBuildEvent>
+  </PropertyGroup>
 </Project>

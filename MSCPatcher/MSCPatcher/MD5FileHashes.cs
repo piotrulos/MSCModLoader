@@ -37,6 +37,5 @@ namespace MSCPatcher
         public const string steam32 = "4802608A59A9D268EF94A5C0727EC777";
         public const string steam64 = "B7F58E5AD108BFEDC1F90CD3525AD29A";
 
-
     }
 }
