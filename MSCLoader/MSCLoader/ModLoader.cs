@@ -34,6 +34,7 @@ namespace MSCLoader
         /// When true, game scene is fully loaded.
         /// </summary>
         public static bool fullyLoaded = false;
+        public static bool allModsLoaded = false;
 
         /// <summary>
         /// A list of all loaded mods.
@@ -372,6 +373,7 @@ namespace MSCLoader
                 }
             }
             ModConsole.Print("</color>");
+            allModsLoaded = true;
         }
 
         /// <summary>
@@ -578,7 +580,7 @@ namespace MSCLoader
                 {
                     if (mod.LoadInMenu)
                         mod.OnGUI();
-                    else if (Application.loadedLevelName == "GAME" && !mod.isDisabled)
+                    else if (Application.loadedLevelName == "GAME" && !mod.isDisabled && allModsLoaded)
                         mod.OnGUI();
                 }
                 catch (Exception e)
@@ -607,6 +609,7 @@ namespace MSCLoader
                 if (GameObject.Find("PLAYER/Pivot/Camera/FPSCamera") != null)
                 {
                     //load mods
+                    allModsLoaded = false;
                     fullyLoaded = true;
                     Init();
                 }
@@ -625,7 +628,7 @@ namespace MSCLoader
                 {
                     if (mod.LoadInMenu)
                         mod.Update();
-                    else if (Application.loadedLevelName == "GAME" && !mod.isDisabled)
+                    else if (Application.loadedLevelName == "GAME" && !mod.isDisabled && allModsLoaded)
                         mod.Update();
                 }
                 catch (Exception e)
@@ -655,7 +658,7 @@ namespace MSCLoader
                 {
                     if (mod.LoadInMenu)
                         mod.FixedUpdate();
-                    else if (Application.loadedLevelName == "GAME" && !mod.isDisabled)
+                    else if (Application.loadedLevelName == "GAME" && !mod.isDisabled && allModsLoaded)
                         mod.FixedUpdate();
                 }
                 catch (Exception e)
