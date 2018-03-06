@@ -49,11 +49,6 @@ namespace MSCPatcher
                 File.Copy(Path.GetFullPath(Path.Combine("NAudio.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\NAudio.dll"));
                 Log.Write("Copying new file.....NAudio.dll");
             }
-            if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\AudioAddon.dll")))
-            {
-                File.Copy(Path.GetFullPath(Path.Combine("AudioAddon.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\AudioAddon.dll"));
-                Log.Write("Copying new file.....AudioAddon.dll");
-            }
             if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\NVorbis.dll")))
             {
                 File.Copy(Path.GetFullPath(Path.Combine("NVorbis.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\NVorbis.dll"));

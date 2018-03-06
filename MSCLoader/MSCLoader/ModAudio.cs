@@ -8,6 +8,7 @@ namespace MSCLoader
     public class ModAudio : MonoBehaviour
     {
         public AudioSource audioSource;
+        bool timeshit = false;
 
         public void LoadAudioFromFile(string path, bool doStream, bool background)
         {
@@ -42,6 +43,14 @@ namespace MSCLoader
             else
                 return TimeSpan.FromSeconds(0);
         }
+
+        public void Play(float time, float delay=1f)
+        {
+            audioSource.PlayDelayed(delay);
+            audioSource.time = time;
+            timeshit = true;
+        }
+
         public void Play()
         {
             audioSource.Play();
@@ -49,8 +58,18 @@ namespace MSCLoader
 
         public void Stop()
         {
-            if(audioSource.isPlaying)
-                audioSource.Stop();
+            audioSource.Stop();
+        }
+        void Update()
+        {
+            if(timeshit)
+            {
+                if(audioSource.isPlaying)
+                {
+                    Invoke("Play",1f);
+                    timeshit = false;
+                }
+            }
         }
     }
 }

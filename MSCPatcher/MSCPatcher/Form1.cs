@@ -704,7 +704,6 @@ namespace MSCPatcher
                         Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Data.dll"));
                         Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Runtime.Serialization.dll"));
                         Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\NAudio.dll"));
-                        Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\AudioAddon.dll"));
                         Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\NVorbis.dll"));
 
                         Log.Write("", false, true);
