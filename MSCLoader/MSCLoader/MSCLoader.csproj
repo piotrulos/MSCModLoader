@@ -37,11 +37,15 @@
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="AudioAddon">
-      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\AudioAddon.dll</HintPath>
+    <Reference Include="NAudio">
+      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\NAudio.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NVorbis, Version=0.8.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\NVorbis.dll</HintPath>
     </Reference>
     <Reference Include="PlayMaker">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\PlayMaker.dll</HintPath>
@@ -86,8 +90,12 @@
     <Compile Include="ModUI.cs" />
     <Compile Include="ModUIDrag.cs" />
     <Compile Include="MSCUnloader.cs" />
+    <Compile Include="NVorbis.NAudioSupport\VorbisWaveReader.cs" />
     <Compile Include="OBJLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RuntimeAudioClipLoader\AudioFormat.cs" />
+    <Compile Include="RuntimeAudioClipLoader\CustomAudioFileReader.cs" />
+    <Compile Include="RuntimeAudioClipLoader\Manager.cs" />
     <Compile Include="SaveLoad.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SettingsView.cs" />
