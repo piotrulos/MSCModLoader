@@ -98,7 +98,10 @@ namespace RuntimeAudioClipLoader
                         reader.Read(target, 0, target.Length);
                     }, delegate (int target)
                     {
-                        reader.Seek(target * 8, SeekOrigin.Begin);
+                        if(audioInstance.channels == 1)
+                            reader.Seek(target * 4, SeekOrigin.Begin);
+                        else
+                            reader.Seek(target * 8, SeekOrigin.Begin);
                     });
                     audioInstance.audioClip = audioClip;
                     SetAudioClipLoadType(audioInstance, AudioClipLoadType.Streaming);
