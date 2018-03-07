@@ -4,7 +4,7 @@ using UnityEngine;
 namespace MSCLoader
 {
 	/// <summary>
-	/// Allow Mods to easily add rebindable keybinds.
+	/// Add easily rebindable keybinds.
 	/// </summary>
 	public class Keybind
 	{

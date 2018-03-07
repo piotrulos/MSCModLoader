@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using UnityEngine;
 
-
+#pragma warning disable CS1591 
 namespace RuntimeAudioClipLoader
 {
     public class Manager : MonoBehaviour
@@ -312,3 +312,4 @@ namespace RuntimeAudioClipLoader
         }
     }
 }
+#pragma warning restore CS1591

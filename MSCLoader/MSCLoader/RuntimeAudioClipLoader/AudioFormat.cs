@@ -1,3 +1,4 @@
+#pragma warning disable CS1591
 namespace RuntimeAudioClipLoader
 {
     public enum AudioFormat
@@ -9,3 +10,4 @@ namespace RuntimeAudioClipLoader
         unknown = -1
     }
 }
+#pragma warning restore CS1591

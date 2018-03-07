@@ -4,15 +4,13 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-//Standard unity MonoBehaviour class
 namespace MSCLoader
 {
-    /// <summary>
-    /// Resize console window by mouse
-    /// </summary>
+
+#pragma warning disable CS1591
+    //resize console UI by mouse
     public class ConsoleUIResizer : MonoBehaviour, IDragHandler
     {
-#pragma warning disable CS1591
         RectTransform m_transform = null;
         RectTransform m_logview = null;
         RectTransform m_scrollbar = null;

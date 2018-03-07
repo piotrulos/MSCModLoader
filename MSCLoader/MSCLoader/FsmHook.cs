@@ -4,14 +4,11 @@ using System.Linq;
 using HutongGames.PlayMaker;
 using UnityEngine;
 
-/* Usage:
-// save game event
-GameHook.InjectStateHook(GameObject.Find("ITEMS"), "Save game", Save);
-*/
-
-
 namespace MSCLoader
 {
+    /// <summary>
+    /// Playmaker hooks.
+    /// </summary>
     public class FsmHook
     {
         private class FsmHookAction : FsmStateAction
@@ -24,6 +21,12 @@ namespace MSCLoader
             }
         }
 
+        /// <summary>
+        /// Hook to playmaker state
+        /// </summary>
+        /// <param name="gameObject">GameObject where to hook</param>
+        /// <param name="stateName">Name of the state</param>
+        /// <param name="hook">Your function to hook</param>
         public static void FsmInject(GameObject gameObject, string stateName, Action hook)
         {
             FsmState state = GetStateFromGameObject(gameObject, stateName);

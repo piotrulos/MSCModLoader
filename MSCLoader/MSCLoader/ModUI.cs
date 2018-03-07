@@ -1,17 +1,16 @@
-﻿//Replace this with Asset Bundles for simplicity
-
-using System;
+﻿using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace MSCLoader
 {
-#pragma warning disable CS1591
+    /// <summary>
+    /// UI stuff
+    /// </summary>
     public class ModUI
     {
-        public static GameObject messageBox;
-        
+#pragma warning disable CS1591
         //canvas for UI
         public static void CreateCanvas()
         {
@@ -34,9 +33,23 @@ namespace MSCLoader
             evSys.AddComponent<StandaloneInputModule>();
             GameObject.DontDestroyOnLoad(evSys);
         }
+#pragma warning restore CS1591
+        /// <summary>
+        /// Message box GameObject
+        /// </summary>
+        public static GameObject messageBox;
 
+        /// <summary>
+        /// Show Message Box with simple message
+        /// </summary>
+        /// <param name="message">Message content</param>
         public static void ShowMessage(string message) => ShowMessage(message, "Message");
 
+        /// <summary>
+        /// Show Message Box with simple message
+        /// </summary>
+        /// <param name="message">Message content</param>
+        /// <param name="title">Title of message</param>
         public static void ShowMessage(string message, string title)
         {
             GameObject mb = GameObject.Instantiate(messageBox);
@@ -48,8 +61,19 @@ namespace MSCLoader
             mb.SetActive(true);
         }
 
+        /// <summary>
+        /// Show simple question message, and do something when user click yes.
+        /// </summary>
+        /// <param name="message">Message content</param>
+        /// <param name="ifYes">What to do when user click yes</param>
         public static void ShowYesNoMessage(string message, Action ifYes) => ShowYesNoMessage(message, "Message", ifYes);
 
+        /// <summary>
+        /// Show simple question message, and do something when user click yes.
+        /// </summary>
+        /// <param name="message">Message content</param>
+        /// <param name="title">Title of message</param>
+        /// <param name="ifYes">What to do when user click yes</param>
         public static void ShowYesNoMessage(string message, string title, Action ifYes)
         {
             GameObject mb = GameObject.Instantiate(messageBox); 
@@ -62,5 +86,5 @@ namespace MSCLoader
             mb.SetActive(true);
         }
     }
-#pragma warning restore CS1591
+
 }

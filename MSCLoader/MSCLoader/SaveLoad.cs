@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace MSCLoader
 {
+#pragma warning disable CS1591 
     public class SaveData
     {
         public List<SaveDataList> save = new List<SaveDataList>();
@@ -15,11 +16,21 @@ namespace MSCLoader
         public Vector3 pos;
         public float rotX, rotY, rotZ;
     }
+#pragma warning restore CS1591
 
+    /// <summary>
+    /// Save and Load Class for gameobject and custom class
+    /// </summary>
     public class SaveLoad
     {
 
-        //save position and rotation of single gameobject to file
+        /// <summary>
+        /// Save position and rotation of single gameobject to file (DO NOT loop this for multiple gameobjects)
+        /// Call this in <see cref="Mod.OnSave"/>  function
+        /// </summary>
+        /// <param name="mod">Mod instance</param>
+        /// <param name="g">Your GameObject to save</param>
+        /// <param name="fileName">Name of the save file</param>
         public static void SaveGameObject(Mod mod, GameObject g, string fileName)
         {
             string path = Path.Combine(ModLoader.GetModConfigFolder(mod), fileName);
@@ -38,7 +49,12 @@ namespace MSCLoader
            
         }
 
-        //load position and rotation of single gameobject to file
+        /// <summary>
+        /// Load position and rotation of single gameobject from file
+        /// Call this AFTER you load your gameobject
+        /// </summary>
+        /// <param name="mod">Mod instance</param>
+        /// <param name="fileName">Name of the save file</param>
         public static void LoadGameObject(Mod mod, string fileName)
         {
             SaveData data = DeserializeSaveFile<SaveData>(mod, fileName);
@@ -47,7 +63,16 @@ namespace MSCLoader
             go.transform.rotation = Quaternion.Euler(data.save[0].rotX, data.save[0].rotY, data.save[0].rotZ);
         }
 
-        //serialize custom save class
+        /// <summary>
+        /// Serialize custom save class (see example)
+        /// Call Only in <see cref="Mod.OnSave"/>
+        /// </summary>
+        /// <typeparam name="T">Your class</typeparam>
+        /// <param name="mod">Mod Instance</param>
+        /// <param name="saveDataClass">Your class</param>
+        /// <param name="fileName">Name of the save file</param>
+        /// <example><code source="SaveExamples.cs" region="Serializer" lang="C#" 
+        /// title="Example of save class" /></example>
         public static void SerializeSaveFile<T>(Mod mod, T saveDataClass, string fileName)
         {
             var config = new JsonSerializerSettings();
@@ -58,7 +83,15 @@ namespace MSCLoader
             File.WriteAllText(path, serializedData);
         }
 
-        //deserialize custom save class
+        /// <summary>
+        /// Deserialize custom save class (see example)
+        /// </summary>
+        /// <typeparam name="T">Your save class</typeparam>
+        /// <param name="mod">Mod Instance</param>
+        /// <param name="fileName">Name of the save file</param>
+        /// <returns>Deserialized class</returns>
+        /// <example><code source="SaveExamples.cs" region="Deserializer" lang="C#" 
+        /// title="Example of loading class" /></example>
         public static T DeserializeSaveFile<T>(Mod mod, string fileName) where T : new()
         {
             string path = Path.Combine(ModLoader.GetModConfigFolder(mod), fileName);
