@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 namespace MSCLoader 
 {
+#pragma warning disable CS1591
     public class KeybindList
     {
         public List<Keybinds> keybinds = new List<Keybinds>();
@@ -15,7 +16,6 @@ namespace MSCLoader
         public KeyCode Key { get; set; }
         public KeyCode Modifier { get; set; }
     }
-#pragma warning disable CS1591
     public class KeyBinding : MonoBehaviour
     {
         public KeyCode modifierKey;
