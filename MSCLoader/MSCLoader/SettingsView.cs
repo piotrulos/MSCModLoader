@@ -128,7 +128,7 @@ namespace MSCLoader
             modButton.transform.GetChild(1).GetComponent<Text>().text = version;
             modButton.transform.GetChild(2).GetComponent<Text>().text = author;
             modButton.transform.SetParent(modView.transform, false);
-            if(mod.hasUpdate)
+            if (mod.hasUpdate)
             {
                 modButton.transform.GetChild(3).GetChild(0).gameObject.SetActive(true); //Add Update Icon
             }
@@ -195,10 +195,10 @@ namespace MSCLoader
                     GameObject slidr = Instantiate(slider);
                     slidr.transform.GetChild(1).GetComponent<Text>().text = setting.Value.ToString();
                     slidr.transform.GetChild(0).GetComponent<Slider>().value = float.Parse(setting.Value.ToString());
-                    slidr.transform.GetChild(0).GetComponent<Slider>().minValue =  float.Parse(setting.Vals[0].ToString());
+                    slidr.transform.GetChild(0).GetComponent<Slider>().minValue = float.Parse(setting.Vals[0].ToString());
                     slidr.transform.GetChild(0).GetComponent<Slider>().maxValue = float.Parse(setting.Vals[1].ToString());
                     slidr.transform.GetChild(0).GetComponent<Slider>().wholeNumbers = (bool)setting.Vals[2];
-                    slidr.transform.GetChild(0).GetComponent<Slider>().onValueChanged.AddListener(delegate 
+                    slidr.transform.GetChild(0).GetComponent<Slider>().onValueChanged.AddListener(delegate
                     {
                         setting.Value = slidr.transform.GetChild(0).GetComponent<Slider>().value;
                         slidr.transform.GetChild(1).GetComponent<Text>().text = setting.Value.ToString();
@@ -306,8 +306,8 @@ namespace MSCLoader
             if (selected.isDisabled != ischecked)
             {
                 selected.isDisabled = ischecked;
-                if(ischecked)
-                    ModConsole.Print(string.Format("Mod <b><color=orange>{0}</color></b> is <color=red><b>Disabled</b></color>",selected.Name));
+                if (ischecked)
+                    ModConsole.Print(string.Format("Mod <b><color=orange>{0}</color></b> is <color=red><b>Disabled</b></color>", selected.Name));
                 else
                     ModConsole.Print(string.Format("Mod <b><color=orange>{0}</color></b> is <color=green><b>Enabled</b></color>", selected.Name));
                 ModSettings.SaveSettings(selected);
@@ -321,19 +321,19 @@ namespace MSCLoader
             if (selected.ID.StartsWith("MSCLoader_"))
                 core = true; //can't disable core components
             goBackBtn.SetActive(true);
-            IDtxt.text = string.Format("ID: <b>{0}</b>", selected.ID);
-            Nametxt.text = string.Format("Name: <b>{0}</b>", selected.Name);
-            if(core)
-                Versiontxt.text = string.Format("Version: <b>{0}</b>", selected.Version);
+            IDtxt.text = string.Format("<color=yellow>ID:</color> <b><color=lime>{0}</color></b>", selected.ID);
+            Nametxt.text = string.Format("<color=yellow>Name:</color> <b><color=lime>{0}</color></b>", selected.Name);
+            if (core)
+                Versiontxt.text = string.Format("<color=yellow>Version:</color> <b><color=lime>{0}</color></b>", selected.Version);
             else
             {
-                if(selected.hasUpdate)
-                Versiontxt.text = string.Format("Version: <b>{0}</b> (<color=lime>Update available</color>){2}(compiled for <b>v{1}</b>)", selected.Version, selected.compiledVersion, Environment.NewLine);
+                if (selected.hasUpdate)
+                    Versiontxt.text = string.Format("<color=yellow>Version:</color> <b><color=orange>{0}</color></b> (<color=lime>Update available</color>){2}(designed for <b><color=lime>v{1}</color></b>)", selected.Version, selected.compiledVersion, Environment.NewLine);
                 else
-                    Versiontxt.text = string.Format("Version: <b>{0}</b>{2}(compiled for <b>v{1}</b>)", selected.Version, selected.compiledVersion, Environment.NewLine);
+                    Versiontxt.text = string.Format("<color=yellow>Version:</color> <b><color=lime>{0}</color></b>{2}(designed for <b><color=lime>v{1}</color></b>)", selected.Version, selected.compiledVersion, Environment.NewLine);
 
             }
-            Authortxt.text = string.Format("Author: <b>{0}</b>", selected.Author);
+            Authortxt.text = string.Format("<color=yellow>Author:</color> <b><color=lime>{0}</color></b>", selected.Author);
             if (Application.loadedLevelName == "MainMenu" && !core)
                 DisableMod.interactable = true;
             else
@@ -347,10 +347,10 @@ namespace MSCLoader
                 if (key.Mod == selected)
                 {
                     hasKeybinds = true;
-                    KeyBindsList(key.Name, key.Modifier, key.Key, key.ID);                  
+                    KeyBindsList(key.Name, key.Modifier, key.Key, key.ID);
                 }
             }
-            if(!hasKeybinds)
+            if (!hasKeybinds)
             {
                 //no keybinds
                 if (Application.loadedLevelName == "MainMenu" && !selected.LoadInMenu)
@@ -358,7 +358,7 @@ namespace MSCLoader
                     GameObject modViewLabel = Instantiate(ModViewLabel);
                     modViewLabel.GetComponent<Text>().text = "This mod is not loaded or disabled.";
                     modViewLabel.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
-                    modViewLabel.GetComponent<Text>().fontStyle = FontStyle.Italic; 
+                    modViewLabel.GetComponent<Text>().fontStyle = FontStyle.Italic;
                     modViewLabel.transform.SetParent(keybindsList.transform, false);
                 }
                 else
@@ -375,10 +375,10 @@ namespace MSCLoader
 
             foreach (Settings set in Settings.modSettings)
             {
-                if(set.Mod == selected)
+                if (set.Mod == selected)
                 {
                     hasSettings = true;
-                    SettingsList(set);                    
+                    SettingsList(set);
                 }
             }
             if (!hasSettings)

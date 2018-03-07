@@ -50,7 +50,6 @@ namespace MSCLoader
             setBtn = ab.LoadAsset("Button.prefab") as GameObject;
             slider = ab.LoadAsset("Slider.prefab") as GameObject;
 
-            //ModConsole.Print(UI.name);
             UI = GameObject.Instantiate(UI);
             UI.AddComponent<ModUIDrag>();
             settings = UI.AddComponent<SettingsView>();

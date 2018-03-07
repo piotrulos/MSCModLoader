@@ -24,8 +24,9 @@ namespace MSCLoader
         public static bool IsOpen { get; private set; }
 
         public static ConsoleView console;
+        private GameObject UI;
+
         private Keybind consoleKey = new Keybind("Open", "Open console", KeyCode.BackQuote);
-        GameObject UI;
 
         public static Settings typing = new Settings("typeConsole", "Start typing when you open console", false);
         static Settings ConsoleFontSize = new Settings("consoleFont", "Change console font size:", 14, ChangeFontSize);
@@ -103,9 +104,9 @@ namespace MSCLoader
             Debug.Log(string.Format("MSCLoader Message: {0}", Regex.Replace(str, "<.*?>", string.Empty)));
         }
         /// <summary>
-        /// OBSOLETE: For compatibility with 0.1 plugins, please use string str overload!
+        /// Prints anything to console.
         /// </summary>
-        /// <param name="obj">Text or object to append to console.</param>
+        /// <param name="obj">Text or object to print to console.</param>
         /// <example><code source="Examples.cs" region="ModConsolePrint" lang="C#" 
         /// title="Example Code" /></example>
         public static void Print(object obj)
