@@ -3,8 +3,6 @@ using System.Collections;
 using System.IO;
 using UnityEngine;
 
-//TODO: test assetbundles on external mods (and do tutorial)
-
 namespace MSCLoader
 {
     /// <summary>
@@ -12,6 +10,15 @@ namespace MSCLoader
     /// </summary>
     public class LoadAssets : MonoBehaviour
     {
+        /// <summary>
+        /// Make GameObject Pickable, make sure your GameObject has Rigidbody and colliders attached.
+        /// </summary>
+        /// <param name="go">Your GameObject</param>
+        public static void MakeGameObjectPickable(GameObject go)
+        {
+            go.layer = LayerMask.NameToLayer("Parts");
+            go.tag = "PART";
+        }
 
         /// <summary>
         /// Load texture (*.dds, *.jpg, *.png, *.tga) from mod assets folder
@@ -181,7 +188,7 @@ namespace MSCLoader
             {
                 while (www.progress < 1)
                 {
-                    ModConsole.Print(string.Format("Loading Asset: {0}...",bundleName)); //TODO: replace with UI progressbar
+                    ModConsole.Print(string.Format("Loading Asset: {0}...",bundleName)); 
                     yield return new WaitForSeconds(.1f);
                 }
                 yield return www;

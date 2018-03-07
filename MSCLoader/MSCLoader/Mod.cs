@@ -1,7 +1,7 @@
 ﻿namespace MSCLoader
 {
     /// <summary>
-    /// The base mod class, all mods should derive this.
+    /// The base mod class, all mods should have this class.
     /// </summary>
     /// <example><code source="Examples.cs" region="Mod" lang="C#" 
     /// title="Example Mod Class" /></example>
@@ -12,7 +12,7 @@
         string compiledVer = null;
 
         /// <summary>
-        /// If true, mod will never call OnLoad (used only by settings)
+        /// If true, mod will never call OnLoad/Update/OnGui (used only by settings)
         /// </summary>
         public virtual bool isDisabled { get => disabled; set => disabled = value; }
 
@@ -22,7 +22,8 @@
         public virtual bool hasUpdate { get => update; set => update = value; }
 
         /// <summary>
-        /// Load this mod in Main Menu (in most cases should be false).
+        /// Load this mod in Main Menu.
+        /// (in most cases should be false, use only if you need this).
         /// </summary>
         public virtual bool LoadInMenu => false;
 
@@ -38,19 +39,20 @@
         public abstract string ID { get; }
 
         /// <summary>
-        /// The name that will be displayed.
+        /// The name of mod that will be displayed in settings.
         /// (if not set, will be same as ID)
         /// </summary>
         public virtual string Name => ID;
 
         /// <summary>
         /// The current version of the mod.
-        /// (prefered standard version format 2, 3 or 4 digit)
+        /// (prefered standard version format: 2, 3 or 4 digits)
         /// </summary>
         public abstract string Version { get; }
    
         /// <summary>
         /// Compiled MSCLoader version 
+        /// (for what version this mod was compiled, visible in settings)
         /// </summary>
         public virtual string compiledVersion { get => compiledVer; set => compiledVer = value; }
 
@@ -61,12 +63,12 @@
         public abstract string Author { get; }
 
         /// <summary>
-        /// Called once, after GAME scene is fully loaded.
+        /// All settings should be created here.
         /// </summary>
         public virtual void ModSettings() { }
 
         /// <summary>
-        /// Called once, when the mod is loaded in MainMenu scene (only when LoadInMenu is true).
+        /// Called once in main menu (only when LoadInMenu is true).
         /// </summary>
         public virtual void OnMenuLoad() {
             if (LoadInMenu)
@@ -90,12 +92,14 @@
         public virtual void OnGUI() { }
 
 		/// <summary>
-		/// Called once every frame (standard unity Update()).
+		/// Called once every frame
+        /// (standard unity Update()).
 		/// </summary>
 		public virtual void Update() { }
 
         /// <summary>
-        /// Called once every fixed frame (standard unity FixedUpdate()).
+        /// Called once every fixed frame 
+        /// (standard unity FixedUpdate()).
         /// </summary>
         public virtual void FixedUpdate() { }
     }

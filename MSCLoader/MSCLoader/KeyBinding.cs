@@ -62,7 +62,6 @@ namespace MSCLoader
                         {
                             if (kcode != KeyCode.Mouse0 && kcode != KeyCode.Mouse1) //LMB = cancel
                             {
-                                //ModConsole.Print("KeyCode down: " + kcode);  //debug
                                 UpdateKeyCode(kcode, ismodifier);
                             }
                             if (kcode == KeyCode.Mouse1) //RMB = sets to none

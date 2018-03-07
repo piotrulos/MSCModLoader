@@ -574,6 +574,8 @@ namespace MSCPatcher
                 Log.Write(string.Format("Game folder is saved as: {0}{1}", mscPath, Environment.NewLine));
                 MainData.loadMainData(OutputlogLabel, resDialogLabel, resDialogCheck);
                 checkPatchStatus();
+                debugStatusInfo();
+                check64Info();
             }
 
         }

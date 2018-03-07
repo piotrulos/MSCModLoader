@@ -46,10 +46,13 @@ namespace MSCLoader
         public static List<Mod> LoadedMods;
         static string mods;
         static string mods_ver;
+
         /// <summary>
-        /// A list of invalid mod files (like random dll in Mods Folder that isn't a mod).
+        /// A list of invalid mod files 
+        /// (like random dll in Mods Folder that isn't a mod).
         /// </summary>
         public static List<string> InvalidMods;
+
         /// <summary>
         /// The instance of ModLoader.
         /// </summary>
@@ -72,7 +75,7 @@ namespace MSCLoader
 
 
         /// <summary>
-        /// non-public field, please use <c>GetModConfigFolder</c> or <c>GetModAssetsFolder</c> instead, to keep mods folder clean.
+        /// non-public field, please use <see cref="GetModConfigFolder"/> or <see cref="GetModAssetsFolder"/> instead, to keep mods folder clean.
         /// </summary>
         static string ModsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"MySummerCar\Mods");
         static string ConfigFolder = Path.Combine(ModsFolder, @"Config\");
@@ -85,8 +88,10 @@ namespace MSCLoader
 
         static int numOfUpdates;
         static bool isModUpdates = false;
+
         /// <summary>
-        /// Get user steamID (read-only)
+        /// User steamID 
+        /// (read-only)
         /// </summary>
         public static string steamID { get; private set; }
 
@@ -199,8 +204,6 @@ namespace MSCLoader
             {
                 if (Application.loadedLevelName != "MainMenu")
                     menuInfoAnim.SetBool("isHidden", true);
-                //if (Application.loadedLevelName != "GAME")
-                //    ModConsole.Print("<color=#505050ff>MSCLoader is already loaded!</color>");//debug
             }
             else
             {
@@ -284,6 +287,10 @@ namespace MSCLoader
                 {
                     Assembly.LoadFrom(file);
                 }
+            }
+            else
+            {
+                Directory.CreateDirectory(Path.Combine(ModsFolder, "References"));
             }
         }
         static void LoadCoreAssets()
