@@ -72,7 +72,7 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string Version = "0.4";
+        public static readonly string Version = "0.4.1";
 
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace MSCLoader
         static string ConfigFolder = Path.Combine(ModsFolder, @"Config\");
         static string AssetsFolder = Path.Combine(ModsFolder, @"Assets\");
 
-        static bool experimental = true; //Is this build is experimental
+        static bool experimental = false; //Is this build is experimental
         static bool modStats = false;
         static GameObject mainMenuInfo;
         static Animator menuInfoAnim;
@@ -236,7 +236,10 @@ namespace MSCLoader
                 }
                 // Loading internal tools (console and settings)
                 LoadMod(new ModConsole(), Version);
-                LoadMod(new ModSettings(), Version);
+                LoadedMods[0].ModSettings();
+                LoadMod(new ModSettings_menu(), Version);
+                LoadedMods[1].ModSettings();
+                ModSettings_menu.LoadSettings();
                 LoadCoreAssets();
                 IsDoneLoading = true;
                 ModConsole.Print(string.Format("<color=green>ModLoader <b>v{0}</b> ready</color>", Version));
@@ -256,7 +259,7 @@ namespace MSCLoader
 
                     string Name;
                     bool ret = Steamworks.SteamApps.GetCurrentBetaName(out Name, 128);
-                    if (ret)
+                    if (ret && !(bool)ModSettings_menu.expWarning.GetValue())
                     {
                         ModUI.ShowMessage(string.Format("<color=orange><b>Warning:</b></color>{1}You are using beta build: <color=orange><b>{0}</b></color>{1}{1}Remember that some mods may not work correctly on beta branches.", Name, Environment.NewLine), "Experimental build warning");
                     }
@@ -399,7 +402,7 @@ namespace MSCLoader
             loading.SetActive(false);
             ModConsole.Print("</color>");
             allModsLoaded = true;
-            ModSettings.LoadBinds();
+            ModSettings_menu.LoadBinds();
             IsModsDoneLoading = true;
             s.Stop();
             if (s.ElapsedMilliseconds < 1000)
@@ -440,6 +443,8 @@ namespace MSCLoader
         {
             foreach (Mod mod in LoadedMods)
             {
+                if (mod.ID.StartsWith("MSCLoader_"))
+                    continue;
                 try
                 {
                     mod.ModSettings();                
@@ -450,7 +455,7 @@ namespace MSCLoader
                     UnityEngine.Debug.Log(e);
                 }
             }
-            ModSettings.LoadSettings();
+            ModSettings_menu.LoadSettings();
         }
 
         static void ModStats()
@@ -588,7 +593,7 @@ namespace MSCLoader
                 if (mod.LoadInMenu)
                 {
                     mod.OnMenuLoad();
-                    ModSettings.LoadBinds();
+                    ModSettings_menu.LoadBinds();
                 }
                 mod.compiledVersion = msver;
                 LoadedMods.Add(mod);
