@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace MSCLoader
 {
 #pragma warning disable CS1591
-    public class ModSettings : Mod
+    public class ModSettings_menu : Mod
     {
 
         public override bool LoadInMenu => true;
@@ -27,6 +27,13 @@ namespace MSCLoader
 
         private Keybind menuKey = new Keybind("Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
         public SettingsView settings;
+
+        public static Settings expWarning = new Settings("expWarning", "Don't show experimental warning", false);
+
+        public override void ModSettings()
+        {
+            Settings.AddCheckBox(this, expWarning);
+        }
 
         public override void OnMenuLoad()
         {
