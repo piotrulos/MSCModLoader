@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -81,10 +82,12 @@ namespace MSCLoader
         static string ConfigFolder = Path.Combine(ModsFolder, @"Config\");
         static string AssetsFolder = Path.Combine(ModsFolder, @"Assets\");
 
-        static bool experimental = false; //Is this build is experimental
+        static bool experimental = true; //Is this build is experimental
         static bool modStats = false;
         static GameObject mainMenuInfo;
         static Animator menuInfoAnim;
+
+        static GameObject loading;
 
         static int numOfUpdates;
         static bool isModUpdates = false;
@@ -182,17 +185,7 @@ namespace MSCLoader
             if (!IsModsDoneLoading && Application.loadedLevelName == "GAME" && fullyLoaded)
             {
                 // Load all mods
-                ModConsole.Print("Loading mods...");
-                Stopwatch s = new Stopwatch();
-                s.Start();
-                LoadMods();
-                ModSettings.LoadBinds();
-                IsModsDoneLoading = true;
-                s.Stop();
-                if (s.ElapsedMilliseconds < 1000)
-                    ModConsole.Print(string.Format("Loading mods completed in {0}ms!", s.ElapsedMilliseconds));
-                else
-                    ModConsole.Print(string.Format("Loading mods completed in {0} sec(s)!", s.Elapsed.Seconds));
+                Instance.StartCoroutine(Instance.LoadMods());
             }
 
             if (IsDoneLoading && Application.loadedLevelName == "MainMenu" && GameObject.Find("MSCLoader Info") == null)
@@ -300,6 +293,10 @@ namespace MSCLoader
             guiskin = ab.LoadAsset("MSCLoader.guiskin") as GUISkin;
             ModUI.messageBox = ab.LoadAsset("MSCLoader MB.prefab") as GameObject;
             mainMenuInfo = ab.LoadAsset("MSCLoader Info.prefab") as GameObject;
+            loading = ab.LoadAsset("LoadingMods.prefab") as GameObject;
+            loading.SetActive(false);
+            loading = GameObject.Instantiate(loading);
+            loading.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
             ModConsole.Print("Loading core assets completed!");
             ab.Unload(false); //freeup memory
         }
@@ -356,19 +353,21 @@ namespace MSCLoader
             mainMenuInfo.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
         }
 
-        /// <summary>
-        /// Load mods, this will call OnLoad() for all loaded mods.
-        /// </summary>
-        private static void LoadMods()
+        IEnumerator LoadMods()
         {
+            ModConsole.Print("Loading mods...");
+            Stopwatch s = new Stopwatch();
+            s.Start();
             ModConsole.Print("<color=#505050ff>");
             // Load Mods
+            loading.SetActive(true);
             foreach (Mod mod in LoadedMods)
             {
                 try
                 {
                     if (!mod.isDisabled)
                     {
+                        loading.transform.GetChild(1).GetComponent<Text>().text = mod.Name;
                         mod.OnLoad();
                         FsmHook.FsmInject(GameObject.Find("ITEMS"), "Save game", mod.OnSave);
                     }
@@ -382,9 +381,19 @@ namespace MSCLoader
                     ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
                     UnityEngine.Debug.Log(e);
                 }
+                yield return new WaitForSeconds(.1f);
             }
+            loading.SetActive(false);
             ModConsole.Print("</color>");
             allModsLoaded = true;
+            ModSettings.LoadBinds();
+            IsModsDoneLoading = true;
+            s.Stop();
+            if (s.ElapsedMilliseconds < 1000)
+                ModConsole.Print(string.Format("Loading mods completed in {0}ms!", s.ElapsedMilliseconds));
+            else
+                ModConsole.Print(string.Format("Loading mods completed in {0} sec(s)!", s.Elapsed.Seconds));
+           // yield return null;
         }
 
         /// <summary>
