@@ -355,19 +355,32 @@ namespace MSCLoader
 
         IEnumerator LoadMods()
         {
+            loading.transform.GetChild(2).GetComponent<Text>().text = string.Format("MSCLoader <color=green>v{0}</color>", Version);
             ModConsole.Print("Loading mods...");
             Stopwatch s = new Stopwatch();
             s.Start();
             ModConsole.Print("<color=#505050ff>");
             // Load Mods
             loading.SetActive(true);
+            loading.transform.GetChild(3).GetComponent<Slider>().minValue = 1;
+            loading.transform.GetChild(3).GetComponent<Slider>().maxValue = LoadedMods.Count-2;
+
+            int i = 1;
             foreach (Mod mod in LoadedMods)
             {
+                
+                loading.transform.GetChild(0).GetComponent<Text>().text = string.Format("Loading mods: <color=orage><b>{0}</b></color> of <color=orage><b>{1}</b></color>. Please wait...", i, LoadedMods.Count-2);
+                loading.transform.GetChild(3).GetComponent<Slider>().value = i;
+                if (mod.ID.StartsWith("MSCLoader_"))
+                    continue;
+                i++;
+                if (!mod.isDisabled)
+                    loading.transform.GetChild(1).GetComponent<Text>().text = mod.Name;
+                yield return new WaitForSeconds(.05f);
                 try
                 {
                     if (!mod.isDisabled)
                     {
-                        loading.transform.GetChild(1).GetComponent<Text>().text = mod.Name;
                         mod.OnLoad();
                         FsmHook.FsmInject(GameObject.Find("ITEMS"), "Save game", mod.OnSave);
                     }
@@ -381,7 +394,7 @@ namespace MSCLoader
                     ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
                     UnityEngine.Debug.Log(e);
                 }
-                yield return new WaitForSeconds(.1f);
+
             }
             loading.SetActive(false);
             ModConsole.Print("</color>");
@@ -393,7 +406,6 @@ namespace MSCLoader
                 ModConsole.Print(string.Format("Loading mods completed in {0}ms!", s.ElapsedMilliseconds));
             else
                 ModConsole.Print(string.Format("Loading mods completed in {0} sec(s)!", s.Elapsed.Seconds));
-           // yield return null;
         }
 
         /// <summary>
