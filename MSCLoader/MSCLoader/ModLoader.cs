@@ -248,6 +248,12 @@ namespace MSCLoader
                 ModConsole.Print(string.Format("<color=orange>Found <color=green><b>{0}</b></color> mods!</color>", LoadedMods.Count - 2));
                 try
                 {
+                    if(File.Exists(Path.GetFullPath(Path.Combine("LAUNCHER.exe", ""))) || File.Exists(Path.GetFullPath(Path.Combine("SmartSteamEmu64.dll", ""))) || File.Exists(Path.GetFullPath(Path.Combine("SmartSteamEmu.dll", ""))))
+                    {
+                        ModConsole.Print(string.Format("<color=orange>Hello <color=green><b>{0}</b></color>!</color>", "PIRATE IS FREE!!!"));
+                        throw new Exception("Do What You Want, Cause A Pirate Is Free... You Are A Pirate!");
+                        //exclude emulators from stats (spam weird stuff sometimes)
+                    }
                     Steamworks.SteamAPI.Init();
                     steamID = Steamworks.SteamUser.GetSteamID().ToString();
                     ModConsole.Print(string.Format("<color=orange>Hello <color=green><b>{0}</b></color>!</color>", Steamworks.SteamFriends.GetPersonaName()));
