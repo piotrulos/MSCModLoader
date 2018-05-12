@@ -249,6 +249,8 @@ namespace MSCLoader
                         continue;
                     set.Value = kb.Value;
                 }
+
+                mod.ModSettingsLoaded();
             }
         }
 

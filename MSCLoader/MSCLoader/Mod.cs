@@ -68,6 +68,11 @@
         public virtual void ModSettings() { }
 
         /// <summary>
+        /// Called after saved settings is loaded from file.
+        /// </summary>
+        public virtual void ModSettingsLoaded() { }
+
+        /// <summary>
         /// Called once in main menu (only when LoadInMenu is true).
         /// </summary>
         public virtual void OnMenuLoad() {

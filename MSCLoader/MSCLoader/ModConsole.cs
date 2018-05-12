@@ -35,7 +35,11 @@ namespace MSCLoader
         {
             Settings.AddCheckBox(this, typing);
             Settings.AddSlider(this, ConsoleFontSize, 10, 20);
-            ChangeFontSize(); //When loading
+        }
+
+        public override void ModSettingsLoaded()
+        {
+            ChangeFontSize();
         }
 
         public static void ChangeFontSize()

@@ -523,8 +523,6 @@ namespace MSCLoader
             try
             {
                 Assembly asm = null;
-
-                //STILL TESTING - Loading for proper debug
                 asm = Assembly.LoadFrom(file);
                 bool isMod = false;
 
@@ -534,6 +532,7 @@ namespace MSCLoader
                 foreach (Type type in asm.GetTypes())
                 {
                     string msVer = null;
+                    
                     // Check if class inherits Mod
                     //if (type.IsSubclassOf(typeof(Mod)))
                     if (typeof(Mod).IsAssignableFrom(type))

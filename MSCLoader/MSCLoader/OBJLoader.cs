@@ -175,25 +175,25 @@ namespace MSCLoader
                             case "mtllib":
                                 break;
                             case "v":
-                                mesh.vertices[v] = new Vector3(System.Convert.ToSingle(brokenString[1]), System.Convert.ToSingle(brokenString[2]),
-                                                         System.Convert.ToSingle(brokenString[3]));
+                                mesh.vertices[v] = new Vector3(Convert.ToSingle(brokenString[1]), Convert.ToSingle(brokenString[2]),
+                                                         Convert.ToSingle(brokenString[3]));
                                 v++;
                                 break;
                             case "vt":
-                                mesh.uv[vt] = new Vector2(System.Convert.ToSingle(brokenString[1]), System.Convert.ToSingle(brokenString[2]));
+                                mesh.uv[vt] = new Vector2(Convert.ToSingle(brokenString[1]), Convert.ToSingle(brokenString[2]));
                                 vt++;
                                 break;
                             case "vt1":
-                                mesh.uv[vt1] = new Vector2(System.Convert.ToSingle(brokenString[1]), System.Convert.ToSingle(brokenString[2]));
+                                mesh.uv[vt1] = new Vector2(Convert.ToSingle(brokenString[1]), Convert.ToSingle(brokenString[2]));
                                 vt1++;
                                 break;
                             case "vt2":
-                                mesh.uv[vt2] = new Vector2(System.Convert.ToSingle(brokenString[1]), System.Convert.ToSingle(brokenString[2]));
+                                mesh.uv[vt2] = new Vector2(Convert.ToSingle(brokenString[1]), Convert.ToSingle(brokenString[2]));
                                 vt2++;
                                 break;
                             case "vn":
-                                mesh.normals[vn] = new Vector3(System.Convert.ToSingle(brokenString[1]), System.Convert.ToSingle(brokenString[2]),
-                                                        System.Convert.ToSingle(brokenString[3]));
+                                mesh.normals[vn] = new Vector3(Convert.ToSingle(brokenString[1]), Convert.ToSingle(brokenString[2]),
+                                                        Convert.ToSingle(brokenString[3]));
                                 vn++;
                                 break;
                             case "vc":
@@ -206,14 +206,14 @@ namespace MSCLoader
                                 {
                                     Vector3 temp = new Vector3();
                                     brokenBrokenString = brokenString[j].Split(splitIdentifier2, 3);    //Separate the face into individual components (vert, uv, normal)
-                                    temp.x = System.Convert.ToInt32(brokenBrokenString[0]);
+                                    temp.x = Convert.ToInt32(brokenBrokenString[0]);
                                     if (brokenBrokenString.Length > 1)                                  //Some .obj files skip UV and normal
                                     {
                                         if (brokenBrokenString[1] != "")                                    //Some .obj files skip the uv and not the normal
                                         {
-                                            temp.y = System.Convert.ToInt32(brokenBrokenString[1]);
+                                            temp.y = Convert.ToInt32(brokenBrokenString[1]);
                                         }
-                                        temp.z = System.Convert.ToInt32(brokenBrokenString[2]);
+                                        temp.z = Convert.ToInt32(brokenBrokenString[2]);
                                     }
                                     j++;
 
