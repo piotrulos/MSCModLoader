@@ -479,7 +479,7 @@
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Size = new System.Drawing.Size(439, 139);
             this.tabPage1.TabIndex = 3;
-            this.tabPage1.Text = "64-bit patch";
+            this.tabPage1.Text = "64-bit patch (obsolete)";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // groupBox6
@@ -497,7 +497,7 @@
             this.groupBox6.Size = new System.Drawing.Size(428, 133);
             this.groupBox6.TabIndex = 1;
             this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "64-bit game patch";
+            this.groupBox6.Text = "64-bit game patch (OBSOLETE)";
             // 
             // label1
             // 
