@@ -180,6 +180,10 @@ namespace MSCPatcher
                     status64g.Text = "64-bit patch is installed!";
                     remove64.Enabled = true;
                     break;
+                case 3:
+                    status64g.ForeColor = Color.Green;
+                    status64g.Text = "Original 64-bit binary detected!";
+                    break;
                 default:
                     status64g.ForeColor = Color.Red;
                     status64g.Text = "Unknown mysummercar.exe detected.";

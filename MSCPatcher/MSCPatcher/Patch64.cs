@@ -17,8 +17,9 @@ namespace MSCPatcher
                     case MD5FileHashes.exe32:
                         return 1;
                     case MD5FileHashes.exe64:
-                    case MD5FileHashes.exe64o:
                         return 2;
+                    case MD5FileHashes.exe64o:
+                        return 3;
                     default:
                         return 0;
                 }
