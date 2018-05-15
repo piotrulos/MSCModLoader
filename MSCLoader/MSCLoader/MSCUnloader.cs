@@ -34,6 +34,7 @@ namespace MSCLoader
                 }
                 ModLoader.IsDoneLoading = false;
                 ModLoader.IsModsDoneLoading = false;
+                ModLoader.IsModsLoading = false;
                 ModLoader.fullyLoaded = false;
                 ModLoader.allModsLoaded = false;
                 Keybind.Keybinds = new List<Keybind>();

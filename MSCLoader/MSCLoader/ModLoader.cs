@@ -72,7 +72,7 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string Version = "0.4.2";
+        public static readonly string Version = "0.4.3";
 
 
         /// <summary>
@@ -97,6 +97,11 @@ namespace MSCLoader
         /// (read-only)
         /// </summary>
         public static string steamID { get; private set; }
+
+        /// <summary>
+        /// Is mods loading now.
+        /// </summary>
+        public static bool IsModsLoading = false;
 
         /// <summary>
         /// Mod config folder, use this if you want save something. 
@@ -182,9 +187,10 @@ namespace MSCLoader
                 MSCUnloaderInstance.reset = false;
                 MSCUnloaderInstance.MSCLoaderReset();
             }
-            if (!IsModsDoneLoading && Application.loadedLevelName == "GAME" && fullyLoaded)
+            if (!IsModsDoneLoading && Application.loadedLevelName == "GAME" && fullyLoaded && !IsModsLoading)
             {
                 // Load all mods
+                IsModsLoading = true;
                 Instance.StartCoroutine(Instance.LoadMods());
             }
 
