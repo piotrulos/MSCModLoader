@@ -212,8 +212,8 @@ namespace MSCLoader
             setting.Mod = mod;
             setting.Vals = new object[3];
 
-            //sometimes is double
-            if (setting.Value is int || setting.Value is double)
+            //sometimes is double or Single (this should fix that, exclude types)
+            if (setting.Value.GetType() != typeof(float) || setting.Value.GetType() != typeof(string))
             {
                 setting.type = SettingsType.Slider;
                 setting.Vals[0] = minValue;
