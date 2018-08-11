@@ -76,6 +76,8 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.statusBarLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.basic64info = new System.Windows.Forms.Label();
+            this.basicDebugInfo = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.folderPage.SuspendLayout();
@@ -302,6 +304,7 @@
             // 
             // settingPage
             // 
+            this.settingPage.Controls.Add(this.basicDebugInfo);
             this.settingPage.Controls.Add(this.groupBox5);
             this.settingPage.Controls.Add(this.groupBox4);
             this.settingPage.Location = new System.Drawing.Point(4, 22);
@@ -474,6 +477,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.basic64info);
             this.tabPage1.Controls.Add(this.groupBox6);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
@@ -602,6 +606,28 @@
             this.statusBarLabel.Size = new System.Drawing.Size(38, 17);
             this.statusBarLabel.Text = "status";
             // 
+            // basic64info
+            // 
+            this.basic64info.AutoSize = true;
+            this.basic64info.ForeColor = System.Drawing.Color.Red;
+            this.basic64info.Location = new System.Drawing.Point(3, 9);
+            this.basic64info.Name = "basic64info";
+            this.basic64info.Size = new System.Drawing.Size(101, 13);
+            this.basic64info.TabIndex = 2;
+            this.basic64info.Text = "No 64-bit files found";
+            this.basic64info.Visible = false;
+            // 
+            // basicDebugInfo
+            // 
+            this.basicDebugInfo.AutoSize = true;
+            this.basicDebugInfo.ForeColor = System.Drawing.Color.Red;
+            this.basicDebugInfo.Location = new System.Drawing.Point(166, 63);
+            this.basicDebugInfo.Name = "basicDebugInfo";
+            this.basicDebugInfo.Size = new System.Drawing.Size(107, 13);
+            this.basicDebugInfo.TabIndex = 32;
+            this.basicDebugInfo.Text = "No Debug files found";
+            this.basicDebugInfo.Visible = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -621,11 +647,13 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.settingPage.ResumeLayout(false);
+            this.settingPage.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
             this.logPage.ResumeLayout(false);
@@ -686,6 +714,8 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button remove64;
         private System.Windows.Forms.Button install64;
+        private System.Windows.Forms.Label basic64info;
+        private System.Windows.Forms.Label basicDebugInfo;
     }
 }
 
