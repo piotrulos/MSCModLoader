@@ -106,7 +106,10 @@ namespace MSCPatcher
                     {
                         try
                         {
-                            Process.Start("https://github.com/piotrulos/MSCModLoader/releases");
+                            if (File.Exists("MSCLoader_Launcher.exe"))
+                                Process.Start("MSCLoader_Launcher.exe");
+                            else
+                                Process.Start("https://github.com/piotrulos/MSCModLoader/releases");
                             Environment.Exit(0);
                         }
                         catch (Exception ex)
@@ -126,6 +129,16 @@ namespace MSCPatcher
             {
                 Log.Write(string.Format("Check for new version failed with error: {0}", e.Message));
                 statusBarLabel.Text = "MSCPatcher Ready!";
+            }
+            if (!Directory.Exists("64bit"))
+            {
+                groupBox6.Visible = false;
+                basic64info.Visible = true;
+            }
+            if (!Directory.Exists("Debug"))
+            {
+                groupBox5.Visible = false;
+                basicDebugInfo.Visible = true;
             }
             Log.Write("MSCPatcher ready!", true, true);
 
