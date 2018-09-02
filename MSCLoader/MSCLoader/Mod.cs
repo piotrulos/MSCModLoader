@@ -10,6 +10,12 @@
         bool disabled = false;
         bool update = false;
         string compiledVer = null;
+        int errorCount = 0;
+
+        /// <summary>
+        /// Number of Errors/Exceptions thrown by this mod
+        /// </summary>
+        public virtual int errorsThrown { get => errorCount; set => errorCount = value; }
 
         /// <summary>
         /// If true, mod will never call OnLoad/Update/OnGui (used only by settings)

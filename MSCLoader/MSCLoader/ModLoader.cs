@@ -73,6 +73,8 @@ namespace MSCLoader
         /// The current version of the ModLoader.
         /// </summary>
         public static readonly string Version = "0.4.4";
+        //Is this version experimental?
+        static bool experimental = true; 
 
 
         /// <summary>
@@ -82,7 +84,6 @@ namespace MSCLoader
         static string ConfigFolder = Path.Combine(ModsFolder, @"Config\");
         static string AssetsFolder = Path.Combine(ModsFolder, @"Assets\");
 
-        static bool experimental = false; //Is this build is experimental
         static bool modStats = false;
         static GameObject mainMenuInfo;
         static Animator menuInfoAnim;
@@ -640,7 +641,14 @@ namespace MSCLoader
 
                         string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
                         ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
-                        UnityEngine.Debug.Log(e);
+                    }
+                    UnityEngine.Debug.Log(e);
+                    if (allModsLoaded && fullyLoaded)
+                        mod.errorsThrown++;
+                    if (mod.errorsThrown > 30)
+                    {
+                        mod.isDisabled = true;
+                        ModConsole.Error(string.Format("Mod <b>{0}</b> has been <b>disabled!</b> Because it thrown too many errors!{1}Report this problem to mod author.", mod.ID, Environment.NewLine));
                     }
                 }
             }
@@ -688,7 +696,14 @@ namespace MSCLoader
 
                         string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
                         ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
-                        UnityEngine.Debug.Log(e);
+                    }
+                    UnityEngine.Debug.Log(e);
+                    if (allModsLoaded && fullyLoaded)
+                        mod.errorsThrown++;
+                    if (mod.errorsThrown > 30)
+                    {
+                        mod.isDisabled = true;
+                        ModConsole.Error(string.Format("Mod <b>{0}</b> has been <b>disabled!</b>{1}It threw too many errors!{1}Report this problem to the mod author.", mod.ID, Environment.NewLine));
                     }
                 }
             }
@@ -718,7 +733,14 @@ namespace MSCLoader
 
                         string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
                         ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
-                        UnityEngine.Debug.Log(e);
+                    }
+                    UnityEngine.Debug.Log(e);
+                    if (allModsLoaded && fullyLoaded)
+                        mod.errorsThrown++;
+                    if (mod.errorsThrown > 30)
+                    {
+                        mod.isDisabled = true;
+                        ModConsole.Error(string.Format("Mod <b>{0}</b> has been <b>disabled!</b> Because it thrown too many errors!{1}Report this problem to mod author.", mod.ID, Environment.NewLine));
                     }
                 }
             }
