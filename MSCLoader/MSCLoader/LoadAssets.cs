@@ -80,6 +80,7 @@ namespace MSCLoader
         /// <example>Example Code
         /// <code source="Examples.cs" region="LoadOBJ" lang="C#" />
         /// </example>
+        [Obsolete("LoadOBJ is deprecated, please use AssetBundles instead.")]
         public static GameObject LoadOBJ(Mod mod, string fileName, bool collider = true, bool rigidbody = false)
         {
             Mesh mesh = LoadOBJMesh(mod, fileName);
@@ -112,6 +113,7 @@ namespace MSCLoader
         /// <example>Example Code
         /// <code source="Examples.cs" region="LoadOBJMesh" lang="C#" />
         /// </example>
+        [Obsolete("LoadOBJMesh is deprecated, please use AssetBundles instead.")]
         public static Mesh LoadOBJMesh(Mod mod, string fileName)
         {
             string fn = Path.Combine(ModLoader.GetModAssetsFolder(mod), fileName);
