@@ -72,9 +72,9 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string Version = "0.4.4";
+        public static readonly string Version = "0.4.5";
         //Is this version experimental?
-        static bool experimental = true; 
+        static bool experimental = false; 
 
 
         /// <summary>
