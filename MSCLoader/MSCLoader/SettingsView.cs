@@ -160,7 +160,12 @@ namespace MSCLoader
                     GameObject checkbox = Instantiate(Checkbox);
                     checkbox.transform.GetChild(1).GetComponent<Text>().text = setting.Name;
                     checkbox.GetComponent<Toggle>().isOn = (bool)setting.Value;
-                    checkbox.GetComponent<Toggle>().onValueChanged.AddListener(delegate { setting.Value = checkbox.GetComponent<Toggle>().isOn; });
+                    checkbox.GetComponent<Toggle>().onValueChanged.AddListener(delegate
+                    {
+                        setting.Value = checkbox.GetComponent<Toggle>().isOn;
+                        if (setting.DoAction != null)
+                            setting.DoAction.Invoke();
+                    });
                     checkbox.transform.SetParent(modSettingsList.transform, false);
                     break;
                 case SettingsType.CheckBoxGroup:
@@ -178,7 +183,12 @@ namespace MSCLoader
                     checkboxG.transform.GetChild(1).GetComponent<Text>().text = setting.Name;
                     checkboxG.GetComponent<Toggle>().group = group.GetComponent<ToggleGroup>();
                     checkboxG.GetComponent<Toggle>().isOn = (bool)setting.Value;
-                    checkboxG.GetComponent<Toggle>().onValueChanged.AddListener(delegate { setting.Value = checkboxG.GetComponent<Toggle>().isOn; });
+                    checkboxG.GetComponent<Toggle>().onValueChanged.AddListener(delegate
+                    {
+                        setting.Value = checkboxG.GetComponent<Toggle>().isOn;
+                        if (setting.DoAction != null)
+                            setting.DoAction.Invoke();
+                    });
                     checkboxG.transform.SetParent(modSettingsList.transform, false);
                     break;
                 case SettingsType.Button:
