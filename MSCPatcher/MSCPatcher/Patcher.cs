@@ -16,6 +16,8 @@ namespace MSCPatcher
         public static void CopyReferences(string mscPath)
         {
             DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll"));
+            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll.mdb"));
+            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.pdb"));
             DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\uAudio.dll"));
 
             if (File.Exists(Path.GetFullPath(Path.Combine("MSCLoader.dll", ""))))
@@ -24,6 +26,17 @@ namespace MSCPatcher
                 Log.Write("Copying new file.....MSCLoader.dll");
             }
 
+            if (File.Exists(Path.GetFullPath(Path.Combine("MSCLoader.dll.mdb", ""))))
+            {
+                File.Copy(Path.GetFullPath(Path.Combine("MSCLoader.dll.mdb", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll.mdb"));
+                Log.Write("Copying new file.....MSCLoader.dll.mdb");
+            }
+
+            if (File.Exists(Path.GetFullPath(Path.Combine("MSCLoader.pdb", ""))))
+            {
+                File.Copy(Path.GetFullPath(Path.Combine("MSCLoader.pdb", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.pdb"));
+                Log.Write("Copying new file.....MSCLoader.pdb");
+            }
             if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll")))
             {
                 File.Copy(Path.GetFullPath(Path.Combine("System.Xml.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll"));

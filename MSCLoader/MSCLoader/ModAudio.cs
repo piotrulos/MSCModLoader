@@ -44,6 +44,8 @@ namespace MSCLoader
             catch (Exception e)
             {
                 ModConsole.Error(e.Message);
+                if (ModLoader.devMode)
+                    ModConsole.Error(e.ToString());
                 Debug.Log(e);
                 audioSource.clip = null;
             }
