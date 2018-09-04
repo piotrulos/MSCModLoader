@@ -74,8 +74,13 @@ namespace MSCLoader
         /// </summary>
         public static readonly string Version = "0.4.5";
         //Is this version experimental?
-        static bool experimental = false; 
+        static bool experimental = false;
 
+#if DevMode
+        public static bool devMode = true;
+#else
+        public static bool devMode = false;
+#endif
 
         /// <summary>
         /// non-public field, please use <see cref="GetModConfigFolder"/> or <see cref="GetModAssetsFolder"/> instead, to keep mods folder clean.
@@ -274,16 +279,21 @@ namespace MSCLoader
                     bool ret = Steamworks.SteamApps.GetCurrentBetaName(out Name, 128);
                     if (ret && !(bool)ModSettings_menu.expWarning.GetValue())
                     {
-                        ModUI.ShowMessage(string.Format("<color=orange><b>Warning:</b></color>{1}You are using beta build: <color=orange><b>{0}</b></color>{1}{1}Remember that some mods may not work correctly on beta branches.", Name, Environment.NewLine), "Experimental build warning");
+                        if(Name != "default_32bit") //Not experimental branch
+                            ModUI.ShowMessage(string.Format("<color=orange><b>Warning:</b></color>{1}You are using beta build: <color=orange><b>{0}</b></color>{1}{1}Remember that some mods may not work correctly on beta branches.", Name, Environment.NewLine), "Experimental build warning");
                     }
                 }
                 catch (Exception e)
                 {
                     ModConsole.Error("Steam not detected, only steam version is supported.");
+                    if (devMode)
+                        ModConsole.Error(e.ToString());
                     UnityEngine.Debug.Log(e);
                 }
                 MainMenuInfo(); 
                 LoadModsSettings();
+                if (devMode)
+                    ModConsole.Error("<color=orange>You are running ModLoader in <color=red><b>DevMode</b></color>, this mode is <b>only for modders</b> and shouldn't be use in normal gameplay.</color>");
             }
         }
 
@@ -349,10 +359,14 @@ namespace MSCLoader
                         info.text = string.Format("Mod Loader MSCLoader v{0} is ready! (<color=orange>New version available: <b>v{1}</b></color>)", Version, version.Trim());
                     else if (i == 0)
                         info.text = string.Format("Mod Loader MSCLoader v{0} is ready! (<color=lime>Up to date</color>)", Version);
+                    if (devMode)
+                        info.text = info.text + " [<color=red><b>Dev Mode!</b></color>]";
                 }
                 catch (Exception e)
                 {
                     ModConsole.Error(string.Format("Check for new version failed with error: {0}", e.Message));
+                    if (devMode)
+                        ModConsole.Error(e.ToString());
                     UnityEngine.Debug.Log(e);
                     info.text = string.Format("Mod Loader MSCLoader v{0} is ready!", Version);
                 }
@@ -408,6 +422,8 @@ namespace MSCLoader
 
                     string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
                     ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
+                    if (devMode)
+                        ModConsole.Error(e.ToString());
                     UnityEngine.Debug.Log(e);
                 }
 
@@ -465,6 +481,8 @@ namespace MSCLoader
                 catch (Exception e)
                 {
                     ModConsole.Error(string.Format("Settings error for mod <b>{0}</b>{2}<b>Details:</b> {1}", mod.ID, e.Message, Environment.NewLine));
+                    if (devMode)
+                        ModConsole.Error(e.ToString());
                     UnityEngine.Debug.Log(e);
                 }
             }
@@ -520,6 +538,8 @@ namespace MSCLoader
                 catch (Exception e)
                 {
                     ModConsole.Error(string.Format("Connection to server failed: {0}", e.Message));
+                    if (devMode)
+                        ModConsole.Error(e.ToString());
                     UnityEngine.Debug.Log(e);
                 }
             }
@@ -579,6 +599,8 @@ namespace MSCLoader
             catch (Exception e)
             {
                 ModConsole.Error(string.Format("<b>{0}</b> - doesn't look like a mod, remove this file from mods folder!", Path.GetFileName(file)));
+                if (devMode)
+                    ModConsole.Error(e.ToString());
                 UnityEngine.Debug.Log(e);
                 InvalidMods.Add(Path.GetFileName(file));
             }
@@ -645,11 +667,24 @@ namespace MSCLoader
                     UnityEngine.Debug.Log(e);
                     if (allModsLoaded && fullyLoaded)
                         mod.errorsThrown++;
-                    if (mod.errorsThrown > 30)
+                    if (devMode)
                     {
-                        mod.isDisabled = true;
-                        ModConsole.Error(string.Format("Mod <b>{0}</b> has been <b>disabled!</b> Because it thrown too many errors!{1}Report this problem to mod author.", mod.ID, Environment.NewLine));
+                        if (mod.errorsThrown == 30)
+                        {
+                            ModConsole.Error(string.Format("Mod <b>{0}</b> thrown <b>too many errors</b>!", mod.ID));
+                            ModConsole.Error(e.ToString());
+                        }
+
                     }
+                    else
+                    {
+                        if (mod.errorsThrown > 30)
+                        {
+                            mod.isDisabled = true;
+                            ModConsole.Error(string.Format("Mod <b>{0}</b> has been <b>disabled!</b> Because it thrown too many errors!{1}Report this problem to mod author.", mod.ID, Environment.NewLine));
+                        }
+                    }
+                    
                 }
             }
         }
@@ -700,10 +735,22 @@ namespace MSCLoader
                     UnityEngine.Debug.Log(e);
                     if (allModsLoaded && fullyLoaded)
                         mod.errorsThrown++;
-                    if (mod.errorsThrown > 30)
+                    if (devMode)
                     {
-                        mod.isDisabled = true;
-                        ModConsole.Error(string.Format("Mod <b>{0}</b> has been <b>disabled!</b>{1}It threw too many errors!{1}Report this problem to the mod author.", mod.ID, Environment.NewLine));
+                        if (mod.errorsThrown == 30)
+                        {
+                            ModConsole.Error(string.Format("Mod <b>{0}</b> thrown <b>too many errors</b>!", mod.ID));
+                            ModConsole.Error(e.ToString());
+                        }
+
+                    }
+                    else
+                    {
+                        if (mod.errorsThrown > 30)
+                        {
+                            mod.isDisabled = true;
+                            ModConsole.Error(string.Format("Mod <b>{0}</b> has been <b>disabled!</b> Because it thrown too many errors!{1}Report this problem to mod author.", mod.ID, Environment.NewLine));
+                        }
                     }
                 }
             }
@@ -737,10 +784,22 @@ namespace MSCLoader
                     UnityEngine.Debug.Log(e);
                     if (allModsLoaded && fullyLoaded)
                         mod.errorsThrown++;
-                    if (mod.errorsThrown > 30)
+                    if (devMode)
                     {
-                        mod.isDisabled = true;
-                        ModConsole.Error(string.Format("Mod <b>{0}</b> has been <b>disabled!</b> Because it thrown too many errors!{1}Report this problem to mod author.", mod.ID, Environment.NewLine));
+                        if (mod.errorsThrown == 30)
+                        {
+                            ModConsole.Error(string.Format("Mod <b>{0}</b> thrown <b>too many errors</b>!", mod.ID));
+                            ModConsole.Error(e.ToString());
+                        }
+
+                    }
+                    else
+                    {
+                        if (mod.errorsThrown > 30)
+                        {
+                            mod.isDisabled = true;
+                            ModConsole.Error(string.Format("Mod <b>{0}</b> has been <b>disabled!</b> Because it thrown too many errors!{1}Report this problem to mod author.", mod.ID, Environment.NewLine));
+                        }
                     }
                 }
             }

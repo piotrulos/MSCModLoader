@@ -32,6 +32,15 @@
     <DebugSymbols>false</DebugSymbols>
     <DocumentationFile>bin\Release\MSCLoader.xml</DocumentationFile>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DevMode|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\DevMode\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;DevMode</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
@@ -106,13 +115,13 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if "$(ConfigurationName)" == "Debug" (
+    <PostBuildEvent>if "$(ConfigurationName)" == "Release" (
+copy $(TargetPath) "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
+) ELSE (
 copy $(TargetPath) "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
 copy "$(TargetDir)$(TargetName).pdb" "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
 cd "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\"
 call "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\debug.bat"
-) ELSE (
-copy $(TargetPath) "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
 )
 </PostBuildEvent>
   </PropertyGroup>

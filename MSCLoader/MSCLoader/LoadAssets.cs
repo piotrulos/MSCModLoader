@@ -255,6 +255,8 @@ namespace MSCLoader
             catch (Exception ex)
             {
                 ModConsole.Error(string.Format("<b>LoadTexture() Error:</b>{0}Error: Could not load DDS texture", Environment.NewLine,ex.Message));
+                if (ModLoader.devMode)
+                    ModConsole.Error(ex.ToString());
                 Debug.Log(ex);
                 return new Texture2D(8, 8);
             }
