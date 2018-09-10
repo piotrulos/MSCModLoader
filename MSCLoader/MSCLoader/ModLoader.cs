@@ -72,14 +72,20 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string Version = "0.4.5";
-        //Is this version experimental?
-        static bool experimental = false;
+        public static readonly string Version = "0.4.6";
+        
+        /// <summary>
+        /// Is this version of ModLoader experimental (this is NOT game experimental branch)
+        /// </summary>
+        public static readonly bool experimental = false;
 
+        /// <summary>
+        /// Is DevMode active
+        /// </summary>
 #if DevMode
-        public static bool devMode = true;
+        public static readonly bool devMode = true;
 #else
-        public static bool devMode = false;
+        public static readonly bool devMode = false;
 #endif
 
         /// <summary>
@@ -454,16 +460,19 @@ namespace MSCLoader
                 }
             }
 
-            //cleanup files.
-            foreach (string dir in Directory.GetDirectories(ConfigFolder))
+            //cleanup files if not in dev mode
+            if (!devMode)
             {
-                if (!LoadedMods.Exists(x => x.ID == new DirectoryInfo(dir).Name))
-                    Directory.Delete(dir, true);
-            }
-            foreach (string dir in Directory.GetDirectories(AssetsFolder))
-            {
-                if (!LoadedMods.Exists(x => x.ID == new DirectoryInfo(dir).Name) && new DirectoryInfo(dir).Name != "MSCLoader_Core")
-                    Directory.Delete(dir, true);
+                foreach (string dir in Directory.GetDirectories(ConfigFolder))
+                {
+                    if (!LoadedMods.Exists(x => x.ID == new DirectoryInfo(dir).Name))
+                        Directory.Delete(dir, true);
+                }
+                foreach (string dir in Directory.GetDirectories(AssetsFolder))
+                {
+                    if (!LoadedMods.Exists(x => x.ID == new DirectoryInfo(dir).Name) && new DirectoryInfo(dir).Name != "MSCLoader_Core")
+                        Directory.Delete(dir, true);
+                }
             }
 
         }
@@ -666,10 +675,10 @@ namespace MSCLoader
                     }
                     UnityEngine.Debug.Log(e);
                     if (allModsLoaded && fullyLoaded)
-                        mod.errorsThrown++;
+                        mod.modErrors++;
                     if (devMode)
                     {
-                        if (mod.errorsThrown == 30)
+                        if (mod.modErrors == 30)
                         {
                             ModConsole.Error(string.Format("Mod <b>{0}</b> thrown <b>too many errors</b>!", mod.ID));
                             ModConsole.Error(e.ToString());
@@ -678,7 +687,7 @@ namespace MSCLoader
                     }
                     else
                     {
-                        if (mod.errorsThrown > 30)
+                        if (mod.modErrors > 30)
                         {
                             mod.isDisabled = true;
                             ModConsole.Error(string.Format("Mod <b>{0}</b> has been <b>disabled!</b> Because it thrown too many errors!{1}Report this problem to mod author.", mod.ID, Environment.NewLine));
@@ -734,10 +743,10 @@ namespace MSCLoader
                     }
                     UnityEngine.Debug.Log(e);
                     if (allModsLoaded && fullyLoaded)
-                        mod.errorsThrown++;
+                        mod.modErrors++;
                     if (devMode)
                     {
-                        if (mod.errorsThrown == 30)
+                        if (mod.modErrors == 30)
                         {
                             ModConsole.Error(string.Format("Mod <b>{0}</b> thrown <b>too many errors</b>!", mod.ID));
                             ModConsole.Error(e.ToString());
@@ -746,7 +755,7 @@ namespace MSCLoader
                     }
                     else
                     {
-                        if (mod.errorsThrown > 30)
+                        if (mod.modErrors > 30)
                         {
                             mod.isDisabled = true;
                             ModConsole.Error(string.Format("Mod <b>{0}</b> has been <b>disabled!</b> Because it thrown too many errors!{1}Report this problem to mod author.", mod.ID, Environment.NewLine));
@@ -783,10 +792,10 @@ namespace MSCLoader
                     }
                     UnityEngine.Debug.Log(e);
                     if (allModsLoaded && fullyLoaded)
-                        mod.errorsThrown++;
+                        mod.modErrors++;
                     if (devMode)
                     {
-                        if (mod.errorsThrown == 30)
+                        if (mod.modErrors == 30)
                         {
                             ModConsole.Error(string.Format("Mod <b>{0}</b> thrown <b>too many errors</b>!", mod.ID));
                             ModConsole.Error(e.ToString());
@@ -795,7 +804,7 @@ namespace MSCLoader
                     }
                     else
                     {
-                        if (mod.errorsThrown > 30)
+                        if (mod.modErrors > 30)
                         {
                             mod.isDisabled = true;
                             ModConsole.Error(string.Format("Mod <b>{0}</b> has been <b>disabled!</b> Because it thrown too many errors!{1}Report this problem to mod author.", mod.ID, Environment.NewLine));
