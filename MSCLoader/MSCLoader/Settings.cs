@@ -126,6 +126,7 @@ namespace MSCLoader
 
         /// <summary>
         /// Add checkbox to settings menu (only <see langword="bool"/> Value accepted)
+        /// Can execute action when its value is changed.
         /// </summary>
         /// <param name="mod">Your mod instance</param>
         /// <param name="setting">Your settings variable</param>

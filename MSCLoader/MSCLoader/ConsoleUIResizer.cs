@@ -62,16 +62,26 @@ namespace MSCLoader
             string path = ModLoader.GetModConfigFolder(new ModConsole());
             if (File.Exists(Path.Combine(path, "console.data")))
             {
-                m_transform = GetComponent<RectTransform>();
-                m_logview = logview.GetComponent<RectTransform>();
-                m_scrollbar = scrollbar.GetComponent<RectTransform>();
-                string data = File.ReadAllText(Path.Combine(path, "console.data"));
-                string[] values = data.Trim().Split(',');
-                m_transform.anchoredPosition = new Vector3(0f, float.Parse(values[0], CultureInfo.InvariantCulture));
-                m_logview.anchoredPosition = new Vector3(0f, float.Parse(values[1], CultureInfo.InvariantCulture));
-                m_scrollbar.anchoredPosition = new Vector3(0f, float.Parse(values[2], CultureInfo.InvariantCulture));
-                m_logview.sizeDelta = new Vector2(333f, float.Parse(values[3], CultureInfo.InvariantCulture));
-                m_scrollbar.sizeDelta = new Vector2(13f, float.Parse(values[4], CultureInfo.InvariantCulture));
+                try
+                {
+                    m_transform = GetComponent<RectTransform>();
+                    m_logview = logview.GetComponent<RectTransform>();
+                    m_scrollbar = scrollbar.GetComponent<RectTransform>();
+                    string data = File.ReadAllText(Path.Combine(path, "console.data"));
+                    string[] values = data.Trim().Split(',');
+                    m_transform.anchoredPosition = new Vector3(0f, float.Parse(values[0], CultureInfo.InvariantCulture));
+                    m_logview.anchoredPosition = new Vector3(0f, float.Parse(values[1], CultureInfo.InvariantCulture));
+                    m_scrollbar.anchoredPosition = new Vector3(0f, float.Parse(values[2], CultureInfo.InvariantCulture));
+                    m_logview.sizeDelta = new Vector2(333f, float.Parse(values[3], CultureInfo.InvariantCulture));
+                    m_scrollbar.sizeDelta = new Vector2(13f, float.Parse(values[4], CultureInfo.InvariantCulture));
+                }
+                catch (Exception e)
+                {
+                    if (ModLoader.devMode)
+                        ModConsole.Error(e.ToString());
+                    Debug.Log(e);
+                    File.Delete(Path.Combine(path, "console.data"));
+                }
             }
         }
         public void SaveConsoleSize()

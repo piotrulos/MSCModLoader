@@ -13,9 +13,10 @@
         int errorCount = 0;
 
         /// <summary>
-        /// Number of Errors/Exceptions thrown by this mod
+        /// Number of Errors/Exceptions thrown by this mod (in Update or FixedUpdate)
+        /// If there is too many errors thrown each frame, mod will be disabled to prevent FPS drop.
         /// </summary>
-        public virtual int errorsThrown { get => errorCount; set => errorCount = value; }
+        public virtual int modErrors { get => errorCount; set => errorCount = value; }
 
         /// <summary>
         /// If true, mod will never call OnLoad/Update/OnGui (used only by settings)
@@ -99,7 +100,8 @@
         /// <summary>
         /// Standard unity OnGUI().
         /// </summary>
-        /// <example>see https://docs.unity3d.com/500/Documentation/Manual/GUIScriptingGuide.html</example>
+        /// <example>See: https://docs.unity3d.com/530/Documentation/Manual/GUIScriptingGuide.html
+        /// </example>
         public virtual void OnGUI() { }
 
 		/// <summary>

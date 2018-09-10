@@ -27,6 +27,7 @@ namespace MSCLoader
         /// <param name="gameObject">GameObject where to hook</param>
         /// <param name="stateName">Name of the state</param>
         /// <param name="hook">Your function to hook</param>
+        /// <example><code lang="C#" title="Fsm Inject" >FsmHook.FsmInject(GameObject.Find("Some game object"), "state name", function);</code></example>
         public static void FsmInject(GameObject gameObject, string stateName, Action hook)
         {
             FsmState state = GetStateFromGameObject(gameObject, stateName);
