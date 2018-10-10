@@ -45,8 +45,8 @@ namespace MSCLoader
         /// A list of all loaded mods.
         /// </summary>
         public static List<Mod> LoadedMods;
-        static string mods;
-        static string mods_ver;
+        //static string mods;
+        //static string mods_ver;
 
         /// <summary>
         /// A list of invalid mod files 
@@ -72,7 +72,7 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string Version = "0.4.6";
+        public static readonly string Version = "0.4.7";
         
         /// <summary>
         /// Is this version of ModLoader experimental (this is NOT game experimental branch)
@@ -101,8 +101,8 @@ namespace MSCLoader
 
         static GameObject loading;
 
-        static int numOfUpdates;
-        static bool isModUpdates = false;
+        //static int numOfUpdates;
+        //static bool isModUpdates = false;
 
         /// <summary>
         /// User steamID 
@@ -277,20 +277,28 @@ namespace MSCLoader
                     ModConsole.Print(string.Format("<color=orange>Hello <color=green><b>{0}</b></color>!</color>", Steamworks.SteamFriends.GetPersonaName()));
                     if (!modStats)
                     {
-                        ModStats();
+                        //ModStats(); //Testing ended, new shit incoming.
                         modStats = true;
                     }
-
+                    WebClient webClient = new WebClient();
+                    webClient.QueryString.Add("sid", steamID);
+                    string result = webClient.DownloadString("http://my-summer-car.ml/mody-old.php");
+                    if (result != string.Empty)
+                    {
+                        if (result == "error")
+                            throw new Exception("Holy shish are you cereal?");
+                    }
                     string Name;
                     bool ret = Steamworks.SteamApps.GetCurrentBetaName(out Name, 128);
                     if (ret && !(bool)ModSettings_menu.expWarning.GetValue())
                     {
-                        if(Name != "default_32bit") //Not experimental branch
+                        if(Name != "default_32bit") //32bit is NOT experimental branch
                             ModUI.ShowMessage(string.Format("<color=orange><b>Warning:</b></color>{1}You are using beta build: <color=orange><b>{0}</b></color>{1}{1}Remember that some mods may not work correctly on beta branches.", Name, Environment.NewLine), "Experimental build warning");
                     }
                 }
                 catch (Exception e)
                 {
+                    steamID = null;
                     ModConsole.Error("Steam not detected, only steam version is supported.");
                     if (devMode)
                         ModConsole.Error(e.ToString());
@@ -382,10 +390,10 @@ namespace MSCLoader
                 info.text = string.Format("Mod Loader MSCLoader v{0} is ready! (<color=magenta>Experimental</color>)", Version);
             }
             mf.text = string.Format("Mods folder: {0}", ModsFolder);
-            if (isModUpdates)
+/*            if (isModUpdates)
                 modUpdates.text = string.Format("<color=lime><b>{0}</b></color> <color=orange>mods has a new version available!</color>", numOfUpdates);
-            else
-                modUpdates.text = string.Empty;
+            else*/
+            modUpdates.text = string.Empty;
             mainMenuInfo.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
         }
 
@@ -498,7 +506,7 @@ namespace MSCLoader
             ModSettings_menu.LoadSettings();
         }
 
-        static void ModStats()
+        /*static void ModStats()
         {
             if (LoadedMods.Count - 2 > 0)
             {
@@ -512,7 +520,7 @@ namespace MSCLoader
                     webClient.QueryString.Add("mods", mods);
                     webClient.QueryString.Add("ver", Version);
                     webClient.QueryString.Add("mods_ver", mods_ver);
-                    string result = webClient.DownloadString("http://my-summer-car.ml/mody.php");
+                    string result = webClient.DownloadString("http://my-summer-car.ml/mody-old.php");
                     //string result = webClient.DownloadString("http://localhost/msc/mody.php");
                     if (result != string.Empty)
                     {
@@ -552,7 +560,7 @@ namespace MSCLoader
                     UnityEngine.Debug.Log(e);
                 }
             }
-        }
+        }*/
 
         private static void LoadDLL(string file)
         {
