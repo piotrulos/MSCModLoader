@@ -77,7 +77,8 @@ namespace MSCLoader
         /// <summary>
         /// Is this version of ModLoader experimental (this is NOT game experimental branch)
         /// </summary>
-        public static readonly bool experimental = false;
+        public static readonly bool experimental = true;
+        private static string expBuild = Assembly.GetExecutingAssembly().GetName().Version.Revision.ToString();
 
         /// <summary>
         /// Is DevMode active
@@ -260,7 +261,10 @@ namespace MSCLoader
                 ModSettings_menu.LoadSettings();
                 LoadCoreAssets();
                 IsDoneLoading = true;
-                ModConsole.Print(string.Format("<color=green>ModLoader <b>v{0}</b> ready</color>", Version));
+                if (experimental)
+                    ModConsole.Print(string.Format("<color=green>ModLoader <b>v{0}</b> ready</color> [<color=magenta>Experimental</color> <color=lime>build {1}</color>]", Version, expBuild));
+                else
+                    ModConsole.Print(string.Format("<color=green>ModLoader <b>v{0}</b> ready</color>", Version));
                 LoadReferences();
                 PreLoadMods();
                 ModConsole.Print(string.Format("<color=orange>Found <color=green><b>{0}</b></color> mods!</color>", LoadedMods.Count - 2));
@@ -288,8 +292,7 @@ namespace MSCLoader
                         if (result == "error")
                             throw new Exception("Holy shish are you cereal?");
                     }
-                    string Name;
-                    bool ret = Steamworks.SteamApps.GetCurrentBetaName(out Name, 128);
+                    bool ret = Steamworks.SteamApps.GetCurrentBetaName(out string Name, 128);
                     if (ret && !(bool)ModSettings_menu.expWarning.GetValue())
                     {
                         if(Name != "default_32bit") //32bit is NOT experimental branch
@@ -330,10 +333,10 @@ namespace MSCLoader
         {
             ModConsole.Print("Loading core assets...");
             AssetBundle ab = LoadAssets.LoadBundle(new ModCore(), "core.unity3d");
-            guiskin = ab.LoadAsset("MSCLoader.guiskin") as GUISkin;
-            ModUI.messageBox = ab.LoadAsset("MSCLoader MB.prefab") as GameObject;
-            mainMenuInfo = ab.LoadAsset("MSCLoader Info.prefab") as GameObject;
-            loading = ab.LoadAsset("LoadingMods.prefab") as GameObject;
+            guiskin = ab.LoadAsset<GUISkin>("MSCLoader.guiskin");
+            ModUI.messageBox = ab.LoadAsset<GameObject>("MSCLoader MB.prefab");
+            mainMenuInfo = ab.LoadAsset<GameObject>("MSCLoader Info.prefab");
+            loading = ab.LoadAsset<GameObject>("LoadingMods.prefab");
             loading.SetActive(false);
             loading = GameObject.Instantiate(loading);
             loading.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
@@ -387,7 +390,31 @@ namespace MSCLoader
             }
             else
             {
-                info.text = string.Format("Mod Loader MSCLoader v{0} is ready! (<color=magenta>Experimental</color>)", Version);
+                try
+                {
+                    string newBuild;
+                    using (WebClient client = new WebClient())
+                    {
+                        client.QueryString.Add("core", "exp_build");
+                        newBuild = client.DownloadString("http://my-summer-car.ml/ver.php");
+                    }
+                    if (newBuild.Trim().Length > 8)
+                        throw new Exception("Parse Error, please report that problem!");
+                    int i = expBuild.CompareTo(newBuild.Trim());
+                    if (i != 0)
+                        info.text = string.Format("Mod Loader MSCLoader v{0} is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>] (<color=orange>New build available: <b>v{1}</b></color>)", Version, expBuild, newBuild);
+                    else if (i == 0)
+                        info.text = string.Format("Mod Loader MSCLoader v{0} is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>]", Version, expBuild);
+
+                }
+                catch (Exception e)
+                {
+                    ModConsole.Error(string.Format("Check for new build failed with error: {0}", e.Message));
+                    if (devMode)
+                        ModConsole.Error(e.ToString());
+                    UnityEngine.Debug.Log(e);
+                    info.text = string.Format("Mod Loader MSCLoader v{0} is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>]", Version, expBuild);
+                }
             }
             mf.text = string.Format("Mods folder: {0}", ModsFolder);
 /*            if (isModUpdates)

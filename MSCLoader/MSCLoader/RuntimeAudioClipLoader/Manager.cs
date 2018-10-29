@@ -138,7 +138,13 @@ namespace RuntimeAudioClipLoader
             }
             catch (Exception ex)
             {
-                SetAudioClipLoadState(audioClip, AudioDataLoadState.Failed);
+                //SetAudioClipLoadState(audioClip, AudioDataLoadState.Failed);
+                MSCLoader.ModConsole.Error(string.Concat(new object[]
+                {
+                    unityAudioClipName,
+                    " - Failed:",
+                    ex.Message
+                }));
                 Debug.LogError(string.Concat(new object[]
                 {
                     "Could not load AudioClip named '",

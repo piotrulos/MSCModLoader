@@ -236,7 +236,15 @@ namespace MSCLoader
         void version(string[] args)
         {
             appendLogLine(string.Format("Unity: <b>{0}</b>", Application.unityVersion));
-            //appendLogLine(string.Format("MSC: <b>{0}</b>",Application.version)); //Shows just 1.0
+            try
+            {
+                appendLogLine(string.Format("MSC buildID: <b>{0}</b>", Steamworks.SteamApps.GetAppBuildId())); //Get steam buildID
+            }
+            catch (Exception e)
+            {
+                appendLogLine(string.Format("<color=red>Failed to get build ID:</color> <b>{0}</b>", e.Message)); //Show steamworks error
+
+            }
             appendLogLine(string.Format("MSCLoader: <b>{0}</b>", ModLoader.Version));
         }
 
