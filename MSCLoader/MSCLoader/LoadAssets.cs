@@ -170,7 +170,7 @@ namespace MSCLoader
         }
 
 
-        /// <summary>
+        /*/// <summary>
         /// A Coroutine for Loading AssetBundles asynchronously (prefered to call from another Corountine)
         /// </summary>
         /// <example>
@@ -205,7 +205,7 @@ namespace MSCLoader
                     yield return www.assetBundle;
                 }
             }
-        }
+        }*/
 
         static Texture2D LoadTGA(string fileName)
         {

@@ -93,10 +93,10 @@ namespace MSCLoader
                 }
                 //blue background, yellow title
                 modButton = Instantiate(ModButton);
-                ColorBlock cb = modButton.GetComponent<Button>().colors;
+               /* ColorBlock cb = modButton.transform.GetChild(1).GetChild(0).GetComponent<Text>().color;
                 cb.normalColor = new Color32(0, 0, 255, 100);
-                modButton.GetComponent<Button>().colors = cb;
-                modButton.transform.GetChild(0).GetComponent<Text>().color = Color.yellow;
+                modButton.GetComponent<Button>().colors = cb;*/
+                modButton.transform.GetChild(1).GetChild(0).GetComponent<Text>().color = Color.yellow;
             }
             else
             {
@@ -111,10 +111,10 @@ namespace MSCLoader
                     }
                     //blue background, red title
                     modButton = Instantiate(ModButton);
-                    ColorBlock cb = modButton.GetComponent<Button>().colors;
+                    /*ColorBlock cb = modButton.GetComponent<Button>().colors;
                     cb.normalColor = new Color32(0, 0, 255, 100);
-                    modButton.GetComponent<Button>().colors = cb;
-                    modButton.transform.GetChild(0).GetComponent<Text>().color = Color.red;
+                    modButton.GetComponent<Button>().colors = cb;*/
+                    modButton.transform.GetChild(1).GetChild(0).GetComponent<Text>().color = Color.red;
                 }
                 else
                 {
@@ -122,32 +122,32 @@ namespace MSCLoader
                 }
             }
 
-            modButton.AddComponent<ModInfo>().mod = mod;
-            modButton.GetComponent<Button>().onClick.AddListener(() => settingView.GetComponent<SettingsView>().selectMod());
-            modButton.transform.GetChild(0).GetComponent<Text>().text = name;
-            modButton.transform.GetChild(1).GetComponent<Text>().text = version;
-            modButton.transform.GetChild(2).GetComponent<Text>().text = author;
+            modButton.transform.GetChild(1).GetChild(4).GetChild(0).gameObject.AddComponent<ModInfo>().mod = mod;
+            modButton.transform.GetChild(1).GetChild(4).GetChild(0).GetComponent<Button>().onClick.AddListener(() => settingView.GetComponent<SettingsView>().selectMod());
+            modButton.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = name;
+            modButton.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = string.Format("by <color=orange>{0}</color>", author);
+            modButton.transform.GetChild(1).GetChild(2).GetComponent<Text>().text = version;
             modButton.transform.SetParent(modView.transform, false);
             if (mod.hasUpdate)
             {
-                modButton.transform.GetChild(3).GetChild(0).gameObject.SetActive(true); //Add Update Icon
+               //modButton.transform.GetChild(3).GetChild(0).gameObject.SetActive(true); //Add Update Icon
             }
             if (mod.UseAssetsFolder)
             {
-                modButton.transform.GetChild(3).GetChild(1).gameObject.SetActive(true); //Add assets icon
+                modButton.transform.GetChild(2).GetChild(2).gameObject.SetActive(true); //Add assets icon
             }
             if (mod.isDisabled)
             {
-                modButton.transform.GetChild(3).GetChild(2).gameObject.SetActive(true); //Add plugin Disabled icon
-                modButton.transform.GetChild(3).GetChild(2).GetComponent<Image>().color = Color.red;
+                modButton.transform.GetChild(2).GetChild(1).gameObject.SetActive(true); //Add plugin Disabled icon
+                modButton.transform.GetChild(2).GetChild(1).GetComponent<Image>().color = Color.red;
             }
             else
             {
-                modButton.transform.GetChild(3).GetChild(2).gameObject.SetActive(true); //Add plugin OK icon
+                modButton.transform.GetChild(2).GetChild(1).gameObject.SetActive(true); //Add plugin OK icon
             }
             if (mod.LoadInMenu)
             {
-                modButton.transform.GetChild(3).GetChild(3).gameObject.SetActive(true);//Add Menu Icon
+                modButton.transform.GetChild(2).GetChild(0).gameObject.SetActive(true);//Add Menu Icon
             }
 
         }

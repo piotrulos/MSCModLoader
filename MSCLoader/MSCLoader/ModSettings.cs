@@ -45,17 +45,20 @@ namespace MSCLoader
         {
             AssetBundle ab = LoadAssets.LoadBundle(this, "settingsui.unity3d");
 
-            UI = ab.LoadAsset("MSCLoader Settings.prefab") as GameObject;
+            UI = ab.LoadAsset<GameObject>("MSCLoader Settings.prefab");
 
-            ModButton = ab.LoadAsset("ModButton.prefab") as GameObject;
-            ModButton_Invalid = ab.LoadAsset("ModButton_Invalid.prefab") as GameObject;
-            ModViewLabel = ab.LoadAsset("ModViewLabel.prefab") as GameObject;
+            ModButton = ab.LoadAsset<GameObject>("ModButton.prefab");
+            ModButton_Invalid = ab.LoadAsset<GameObject>("ModButton_Invalid.prefab");
 
-            KeyBind = ab.LoadAsset("KeyBind.prefab") as GameObject;
+            //REMOVE
+            ModViewLabel = ab.LoadAsset<GameObject>("ModViewLabel.prefab");
 
-            Checkbox = ab.LoadAsset("Checkbox.prefab") as GameObject;
-            setBtn = ab.LoadAsset("Button.prefab") as GameObject;
-            slider = ab.LoadAsset("Slider.prefab") as GameObject;
+            KeyBind = ab.LoadAsset<GameObject>("KeyBind.prefab");
+
+            //For mod settings
+            Checkbox = ab.LoadAsset<GameObject>("Checkbox.prefab");
+            setBtn = ab.LoadAsset<GameObject>("Button.prefab");
+            slider = ab.LoadAsset<GameObject>("Slider.prefab");
 
             UI = GameObject.Instantiate(UI);
             UI.AddComponent<ModUIDrag>();
@@ -73,7 +76,7 @@ namespace MSCLoader
             UI.GetComponent<SettingsView>().modSettings = UI.GetComponent<SettingsView>().settingViewContainer.transform.GetChild(4).gameObject;
             UI.GetComponent<SettingsView>().modSettingsList = UI.GetComponent<SettingsView>().modSettings.transform.GetChild(0).GetChild(4).gameObject;
 
-            UI.GetComponent<SettingsView>().goBackBtn = UI.GetComponent<SettingsView>().settingViewContainer.transform.GetChild(0).GetChild(0).gameObject;
+            UI.GetComponent<SettingsView>().goBackBtn = UI.GetComponent<SettingsView>().settingViewContainer.transform.GetChild(0).GetChild(1).gameObject;
             UI.GetComponent<SettingsView>().goBackBtn.GetComponent<Button>().onClick.AddListener(() => UI.GetComponent<SettingsView>().goBack());
             UI.GetComponent<SettingsView>().DisableMod = ModSettingsView.transform.GetChild(5).GetComponent<Toggle>();
             UI.GetComponent<SettingsView>().DisableMod.onValueChanged.AddListener(UI.GetComponent<SettingsView>().disableMod);
