@@ -272,9 +272,9 @@ namespace MSCLoader
                 {
                     if(File.Exists(Path.GetFullPath(Path.Combine("LAUNCHER.exe", ""))) || File.Exists(Path.GetFullPath(Path.Combine("SmartSteamEmu64.dll", ""))) || File.Exists(Path.GetFullPath(Path.Combine("SmartSteamEmu.dll", ""))))
                     {
-                        ModConsole.Print(string.Format("<color=orange>Hello <color=green><b>{0}</b></color>!</color>", "PIRATE IS FREE!!!"));
-                        throw new Exception("Do What You Want, Cause A Pirate Is Free... You Are A Pirate!");
-                        //exclude emulators from stats (spam weird stuff sometimes)
+                        ModConsole.Print(string.Format("<color=orange>Hello <color=green><b>{0}</b></color>!</color>", "Murzyn!"));
+                        throw new Exception("[EMULATOR] Do What You Want, Cause A Pirate Is Free... You Are A Pirate!");
+                        //exclude emulators
                     }
                     Steamworks.SteamAPI.Init();
                     steamID = Steamworks.SteamUser.GetSteamID().ToString();
@@ -298,6 +298,7 @@ namespace MSCLoader
                         if(Name != "default_32bit") //32bit is NOT experimental branch
                             ModUI.ShowMessage(string.Format("<color=orange><b>Warning:</b></color>{1}You are using beta build: <color=orange><b>{0}</b></color>{1}{1}Remember that some mods may not work correctly on beta branches.", Name, Environment.NewLine), "Experimental build warning");
                     }
+                    UnityEngine.Debug.Log(string.Format("MSC buildID: <b>{0}</b>", Steamworks.SteamApps.GetAppBuildId())); 
                 }
                 catch (Exception e)
                 {
@@ -402,7 +403,7 @@ namespace MSCLoader
                         throw new Exception("Parse Error, please report that problem!");
                     int i = expBuild.CompareTo(newBuild.Trim());
                     if (i != 0)
-                        info.text = string.Format("Mod Loader MSCLoader v{0} is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>] (<color=orange>New build available: <b>v{1}</b></color>)", Version, expBuild, newBuild);
+                        info.text = string.Format("Mod Loader MSCLoader v{0} is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>] (<color=orange>New build available: <b>{2}</b></color>)", Version, expBuild, newBuild);
                     else if (i == 0)
                         info.text = string.Format("Mod Loader MSCLoader v{0} is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>]", Version, expBuild);
 
