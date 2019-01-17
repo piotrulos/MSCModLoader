@@ -21,7 +21,7 @@ namespace MSCLoader
         GameObject UI;
         GameObject ModButton;
         GameObject ModButton_Invalid;
-        GameObject ModViewLabel;
+        GameObject ModLabel;
         GameObject KeyBind;
         GameObject Checkbox, setBtn, slider;
 
@@ -50,8 +50,7 @@ namespace MSCLoader
             ModButton = ab.LoadAsset<GameObject>("ModButton.prefab");
             ModButton_Invalid = ab.LoadAsset<GameObject>("ModButton_Invalid.prefab");
 
-            //REMOVE
-            ModViewLabel = ab.LoadAsset<GameObject>("ModViewLabel.prefab");
+            ModLabel = ab.LoadAsset<GameObject>("ModViewLabel.prefab");
 
             KeyBind = ab.LoadAsset<GameObject>("KeyBind.prefab");
 
@@ -76,16 +75,22 @@ namespace MSCLoader
             UI.GetComponent<SettingsView>().modSettings = UI.GetComponent<SettingsView>().settingViewContainer.transform.GetChild(4).gameObject;
             UI.GetComponent<SettingsView>().modSettingsList = UI.GetComponent<SettingsView>().modSettings.transform.GetChild(0).GetChild(4).gameObject;
 
+            UI.GetComponent<SettingsView>().coreModCheckbox = UI.GetComponent<SettingsView>().settingViewContainer.transform.GetChild(6).GetChild(0).GetComponent<Toggle>();
+            UI.GetComponent<SettingsView>().coreModCheckbox.onValueChanged.AddListener(delegate { UI.GetComponent<SettingsView>().ToggleCoreCheckbox(); });
+
+            UI.GetComponent<SettingsView>().noOfMods = UI.GetComponent<SettingsView>().settingViewContainer.transform.GetChild(6).GetChild(1).GetComponent<Text>();
+
             UI.GetComponent<SettingsView>().goBackBtn = UI.GetComponent<SettingsView>().settingViewContainer.transform.GetChild(0).GetChild(1).gameObject;
             UI.GetComponent<SettingsView>().goBackBtn.GetComponent<Button>().onClick.AddListener(() => UI.GetComponent<SettingsView>().goBack());
+            UI.GetComponent<SettingsView>().settingViewContainer.transform.GetChild(0).GetChild(2).GetComponent<Button>().onClick.AddListener(() => UI.GetComponent<SettingsView>().setVisibility(false));
             UI.GetComponent<SettingsView>().DisableMod = ModSettingsView.transform.GetChild(5).GetComponent<Toggle>();
             UI.GetComponent<SettingsView>().DisableMod.onValueChanged.AddListener(UI.GetComponent<SettingsView>().disableMod);
-            ModSettingsView.transform.GetChild(7).GetComponent<Button>().onClick.AddListener(() => UI.GetComponent<SettingsView>().goToKeybinds());
-            ModSettingsView.transform.GetChild(9).GetComponent<Button>().onClick.AddListener(() => UI.GetComponent<SettingsView>().goToSettings());
+          //  ModSettingsView.transform.GetChild(7).GetComponent<Button>().onClick.AddListener(() => UI.GetComponent<SettingsView>().goToKeybinds());
+         //   ModSettingsView.transform.GetChild(9).GetComponent<Button>().onClick.AddListener(() => UI.GetComponent<SettingsView>().goToSettings());
 
             UI.GetComponent<SettingsView>().ModButton = ModButton;
             UI.GetComponent<SettingsView>().ModButton_Invalid = ModButton_Invalid;
-            UI.GetComponent<SettingsView>().ModViewLabel = ModViewLabel;
+            UI.GetComponent<SettingsView>().ModLabel = ModLabel;
             UI.GetComponent<SettingsView>().KeyBind = KeyBind;
 
             UI.GetComponent<SettingsView>().Checkbox = Checkbox;
@@ -168,7 +173,6 @@ namespace MSCLoader
         // Save settings for a single mod to config file.
         public static void SaveSettings(Mod mod)
         {
-
             SettingsList list = new SettingsList();
             list.isDisabled = mod.isDisabled;
             string path = Path.Combine(ModLoader.GetModConfigFolder(mod), "settings.json");
