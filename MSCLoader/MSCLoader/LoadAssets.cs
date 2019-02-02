@@ -8,7 +8,7 @@ namespace MSCLoader
     /// <summary>
     /// Class for Loading custom assets from Assets folder
     /// </summary>
-    public class LoadAssets : MonoBehaviour
+    public static class LoadAssets
     {
         /// <summary>
         /// Make GameObject Pickable, make sure your GameObject has Rigidbody and colliders attached.

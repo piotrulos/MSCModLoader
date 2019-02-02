@@ -67,7 +67,7 @@ namespace MSCLoader
         /// <summary>
         /// The instance of LoadAssets.
         /// </summary>
-        public static LoadAssets loadAssets;
+        //public static LoadAssets loadAssets;
 
         /// <summary>
         /// The current version of the ModLoader.
@@ -105,16 +105,25 @@ namespace MSCLoader
         //static int numOfUpdates;
         //static bool isModUpdates = false;
 
-        /// <summary>
-        /// User steamID 
-        /// (read-only)
-        /// </summary>
-        public static string steamID { get; private set; }
+        //Changed due to abuse
+        private static string steamID;
 
         /// <summary>
         /// Is mods loading now.
         /// </summary>
         public static bool IsModsLoading = false;
+
+        /// <summary>
+        /// Check if steam is present
+        /// </summary>
+        /// <returns>Valid steam detected.</returns>
+        public static bool CheckSteam()
+        {
+            if (steamID != null && steamID != string.Empty && steamID != "0")
+                return true;
+            else
+                return false;
+        }
 
         /// <summary>
         /// Mod config folder, use this if you want save something. 
@@ -147,6 +156,7 @@ namespace MSCLoader
                 ModConsole.Error(string.Format("<b>{0}:</b> Please set variable <b>UseAssetsFolder</b> to <b>true</b>", mod.ID));
             return Path.Combine(AssetsFolder, mod.ID);
         }
+
         /// <summary>
         /// Initialize ModLoader with Mods folder in My Documents (like it was in 0.1)
         /// </summary>
@@ -177,6 +187,10 @@ namespace MSCLoader
         /// </summary>
         public static GUISkin guiskin;
 
+        private static bool IsModsResetting = false;
+        private static bool IsModsDoneResetting = false;
+        private static bool introCheck;
+
 
         /// <summary>
         /// Main function to initialize the ModLoader
@@ -197,12 +211,20 @@ namespace MSCLoader
             }
             if (IsModsDoneLoading && Application.loadedLevelName == "MainMenu")
             {
+                introCheck = false;
+                IsModsDoneResetting = false;
                 MSCUnloaderInstance.reset = false;
                 MSCUnloaderInstance.MSCLoaderReset();
+            }
+            if (Application.loadedLevelName == "Intro" && !IsModsDoneResetting && !IsModsResetting)
+            {
+                IsModsResetting = true;
+                Instance.StartCoroutine(Instance.NewGameMods());
             }
             if (!IsModsDoneLoading && Application.loadedLevelName == "GAME" && fullyLoaded && !IsModsLoading)
             {
                 // Load all mods
+                introCheck = true;
                 IsModsLoading = true;
                 Instance.StartCoroutine(Instance.LoadMods());
             }
@@ -223,9 +245,9 @@ namespace MSCLoader
                 GameObject go = new GameObject();
                 go.name = "MSCModLoader";
                 go.AddComponent<ModLoader>();
-                go.AddComponent<LoadAssets>();
+               //go.AddComponent<LoadAssets>();
                 Instance = go.GetComponent<ModLoader>();
-                loadAssets = go.GetComponent<LoadAssets>();
+                //loadAssets = go.GetComponent<LoadAssets>();
                 DontDestroyOnLoad(go);
 
                 // Init variables
@@ -425,6 +447,51 @@ namespace MSCLoader
             mainMenuInfo.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
         }
 
+        IEnumerator NewGameMods()
+        {
+            loading.transform.GetChild(2).GetComponent<Text>().text = string.Format("MSCLoader <color=green>v{0}</color>", Version);
+            ModConsole.Print("Resetting mods...");
+            loading.SetActive(true);
+            loading.transform.GetChild(3).GetComponent<Slider>().minValue = 1;
+            loading.transform.GetChild(3).GetComponent<Slider>().maxValue = LoadedMods.Count - 2;
+
+            int i = 1;
+            foreach (Mod mod in LoadedMods)
+            {
+
+                loading.transform.GetChild(0).GetComponent<Text>().text = string.Format("<color=red>Resetting mods: <color=orange><b>{0}</b></color> of <color=orange><b>{1}</b></color>. <b>Do not skip intro yet!...</b></color>", i, LoadedMods.Count - 2);
+                loading.transform.GetChild(3).GetComponent<Slider>().value = i;
+                loading.transform.GetChild(3).GetChild(1).GetChild(0).GetComponent<Image>().color = Color.red;
+                if (mod.ID.StartsWith("MSCLoader_"))
+                    continue;
+                i++;
+                loading.transform.GetChild(1).GetComponent<Text>().text = mod.Name;
+                yield return new WaitForSeconds(.4f);
+                try
+                {
+                    mod.OnNewGame();
+                }
+                catch (Exception e)
+                {
+                    var st = new StackTrace(e, true);
+                    var frame = st.GetFrame(0);
+
+                    string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
+                    ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
+                    if (devMode)
+                        ModConsole.Error(e.ToString());
+                    UnityEngine.Debug.Log(e);
+                }
+
+            }
+            loading.transform.GetChild(0).GetComponent<Text>().text = string.Format("Resetting Done! You can skip intro now!");
+            yield return new WaitForSeconds(2f);
+            loading.SetActive(false);
+            IsModsDoneResetting = true;
+            ModConsole.Print("Resetting done!");
+            IsModsResetting = false;
+
+        }
         IEnumerator LoadMods()
         {
             loading.transform.GetChild(2).GetComponent<Text>().text = string.Format("MSCLoader <color=green>v{0}</color>", Version);
@@ -443,6 +510,7 @@ namespace MSCLoader
                 
                 loading.transform.GetChild(0).GetComponent<Text>().text = string.Format("Loading mods: <color=orage><b>{0}</b></color> of <color=orage><b>{1}</b></color>. Please wait...", i, LoadedMods.Count-2);
                 loading.transform.GetChild(3).GetComponent<Slider>().value = i;
+                loading.transform.GetChild(3).GetChild(1).GetChild(0).GetComponent<Image>().color = new Color32(0, 113, 0, 255);
                 if (mod.ID.StartsWith("MSCLoader_"))
                     continue;
                 i++;
@@ -611,6 +679,10 @@ namespace MSCLoader
                     {
                         for (int i = 0; i < list.Length; i++)
                         {
+                            if (list[i].Name == "Assembly-CSharp-firstpass")
+                            {
+                                throw new Exception("Targeting forbidden reference");
+                            }
                             if (list[i].Name == "MSCLoader")
                             {
                                 string[] verparse = list[i].Version.ToString().Split('.');
@@ -623,7 +695,6 @@ namespace MSCLoader
                                     else
                                         msVer = string.Format("{0}.{1}.{2}", verparse[0], verparse[1], verparse[2]);
                                 }
-                                break;
                             }
                         }
                         isMod = true;
@@ -751,9 +822,13 @@ namespace MSCLoader
                 }
             }
 
-            if (Input.GetKeyDown(KeyCode.F10)) //debug
+            if(!introCheck)
             {
-
+                if(Application.loadedLevelName == "Intro")
+                {
+                    introCheck = true;
+                    Init();
+                }
             }
 
             // Call update for loaded mods

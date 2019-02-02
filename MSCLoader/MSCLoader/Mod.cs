@@ -79,6 +79,7 @@
         /// </summary>
         public virtual void ModSettingsLoaded() { }
 
+
         /// <summary>
         /// Called once in main menu (only when LoadInMenu is true).
         /// </summary>
@@ -86,6 +87,12 @@
             if (LoadInMenu)
                 ModConsole.Error(string.Format("<b>LoadInMenu</b> is set to <b>true</b> for mod: <b>{0}</b> but <b>OnMenuLoad()</b> is empty.",ID));
         }
+
+        /// <summary>
+        /// Called once after starting "New Game"
+        /// You can reset/delete your saves here
+        /// </summary>
+        public virtual void OnNewGame() { }
 
         /// <summary>
         /// Called once, after GAME scene is fully loaded.
