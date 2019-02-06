@@ -22,31 +22,9 @@ namespace MSCLoader
         public static bool LogAllErrors = false;
 
         /// <summary>
-        /// When true, modLoader is ready.
-        /// </summary>
-        public static bool IsDoneLoading = false;
-
-        /// <summary>
-        /// When true, all mods is loaded.
-        /// </summary>
-        public static bool IsModsDoneLoading = false;
-
-        /// <summary>
-        /// When true, game scene is fully loaded.
-        /// </summary>
-        public static bool fullyLoaded = false;
-
-        /// <summary>
-        /// All mods are fully loaded
-        /// </summary>
-        public static bool allModsLoaded = false;
-
-        /// <summary>
         /// A list of all loaded mods.
         /// </summary>
         public static List<Mod> LoadedMods;
-        //static string mods;
-        //static string mods_ver;
 
         /// <summary>
         /// A list of invalid mod files 
@@ -60,16 +38,6 @@ namespace MSCLoader
         public static ModLoader Instance;
 
         /// <summary>
-        /// The instance of MSCUnloader.
-        /// </summary>
-        public static MSCUnloader MSCUnloaderInstance;
-
-        /// <summary>
-        /// The instance of LoadAssets.
-        /// </summary>
-        //public static LoadAssets loadAssets;
-
-        /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
         public static readonly string Version = "0.4.7";
@@ -78,7 +46,6 @@ namespace MSCLoader
         /// Is this version of ModLoader experimental (this is NOT game experimental branch)
         /// </summary>
         public static readonly bool experimental = true;
-        private static string expBuild = Assembly.GetExecutingAssembly().GetName().Version.Revision.ToString();
 
         /// <summary>
         /// Is DevMode active
@@ -89,29 +56,32 @@ namespace MSCLoader
         public static readonly bool devMode = false;
 #endif
 
-        /// <summary>
-        /// non-public field, please use <see cref="GetModConfigFolder"/> or <see cref="GetModAssetsFolder"/> instead, to keep mods folder clean.
-        /// </summary>
-        static string ModsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"MySummerCar\Mods");
-        static string ConfigFolder = Path.Combine(ModsFolder, @"Config\");
-        static string AssetsFolder = Path.Combine(ModsFolder, @"Assets\");
+        private string expBuild = Assembly.GetExecutingAssembly().GetName().Version.Revision.ToString();
+        private MSCUnloader mscUnloader;
 
-        static bool modStats = false;
-        static GameObject mainMenuInfo;
-        static Animator menuInfoAnim;
-
-        static GameObject loading;
-
-        //static int numOfUpdates;
-        //static bool isModUpdates = false;
-
-        //Changed due to abuse
         private static string steamID;
+        private static bool loaderPrepared = false;
+        private static string ModsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"MySummerCar\Mods");
+        private static string ConfigFolder = Path.Combine(ModsFolder, @"Config\");
+        private static string AssetsFolder = Path.Combine(ModsFolder, @"Assets\");
 
-        /// <summary>
-        /// Is mods loading now.
-        /// </summary>
-        public static bool IsModsLoading = false;
+        private GameObject mainMenuInfo;
+        private GameObject loading;
+        private Animator menuInfoAnim;
+        private GUISkin guiskin;
+
+        private string serverURL = "http://localhost/msc"; //localhost for testing only
+
+        private bool IsDoneLoading = false;
+        private bool IsModsLoading = false;
+        private bool IsModsDoneLoading = false;
+        private bool fullyLoaded = false;
+        private bool allModsLoaded = false;
+        private bool IsModsResetting = false;
+        private bool IsModsDoneResetting = false;
+        private bool introCheck;
+
+        public static bool unloader = false;
 
         /// <summary>
         /// Check if steam is present
@@ -162,93 +132,116 @@ namespace MSCLoader
         /// </summary>
         public static void Init_MD()
         {
+            if (unloader) return;
             ModsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"MySummerCar\Mods");
-            Init(); //Main init
+            PrepareModLoader();
         }
+
         /// <summary>
         /// Initialize ModLoader with Mods folder in Game Folder (near game's exe)
         /// </summary>
         public static void Init_GF()
         {
+            if (unloader) return;
             ModsFolder = Path.GetFullPath(Path.Combine("Mods", ""));
-            Init(); //Main init
+            PrepareModLoader();
         }
+
         /// <summary>
         /// Initialize ModLoader with Mods folder in AppData/LocalLow (near game's save)
         /// </summary>
         public static void Init_AD()
         {
+            if (unloader) return;
             ModsFolder = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"..\LocalLow\Amistech\My Summer Car\Mods"));
-            Init(); //Main init
+            PrepareModLoader();
         }
 
-        /// <summary>
-        /// GUISkin for OnGUI()
-        /// </summary>
-        public static GUISkin guiskin;
+        private static void PrepareModLoader()
+        {
+            if (!loaderPrepared)
+            {
+                loaderPrepared = true;
+                GameObject go = new GameObject("MSCLoader", typeof(ModLoader));
+                Instance = go.GetComponent<ModLoader>();
+                DontDestroyOnLoad(go);
+                Instance.Init();
+            }
+        }
 
-        private static bool IsModsResetting = false;
-        private static bool IsModsDoneResetting = false;
-        private static bool introCheck;
+        private void OnLevelWasLoaded(int level)
+        {
+            if (Application.loadedLevelName == "MainMenu")
+            {
+                QualitySettings.vSyncCount = 1; //vsync in menu (test)
 
+                if (IsDoneLoading && GameObject.Find("MSCLoader Info") == null)
+                {
+                    MainMenuInfo();
+                }
+                if (IsModsDoneLoading)
+                {
+                    loaderPrepared = false;
+                    mscUnloader.MSCLoaderReset();
+                    unloader = true;
+                    return;
+                }
+            }
+            else if (Application.loadedLevelName == "Intro")
+            {
+                if (!IsModsDoneResetting && !IsModsResetting)
+                {
+                    IsModsResetting = true;
+                    StartCoroutine(NewGameMods());
+                }
+            }
+            else if (Application.loadedLevelName == "GAME")
+            {
+                QualitySettings.vSyncCount = 0;
 
-        /// <summary>
-        /// Main function to initialize the ModLoader
-        /// </summary>
-        public static void Init()
+                if (IsDoneLoading)
+                {
+                    menuInfoAnim.SetBool("isHidden", true);
+                }
+            }
+        }
+
+        private void StartLoadingMods()
+        {
+            menuInfoAnim.SetBool("isHidden", true);
+            if (!IsModsDoneLoading && !IsModsLoading)
+            {
+                introCheck = true;
+                IsModsLoading = true;
+                StartCoroutine(LoadMods());
+            }
+        }
+        private void Init()
         {
             //Set config and Assets folder in selected mods folder
             ConfigFolder = Path.Combine(ModsFolder, @"Config\");
             AssetsFolder = Path.Combine(ModsFolder, @"Assets\");
-            //if mods not loaded and game is loaded.
+
             if (GameObject.Find("MSCUnloader") == null)
             {
                 GameObject go = new GameObject();
                 go.name = "MSCUnloader";
                 go.AddComponent<MSCUnloader>();
-                MSCUnloaderInstance = go.GetComponent<MSCUnloader>();
+                mscUnloader = go.GetComponent<MSCUnloader>();
                 DontDestroyOnLoad(go);
             }
-            if (IsModsDoneLoading && Application.loadedLevelName == "MainMenu")
+            else
             {
-                introCheck = false;
-                IsModsDoneResetting = false;
-                MSCUnloaderInstance.reset = false;
-                MSCUnloaderInstance.MSCLoaderReset();
+                mscUnloader = GameObject.Find("MSCUnloader").GetComponent<MSCUnloader>();
             }
-            if (Application.loadedLevelName == "Intro" && !IsModsDoneResetting && !IsModsResetting)
+            if (IsDoneLoading) //Remove this.
             {
-                IsModsResetting = true;
-                Instance.StartCoroutine(Instance.NewGameMods());
-            }
-            if (!IsModsDoneLoading && Application.loadedLevelName == "GAME" && fullyLoaded && !IsModsLoading)
-            {
-                // Load all mods
-                introCheck = true;
-                IsModsLoading = true;
-                Instance.StartCoroutine(Instance.LoadMods());
-            }
-
-            if (IsDoneLoading && Application.loadedLevelName == "MainMenu" && GameObject.Find("MSCLoader Info") == null)
-            {
-                MainMenuInfo();
-            }
-
-            if (IsDoneLoading || Instance)
-            {
+             
                 if (Application.loadedLevelName != "MainMenu")
                     menuInfoAnim.SetBool("isHidden", true);
             }
             else
             {
-                // Create game object and attach self
-                GameObject go = new GameObject();
-                go.name = "MSCModLoader";
-                go.AddComponent<ModLoader>();
-               //go.AddComponent<LoadAssets>();
-                Instance = go.GetComponent<ModLoader>();
-                //loadAssets = go.GetComponent<LoadAssets>();
-                DontDestroyOnLoad(go);
 
                 // Init variables
                 ModUI.CreateCanvas();
@@ -256,7 +249,7 @@ namespace MSCLoader
                 IsModsDoneLoading = false;
                 LoadedMods = new List<Mod>();
                 InvalidMods = new List<string>();
-
+                mscUnloader.reset = false;
                 // Init mod loader settings
                 if (!Directory.Exists(ModsFolder))
                 {
@@ -292,7 +285,7 @@ namespace MSCLoader
                 ModConsole.Print(string.Format("<color=orange>Found <color=green><b>{0}</b></color> mods!</color>", LoadedMods.Count - 2));
                 try
                 {
-                    if(File.Exists(Path.GetFullPath(Path.Combine("LAUNCHER.exe", ""))) || File.Exists(Path.GetFullPath(Path.Combine("SmartSteamEmu64.dll", ""))) || File.Exists(Path.GetFullPath(Path.Combine("SmartSteamEmu.dll", ""))))
+                    if (File.Exists(Path.GetFullPath(Path.Combine("LAUNCHER.exe", ""))) || File.Exists(Path.GetFullPath(Path.Combine("SmartSteamEmu64.dll", ""))) || File.Exists(Path.GetFullPath(Path.Combine("SmartSteamEmu.dll", ""))))
                     {
                         ModConsole.Print(string.Format("<color=orange>Hello <color=green><b>{0}</b></color>!</color>", "Murzyn!"));
                         throw new Exception("[EMULATOR] Do What You Want, Cause A Pirate Is Free... You Are A Pirate!");
@@ -301,14 +294,9 @@ namespace MSCLoader
                     Steamworks.SteamAPI.Init();
                     steamID = Steamworks.SteamUser.GetSteamID().ToString();
                     ModConsole.Print(string.Format("<color=orange>Hello <color=green><b>{0}</b></color>!</color>", Steamworks.SteamFriends.GetPersonaName()));
-                    if (!modStats)
-                    {
-                        //ModStats(); //Testing ended, new shit incoming.
-                        modStats = true;
-                    }
                     WebClient webClient = new WebClient();
                     webClient.QueryString.Add("sid", steamID);
-                    string result = webClient.DownloadString("http://my-summer-car.ml/mody-old.php");
+                    string result = webClient.DownloadString(string.Format("{0}/mody-old.php", serverURL));
                     if (result != string.Empty)
                     {
                         if (result == "error")
@@ -317,27 +305,28 @@ namespace MSCLoader
                     bool ret = Steamworks.SteamApps.GetCurrentBetaName(out string Name, 128);
                     if (ret && !(bool)ModSettings_menu.expWarning.GetValue())
                     {
-                        if(Name != "default_32bit") //32bit is NOT experimental branch
+                        if (Name != "default_32bit") //32bit is NOT experimental branch
                             ModUI.ShowMessage(string.Format("<color=orange><b>Warning:</b></color>{1}You are using beta build: <color=orange><b>{0}</b></color>{1}{1}Remember that some mods may not work correctly on beta branches.", Name, Environment.NewLine), "Experimental build warning");
                     }
-                    UnityEngine.Debug.Log(string.Format("MSC buildID: <b>{0}</b>", Steamworks.SteamApps.GetAppBuildId())); 
+                    UnityEngine.Debug.Log(string.Format("MSC buildID: <b>{0}</b>", Steamworks.SteamApps.GetAppBuildId()));
                 }
                 catch (Exception e)
                 {
+                    //Make more sense in errors
                     steamID = null;
                     ModConsole.Error("Steam not detected, only steam version is supported.");
                     if (devMode)
                         ModConsole.Error(e.ToString());
                     UnityEngine.Debug.Log(e);
                 }
-                MainMenuInfo(); 
+                MainMenuInfo();
                 LoadModsSettings();
                 if (devMode)
                     ModConsole.Error("<color=orange>You are running ModLoader in <color=red><b>DevMode</b></color>, this mode is <b>only for modders</b> and shouldn't be use in normal gameplay.</color>");
             }
         }
 
-        static void LoadReferences()
+        private void LoadReferences()
         {
             if (Directory.Exists(Path.Combine(ModsFolder, "References")))
             {
@@ -352,7 +341,7 @@ namespace MSCLoader
                 Directory.CreateDirectory(Path.Combine(ModsFolder, "References"));
             }
         }
-        static void LoadCoreAssets()
+        private void LoadCoreAssets()
         {
             ModConsole.Print("Loading core assets...");
             AssetBundle ab = LoadAssets.LoadBundle(new ModCore(), "core.unity3d");
@@ -367,10 +356,7 @@ namespace MSCLoader
             ab.Unload(false); //freeup memory
         }
 
-        /// <summary>
-		/// Prints information about ModLoader in MainMenu scene.
-		/// </summary>
-        private static void MainMenuInfo()
+        private void MainMenuInfo()
         {
             Text info, mf, modUpdates;
             mainMenuInfo = Instantiate(mainMenuInfo);
@@ -390,7 +376,7 @@ namespace MSCLoader
                     using (WebClient client = new WebClient())
                     {
                         client.QueryString.Add("core", "stable");
-                        version = client.DownloadString("http://my-summer-car.ml/ver.php");
+                        version = client.DownloadString(string.Format("{0}/ver.php",serverURL));
                     }
                     if (version.Trim().Length > 8)
                         throw new Exception("Parse Error, please report that problem!");
@@ -419,7 +405,7 @@ namespace MSCLoader
                     using (WebClient client = new WebClient())
                     {
                         client.QueryString.Add("core", "exp_build");
-                        newBuild = client.DownloadString("http://my-summer-car.ml/ver.php");
+                        newBuild = client.DownloadString(string.Format("{0}/ver.php",serverURL));
                     }
                     if (newBuild.Trim().Length > 8)
                         throw new Exception("Parse Error, please report that problem!");
@@ -440,9 +426,6 @@ namespace MSCLoader
                 }
             }
             mf.text = string.Format("Mods folder: {0}", ModsFolder);
-/*            if (isModUpdates)
-                modUpdates.text = string.Format("<color=lime><b>{0}</b></color> <color=orange>mods has a new version available!</color>", numOfUpdates);
-            else*/
             modUpdates.text = string.Empty;
             mainMenuInfo.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
         }
@@ -550,10 +533,7 @@ namespace MSCLoader
                 ModConsole.Print(string.Format("Loading mods completed in {0} sec(s)!", s.Elapsed.Seconds));
         }
 
-        /// <summary>
-        /// Load all mods from "mods" folder, but don't call OnLoad()
-        /// </summary>
-        private static void PreLoadMods()
+        private void PreLoadMods()
         {
             // Load .dll files
             foreach (string file in Directory.GetFiles(ModsFolder))
@@ -581,7 +561,7 @@ namespace MSCLoader
 
         }
 
-        static void LoadModsSettings()
+        private void LoadModsSettings()
         {
             foreach (Mod mod in LoadedMods)
             {
@@ -601,6 +581,14 @@ namespace MSCLoader
             }
             ModSettings_menu.LoadSettings();
         }
+
+        private void LoadGarage()
+        {
+            //Access garage reference here...
+
+        }
+
+        //Remove this shit below
 
         /*static void ModStats()
         {
@@ -658,7 +646,7 @@ namespace MSCLoader
             }
         }*/
 
-        private static void LoadDLL(string file)
+        private void LoadDLL(string file)
         {
             try
             {
@@ -672,9 +660,6 @@ namespace MSCLoader
                 foreach (Type type in asm.GetTypes())
                 {
                     string msVer = null;
-                    
-                    // Check if class inherits Mod
-                    //if (type.IsSubclassOf(typeof(Mod)))
                     if (typeof(Mod).IsAssignableFrom(type))
                     {
                         for (int i = 0; i < list.Length; i++)
@@ -723,7 +708,7 @@ namespace MSCLoader
 
         }
 
-        private static void LoadMod(Mod mod, string msver)
+        private void LoadMod(Mod mod, string msver)
         {
             // Check if mod already exists
             if (!LoadedMods.Contains(mod))
@@ -754,13 +739,9 @@ namespace MSCLoader
             }
         }
 
-        /// <summary>
-        /// Call Unity OnGUI() function, for each loaded mods.
-        /// </summary>
         private void OnGUI()
         {
             GUI.skin = guiskin;
-            // Call OnGUI for loaded mods
             foreach (Mod mod in LoadedMods)
             {
                 try
@@ -805,9 +786,6 @@ namespace MSCLoader
             }
         }
 
-        /// <summary>
-        /// Call Unity Update() function, for each loaded mods.
-        /// </summary>
         private void Update()
         {
             if (!fullyLoaded)
@@ -818,7 +796,7 @@ namespace MSCLoader
                     //load mods
                     allModsLoaded = false;
                     fullyLoaded = true;
-                    Init();
+                    StartLoadingMods();
                 }
             }
 
@@ -831,7 +809,6 @@ namespace MSCLoader
                 }
             }
 
-            // Call update for loaded mods
             foreach (Mod mod in LoadedMods)
             {
 
@@ -875,12 +852,9 @@ namespace MSCLoader
                 }
             }
         }
-        /// <summary>
-        /// Call Unity FixedUpdate() function, for each loaded mods.
-        /// </summary>
+
         private void FixedUpdate()
         {
-            // Call FixedUpdate for loaded mods
             foreach (Mod mod in LoadedMods)
             {
 

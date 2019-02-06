@@ -27,20 +27,15 @@ namespace MSCLoader
             {
                 foreach (GameObject o in FindObjectsOfType<GameObject>())
                 {
-                    if (o.name != "MSCUnloader")
-                    {
-                        Destroy(o);
-                    }
+                    if (o.name == "MSCUnloader")
+                        continue;
+                    Destroy(o);                    
                 }
-                ModLoader.IsDoneLoading = false;
-                ModLoader.IsModsDoneLoading = false;
-                ModLoader.IsModsLoading = false;
-                ModLoader.fullyLoaded = false;
-                ModLoader.allModsLoaded = false;
                 Keybind.Keybinds = new List<Keybind>();
                 Keybind.DefaultKeybinds = new List<Keybind>();
                 Settings.modSettings = new List<Settings>();
                 PlayMakerGlobals.Instance.Variables.FindFsmBool("SongImported").Value = false; //stupid variable name.
+                ModLoader.unloader = false;
                 Application.LoadLevel(Application.loadedLevelName);
                 doReset = false;
             }
