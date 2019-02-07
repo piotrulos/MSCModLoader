@@ -2,29 +2,23 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace MSCLoader
 {
     #pragma warning disable CS1591 
     public delegate void CommandHandler(string[] args);
 
-
     public class ConsoleController
-
     {
-
-        #region Event declarations
         // Used to communicate with ConsoleView
         public delegate void LogChangedHandler(string[] log);
         public event LogChangedHandler logChanged;
-
         public delegate void VisibilityChangedHandler(bool visible);
         public event VisibilityChangedHandler visibilityChanged;
-        #endregion
 
         
         // Object to hold information about each command
-
         class CommandRegistration
         {
             public string command { get; private set; }
@@ -49,23 +43,22 @@ namespace MSCLoader
 
         public string[] log { get; private set; } //Copy of scrollback as an array for easier use by ConsoleView
 
-        const string repeatCmdName = "!!"; //Name of the repeat command, constant since it needs to skip these if they are in the command history
-
         public ConsoleController()
         {
-            registerCommand(repeatCmdName, repeatCommand, "Repeat last command.");
-            registerCommand("hide", hide, "Hide the console.");
-            registerCommand("ver", version, "Version information");
-            //registerCommand("babble", babble, "Example command that demonstrates how to parse arguments. babble [word] [# of times to repeat]");
-            //registerCommand("echo", echo, "echoes arguments back as array (for testing argument parser)");
-
+            registerCommand("help", help, "This screen", "?");
+            registerCommand("clear", clearConsole, "Clears console screen");
         }
 
         public void registerCommand(string command, CommandHandler handler, string help)
         {
             commands.Add(command, new CommandRegistration(command, handler, help));
         }
-        public void clearConsole()
+        public void registerCommand(string command, CommandHandler handler, string help, string alias)
+        {
+            commands.Add(command, new CommandRegistration(command, handler, help));
+            commands.Add(alias, new CommandRegistration(command, handler, help));
+        }
+        void clearConsole(string[] args)
         {
             scrollback.Clear();
             log = scrollback.ToArray();
@@ -91,7 +84,7 @@ namespace MSCLoader
         {
             if (!string.IsNullOrEmpty(commandString))
             {
-                appendLogLine(string.Format("> {0}", commandString));
+                appendLogLine(string.Format("{1}<b><color=orange>></color></b> {0}", commandString, Environment.NewLine));
 
                 string[] commandSplit = parseArguments(commandString);
                 string[] args = new string[0];
@@ -112,7 +105,7 @@ namespace MSCLoader
             }
         }
 
-        public void runCommand(string command, string[] args)
+        void runCommand(string command, string[] args)
         {
             if (!string.IsNullOrEmpty(command))
             {
@@ -158,97 +151,15 @@ namespace MSCLoader
             return (new string(parmCharsArr)).Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
         }
 
-        #region Command handlers
-       
-
-        // A test command to demonstrate argument checking/parsing.
-        // Will repeat the given word a specified number of times.
-        void babble(string[] args)
+        void help(string[] args)
         {
-            if (args.Length < 2)
-            {
-                appendLogLine("Expected 2 arguments.");
-                return;
-            }
-            string text = args[0];
-            if (string.IsNullOrEmpty(text))
-            {
-                appendLogLine("Expected arg1 to be text.");
-            }
-            else
-            {
-                int repeat = 0;
-                if (!Int32.TryParse(args[1], out repeat))
-                {
-                    appendLogLine("Expected an integer for arg2.");
-                }
-                else
-                {
-                    for (int i = 0; i < repeat; ++i)
-                    {
-                        appendLogLine(string.Format("{0} {1}", text, i));
-                    }
-                }
-            }
-        }
-
-        void echo(string[] args)
-        {
-            StringBuilder sb = new StringBuilder();
-            foreach (string arg in args)
-            {
-                sb.AppendFormat("{0},", arg);
-            }
-            sb.Remove(sb.Length - 1, 1);
-            appendLogLine(sb.ToString());
-        }
-
-        public void help(string[] args)
-        {
-            foreach (CommandRegistration reg in commands.Values)
+            ModConsole.Print("<color=green><b>Available commands:</b></color>");
+            List<CommandRegistration> cmds = commands.Values.GroupBy(x => x.command).Select(g => g.First()).Distinct().ToList();
+            foreach (CommandRegistration reg in cmds)
             {
                 appendLogLine(string.Format("<color=orange><b>{0}</b></color>: {1}", reg.command, reg.help));
             }
         }
-
-        void hide(string[] args)
-        {
-            if (visibilityChanged != null)
-            {
-                visibilityChanged(false);
-            }
-        }
-
-        void repeatCommand(string[] args)
-        {
-            for (int cmdIdx = commandHistory.Count - 1; cmdIdx >= 0; --cmdIdx)
-            {
-                string cmd = commandHistory[cmdIdx];
-                if (String.Equals(repeatCmdName, cmd))
-                {
-                    continue;
-                }
-                runCommandString(cmd);
-                break;
-            }
-        }
-
-        void version(string[] args)
-        {
-            appendLogLine(string.Format("Unity: <b>{0}</b>", Application.unityVersion));
-            try
-            {
-                appendLogLine(string.Format("MSC buildID: <b>{0}</b>", Steamworks.SteamApps.GetAppBuildId())); //Get steam buildID
-            }
-            catch (Exception e)
-            {
-                appendLogLine(string.Format("<color=red>Failed to get build ID:</color> <b>{0}</b>", e.Message)); //Show steamworks error
-
-            }
-            appendLogLine(string.Format("MSCLoader: <b>{0}</b>", ModLoader.Version));
-        }
-
-        #endregion
     }
     #pragma warning restore CS1591
 }

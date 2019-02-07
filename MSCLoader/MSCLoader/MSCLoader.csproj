@@ -82,8 +82,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Commands\CommandClear.cs" />
-    <Compile Include="Commands\CommandHelp.cs" />
+    <Compile Include="Commands\CommandVersion.cs" />
     <Compile Include="Commands\CommandLogAll.cs" />
     <Compile Include="ConsoleCommand.cs" />
     <Compile Include="ConsoleController.cs" />
