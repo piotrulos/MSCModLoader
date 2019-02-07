@@ -23,7 +23,7 @@ namespace MSCLoader
         GameObject ModButton_Invalid;
         GameObject ModLabel;
         GameObject KeyBind;
-        GameObject Checkbox, setBtn, slider;
+        GameObject Checkbox, setBtn, slider, textBox, header;
 
         private Keybind menuKey = new Keybind("Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
         public SettingsView settings;
@@ -32,7 +32,8 @@ namespace MSCLoader
 
         public override void ModSettings()
         {
-            Settings.AddCheckBox(this, expWarning);
+            Settings.AddHeader(this, "Basic Settings");
+            Settings.AddCheckBox(this, expWarning);            
         }
 
         public override void OnMenuLoad()
@@ -58,6 +59,8 @@ namespace MSCLoader
             Checkbox = ab.LoadAsset<GameObject>("Checkbox.prefab");
             setBtn = ab.LoadAsset<GameObject>("Button.prefab");
             slider = ab.LoadAsset<GameObject>("Slider.prefab");
+            textBox = ab.LoadAsset<GameObject>("TextBox.prefab");
+            header = ab.LoadAsset<GameObject>("Header.prefab");
 
             UI = GameObject.Instantiate(UI);
             UI.AddComponent<ModUIDrag>();
@@ -96,6 +99,8 @@ namespace MSCLoader
             UI.GetComponent<SettingsView>().Checkbox = Checkbox;
             UI.GetComponent<SettingsView>().setBtn = setBtn;
             UI.GetComponent<SettingsView>().slider = slider;
+            UI.GetComponent<SettingsView>().textBox = textBox;
+            UI.GetComponent<SettingsView>().header = header;
 
             UI.GetComponent<SettingsView>().IDtxt = ModSettingsView.transform.GetChild(0).GetComponent<Text>();
             UI.GetComponent<SettingsView>().Nametxt = ModSettingsView.transform.GetChild(1).GetComponent<Text>();
@@ -179,7 +184,7 @@ namespace MSCLoader
 
             foreach (Settings set in Settings.Get(mod))
             {
-                if (set.type == SettingsType.Button)
+                if (set.type == SettingsType.Button || set.type == SettingsType.Header)
                     continue;
 
                 Setting sets = new Setting

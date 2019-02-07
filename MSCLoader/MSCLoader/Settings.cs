@@ -19,7 +19,9 @@ namespace MSCLoader
         CheckBoxGroup,
         CheckBox,
         Button,
-        Slider
+        Slider,
+        TextBox,
+        Header
     }
 #pragma warning restore CS1591
 
@@ -64,7 +66,7 @@ namespace MSCLoader
         public SettingsType type { get; set; }
 
         /// <summary>
-        /// Helpfull additional variables.
+        /// Helpful additional variables.
         /// </summary>
         public object[] Vals { get; set; }
 
@@ -255,6 +257,37 @@ namespace MSCLoader
                 ModConsole.Error("AddSlider: only float allowed here");
             }
         }
+
+        /// <summary>
+        /// Add TextBox where user can type any text
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="setting">Your settings variable</param>
+        /// <param name="placeholderText">Placeholder text (like "Enter text...")</param>
+        public static void AddTextBox(Mod mod, Settings setting, string placeholderText)
+        {
+            setting.Mod = mod;
+            setting.Vals = new object[1];
+            setting.type = SettingsType.TextBox;
+            setting.Vals[0] = placeholderText;
+            modSettings.Add(setting);
+        }
+
+        /// <summary>
+        /// Add Header, blue title bar that can be used to separate settings.
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="HeaderTitle">Title of your header</param>
+        public static void AddHeader(Mod mod, string HeaderTitle)
+        {
+            Settings setting = new Settings(null, HeaderTitle, null);
+            setting.Mod = mod;
+            setting.Vals = new object[1];
+            setting.type = SettingsType.Header;
+            setting.Vals[0] = HeaderTitle;
+            modSettings.Add(setting);
+        }
+
         /// <summary>
         /// Get value of setting.
         /// </summary>

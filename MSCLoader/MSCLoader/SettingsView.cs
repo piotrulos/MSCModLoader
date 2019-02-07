@@ -27,7 +27,7 @@ namespace MSCLoader
         public GameObject KeyBind;
 
         //Settigns
-        public GameObject Checkbox, setBtn, slider;
+        public GameObject Checkbox, setBtn, slider, textBox, header;
         
         public Text IDtxt;
         public Text Nametxt;
@@ -210,6 +210,24 @@ namespace MSCLoader
                             setting.DoAction.Invoke();
                     });
                     slidr.transform.SetParent(modSettingsList.transform, false);
+                    break;
+                case SettingsType.TextBox:
+                    GameObject modViewLabels = Instantiate(ModLabel);
+                    modViewLabels.GetComponent<Text>().text = setting.Name;
+                    modViewLabels.transform.SetParent(modSettingsList.transform, false);
+                    GameObject txt = Instantiate(textBox);
+                    txt.transform.GetChild(0).GetComponent<Text>().text = setting.Vals[0].ToString();
+                    txt.GetComponent<InputField>().text = setting.Value.ToString();
+                    txt.GetComponent<InputField>().onValueChange.AddListener(delegate
+                    {
+                        setting.Value = txt.GetComponent<InputField>().text;
+                    });
+                    txt.transform.SetParent(modSettingsList.transform, false);
+                    break;
+                case SettingsType.Header:
+                    GameObject hdr = Instantiate(header);
+                    hdr.transform.GetChild(0).GetComponent<Text>().text = setting.Name;
+                    hdr.transform.SetParent(modSettingsList.transform, false);
                     break;
             }
         }
