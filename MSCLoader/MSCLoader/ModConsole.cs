@@ -33,6 +33,7 @@ namespace MSCLoader
 
         public override void ModSettings()
         {
+            Settings.AddHeader(this, "Console Settings");
             Settings.AddCheckBox(this, typing);
             Settings.AddSlider(this, ConsoleFontSize, 10, 20);
         }
