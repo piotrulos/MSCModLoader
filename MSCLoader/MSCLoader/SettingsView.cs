@@ -8,26 +8,17 @@ namespace MSCLoader
 #pragma warning disable CS1591
     public class SettingsView : MonoBehaviour
     {
-        public GameObject settingView;
+        public ModSettings_menu ms;
+
         public GameObject settingViewContainer;
         public GameObject modList;
         public GameObject modView;
         public GameObject modInfo;
         public GameObject ModKeyBinds;
         public GameObject modSettings;
-
         public GameObject goBackBtn;
-
         public GameObject keybindsList;
         public GameObject modSettingsList;
-
-        public GameObject ModButton;
-        public GameObject ModButton_Invalid;
-        public GameObject ModLabel;
-        public GameObject KeyBind;
-
-        //Settigns
-        public GameObject Checkbox, setBtn, slider, textBox, header;
         
         public Text IDtxt;
         public Text Nametxt;
@@ -51,13 +42,13 @@ namespace MSCLoader
             {
                 if (mod.isDisabled)
                 {
-                    modButton = Instantiate(ModButton);
+                    modButton = Instantiate(ms.ModButton);
                     modButton.transform.GetChild(1).GetChild(0).GetComponent<Text>().color = Color.red;
                     modButton.transform.GetChild(1).GetChild(3).GetComponent<Text>().text = "<color=red>Mod is disabled!</color>";
                 }
                 else
                 {
-                    modButton = Instantiate(ModButton);
+                    modButton = Instantiate(ms.ModButton);
                     modButton.transform.GetChild(1).GetChild(0).GetComponent<Text>().color = Color.yellow;
                     modButton.transform.GetChild(1).GetChild(3).GetComponent<Text>().text = "<color=yellow>Ready to load</color>";
                 }
@@ -66,7 +57,7 @@ namespace MSCLoader
             {
                 if (mod.isDisabled)
                 {
-                    modButton = Instantiate(ModButton);
+                    modButton = Instantiate(ms.ModButton);
                     modButton.transform.GetChild(1).GetChild(0).GetComponent<Text>().color = Color.red;
                     modButton.transform.GetChild(1).GetChild(3).GetComponent<Text>().text = "<color=red>Mod is disabled!</color>";
                 }
@@ -76,7 +67,7 @@ namespace MSCLoader
                     {
                         if (coreModCheckbox.isOn)
                         {
-                            modButton = Instantiate(ModButton);
+                            modButton = Instantiate(ms.ModButton);
                             modButton.transform.GetChild(1).GetChild(0).GetComponent<Text>().color = Color.cyan;
                             modButton.transform.GetChild(1).GetChild(3).GetComponent<Text>().text = "<color=cyan>Core Module!</color>";
 
@@ -85,21 +76,21 @@ namespace MSCLoader
                     }
                     else
                     {
-                        modButton = Instantiate(ModButton);
+                        modButton = Instantiate(ms.ModButton);
                         modButton.transform.GetChild(1).GetChild(0).GetComponent<Text>().color = Color.green;
                     }
                 }
             }
 
             //modButton.transform.GetChild(1).GetChild(4).GetChild(0).gameObject.AddComponent<ModInfo>().mod = mod;
-            modButton.transform.GetChild(1).GetChild(4).GetChild(0).GetComponent<Button>().onClick.AddListener(() => settingView.GetComponent<SettingsView>().ModDetailsShow(mod));
+            modButton.transform.GetChild(1).GetChild(4).GetChild(0).GetComponent<Button>().onClick.AddListener(() => ms.settings.ModDetailsShow(mod));
 
             foreach (Settings set in Settings.modSettings)
             {
                 if (set.Mod == mod)
                 {
                     modButton.transform.GetChild(1).GetChild(4).GetChild(1).GetComponent<Button>().interactable = true;
-                    modButton.transform.GetChild(1).GetChild(4).GetChild(1).GetComponent<Button>().onClick.AddListener(() => settingView.GetComponent<SettingsView>().ModSettingsShow(mod));
+                    modButton.transform.GetChild(1).GetChild(4).GetChild(1).GetComponent<Button>().onClick.AddListener(() => ms.settings.ModSettingsShow(mod));
                     break;
                 }
             }
@@ -108,7 +99,7 @@ namespace MSCLoader
                 if (key.Mod == mod)
                 {
                     modButton.transform.GetChild(1).GetChild(4).GetChild(2).GetComponent<Button>().interactable = true;
-                    modButton.transform.GetChild(1).GetChild(4).GetChild(2).GetComponent<Button>().onClick.AddListener(() => settingView.GetComponent<SettingsView>().ModKeybindsShow(mod));
+                    modButton.transform.GetChild(1).GetChild(4).GetChild(2).GetComponent<Button>().onClick.AddListener(() => ms.settings.ModKeybindsShow(mod));
                     break;
                 }
             }
@@ -151,7 +142,7 @@ namespace MSCLoader
             switch (setting.type)
             {
                 case SettingsType.CheckBox:
-                    GameObject checkbox = Instantiate(Checkbox);
+                    GameObject checkbox = Instantiate(ms.Checkbox);
                     checkbox.transform.GetChild(1).GetComponent<Text>().text = setting.Name;
                     checkbox.GetComponent<Toggle>().isOn = (bool)setting.Value;
                     checkbox.GetComponent<Toggle>().onValueChanged.AddListener(delegate
@@ -173,7 +164,7 @@ namespace MSCLoader
                     }
                     else
                         group = modSettingsList.transform.FindChild(setting.Vals[0].ToString()).gameObject;
-                    GameObject checkboxG = Instantiate(Checkbox);
+                    GameObject checkboxG = Instantiate(ms.Checkbox);
                     checkboxG.transform.GetChild(1).GetComponent<Text>().text = setting.Name;
                     checkboxG.GetComponent<Toggle>().group = group.GetComponent<ToggleGroup>();
                     checkboxG.GetComponent<Toggle>().isOn = (bool)setting.Value;
@@ -186,17 +177,17 @@ namespace MSCLoader
                     checkboxG.transform.SetParent(modSettingsList.transform, false);
                     break;
                 case SettingsType.Button:
-                    GameObject btn = Instantiate(setBtn);
+                    GameObject btn = Instantiate(ms.setBtn);
                     btn.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = setting.Name;
                     btn.transform.GetChild(1).GetComponent<Text>().text = setting.Vals[0].ToString();
                     btn.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(setting.DoAction.Invoke);
                     btn.transform.SetParent(modSettingsList.transform, false);
                     break;
                 case SettingsType.Slider:
-                    GameObject modViewLabel = Instantiate(ModLabel);
+                    GameObject modViewLabel = Instantiate(ms.ModLabel);
                     modViewLabel.GetComponent<Text>().text = setting.Name;
                     modViewLabel.transform.SetParent(modSettingsList.transform, false);
-                    GameObject slidr = Instantiate(slider);
+                    GameObject slidr = Instantiate(ms.slider);
                     slidr.transform.GetChild(1).GetComponent<Text>().text = setting.Value.ToString();
                     slidr.transform.GetChild(0).GetComponent<Slider>().value = float.Parse(setting.Value.ToString());
                     slidr.transform.GetChild(0).GetComponent<Slider>().minValue = float.Parse(setting.Vals[0].ToString());
@@ -212,10 +203,10 @@ namespace MSCLoader
                     slidr.transform.SetParent(modSettingsList.transform, false);
                     break;
                 case SettingsType.TextBox:
-                    GameObject modViewLabels = Instantiate(ModLabel);
+                    GameObject modViewLabels = Instantiate(ms.ModLabel);
                     modViewLabels.GetComponent<Text>().text = setting.Name;
                     modViewLabels.transform.SetParent(modSettingsList.transform, false);
-                    GameObject txt = Instantiate(textBox);
+                    GameObject txt = Instantiate(ms.textBox);
                     txt.transform.GetChild(0).GetComponent<Text>().text = setting.Vals[0].ToString();
                     txt.GetComponent<InputField>().text = setting.Value.ToString();
                     txt.GetComponent<InputField>().onValueChange.AddListener(delegate
@@ -225,7 +216,7 @@ namespace MSCLoader
                     txt.transform.SetParent(modSettingsList.transform, false);
                     break;
                 case SettingsType.Header:
-                    GameObject hdr = Instantiate(header);
+                    GameObject hdr = Instantiate(ms.header);
                     hdr.transform.GetChild(0).GetComponent<Text>().text = setting.Name;
                     hdr.transform.SetParent(modSettingsList.transform, false);
                     break;
@@ -234,7 +225,7 @@ namespace MSCLoader
 
         public void KeyBindsList(string name, KeyCode modifier, KeyCode key, string ID)
         {
-            GameObject keyBind = Instantiate(KeyBind);
+            GameObject keyBind = Instantiate(ms.KeyBind);
             keyBind.transform.GetChild(0).GetComponent<Text>().text = name;
             keyBind.AddComponent<KeyBinding>().modifierButton = keyBind.transform.GetChild(1).gameObject;
             keyBind.GetComponent<KeyBinding>().modifierDisplay = keyBind.transform.GetChild(1).GetChild(0).GetComponent<Text>();
@@ -387,7 +378,7 @@ namespace MSCLoader
                 //no keybinds
                 if (Application.loadedLevelName == "MainMenu" && !selected.LoadInMenu)
                 {
-                    GameObject modViewLabel = Instantiate(ModLabel);
+                    GameObject modViewLabel = Instantiate(ms.ModLabel);
                     modViewLabel.GetComponent<Text>().text = "This mod is not loaded or disabled.";
                     modViewLabel.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
                     modViewLabel.GetComponent<Text>().fontStyle = FontStyle.Italic;
@@ -395,7 +386,7 @@ namespace MSCLoader
                 }
                 else
                 {
-                    GameObject modViewLabel = Instantiate(ModLabel);
+                    GameObject modViewLabel = Instantiate(ms.ModLabel);
                     modViewLabel.GetComponent<Text>().text = "This mod has no defined keybinds.";
                     modViewLabel.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
                     modViewLabel.GetComponent<Text>().fontStyle = FontStyle.Italic;
@@ -421,7 +412,7 @@ namespace MSCLoader
             }
             if (!hasSettings)
             {
-                GameObject modViewLabel = Instantiate(ModLabel);
+                GameObject modViewLabel = Instantiate(ms.ModLabel);
                 modViewLabel.GetComponent<Text>().text = "This mod has no defined Settings.";
                 modViewLabel.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
                 modViewLabel.GetComponent<Text>().fontStyle = FontStyle.Italic;
@@ -469,12 +460,12 @@ namespace MSCLoader
             {
                 if (!invalidLabel)
                 {
-                    GameObject modViewLabel = Instantiate(ModLabel);
+                    GameObject modViewLabel = Instantiate(ms.ModLabel);
                     modViewLabel.GetComponent<Text>().text = "Invalid/Broken Mods:";
                     modViewLabel.transform.SetParent(modView.transform, false);
                     invalidLabel = true;
                 }
-                GameObject invMod = Instantiate(ModButton_Invalid);
+                GameObject invMod = Instantiate(ms.ModButton_Invalid);
                 invMod.transform.GetChild(0).GetComponent<Text>().text = s;
                 invMod.transform.SetParent(modView.transform, false);
             }

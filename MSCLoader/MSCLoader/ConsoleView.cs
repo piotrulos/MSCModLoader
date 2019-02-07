@@ -6,28 +6,27 @@ namespace MSCLoader
 #pragma warning disable CS1591
     public class ConsoleView : MonoBehaviour
     {
-
-        public ConsoleController console;
-
+        public ConsoleController controller;
         public GameObject viewContainer; //Container for console view, should be a child of this GameObject
         public Text logTextArea;
         public InputField inputField;
-        bool wasFocused;
-        int commands, pos;
+        private bool wasFocused;
+        private int commands, pos;
+
         void Start()
         {
-            if (console != null)
+            if (controller != null)
             {
-                console.visibilityChanged += onVisibilityChanged;
-                console.logChanged += onLogChanged;
+                controller.visibilityChanged += onVisibilityChanged;
+                controller.logChanged += onLogChanged;
             }
-            updateLogStr(console.log);
+            updateLogStr(controller.log);
         }
 
         ~ConsoleView()
         {
-            console.visibilityChanged -= onVisibilityChanged;
-            console.logChanged -= onLogChanged;
+            controller.visibilityChanged -= onVisibilityChanged;
+            controller.logChanged -= onLogChanged;
         }
 
         public void toggleVisibility()
@@ -73,7 +72,7 @@ namespace MSCLoader
         // Event that should be called by anything wanting to submit the current input to the console.
         public void runCommand()
         {
-            console.runCommandString(inputField.text);
+            controller.runCommandString(inputField.text);
             inputField.text = string.Empty;
             //keep active input field
             inputField.ActivateInputField();
@@ -94,7 +93,7 @@ namespace MSCLoader
                 if (!wasFocused)
                 {
                     wasFocused = true;
-                    commands = console.commandHistory.Count;
+                    commands = controller.commandHistory.Count;
                     pos = commands;
                 }
                 if (Input.GetKeyDown(KeyCode.UpArrow))
@@ -104,7 +103,7 @@ namespace MSCLoader
                     {
                         if (pos != 0)
                             pos--;
-                        inputField.text = console.commandHistory[pos];
+                        inputField.text = controller.commandHistory[pos];
                         inputField.MoveTextEnd(false);
                     }
                 }
@@ -115,7 +114,7 @@ namespace MSCLoader
                         pos++;
                         if (pos != commands)
                         {
-                            inputField.text = console.commandHistory[pos];
+                            inputField.text = controller.commandHistory[pos];
                             inputField.MoveTextEnd(false);
                         }
                         else

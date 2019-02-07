@@ -18,17 +18,18 @@ namespace MSCLoader
 
         private static Mod selectedMod = null;
 
-        GameObject UI;
-        GameObject ModButton;
-        GameObject ModButton_Invalid;
-        GameObject ModLabel;
-        GameObject KeyBind;
-        GameObject Checkbox, setBtn, slider, textBox, header;
+      
 
         private Keybind menuKey = new Keybind("Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
-        public SettingsView settings;
-
         public static Settings expWarning = new Settings("expWarning", "Don't show experimental warning", false);
+
+        public SettingsView settings;
+        public GameObject UI;
+        public GameObject ModButton;
+        public GameObject ModButton_Invalid;
+        public GameObject ModLabel;
+        public GameObject KeyBind;
+        public GameObject Checkbox, setBtn, slider, textBox, header;
 
         public override void ModSettings()
         {
@@ -64,48 +65,31 @@ namespace MSCLoader
 
             UI = GameObject.Instantiate(UI);
             UI.AddComponent<ModUIDrag>();
+
             settings = UI.AddComponent<SettingsView>();
-            UI.GetComponent<SettingsView>().settingView = UI;
-            UI.GetComponent<SettingsView>().settingViewContainer = UI.transform.GetChild(0).gameObject;
+            settings.ms = this;
+            settings.settingViewContainer = UI.transform.GetChild(0).gameObject;
+            settings.modList = settings.settingViewContainer.transform.GetChild(3).gameObject;
+            settings.modView = settings.modList.transform.GetChild(0).gameObject;
+            settings.modInfo = settings.settingViewContainer.transform.GetChild(2).gameObject;
+            GameObject ModSettingsView = settings.modInfo.transform.GetChild(0).gameObject;
+            settings.ModKeyBinds = settings.settingViewContainer.transform.GetChild(1).gameObject;
+            settings.keybindsList = settings.ModKeyBinds.transform.GetChild(0).GetChild(4).gameObject;
+            settings.modSettings = settings.settingViewContainer.transform.GetChild(4).gameObject;
+            settings.modSettingsList = settings.modSettings.transform.GetChild(0).GetChild(4).gameObject;
+            settings.coreModCheckbox = settings.settingViewContainer.transform.GetChild(6).GetChild(0).GetComponent<Toggle>();
+            settings.coreModCheckbox.onValueChanged.AddListener(delegate { settings.ToggleCoreCheckbox(); });
+            settings.noOfMods = settings.settingViewContainer.transform.GetChild(6).GetChild(1).GetComponent<Text>();
+            settings.goBackBtn = settings.settingViewContainer.transform.GetChild(0).GetChild(1).gameObject;
+            settings.goBackBtn.GetComponent<Button>().onClick.AddListener(() => settings.goBack());
+            settings.settingViewContainer.transform.GetChild(0).GetChild(2).GetComponent<Button>().onClick.AddListener(() => settings.setVisibility(false));
+            settings.DisableMod = ModSettingsView.transform.GetChild(5).GetComponent<Toggle>();
+            settings.DisableMod.onValueChanged.AddListener(settings.disableMod);
 
-            UI.GetComponent<SettingsView>().modList = UI.GetComponent<SettingsView>().settingViewContainer.transform.GetChild(3).gameObject;
-            UI.GetComponent<SettingsView>().modView = UI.GetComponent<SettingsView>().modList.transform.GetChild(0).gameObject;
-            UI.GetComponent<SettingsView>().modInfo = UI.GetComponent<SettingsView>().settingViewContainer.transform.GetChild(2).gameObject;
-            GameObject ModSettingsView = UI.GetComponent<SettingsView>().modInfo.transform.GetChild(0).gameObject;
-            UI.GetComponent<SettingsView>().ModKeyBinds = UI.GetComponent<SettingsView>().settingViewContainer.transform.GetChild(1).gameObject;
-            UI.GetComponent<SettingsView>().keybindsList = UI.GetComponent<SettingsView>().ModKeyBinds.transform.GetChild(0).GetChild(4).gameObject;
-
-            UI.GetComponent<SettingsView>().modSettings = UI.GetComponent<SettingsView>().settingViewContainer.transform.GetChild(4).gameObject;
-            UI.GetComponent<SettingsView>().modSettingsList = UI.GetComponent<SettingsView>().modSettings.transform.GetChild(0).GetChild(4).gameObject;
-
-            UI.GetComponent<SettingsView>().coreModCheckbox = UI.GetComponent<SettingsView>().settingViewContainer.transform.GetChild(6).GetChild(0).GetComponent<Toggle>();
-            UI.GetComponent<SettingsView>().coreModCheckbox.onValueChanged.AddListener(delegate { UI.GetComponent<SettingsView>().ToggleCoreCheckbox(); });
-
-            UI.GetComponent<SettingsView>().noOfMods = UI.GetComponent<SettingsView>().settingViewContainer.transform.GetChild(6).GetChild(1).GetComponent<Text>();
-
-            UI.GetComponent<SettingsView>().goBackBtn = UI.GetComponent<SettingsView>().settingViewContainer.transform.GetChild(0).GetChild(1).gameObject;
-            UI.GetComponent<SettingsView>().goBackBtn.GetComponent<Button>().onClick.AddListener(() => UI.GetComponent<SettingsView>().goBack());
-            UI.GetComponent<SettingsView>().settingViewContainer.transform.GetChild(0).GetChild(2).GetComponent<Button>().onClick.AddListener(() => UI.GetComponent<SettingsView>().setVisibility(false));
-            UI.GetComponent<SettingsView>().DisableMod = ModSettingsView.transform.GetChild(5).GetComponent<Toggle>();
-            UI.GetComponent<SettingsView>().DisableMod.onValueChanged.AddListener(UI.GetComponent<SettingsView>().disableMod);
-          //  ModSettingsView.transform.GetChild(7).GetComponent<Button>().onClick.AddListener(() => UI.GetComponent<SettingsView>().goToKeybinds());
-         //   ModSettingsView.transform.GetChild(9).GetComponent<Button>().onClick.AddListener(() => UI.GetComponent<SettingsView>().goToSettings());
-
-            UI.GetComponent<SettingsView>().ModButton = ModButton;
-            UI.GetComponent<SettingsView>().ModButton_Invalid = ModButton_Invalid;
-            UI.GetComponent<SettingsView>().ModLabel = ModLabel;
-            UI.GetComponent<SettingsView>().KeyBind = KeyBind;
-
-            UI.GetComponent<SettingsView>().Checkbox = Checkbox;
-            UI.GetComponent<SettingsView>().setBtn = setBtn;
-            UI.GetComponent<SettingsView>().slider = slider;
-            UI.GetComponent<SettingsView>().textBox = textBox;
-            UI.GetComponent<SettingsView>().header = header;
-
-            UI.GetComponent<SettingsView>().IDtxt = ModSettingsView.transform.GetChild(0).GetComponent<Text>();
-            UI.GetComponent<SettingsView>().Nametxt = ModSettingsView.transform.GetChild(1).GetComponent<Text>();
-            UI.GetComponent<SettingsView>().Versiontxt = ModSettingsView.transform.GetChild(2).GetComponent<Text>();
-            UI.GetComponent<SettingsView>().Authortxt = ModSettingsView.transform.GetChild(3).GetComponent<Text>();
+            settings.IDtxt = ModSettingsView.transform.GetChild(0).GetComponent<Text>();
+            settings.Nametxt = ModSettingsView.transform.GetChild(1).GetComponent<Text>();
+            settings.Versiontxt = ModSettingsView.transform.GetChild(2).GetComponent<Text>();
+            settings.Authortxt = ModSettingsView.transform.GetChild(3).GetComponent<Text>();
 
             UI.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
             settings.setVisibility(false);

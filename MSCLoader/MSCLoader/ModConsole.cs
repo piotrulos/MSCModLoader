@@ -51,26 +51,26 @@ namespace MSCLoader
         public void CreateConsoleUI()
         {
             AssetBundle ab = LoadAssets.LoadBundle(this, "console.unity3d");
-            UI = ab.LoadAsset("MSCLoader Console.prefab") as GameObject;
-            Texture2D cursor = ab.LoadAsset("resizeCur.png") as Texture2D;
+            UI = ab.LoadAsset<GameObject>("MSCLoader Console.prefab");
+            Texture2D cursor = ab.LoadAsset<Texture2D>("resizeCur.png");
             ab.Unload(false);
             UI = Object.Instantiate(UI);
             console = UI.AddComponent<ConsoleView>();
-            UI.GetComponent<ConsoleView>().viewContainer = UI.transform.GetChild(0).gameObject;
-            UI.GetComponent<ConsoleView>().inputField = UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(0).gameObject.GetComponent<InputField>();
-            UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(1).gameObject.GetComponent<Button>().onClick.AddListener(() => UI.GetComponent<ConsoleView>().runCommand());
-            UI.GetComponent<ConsoleView>().logTextArea = UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(2).GetChild(0).gameObject.GetComponent<Text>();
-            UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(4).gameObject.AddComponent<ConsoleUIResizer>().logview = UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(2).gameObject;
-            UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().scrollbar = UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(3).gameObject;
-            UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().cursor = cursor;
-            EventTrigger trigger = UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(4).gameObject.GetComponent<EventTrigger>();
+            console.viewContainer = UI.transform.GetChild(0).gameObject;
+            console.inputField = console.viewContainer.transform.GetChild(0).gameObject.GetComponent<InputField>();
+            console.viewContainer.transform.GetChild(1).gameObject.GetComponent<Button>().onClick.AddListener(() => console.runCommand());
+            console.logTextArea = console.viewContainer.transform.GetChild(2).GetChild(0).gameObject.GetComponent<Text>();
+            console.viewContainer.transform.GetChild(4).gameObject.AddComponent<ConsoleUIResizer>().logview = console.viewContainer.transform.GetChild(2).gameObject;
+            console.viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().scrollbar = console.viewContainer.transform.GetChild(3).gameObject;
+            console.viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().cursor = cursor;
+            EventTrigger trigger = console.viewContainer.transform.GetChild(4).gameObject.GetComponent<EventTrigger>();
             EventTrigger.Entry entry = new EventTrigger.Entry();
             entry.eventID = EventTriggerType.PointerEnter;
-            entry.callback.AddListener((eventData) => { UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().OnMouseEnter(); });
+            entry.callback.AddListener((eventData) => { console.viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().OnMouseEnter(); });
             trigger.delegates.Add(entry);
             entry = new EventTrigger.Entry();
             entry.eventID = EventTriggerType.PointerExit;
-            entry.callback.AddListener((eventData) => { UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().OnMouseExit(); });
+            entry.callback.AddListener((eventData) => { console.viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().OnMouseExit(); });
             trigger.delegates.Add(entry);
 
             UI.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
@@ -88,12 +88,11 @@ namespace MSCLoader
         {
             Keybind.Add(this, consoleKey);
             CreateConsoleUI();
-            console.console = new ConsoleController();
-            ConsoleCommand.cc = console.console;
+            console.controller = new ConsoleController();
+            ConsoleCommand.cc = console.controller;
             console.setVisibility(false);
-            UI.GetComponent<ConsoleView>().viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().LoadConsoleSize();
-            ConsoleCommand.Add(new CommandClear());
-            ConsoleCommand.Add(new CommandHelp());
+            console.viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().LoadConsoleSize();
+            ConsoleCommand.Add(new CommandVersion());
             ConsoleCommand.Add(new CommandLogAll());
         }
 #pragma warning restore CS1591
@@ -105,7 +104,7 @@ namespace MSCLoader
         /// title="Example Code" /></example>
         public static void Print(string str)
         {
-            console.console.appendLogLine(str);
+            console.controller.appendLogLine(str);
             Debug.Log(string.Format("MSCLoader Message: {0}", Regex.Replace(str, "<.*?>", string.Empty)));
         }
         /// <summary>
@@ -116,7 +115,7 @@ namespace MSCLoader
         /// title="Example Code" /></example>
         public static void Print(object obj)
         {
-            console.console.appendLogLine(obj.ToString());
+            console.controller.appendLogLine(obj.ToString());
             Debug.Log(string.Format("MSCLoader Message: {0}", obj));
         }
         /// <summary>
@@ -128,17 +127,8 @@ namespace MSCLoader
         public static void Error(string str)
         {
             console.setVisibility(true);
-            console.console.appendLogLine(string.Format("<color=red><b>Error: </b>{0}</color>", str));
+            console.controller.appendLogLine(string.Format("<color=red><b>Error: </b>{0}</color>", str));
             Debug.Log(string.Format("MSCLoader ERROR: {0}", Regex.Replace(str, "<.*?>", string.Empty)));
         }
-
-        /// <summary>
-        /// Clear the console.
-        /// </summary>
-        public static void Clear()
-        {
-            console.console.clearConsole();
-        }
-
     }
 }
