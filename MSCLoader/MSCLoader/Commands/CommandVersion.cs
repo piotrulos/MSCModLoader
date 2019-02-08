@@ -6,12 +6,12 @@ namespace MSCLoader.Commands
 #pragma warning disable CS1591
 
     public class CommandVersion : ConsoleCommand
-	{
+    {
         public override string Name => "ver";
         public override string Help => "Version information";
 
         public override void Run(string[] args)
-		{
+        {
             ModConsole.Print(string.Format("Unity: <b>{0}</b>", Application.unityVersion));
             try
             {
@@ -24,7 +24,7 @@ namespace MSCLoader.Commands
             }
             ModConsole.Print(string.Format("MSCLoader: <b>{0}</b>", ModLoader.Version));
         }
-	}
+    }
 #pragma warning restore CS1591
 
 }

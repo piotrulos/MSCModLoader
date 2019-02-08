@@ -82,7 +82,6 @@ namespace MSCLoader
                 }
             }
 
-            //modButton.transform.GetChild(1).GetChild(4).GetChild(0).gameObject.AddComponent<ModInfo>().mod = mod;
             modButton.transform.GetChild(1).GetChild(4).GetChild(0).GetComponent<Button>().onClick.AddListener(() => ms.settings.ModDetailsShow(mod));
 
             foreach (Settings set in Settings.modSettings)
@@ -364,35 +363,19 @@ namespace MSCLoader
             goBackBtn.SetActive(true);
             selected_mod = selected;
             RemoveChildren(keybindsList.transform);
-            bool hasKeybinds = false;
             foreach (Keybind key in Keybind.Keybinds)
             {
                 if (key.Mod == selected)
                 {
-                    hasKeybinds = true;
                     KeyBindsList(key.Name, key.Modifier, key.Key, key.ID);
                 }
             }
-            if (!hasKeybinds)
+            ModKeyBinds.transform.GetChild(0).GetChild(6).GetComponent<Button>().onClick.RemoveAllListeners();
+            ModKeyBinds.transform.GetChild(0).GetChild(6).GetComponent<Button>().onClick.AddListener(delegate 
             {
-                //no keybinds
-                if (Application.loadedLevelName == "MainMenu" && !selected.LoadInMenu)
-                {
-                    GameObject modViewLabel = Instantiate(ms.ModLabel);
-                    modViewLabel.GetComponent<Text>().text = "This mod is not loaded or disabled.";
-                    modViewLabel.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
-                    modViewLabel.GetComponent<Text>().fontStyle = FontStyle.Italic;
-                    modViewLabel.transform.SetParent(keybindsList.transform, false);
-                }
-                else
-                {
-                    GameObject modViewLabel = Instantiate(ms.ModLabel);
-                    modViewLabel.GetComponent<Text>().text = "This mod has no defined keybinds.";
-                    modViewLabel.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
-                    modViewLabel.GetComponent<Text>().fontStyle = FontStyle.Italic;
-                    modViewLabel.transform.SetParent(keybindsList.transform, false);
-                }
-            }
+                ms.ResetBinds(selected);
+                ModKeybindsShow(selected);
+                });
             goToKeybinds();
         }
         public void ModSettingsShow(Mod selected)
@@ -400,23 +383,12 @@ namespace MSCLoader
             goBackBtn.SetActive(true);
             selected_mod = selected;
             RemoveChildren(modSettingsList.transform);
-            bool hasSettings = false;
-
             foreach (Settings set in Settings.modSettings)
             {
                 if (set.Mod == selected)
                 {
-                    hasSettings = true;
                     SettingsList(set);
                 }
-            }
-            if (!hasSettings)
-            {
-                GameObject modViewLabel = Instantiate(ms.ModLabel);
-                modViewLabel.GetComponent<Text>().text = "This mod has no defined Settings.";
-                modViewLabel.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
-                modViewLabel.GetComponent<Text>().fontStyle = FontStyle.Italic;
-                modViewLabel.transform.SetParent(modSettingsList.transform, false);
             }
             goToSettings();
         }

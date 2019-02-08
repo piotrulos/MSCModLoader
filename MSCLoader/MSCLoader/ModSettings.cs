@@ -12,14 +12,10 @@ namespace MSCLoader
         public override bool LoadInMenu => true;
         public override bool UseAssetsFolder => true;
         public override string ID => "MSCLoader_Settings";
-        public override string Name => "Settings";
+        public override string Name => "Settings (Main)";
         public override string Version => ModLoader.Version;
         public override string Author => "piotrulos";
-
-        private static Mod selectedMod = null;
-
-      
-
+   
         private Keybind menuKey = new Keybind("Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
         public static Settings expWarning = new Settings("expWarning", "Don't show experimental warning", false);
 
@@ -97,30 +93,28 @@ namespace MSCLoader
         }
 
         // Reset keybinds
-        private void resetBinds()
+        public void ResetBinds(Mod mod)
         {
-            if (selectedMod != null)
+            if (mod != null)
             {
                 // Delete file
-                string path = Path.Combine(ModLoader.GetModConfigFolder(selectedMod), "keybinds.xml");
-                File.WriteAllText(path, "");
+                string path = Path.Combine(ModLoader.GetModConfigFolder(mod), "keybinds.json");
 
                 // Revert binds
-                foreach (Keybind bind in Keybind.Get(selectedMod))
+                foreach (Keybind bind in Keybind.Get(mod))
                 {
-                    Keybind original = Keybind.DefaultKeybinds.Find(x => x.Mod == selectedMod && x.ID == bind.ID);
+                    Keybind original = Keybind.DefaultKeybinds.Find(x => x.Mod == mod && x.ID == bind.ID);
 
                     if (original != null)
                     {
+                        ModConsole.Print(original.Key.ToString() + " -> " + bind.Key.ToString());
                         bind.Key = original.Key;
                         bind.Modifier = original.Modifier;
-
-                        ModConsole.Print(original.Key.ToString() + " -> " + bind.Key.ToString());
                     }
                 }
 
                 // Save binds
-                SaveModBinds(selectedMod);
+                SaveModBinds(mod);
             }
         }
 
