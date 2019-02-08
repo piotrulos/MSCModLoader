@@ -74,10 +74,7 @@ namespace MSCLoader
             scrollback.Enqueue(line);
 
             log = scrollback.ToArray();
-            if (logChanged != null)
-            {
-                logChanged(log);
-            }
+            logChanged?.Invoke(log);
         }
 
         public void runCommandString(string commandString)

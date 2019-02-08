@@ -41,7 +41,7 @@ namespace MSCLoader
         /// The current version of the ModLoader.
         /// </summary>
         public static readonly string Version = "0.4.7";
-        
+
         /// <summary>
         /// Is this version of ModLoader experimental (this is NOT game experimental branch)
         /// </summary>
@@ -70,7 +70,7 @@ namespace MSCLoader
         private Animator menuInfoAnim;
         private GUISkin guiskin;
 
-        private string serverURL = "http://localhost/msc"; //localhost for testing only
+        private string serverURL = "http://localhost.fiddler/msc"; //localhost for testing only
 
         private bool IsDoneLoading = false;
         private bool IsModsLoading = false;
@@ -79,7 +79,7 @@ namespace MSCLoader
         private bool allModsLoaded = false;
         private bool IsModsResetting = false;
         private bool IsModsDoneResetting = false;
-        private bool introCheck;
+        // private bool introCheck;
 
         public static bool unloader = false;
 
@@ -211,7 +211,7 @@ namespace MSCLoader
             menuInfoAnim.SetBool("isHidden", true);
             if (!IsModsDoneLoading && !IsModsLoading)
             {
-                introCheck = true;
+                //introCheck = true;
                 IsModsLoading = true;
                 StartCoroutine(LoadMods());
             }
@@ -236,7 +236,7 @@ namespace MSCLoader
             }
             if (IsDoneLoading) //Remove this.
             {
-             
+
                 if (Application.loadedLevelName != "MainMenu")
                     menuInfoAnim.SetBool("isHidden", true);
             }
@@ -295,20 +295,10 @@ namespace MSCLoader
                     steamID = Steamworks.SteamUser.GetSteamID().ToString();
                     ModConsole.Print(string.Format("<color=orange>Hello <color=green><b>{0}</b></color>!</color>", Steamworks.SteamFriends.GetPersonaName()));
                     WebClient webClient = new WebClient();
+                    webClient.Proxy = new WebProxy("127.0.0.1:8888");
                     webClient.QueryString.Add("sid", steamID);
-                    string result = webClient.DownloadString(string.Format("{0}/mody-old.php", serverURL));
-                    if (result != string.Empty)
-                    {
-                        if (result == "error")
-                            throw new Exception("Holy shish are you cereal?");
-                    }
-                    bool ret = Steamworks.SteamApps.GetCurrentBetaName(out string Name, 128);
-                    if (ret && !(bool)ModSettings_menu.expWarning.GetValue())
-                    {
-                        if (Name != "default_32bit") //32bit is NOT experimental branch
-                            ModUI.ShowMessage(string.Format("<color=orange><b>Warning:</b></color>{1}You are using beta build: <color=orange><b>{0}</b></color>{1}{1}Remember that some mods may not work correctly on beta branches.", Name, Environment.NewLine), "Experimental build warning");
-                    }
-                    UnityEngine.Debug.Log(string.Format("MSC buildID: <b>{0}</b>", Steamworks.SteamApps.GetAppBuildId()));
+                    webClient.DownloadStringCompleted += authCheckCompleted;
+                    webClient.DownloadStringAsync(new Uri(string.Format("{0}/mody-old.php", serverURL)));
                 }
                 catch (Exception e)
                 {
@@ -326,6 +316,23 @@ namespace MSCLoader
             }
         }
 
+        private void authCheckCompleted(object sender, DownloadStringCompletedEventArgs e)
+        {
+            string result = e.Result;
+            if (result != string.Empty)
+            {
+                if (result == "error")
+                    throw new Exception("Holy shish are you cereal?");
+            }
+            bool ret = Steamworks.SteamApps.GetCurrentBetaName(out string Name, 128);
+            if (ret && !(bool)ModSettings_menu.expWarning.GetValue())
+            {
+                if (Name != "default_32bit") //32bit is NOT experimental branch
+                    ModUI.ShowMessage(string.Format("<color=orange><b>Warning:</b></color>{1}You are using beta build: <color=orange><b>{0}</b></color>{1}{1}Remember that some mods may not work correctly on beta branches.", Name, Environment.NewLine), "Experimental build warning");
+            }
+            UnityEngine.Debug.Log(string.Format("MSC buildID: <b>{0}</b>", Steamworks.SteamApps.GetAppBuildId()));
+        }
+
         private void LoadReferences()
         {
             if (Directory.Exists(Path.Combine(ModsFolder, "References")))
@@ -341,6 +348,7 @@ namespace MSCLoader
                 Directory.CreateDirectory(Path.Combine(ModsFolder, "References"));
             }
         }
+
         private void LoadCoreAssets()
         {
             ModConsole.Print("Loading core assets...");
@@ -366,68 +374,71 @@ namespace MSCLoader
             info = mainMenuInfo.transform.GetChild(0).gameObject.GetComponent<Text>();
             mf = mainMenuInfo.transform.GetChild(1).gameObject.GetComponent<Text>();
             modUpdates = mainMenuInfo.transform.GetChild(2).gameObject.GetComponent<Text>();
-
-            //check if new version is available
-            if (!experimental)
+            info.text = string.Format("Mod Loader MSCLoader v{0} is ready! (<color=orange>Checking for updates...</color>)", Version);
+            try
             {
-                try
-                {
-                    string version;
-                    using (WebClient client = new WebClient())
-                    {
-                        client.QueryString.Add("core", "stable");
-                        version = client.DownloadString(string.Format("{0}/ver.php",serverURL));
-                    }
-                    if (version.Trim().Length > 8)
-                        throw new Exception("Parse Error, please report that problem!");
-                    int i = Version.CompareTo(version.Trim());
-                    if (i != 0)
-                        info.text = string.Format("Mod Loader MSCLoader v{0} is ready! (<color=orange>New version available: <b>v{1}</b></color>)", Version, version.Trim());
-                    else if (i == 0)
-                        info.text = string.Format("Mod Loader MSCLoader v{0} is ready! (<color=lime>Up to date</color>)", Version);
-                    if (devMode)
-                        info.text = info.text + " [<color=red><b>Dev Mode!</b></color>]";
-                }
-                catch (Exception e)
-                {
-                    ModConsole.Error(string.Format("Check for new version failed with error: {0}", e.Message));
-                    if (devMode)
-                        ModConsole.Error(e.ToString());
-                    UnityEngine.Debug.Log(e);
-                    info.text = string.Format("Mod Loader MSCLoader v{0} is ready!", Version);
-                }
+                WebClient client = new WebClient();
+                client.Proxy = new WebProxy("127.0.0.1:8888"); //ONLY FOR TESTING
+                client.DownloadStringCompleted += VersionCheck;
+                if (experimental)
+                    client.QueryString.Add("core", "exp_build");
+                else
+                    client.QueryString.Add("core", "stable");
+                client.DownloadStringAsync(new Uri(string.Format("{0}/ver.php", serverURL)));
             }
-            else
+            catch (Exception e)
             {
-                try
-                {
-                    string newBuild;
-                    using (WebClient client = new WebClient())
-                    {
-                        client.QueryString.Add("core", "exp_build");
-                        newBuild = client.DownloadString(string.Format("{0}/ver.php",serverURL));
-                    }
-                    if (newBuild.Trim().Length > 8)
-                        throw new Exception("Parse Error, please report that problem!");
-                    int i = expBuild.CompareTo(newBuild.Trim());
-                    if (i != 0)
-                        info.text = string.Format("Mod Loader MSCLoader v{0} is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>] (<color=orange>New build available: <b>{2}</b></color>)", Version, expBuild, newBuild);
-                    else if (i == 0)
-                        info.text = string.Format("Mod Loader MSCLoader v{0} is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>]", Version, expBuild);
-
-                }
-                catch (Exception e)
-                {
-                    ModConsole.Error(string.Format("Check for new build failed with error: {0}", e.Message));
-                    if (devMode)
-                        ModConsole.Error(e.ToString());
-                    UnityEngine.Debug.Log(e);
-                    info.text = string.Format("Mod Loader MSCLoader v{0} is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>]", Version, expBuild);
-                }
+                ModConsole.Error(string.Format("Check for new version failed with error: {0}", e.Message));
+                if (devMode)
+                    ModConsole.Error(e.ToString());
+                UnityEngine.Debug.Log(e);
+                info.text = string.Format("Mod Loader MSCLoader v{0} is ready!", Version);
             }
+
             mf.text = string.Format("Mods folder: {0}", ModsFolder);
             modUpdates.text = string.Empty;
             mainMenuInfo.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
+        }
+
+        private void VersionCheck(object sender, DownloadStringCompletedEventArgs e)
+        {
+            Text info = mainMenuInfo.transform.GetChild(0).gameObject.GetComponent<Text>();
+            try
+            {
+                if (e.Error != null)
+                    throw new Exception(e.Error.Message);
+
+                string version = e.Result;
+                if (version == "error")
+                    throw new Exception("Error returned by server");
+                if (version.Trim().Length > 8)
+                    throw new Exception("Parse Error, please report that problem!");
+                int i = expBuild.CompareTo(version.Trim());
+                if (i != 0)
+                    if (experimental)
+                        info.text = string.Format("Mod Loader MSCLoader v{0} is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>] (<color=orange>New build available: <b>{2}</b></color>)", Version, expBuild, version);
+                    else
+                        info.text = string.Format("Mod Loader MSCLoader v{0} is ready! (<color=orange>New version available: <b>v{1}</b></color>)", Version, version.Trim());
+                else if (i == 0)
+                    if (experimental)
+                        info.text = string.Format("Mod Loader MSCLoader v{0} is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>]", Version, expBuild);
+                    else
+                        info.text = string.Format("Mod Loader MSCLoader v{0} is ready! (<color=lime>Up to date</color>)", Version);
+            }
+            catch (Exception ex)
+            {
+                ModConsole.Error(string.Format("Check for new build failed with error: {0}", ex.Message));
+                if (devMode)
+                    ModConsole.Error(ex.ToString());
+                UnityEngine.Debug.Log(ex);
+                if (experimental)
+                    info.text = string.Format("Mod Loader MSCLoader v{0} is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>]", Version, expBuild);
+                else
+                    info.text = string.Format("Mod Loader MSCLoader v{0} is ready!", Version);
+
+            }
+            if (devMode)
+                info.text = info.text + " [<color=red><b>Dev Mode!</b></color>]";
         }
 
         IEnumerator NewGameMods()
@@ -441,7 +452,6 @@ namespace MSCLoader
             int i = 1;
             foreach (Mod mod in LoadedMods)
             {
-
                 loading.transform.GetChild(0).GetComponent<Text>().text = string.Format("<color=red>Resetting mods: <color=orange><b>{0}</b></color> of <color=orange><b>{1}</b></color>. <b>Do not skip intro yet!...</b></color>", i, LoadedMods.Count - 2);
                 loading.transform.GetChild(3).GetComponent<Slider>().value = i;
                 loading.transform.GetChild(3).GetChild(1).GetChild(0).GetComponent<Image>().color = Color.red;
@@ -456,8 +466,7 @@ namespace MSCLoader
                 }
                 catch (Exception e)
                 {
-                    var st = new StackTrace(e, true);
-                    var frame = st.GetFrame(0);
+                    StackFrame frame = new StackTrace(e, true).GetFrame(0);
 
                     string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
                     ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
@@ -473,8 +482,8 @@ namespace MSCLoader
             IsModsDoneResetting = true;
             ModConsole.Print("Resetting done!");
             IsModsResetting = false;
-
         }
+
         IEnumerator LoadMods()
         {
             loading.transform.GetChild(2).GetComponent<Text>().text = string.Format("MSCLoader <color=green>v{0}</color>", Version);
@@ -482,16 +491,15 @@ namespace MSCLoader
             Stopwatch s = new Stopwatch();
             s.Start();
             ModConsole.Print("<color=#505050ff>");
-            // Load Mods
             loading.SetActive(true);
             loading.transform.GetChild(3).GetComponent<Slider>().minValue = 1;
-            loading.transform.GetChild(3).GetComponent<Slider>().maxValue = LoadedMods.Count-2;
+            loading.transform.GetChild(3).GetComponent<Slider>().maxValue = LoadedMods.Count - 2;
 
             int i = 1;
             foreach (Mod mod in LoadedMods)
             {
-                
-                loading.transform.GetChild(0).GetComponent<Text>().text = string.Format("Loading mods: <color=orage><b>{0}</b></color> of <color=orage><b>{1}</b></color>. Please wait...", i, LoadedMods.Count-2);
+
+                loading.transform.GetChild(0).GetComponent<Text>().text = string.Format("Loading mods: <color=orage><b>{0}</b></color> of <color=orage><b>{1}</b></color>. Please wait...", i, LoadedMods.Count - 2);
                 loading.transform.GetChild(3).GetComponent<Slider>().value = i;
                 loading.transform.GetChild(3).GetChild(1).GetChild(0).GetComponent<Image>().color = new Color32(0, 113, 0, 255);
                 if (mod.ID.StartsWith("MSCLoader_"))
@@ -510,8 +518,7 @@ namespace MSCLoader
                 }
                 catch (Exception e)
                 {
-                    var st = new StackTrace(e, true);
-                    var frame = st.GetFrame(0);
+                    StackFrame frame = new StackTrace(e, true).GetFrame(0);
 
                     string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
                     ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
@@ -569,7 +576,7 @@ namespace MSCLoader
                     continue;
                 try
                 {
-                    mod.ModSettings();                
+                    mod.ModSettings();
                 }
                 catch (Exception e)
                 {
@@ -650,8 +657,7 @@ namespace MSCLoader
         {
             try
             {
-                Assembly asm = null;
-                asm = Assembly.LoadFrom(file);
+                Assembly asm = Assembly.LoadFrom(file);
                 bool isMod = false;
 
                 AssemblyName[] list = asm.GetReferencedAssemblies();
@@ -742,11 +748,12 @@ namespace MSCLoader
         private void OnGUI()
         {
             GUI.skin = guiskin;
-            foreach (Mod mod in LoadedMods)
+            for (int i = 0; i < LoadedMods.Count; i++)
             {
+                Mod mod = LoadedMods[i];
                 try
                 {
-                    if (mod.LoadInMenu)
+                    if (mod.LoadInMenu && !mod.isDisabled)
                         mod.OnGUI();
                     else if (Application.loadedLevelName == "GAME" && !mod.isDisabled && allModsLoaded)
                         mod.OnGUI();
@@ -755,8 +762,7 @@ namespace MSCLoader
                 {
                     if (LogAllErrors)
                     {
-                        var st = new StackTrace(e, true);
-                        var frame = st.GetFrame(0);
+                        StackFrame frame = new StackTrace(e, true).GetFrame(0);
 
                         string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
                         ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
@@ -781,7 +787,7 @@ namespace MSCLoader
                             ModConsole.Error(string.Format("Mod <b>{0}</b> has been <b>disabled!</b> Because it thrown too many errors!{1}Report this problem to mod author.", mod.ID, Environment.NewLine));
                         }
                     }
-                    
+
                 }
             }
         }
@@ -800,21 +806,21 @@ namespace MSCLoader
                 }
             }
 
-            if(!introCheck)
-            {
-                if(Application.loadedLevelName == "Intro")
-                {
-                    introCheck = true;
-                    Init();
-                }
-            }
+            /*         if(!introCheck)
+                     {
+                         if(Application.loadedLevelName == "Intro")
+                         {
+                             introCheck = true;
+                             Init();
+                         }
+                     }*/
 
-            foreach (Mod mod in LoadedMods)
+            for (int i = 0; i < LoadedMods.Count; i++)
             {
-
+                Mod mod = LoadedMods[i];
                 try
                 {
-                    if (mod.LoadInMenu)
+                    if (mod.LoadInMenu && !mod.isDisabled)
                         mod.Update();
                     else if (Application.loadedLevelName == "GAME" && !mod.isDisabled && allModsLoaded)
                         mod.Update();
@@ -823,8 +829,7 @@ namespace MSCLoader
                 {
                     if (LogAllErrors)
                     {
-                        var st = new StackTrace(e, true);
-                        var frame = st.GetFrame(0);
+                        StackFrame frame = new StackTrace(e, true).GetFrame(0);
 
                         string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
                         ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
@@ -855,12 +860,12 @@ namespace MSCLoader
 
         private void FixedUpdate()
         {
-            foreach (Mod mod in LoadedMods)
+            for (int i = 0; i < LoadedMods.Count; i++)
             {
-
+                Mod mod = LoadedMods[i];
                 try
                 {
-                    if (mod.LoadInMenu)
+                    if (mod.LoadInMenu && !mod.isDisabled)
                         mod.FixedUpdate();
                     else if (Application.loadedLevelName == "GAME" && !mod.isDisabled && allModsLoaded)
                         mod.FixedUpdate();
@@ -869,8 +874,7 @@ namespace MSCLoader
                 {
                     if (LogAllErrors)
                     {
-                        var st = new StackTrace(e, true);
-                        var frame = st.GetFrame(0);
+                        StackFrame frame = new StackTrace(e, true).GetFrame(0);
 
                         string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
                         ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
