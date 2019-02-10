@@ -17,7 +17,8 @@ namespace MSCLoader
         public override string Author => "piotrulos";
    
         private Keybind menuKey = new Keybind("Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
-        public static Settings expWarning = new Settings("expWarning", "Don't show experimental warning", false);
+        public static Settings expWarning = new Settings("mscloader_expWarning", "Show experimental warning", true);
+        public static Settings modPath = new Settings("mscloader_modPath", "Show mod path", true);
 
         public SettingsView settings;
         public GameObject UI;
@@ -31,6 +32,7 @@ namespace MSCLoader
         {
             Settings.AddHeader(this, "Basic Settings");
             Settings.AddCheckBox(this, expWarning);            
+            Settings.AddCheckBox(this, modPath);            
         }
 
         public override void OnMenuLoad()

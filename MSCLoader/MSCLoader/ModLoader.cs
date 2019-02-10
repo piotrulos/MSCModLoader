@@ -70,7 +70,7 @@ namespace MSCLoader
         private Animator menuInfoAnim;
         private GUISkin guiskin;
 
-        private string serverURL = "http://localhost.fiddler/msc"; //localhost for testing only
+        private string serverURL = "http://localhost.fiddler/msc_garage"; //localhost for testing only
 
         private bool IsDoneLoading = false;
         private bool IsModsLoading = false;
@@ -296,15 +296,14 @@ namespace MSCLoader
                     ModConsole.Print(string.Format("<color=orange>Hello <color=green><b>{0}</b></color>!</color>", Steamworks.SteamFriends.GetPersonaName()));
                     WebClient webClient = new WebClient();
                     webClient.Proxy = new WebProxy("127.0.0.1:8888");
-                    webClient.QueryString.Add("sid", steamID);
-                    webClient.DownloadStringCompleted += authCheckCompleted;
-                    webClient.DownloadStringAsync(new Uri(string.Format("{0}/mody-old.php", serverURL)));
+                    webClient.DownloadStringCompleted += AuthCheckCompleted;
+                    webClient.DownloadStringAsync(new Uri(string.Format("{0}/sauth.php?sid={1}", serverURL,steamID)));
                 }
                 catch (Exception e)
                 {
                     //Make more sense in errors
                     steamID = null;
-                    ModConsole.Error("Steam not detected, only steam version is supported.");
+                    ModConsole.Error("Steam client doesn't exists.");
                     if (devMode)
                         ModConsole.Error(e.ToString());
                     UnityEngine.Debug.Log(e);
@@ -316,21 +315,53 @@ namespace MSCLoader
             }
         }
 
-        private void authCheckCompleted(object sender, DownloadStringCompletedEventArgs e)
+        private void AuthCheckCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
-            string result = e.Result;
-            if (result != string.Empty)
+            try
             {
-                if (result == "error")
-                    throw new Exception("Holy shish are you cereal?");
+                if (e.Error != null)
+                    throw new Exception(e.Error.Message);
+
+                string result = e.Result;
+
+                if (result != string.Empty)
+                {
+                    string[] ed = result.Split('|');
+                    if (ed[0] == "error")
+                    {
+                        switch (ed[1])
+                        {
+                            case "0":
+                                throw new Exception("Getting steamID failed.");
+                            case "1":
+                                throw new Exception("steamID rejected.");
+                            default:
+                                throw new Exception("Unknown error.");
+                        }
+                    }
+                    else if (ed[0] == "ok")
+                    {
+                        //do stuff...
+                        ModConsole.Print("OTK -> " + ed[2]);
+                    }
+                }
+                bool ret = Steamworks.SteamApps.GetCurrentBetaName(out string Name, 128);
+                if (ret && (bool)ModSettings_menu.expWarning.GetValue())
+                {
+                    if (Name != "default_32bit") //32bit is NOT experimental branch
+                        ModUI.ShowMessage(string.Format("<color=orange><b>Warning:</b></color>{1}You are using beta build: <color=orange><b>{0}</b></color>{1}{1}Remember that some mods may not work correctly on beta branches.", Name, Environment.NewLine), "Experimental build warning");
+                }
+                UnityEngine.Debug.Log(string.Format("MSC buildID: <b>{0}</b>", Steamworks.SteamApps.GetAppBuildId()));
             }
-            bool ret = Steamworks.SteamApps.GetCurrentBetaName(out string Name, 128);
-            if (ret && !(bool)ModSettings_menu.expWarning.GetValue())
+            catch (Exception ex)
             {
-                if (Name != "default_32bit") //32bit is NOT experimental branch
-                    ModUI.ShowMessage(string.Format("<color=orange><b>Warning:</b></color>{1}You are using beta build: <color=orange><b>{0}</b></color>{1}{1}Remember that some mods may not work correctly on beta branches.", Name, Environment.NewLine), "Experimental build warning");
+                //ModConsole.Print("otk_" + MurzynskaMatematyka(string.Format("{0}{1}", steamID, DateTime.Now.ToString("yyyy-MM-dd"))));
+                steamID = null;
+                ModConsole.Error("SteamAPI failed with error: "+ ex.Message);
+                if (devMode)
+                    ModConsole.Error(ex.ToString());
+                UnityEngine.Debug.Log(ex);
             }
-            UnityEngine.Debug.Log(string.Format("MSC buildID: <b>{0}</b>", Steamworks.SteamApps.GetAppBuildId()));
         }
 
         private void LoadReferences()
@@ -375,32 +406,23 @@ namespace MSCLoader
             mf = mainMenuInfo.transform.GetChild(1).gameObject.GetComponent<Text>();
             modUpdates = mainMenuInfo.transform.GetChild(2).gameObject.GetComponent<Text>();
             info.text = string.Format("Mod Loader MSCLoader v{0} is ready! (<color=orange>Checking for updates...</color>)", Version);
-            try
-            {
-                WebClient client = new WebClient();
-                client.Proxy = new WebProxy("127.0.0.1:8888"); //ONLY FOR TESTING
-                client.DownloadStringCompleted += VersionCheck;
-                if (experimental)
-                    client.QueryString.Add("core", "exp_build");
-                else
-                    client.QueryString.Add("core", "stable");
-                client.DownloadStringAsync(new Uri(string.Format("{0}/ver.php", serverURL)));
-            }
-            catch (Exception e)
-            {
-                ModConsole.Error(string.Format("Check for new version failed with error: {0}", e.Message));
-                if (devMode)
-                    ModConsole.Error(e.ToString());
-                UnityEngine.Debug.Log(e);
-                info.text = string.Format("Mod Loader MSCLoader v{0} is ready!", Version);
-            }
+            WebClient client = new WebClient();
+            client.Proxy = new WebProxy("127.0.0.1:8888"); //ONLY FOR TESTING
+            client.DownloadStringCompleted += VersionCheckCompleted;
+            string branch = "unknown";
+            if (experimental)
+                branch = "exp_build";
+            else
+                branch = "stable";
+            client.DownloadStringAsync(new Uri(string.Format("{0}/ver.php?core={1}", serverURL, branch)));
 
-            mf.text = string.Format("Mods folder: {0}", ModsFolder);
+            if ((bool)ModSettings_menu.modPath.GetValue())
+                mf.text = string.Format("Mods folder: {0}", ModsFolder);
             modUpdates.text = string.Empty;
             mainMenuInfo.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
         }
 
-        private void VersionCheck(object sender, DownloadStringCompletedEventArgs e)
+        private void VersionCheckCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
             Text info = mainMenuInfo.transform.GetChild(0).gameObject.GetComponent<Text>();
             try
@@ -408,22 +430,37 @@ namespace MSCLoader
                 if (e.Error != null)
                     throw new Exception(e.Error.Message);
 
-                string version = e.Result;
-                if (version == "error")
-                    throw new Exception("Error returned by server");
-                if (version.Trim().Length > 8)
-                    throw new Exception("Parse Error, please report that problem!");
-                int i = expBuild.CompareTo(version.Trim());
-                if (i != 0)
-                    if (experimental)
-                        info.text = string.Format("Mod Loader MSCLoader v{0} is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>] (<color=orange>New build available: <b>{2}</b></color>)", Version, expBuild, version);
-                    else
-                        info.text = string.Format("Mod Loader MSCLoader v{0} is ready! (<color=orange>New version available: <b>v{1}</b></color>)", Version, version.Trim());
-                else if (i == 0)
-                    if (experimental)
-                        info.text = string.Format("Mod Loader MSCLoader v{0} is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>]", Version, expBuild);
-                    else
-                        info.text = string.Format("Mod Loader MSCLoader v{0} is ready! (<color=lime>Up to date</color>)", Version);
+                string[] result = e.Result.Split('|');
+                if (result[0] == "error")
+                {
+                    switch (result[1])
+                    {
+                        case "0":
+                            throw new Exception("Unknown branch");
+                        case "1":
+                            throw new Exception("Database connection error");
+                        default:
+                            throw new Exception("Unknown error");
+
+                    }
+
+                }
+                else if (result[0] == "ok")
+                {
+                    if (result[1].Trim().Length > 8)
+                        throw new Exception("Parse Error, please report that problem!");
+                    int i = expBuild.CompareTo(result[1].Trim());
+                    if (i != 0)
+                        if (experimental)
+                            info.text = string.Format("Mod Loader MSCLoader v{0} is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>] (<color=orange>New build available: <b>{2}</b></color>)", Version, expBuild, result[1]);
+                        else
+                            info.text = string.Format("Mod Loader MSCLoader v{0} is ready! (<color=orange>New version available: <b>v{1}</b></color>)", Version, result[1].Trim());
+                    else if (i == 0)
+                        if (experimental)
+                            info.text = string.Format("Mod Loader MSCLoader v{0} is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>]", Version, expBuild);
+                        else
+                            info.text = string.Format("Mod Loader MSCLoader v{0} is ready! (<color=lime>Up to date</color>)", Version);
+                }
             }
             catch (Exception ex)
             {
@@ -595,64 +632,6 @@ namespace MSCLoader
 
         }
 
-        //Remove this shit below
-
-        /*static void ModStats()
-        {
-            if (LoadedMods.Count - 2 > 0)
-            {
-                numOfUpdates = 0;
-                mods = string.Join(",", LoadedMods.Select(s => s.ID).Where(x => !x.StartsWith("MSCLoader_")).ToArray());
-                mods_ver = string.Join(",", LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")).Select(s => s.Version).ToArray());
-                try
-                {
-                    WebClient webClient = new WebClient();
-                    webClient.QueryString.Add("sid", steamID);
-                    webClient.QueryString.Add("mods", mods);
-                    webClient.QueryString.Add("ver", Version);
-                    webClient.QueryString.Add("mods_ver", mods_ver);
-                    string result = webClient.DownloadString("http://my-summer-car.ml/mody-old.php");
-                    //string result = webClient.DownloadString("http://localhost/msc/mody.php");
-                    if (result != string.Empty)
-                    {
-                        if (result == "error")
-                            throw new Exception("Error");
-                        string[] lines = result.Split('\n');
-                        for (int i = 0; i < lines.Length; i++)
-                        {
-                            string[] values = lines[i].Trim().Split(',');
-                            foreach (Mod mod in LoadedMods)
-                            {
-                                if (mod.ID == values[0])
-                                {
-                                    int v = mod.Version.CompareTo(values[1].Trim());
-                                    if (v != 0)
-                                    {
-                                        mod.hasUpdate = true;
-                                        isModUpdates = true;
-                                        numOfUpdates++;
-                                    }
-                                    if (values[2] == "1")
-                                    {
-                                        mod.isDisabled = true;
-                                        ModConsole.Error(string.Format("Mod <b>{0}</b> has been disabled. Reason: {1}", mod.Name, values[3]));
-                                    }
-                                }
-                            }
-                        }
-
-                    }
-                }
-                catch (Exception e)
-                {
-                    ModConsole.Error(string.Format("Connection to server failed: {0}", e.Message));
-                    if (devMode)
-                        ModConsole.Error(e.ToString());
-                    UnityEngine.Debug.Log(e);
-                }
-            }
-        }*/
-
         private void LoadDLL(string file)
         {
             try
@@ -806,15 +785,6 @@ namespace MSCLoader
                 }
             }
 
-            /*         if(!introCheck)
-                     {
-                         if(Application.loadedLevelName == "Intro")
-                         {
-                             introCheck = true;
-                             Init();
-                         }
-                     }*/
-
             for (int i = 0; i < LoadedMods.Count; i++)
             {
                 Mod mod = LoadedMods[i];
@@ -900,6 +870,19 @@ namespace MSCLoader
                         }
                     }
                 }
+            }
+        }
+        static string MurzynskaMatematyka(string rawData)
+        {
+            using (System.Security.Cryptography.SHA1 sha256 = System.Security.Cryptography.SHA1.Create())
+            {
+                byte[] bytes = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(rawData));
+                System.Text.StringBuilder builder = new System.Text.StringBuilder();
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    builder.Append(bytes[i].ToString("x2"));
+                }
+                return builder.ToString();
             }
         }
     }
