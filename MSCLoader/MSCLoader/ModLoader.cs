@@ -69,6 +69,7 @@ namespace MSCLoader
         private GameObject loading;
         private Animator menuInfoAnim;
         private GUISkin guiskin;
+        private ModCore modCore;
 
         private string serverURL = "http://localhost.fiddler/msc_garage"; //localhost for testing only
 
@@ -242,33 +243,19 @@ namespace MSCLoader
             }
             else
             {
-
-                // Init variables
                 ModUI.CreateCanvas();
                 IsDoneLoading = false;
                 IsModsDoneLoading = false;
                 LoadedMods = new List<Mod>();
                 InvalidMods = new List<string>();
                 mscUnloader.reset = false;
-                // Init mod loader settings
                 if (!Directory.Exists(ModsFolder))
-                {
-                    //if mods folder not exists, create it.
                     Directory.CreateDirectory(ModsFolder);
-                }
-
                 if (!Directory.Exists(ConfigFolder))
-                {
-                    //if config folder not exists, create it.
                     Directory.CreateDirectory(ConfigFolder);
-                }
-
                 if (!Directory.Exists(AssetsFolder))
-                {
-                    //if config folder not exists, create it.
                     Directory.CreateDirectory(AssetsFolder);
-                }
-                // Loading internal tools (console and settings)
+
                 LoadMod(new ModConsole(), Version);
                 LoadedMods[0].ModSettings();
                 LoadMod(new ModSettings_menu(), Version);
@@ -296,12 +283,19 @@ namespace MSCLoader
                     ModConsole.Print(string.Format("<color=orange>Hello <color=green><b>{0}</b></color>!</color>", Steamworks.SteamFriends.GetPersonaName()));
                     WebClient webClient = new WebClient();
                     webClient.Proxy = new WebProxy("127.0.0.1:8888");
-                    webClient.DownloadStringCompleted += AuthCheckCompleted;
-                    webClient.DownloadStringAsync(new Uri(string.Format("{0}/sauth.php?sid={1}", serverURL,steamID)));
+                    if ((bool)ModSettings_menu.enGarage.GetValue())
+                    {
+                        webClient.DownloadStringCompleted += AuthCheck;                      
+                        webClient.DownloadStringAsync(new Uri(string.Format("{0}/auth.php?sid={1}&auth={2}", serverURL, steamID, (string)ModSettings_menu.authKey.GetValue())));
+                    }
+                    else
+                    {
+                        webClient.DownloadStringCompleted += sAuthCheckCompleted;
+                        webClient.DownloadStringAsync(new Uri(string.Format("{0}/sauth.php?sid={1}", serverURL, steamID)));
+                    }
                 }
                 catch (Exception e)
                 {
-                    //Make more sense in errors
                     steamID = null;
                     ModConsole.Error("Steam client doesn't exists.");
                     if (devMode)
@@ -315,7 +309,108 @@ namespace MSCLoader
             }
         }
 
-        private void AuthCheckCompleted(object sender, DownloadStringCompletedEventArgs e)
+
+        [Serializable]
+        class SaveOtk
+        {
+            public string k1;
+            public string k2;
+        }
+
+        private void AuthCheck(object sender, DownloadStringCompletedEventArgs e)
+        {
+            try
+            {
+                if (e.Error != null)
+                    throw new Exception(e.Error.Message);
+
+                string result = e.Result;
+
+                if (result != string.Empty)
+                {
+                    string[] ed = result.Split('|');
+                    if (ed[0] == "error")
+                    {
+                        switch (ed[1])
+                        {
+                            case "0":
+                                throw new Exception("SteamID failed.");
+                            case "1":
+                                throw new Exception("Auth-key is missing.");
+                            case "2":
+                                throw new Exception("Auth-key is invalid.");
+                            case "3":
+                                throw new Exception("Database connection error.");
+                            default:
+                                throw new Exception("Unknown error.");
+                        }
+                    }
+                    else if (ed[0] == "ok")
+                    {
+                        SaveOtk s = new SaveOtk();
+                        s.k1 = ed[1];
+                        s.k2 = ed[2];
+                        System.Runtime.Serialization.Formatters.Binary.BinaryFormatter f = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                        string sp = Path.Combine(ConfigFolder, @"MSCLoader_Settings\otk.bin");
+                        FileStream st = new FileStream(sp, FileMode.Create);
+                        f.Serialize(st, s);
+                        st.Close();
+                        LoadGarage();
+                    }
+                    else
+                    {
+                        UnityEngine.Debug.Log("Unknown: " + ed[0]);
+                        throw new Exception("Unknown server response.");
+                    }
+                }
+                bool ret = Steamworks.SteamApps.GetCurrentBetaName(out string Name, 128);
+                if (ret && (bool)ModSettings_menu.expWarning.GetValue())
+                {
+                    if (Name != "default_32bit") //32bit is NOT experimental branch
+                        ModUI.ShowMessage(string.Format("<color=orange><b>Warning:</b></color>{1}You are using beta build: <color=orange><b>{0}</b></color>{1}{1}Remember that some mods may not work correctly on beta branches.", Name, Environment.NewLine), "Experimental build warning");
+                }
+                UnityEngine.Debug.Log(string.Format("MSC buildID: <b>{0}</b>", Steamworks.SteamApps.GetAppBuildId()));
+            }
+            catch (Exception ex)
+            {
+                string sp = Path.Combine(ConfigFolder, @"MSCLoader_Settings\otk.bin");
+                if (e.Error != null)
+                {
+                    if (File.Exists(sp))
+                    {
+                        System.Runtime.Serialization.Formatters.Binary.BinaryFormatter f = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                        FileStream st = new FileStream(sp, FileMode.Open);
+                        SaveOtk s = f.Deserialize(st) as SaveOtk;
+                        st.Close();
+                        string murzyn = "otk_" + MurzynskaMatematyka(string.Format("{0}{1}", steamID, s.k1));
+                        if (s.k2.CompareTo(murzyn) != 0)
+                        {
+                            File.Delete(sp);
+                            steamID = null;
+                            ModConsole.Error("SteamAPI failed with error: " + ex.Message);
+                        }
+                    }
+                    else
+                    {
+                        steamID = null;
+                        ModConsole.Error("SteamAPI failed with error: " + ex.Message);
+                    }
+                }
+                else
+                {
+                    if (File.Exists(sp))
+                        File.Delete(sp);
+                    steamID = null;
+                    ModConsole.Error("SteamAPI failed with error: " + ex.Message);
+                    if (devMode)
+                        ModConsole.Error(ex.ToString());
+                }
+
+                UnityEngine.Debug.Log(ex);
+            }
+        }
+
+        private void sAuthCheckCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
             try
             {
@@ -341,8 +436,19 @@ namespace MSCLoader
                     }
                     else if (ed[0] == "ok")
                     {
-                        //do stuff...
-                        ModConsole.Print("OTK -> " + ed[2]);
+                        SaveOtk s = new SaveOtk();
+                        s.k1 = ed[1];
+                        s.k2 = ed[2];
+                        System.Runtime.Serialization.Formatters.Binary.BinaryFormatter f = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                        string sp = Path.Combine(ConfigFolder, @"MSCLoader_Settings\otk.bin");
+                        FileStream st = new FileStream(sp, FileMode.Create);
+                        f.Serialize(st, s);
+                        st.Close();
+                    }
+                    else
+                    {
+                        UnityEngine.Debug.Log("Unknown: " + ed[0]);
+                        throw new Exception("Unknown server response.");
                     }
                 }
                 bool ret = Steamworks.SteamApps.GetCurrentBetaName(out string Name, 128);
@@ -355,11 +461,39 @@ namespace MSCLoader
             }
             catch (Exception ex)
             {
-                //ModConsole.Print("otk_" + MurzynskaMatematyka(string.Format("{0}{1}", steamID, DateTime.Now.ToString("yyyy-MM-dd"))));
-                steamID = null;
-                ModConsole.Error("SteamAPI failed with error: "+ ex.Message);
-                if (devMode)
-                    ModConsole.Error(ex.ToString());
+                string sp = Path.Combine(ConfigFolder, @"MSCLoader_Settings\otk.bin");
+                if (e.Error != null)
+                {
+                    if (File.Exists(sp))
+                    {
+                        System.Runtime.Serialization.Formatters.Binary.BinaryFormatter f = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                        FileStream st = new FileStream(sp, FileMode.Open);
+                        SaveOtk s = f.Deserialize(st) as SaveOtk;
+                        st.Close();
+                        string murzyn = "otk_" + MurzynskaMatematyka(string.Format("{0}{1}", steamID, s.k1));
+                        if(s.k2.CompareTo(murzyn) != 0)
+                        {
+                            File.Delete(sp);
+                            steamID = null;
+                            ModConsole.Error("SteamAPI failed with error: " + ex.Message);
+                        }
+                    }
+                    else
+                    {
+                        steamID = null;
+                        ModConsole.Error("SteamAPI failed with error: " + ex.Message);
+                    }
+                }
+                else
+                {
+                    if (File.Exists(sp))
+                        File.Delete(sp);
+                    steamID = null;
+                    ModConsole.Error("SteamAPI failed with error: " + ex.Message);
+                    if (devMode)
+                        ModConsole.Error(ex.ToString());
+                }
+
                 UnityEngine.Debug.Log(ex);
             }
         }
@@ -382,8 +516,9 @@ namespace MSCLoader
 
         private void LoadCoreAssets()
         {
+            modCore = new ModCore();
             ModConsole.Print("Loading core assets...");
-            AssetBundle ab = LoadAssets.LoadBundle(new ModCore(), "core.unity3d");
+            AssetBundle ab = LoadAssets.LoadBundle(modCore, "core.unity3d");
             guiskin = ab.LoadAsset<GUISkin>("MSCLoader.guiskin");
             ModUI.messageBox = ab.LoadAsset<GameObject>("MSCLoader MB.prefab");
             mainMenuInfo = ab.LoadAsset<GameObject>("MSCLoader Info.prefab");
@@ -460,6 +595,11 @@ namespace MSCLoader
                             info.text = string.Format("Mod Loader MSCLoader v{0} is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>]", Version, expBuild);
                         else
                             info.text = string.Format("Mod Loader MSCLoader v{0} is ready! (<color=lime>Up to date</color>)", Version);
+                }
+                else
+                {
+                    UnityEngine.Debug.Log("Unknown: " + result[0]);
+                    throw new Exception("Unknown server response.");
                 }
             }
             catch (Exception ex)
@@ -628,8 +768,10 @@ namespace MSCLoader
 
         private void LoadGarage()
         {
-            //Access garage reference here...
-
+            if (!File.Exists(Path.Combine(Application.dataPath, @"Managed\MSCGarage.dll")))
+            {
+                return;
+            }
         }
 
         private void LoadDLL(string file)
