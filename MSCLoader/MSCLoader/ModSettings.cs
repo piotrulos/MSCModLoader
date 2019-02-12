@@ -18,7 +18,9 @@ namespace MSCLoader
    
         private Keybind menuKey = new Keybind("Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
         public static Settings expWarning = new Settings("mscloader_expWarning", "Show experimental warning", true);
-        public static Settings modPath = new Settings("mscloader_modPath", "Show mod path", true);
+        public static Settings modPath = new Settings("mscloader_modPath", "Show mods folder", true);
+        public static Settings enGarage = new Settings("mscloader_enGarage", "Enable \"MSC Garage\"", false);
+        public static Settings authKey = new Settings("mscloader_authKey", "\"MSC Garage\" Auth-key",string.Empty);
 
         public SettingsView settings;
         public GameObject UI;
@@ -32,7 +34,10 @@ namespace MSCLoader
         {
             Settings.AddHeader(this, "Basic Settings");
             Settings.AddCheckBox(this, expWarning);            
-            Settings.AddCheckBox(this, modPath);            
+            Settings.AddCheckBox(this, modPath);
+            Settings.AddHeader(this, "Garage Settings");
+            Settings.AddCheckBox(this, enGarage);
+            Settings.AddTextBox(this, authKey, "Paste your auth-key here...");
         }
 
         public override void OnMenuLoad()
