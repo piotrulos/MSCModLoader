@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,8 +20,8 @@ namespace MSCLoader
         private Keybind menuKey = new Keybind("Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
         public static Settings expWarning = new Settings("mscloader_expWarning", "Show experimental warning", true);
         public static Settings modPath = new Settings("mscloader_modPath", "Show mods folder", true);
-        public static Settings enGarage = new Settings("mscloader_enGarage", "Enable \"MSC Garage\"", false);
-        public static Settings authKey = new Settings("mscloader_authKey", "\"MSC Garage\" Auth-key",string.Empty);
+        public static Settings enGarage = new Settings("mscloader_enGarage", "Enable \"MSC Garage\"", false,EnableGarageToggle);
+        private static Settings authKey = new Settings("mscloader_authKey", "\"MSC Garage\" Auth-key",string.Empty);
 
         public SettingsView settings;
         public GameObject UI;
@@ -40,6 +41,17 @@ namespace MSCLoader
             Settings.AddTextBox(this, authKey, "Paste your auth-key here...");
         }
 
+        private static void EnableGarageToggle()
+        {
+            if ((bool)enGarage.GetValue() && (string)authKey.GetValue() == string.Empty)
+            {
+                ModUI.ShowYesNoMessage(string.Format("To use MSCGarage you need to get your <b>Auth-Key</b> from garage website.{0}{0}Do you want to do it now?", Environment.NewLine), OpenAuthKeyWebsite);
+            }
+        }
+        private static void OpenAuthKeyWebsite()
+        {
+            Steamworks.SteamFriends.ActivateGameOverlayToWebPage("http://localhost/msc_garage/");
+        }
         public override void OnMenuLoad()
         {
             CreateSettingsUI();
@@ -249,7 +261,9 @@ namespace MSCLoader
 
                 mod.ModSettingsLoaded();
             }
+            ModLoader.SetAuthKey((string)authKey.GetValue()); //Trick to keep authKey variable as private.
         }
+
 
         // Open menu if the key is pressed.
         public override void Update()

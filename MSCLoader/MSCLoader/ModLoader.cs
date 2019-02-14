@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ionic.Zip;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -60,6 +61,7 @@ namespace MSCLoader
         private MSCUnloader mscUnloader;
 
         private static string steamID;
+        private static string authKey;
         private static bool loaderPrepared = false;
         private static string ModsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"MySummerCar\Mods");
         private static string ConfigFolder = Path.Combine(ModsFolder, @"Config\");
@@ -217,6 +219,9 @@ namespace MSCLoader
                 StartCoroutine(LoadMods());
             }
         }
+
+        public static void SetAuthKey(string ak) => authKey = ak;
+
         private void Init()
         {
             //Set config and Assets folder in selected mods folder
@@ -286,7 +291,7 @@ namespace MSCLoader
                     if ((bool)ModSettings_menu.enGarage.GetValue())
                     {
                         webClient.DownloadStringCompleted += AuthCheck;                      
-                        webClient.DownloadStringAsync(new Uri(string.Format("{0}/auth.php?sid={1}&auth={2}", serverURL, steamID, (string)ModSettings_menu.authKey.GetValue())));
+                        webClient.DownloadStringAsync(new Uri(string.Format("{0}/auth.php?sid={1}&auth={2}", serverURL, steamID, authKey)));
                     }
                     else
                     {
@@ -765,12 +770,80 @@ namespace MSCLoader
             }
             ModSettings_menu.LoadSettings();
         }
-
+        int pbar = 0;
+        bool dwnlFinished = false;
+        IEnumerator DownloadProgress()
+        {
+            while (!dwnlFinished)
+            {
+                loading.transform.GetChild(0).GetComponent<Text>().text = string.Format("<color=green>Downloading MSCGarage! Please wait...</color>");
+                loading.transform.GetChild(3).GetComponent<Slider>().value = pbar;
+                loading.transform.GetChild(1).GetComponent<Text>().text = string.Format("Download progress: {0}%", pbar);
+                yield return new WaitForEndOfFrame();
+            }
+        }
         private void LoadGarage()
         {
             if (!File.Exists(Path.Combine(Application.dataPath, @"Managed\MSCGarage.dll")))
             {
+                WebClient client = new WebClient();
+                client.Proxy = new WebProxy("127.0.0.1:8888"); //ONLY FOR TESTING
+                client.DownloadFileCompleted += DownloadGarageCompleted;
+                client.DownloadProgressChanged += DownloadGarageProgress;
+                client.DownloadFileAsync(new Uri(string.Format("{0}/Garage/test.zip",serverURL)), Path.Combine(Application.dataPath, @"Managed\test.zip"),loading);
+                loading.SetActive(true);
+                loading.transform.GetChild(3).GetComponent<Slider>().minValue = 0;
+                loading.transform.GetChild(3).GetComponent<Slider>().maxValue = 100;
+                loading.transform.GetChild(2).GetComponent<Text>().text = string.Format("MSCLoader <color=green>v{0}</color>", Version);
+                ModConsole.Print("Downloading garage...");
+                loading.transform.GetChild(0).GetComponent<Text>().text = string.Format("<color=green>Downloading MSCGarage! Please wait...</color>");
+                loading.transform.GetChild(1).GetComponent<Text>().text = string.Format("Waiting for response...");
+                StartCoroutine(DownloadProgress());
                 return;
+            }
+        }
+
+        private void DownloadGarageProgress(object sender, DownloadProgressChangedEventArgs e)
+        {
+            pbar = e.ProgressPercentage;
+        }
+
+        private void DownloadGarageCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        {
+            dwnlFinished = true;
+            if (e.Error != null)
+            {
+                loading.SetActive(false);
+                ModConsole.Error(string.Format("Download MSCGarage failed with error: {0}", e.Error.Message));
+                return;
+            }
+            else
+            {
+                loading.transform.GetChild(1).GetComponent<Text>().text = string.Format("Unpacking...");
+                ModConsole.Print("Unpacking garage...");
+                try
+                {
+                    string zip = Path.Combine(Application.dataPath, @"Managed\test.zip");
+                    if (!ZipFile.IsZipFile(zip))
+                    {
+                        loading.SetActive(false);
+                        ModConsole.Error(string.Format("Failed to unpack file"));
+                    }
+                    ZipFile zip1 = ZipFile.Read(zip);
+                    foreach (ZipEntry zz in zip1)
+                    {
+                        ModConsole.Print(zz.FileName);
+                        loading.transform.GetChild(1).GetComponent<Text>().text = "Unpacking garage... " + zz.FileName;
+                        zz.Extract(Path.Combine(Application.dataPath, @"Managed"), ExtractExistingFileAction.OverwriteSilently);
+                    }
+                    ModConsole.Print("Done!");
+                    loading.SetActive(false);
+                }
+                catch (Exception ex)
+                {
+                    ModConsole.Error(ex.Message);
+                    UnityEngine.Debug.Log(ex);
+                }
             }
         }
 
