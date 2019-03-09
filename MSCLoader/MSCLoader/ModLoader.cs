@@ -12,6 +12,7 @@ using UnityEngine.UI;
 
 namespace MSCLoader
 {
+
     /// <summary>
     /// This is main Mod Loader class.
     /// </summary>
@@ -855,7 +856,8 @@ namespace MSCLoader
                 bool isMod = false;
 
                 AssemblyName[] list = asm.GetReferencedAssemblies();
-
+                if (File.ReadAllText(file).Contains("RegistryKey"))
+                    throw new FileLoadException();
                 // Look through all public classes                
                 foreach (Type type in asm.GetTypes())
                 {

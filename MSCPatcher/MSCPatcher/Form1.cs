@@ -1,18 +1,13 @@
 ﻿using Mono.Cecil;
 using Mono.Cecil.Cil;
-using Mono.Cecil.Rocks;
-using MSCPatcher.Instructions;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Reflection;
 using System.Security.Cryptography;
 using System.Windows.Forms;
-using System.Xml.Linq;
 
 namespace MSCPatcher
 {
@@ -20,26 +15,21 @@ namespace MSCPatcher
     {
         public static Form1 form1;
         public static string mscPath = "(unknown)";
+
         private string AssemblyPath = @"mysummercar_Data\Managed\Assembly-CSharp.dll";
         private string AssemblyFullPath = null;
-        private string ModificationsXmlPath = "MSCPatcher.Modifications_MD.xml";
-
+        private string InitMethod = "MSCPatcher.Modifications_MD.xml";
         private string mdPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"MySummerCar\Mods");
-
         private string adPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"..\LocalLow\Amistech\My Summer Car\Mods"));
-
         private string gfPath = "?";
-
         private string modPath = "";
 
-        private static Dictionary<string, AssemblyDefinition> mLoadedAssemblies = new Dictionary<string, AssemblyDefinition>();
         private bool is64bin = false;
         private bool isgameUpdated = false; //game updated, remove backup and patch new Assembly-CSharp.dll
         private bool oldPatchFound = false; //0.1 patch found, recover and patch Assembly-CSharp.original.dll and cleanup unused files
         private bool oldFilesFound = false; //0.1 files found, but no patch, cleanup files and patch new Assembly-CSharp.dll
         private bool mscloaderUpdate = false; //new MSCLoader.dll found, but no new patch needed.
         FileVersionInfo mscLoaderVersion;
-        private XElement mModifications;
 
         public Form1()
         {
@@ -64,7 +54,6 @@ namespace MSCPatcher
                 Log.Write(string.Format("Loaded saved MSC Folder: {0}", mscPath));
             }
             mscPathLabel.Text = mscPath;
-
             MDlabel.Text = mdPath;
             if (Directory.Exists(mdPath))
             {
@@ -89,7 +78,8 @@ namespace MSCPatcher
                     currentVersion = string.Format("{0}.{1}.{2}", mscLoaderVersion.FileMajorPart, mscLoaderVersion.FileMinorPart, mscLoaderVersion.FileBuildPart);
                 else
                     currentVersion = string.Format("{0}.{1}", mscLoaderVersion.FileMajorPart, mscLoaderVersion.FileMinorPart);
-                //string currentVersion = "0.2.1";
+
+                //TODO: replace with async
                 string version;
                 using (WebClient client = new WebClient())
                 {
@@ -114,7 +104,7 @@ namespace MSCPatcher
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show(string.Format("Failed to open url!{1}{1}Error details:{1}{0}", ex.Message, Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show(string.Format("Failed to open update info!{1}{1}Error details:{1}{0}", ex.Message, Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                     statusBarLabel.Text = string.Format("New version available: v{0}", version.Trim());
@@ -157,10 +147,10 @@ namespace MSCPatcher
                 }
                 Log.Write(string.Format("Game folder set to: {0}{1}", mscPath, Environment.NewLine));
 
-                MainData.loadMainData(OutputlogLabel, resDialogLabel, resDialogCheck);
+                MainData.LoadMainData(OutputlogLabel, resDialogLabel, resDialogCheck);
 
-                debugStatusInfo();
-                checkPatchStatus();
+                DebugStatusInfo();
+                CheckPatchStatus();
             }
 
             if(!Environment.Is64BitOperatingSystem)
@@ -174,10 +164,10 @@ namespace MSCPatcher
             {
                 status64.Text = "You are running 64-bit Windows.";
                 status64.ForeColor = Color.Green;
-                check64Info();
+                Check64Info();
             }
         }
-        void check64Info()
+        void Check64Info()
         {
             install64.Enabled = false;
             remove64.Enabled = false;
@@ -203,7 +193,7 @@ namespace MSCPatcher
                     break;
             }
         }
-        void debugStatusInfo()
+        void DebugStatusInfo()
         {
             enDebug.Enabled = false;
             disDebug.Enabled = false;
@@ -249,7 +239,7 @@ namespace MSCPatcher
                     break;
             }
         }
-        public void PatchCheck()
+        public void PatchStarter()
         {
             if (oldFilesFound)
             {
@@ -262,7 +252,7 @@ namespace MSCPatcher
                 Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCPatcher.exe"));
                 Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll"));
 
-                PatchThis();
+                StartPatching();
             }
             else if (isgameUpdated)
             {
@@ -270,7 +260,7 @@ namespace MSCPatcher
                 Log.Write("Removing old backup!", true, true);
                 Patcher.DeleteIfExists(String.Format("{0}.backup", AssemblyFullPath));
 
-                PatchThis();
+                StartPatching();
             }
             else if (oldPatchFound)
             {
@@ -300,7 +290,7 @@ namespace MSCPatcher
                     Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCPatcher.exe"));
                     Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll"));
 
-                    PatchThis();
+                    StartPatching();
                 }
                 else
                 {
@@ -313,189 +303,46 @@ namespace MSCPatcher
                 Log.Write("MSCLoader.dll update!", true, true);
 
                 Patcher.CopyReferences(mscPath);
-
                 Patcher.CopyCoreAssets(modPath);
 
                 Log.Write("MSCLoader.dll update successful!");
                 Log.Write("");
                 MessageBox.Show("Update successfull!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 statusBarLabel.Text = "Update successfull!";
-                checkPatchStatus();
+                CheckPatchStatus();
             }
             else
             {
-                PatchThis();
+                StartPatching();
             }
 
         }
-        public void PatchThis()
+        public void StartPatching()
         {
-            Log.Write("Start patching files!", true, true);
+            Log.Write("Start patching game files!", true, true);
 
-            Patcher.CopyReferences(mscPath);
-
-            var cSharpAssembly = LoadAssembly(AssemblyFullPath);
-            var mscLoader = LoadAssembly("MSCLoader.dll");
-            var coreLibrary =
-                cSharpAssembly.MainModule.AssemblyResolver.Resolve(
-                    (AssemblyNameReference)cSharpAssembly.MainModule.TypeSystem.Corlib);
-
-            mLoadedAssemblies.Add("Assembly-CSharp", cSharpAssembly);
-            mLoadedAssemblies.Add("MSCPatcher", mscLoader);
-            mLoadedAssemblies.Add("CoreLibrary", coreLibrary);
-
-            //Launch the patching
-
-            mModifications = LoadModifications(ModificationsXmlPath);
-
-            PatchModifications();
-
-            // We backup the original dll
-            File.Move(AssemblyFullPath, String.Format("{0}.backup", AssemblyFullPath));
-            Log.Write("Creating.....Assembly-CSharp.dll.backup");
-
-            Log.Write(string.Format("Patching.....{0}", Path.GetFileName(AssemblyFullPath)));
-
-            GetAssembly("Assembly-CSharp").Write(AssemblyFullPath);
-
-            Log.Write("Finished Patching");
-
-            Patcher.CopyCoreAssets(modPath);
-
-            Log.Write("Patching successfull!");
-            Log.Write("");
-            MessageBox.Show("Patching successfull!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            statusBarLabel.Text = "Patching successfull!";
-            checkPatchStatus();
-        }
-
-        public static AssemblyDefinition GetAssembly(string name)
-        {
-            if (mLoadedAssemblies.ContainsKey(name))
+            try
             {
-                return mLoadedAssemblies[name];
+                Patcher.CopyReferences(mscPath);
+                File.Copy(AssemblyFullPath, string.Format("{0}.backup", AssemblyFullPath));
+                Log.Write("Creating.....Assembly-CSharp.dll.backup");
+                Log.Write(string.Format("Patching.....{0}", Path.GetFileName(AssemblyFullPath)));
+                PatchThis(Path.Combine(mscPath, @"mysummercar_Data\Managed\"), "Assembly-CSharp.dll", "PlayMakerArrayListProxy", "Awake", "MSCLoader.dll", "MSCLoader.ModLoader", InitMethod);
+                Log.Write("Finished patching!");
+
+                Patcher.CopyCoreAssets(modPath);
+
+                Log.Write("Patching successfull!");
+                Log.Write("");
+                MessageBox.Show("Patching successfull!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                statusBarLabel.Text = "Patching successfull!";
             }
-
-            AssemblyDefinition assembly = LoadAssembly(name);
-
-            if (assembly != null)
+            catch (Exception ex)
             {
-                mLoadedAssemblies.Add(name, assembly);
-                return assembly;
+                MessageBox.Show(string.Format("Error while patching: {0}",ex.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Log.Write(string.Format("Error while patching: {0}", ex.Message));
             }
-            return null;
-        }
-
-        public static AssemblyDefinition LoadAssembly(string path)
-        {
-            if (!path.EndsWith(".dll"))
-                path += ".dll";
-
-            if (File.Exists(path))
-            {
-                try
-                {
-                    var resolver = new DefaultAssemblyResolver();
-                    resolver.AddSearchDirectory(Path.Combine(mscPath, @"mysummercar_Data\Managed"));
-                    AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(path, new ReaderParameters { AssemblyResolver = resolver });
-                    return assembly;
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show(string.Format("Couldn't load assembly {0}{1}{2}", path, Environment.NewLine, e.Message), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    form1.statusBarLabel.Text = string.Format("Couldn't load assembly {0}", Path.GetFileName(path));
-                }
-            }
-            else
-            {
-                MessageBox.Show(string.Format("Assembly {0} doesn't exist", path), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                form1.statusBarLabel.Text = string.Format("Assembly {0} doesn't exist", Path.GetFileName(path));
-            }
-
-            return null;
-        }
-
-        public void PatchModifications()
-        {
-            foreach (XElement classNode in mModifications.Elements("Class"))
-            {
-                // We load the class in which the modifications will take place
-                string nameTypeToPatch = classNode.Attribute("Name").Value;
-                TypeDefinition typeToPatch = GetAssembly("Assembly-CSharp").MainModule.Types.FirstOrDefault(t => t.Name == nameTypeToPatch);
-
-                if (typeToPatch == null)
-                {
-                    MessageBox.Show(string.Format("Couldn't find type/class named {0}", nameTypeToPatch), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    continue;
-                }
-
-                foreach (XElement methodNode in classNode.Elements("Method"))
-                {
-                    string nameMethodTopatch = methodNode.Attribute("Name").Value;
-                    MethodDefinition methodToPatch = typeToPatch.Methods.FirstOrDefault(m => m.Name == nameMethodTopatch);
-
-                    if (methodToPatch == null)
-                    {
-                        MessageBox.Show(string.Format("Couldn't find method named {0}", nameMethodTopatch), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        continue;
-                    }
-
-                    Mono.Cecil.Cil.MethodBody methodBody = methodToPatch.Body;
-
-                    ILProcessor processor = methodBody.GetILProcessor();
-
-                    // By default, we place the modification just before the "ret" instruction
-                    // (i.e. before the last instruction)
-                    int indexBegin = methodToPatch.Body.Instructions.Count - 1;
-
-                    // But, if the user specified a location, we place the modification there
-                    if (methodNode.Attribute("Location") != null)
-                    {
-                        indexBegin = int.Parse(methodNode.Attribute("Location").Value);
-                    }
-
-                    // If the user specified a count of instructions to delete,
-                    // we delete them
-                    if (methodNode.Attribute("DeleteCount") != null)
-                    {
-                        int countInstrToDelete = int.Parse(methodNode.Attribute("DeleteCount").Value);
-
-                        for (int i = 0; i < countInstrToDelete; i++)
-                        {
-                            processor.Remove(methodToPatch.Body.Instructions.ElementAt(indexBegin));
-                        }
-                    }
-
-                    Instruction locationInstr = methodToPatch.Body.Instructions.ElementAt(indexBegin);
-                    Instruction prevInstr = locationInstr.Previous;
-
-                    foreach (XElement instrNode in methodNode.Elements("Instruction"))
-                    {
-                        Instruction instr = Call.ParseInstruction(processor, typeToPatch, instrNode);
-
-                        if (instr == null)
-                        {
-                            continue;
-                        }
-
-                        if (prevInstr == null)
-                            processor.InsertBefore(locationInstr, instr);
-                        else
-                            processor.InsertAfter(prevInstr, instr);
-
-                        prevInstr = instr;
-                    }
-
-                    // Optimize the method
-                    methodToPatch.Body.OptimizeMacros();
-                }
-            }
-        }
-
-        public XElement LoadModifications(string path)
-        {
-            Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(path);
-            return XElement.Load(stream);
+            CheckPatchStatus();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -505,11 +352,11 @@ namespace MSCPatcher
             {
                 if (MDradio.Checked)
                 {
-                    ModificationsXmlPath = "MSCPatcher.Modifications_MD.xml";
+                    InitMethod = "Init_MD";
                     try
                     {
                         modPath = mdPath;
-                        PatchCheck();
+                        PatchStarter();
                         if (!Directory.Exists(mdPath))
                         {
                             //if mods folder not exists, create it.
@@ -523,11 +370,11 @@ namespace MSCPatcher
                 }
                 else if (GFradio.Checked)
                 {
-                    ModificationsXmlPath = "MSCPatcher.Modifications_GF.xml";
+                    InitMethod = "Init_GF";
                     try
                     {
                         modPath = gfPath;
-                        PatchCheck();
+                        PatchStarter();
                         if (!Directory.Exists(gfPath))
                         {
                             //if mods folder not exists, create it.
@@ -541,11 +388,11 @@ namespace MSCPatcher
                 }
                 else if (ADradio.Checked)
                 {
-                    ModificationsXmlPath = "MSCPatcher.Modifications_AD.xml";
+                    InitMethod = "Init_AD";
                     try
                     {
                         modPath = adPath;
-                        PatchCheck();
+                        PatchStarter();
                         if (!Directory.Exists(adPath))
                         {
                             //if mods folder not exists, create it.
@@ -561,7 +408,7 @@ namespace MSCPatcher
                 MainData.ApplyChanges(enOutputlog.Checked, resDialogCheck.Checked, false);
 
                 //check if everything is ok
-                MainData.loadMainData(OutputlogLabel, resDialogLabel, resDialogCheck);
+                MainData.LoadMainData(OutputlogLabel, resDialogLabel, resDialogCheck);
 
             }
             else
@@ -589,14 +436,14 @@ namespace MSCPatcher
                 Log.Write(string.Format("Game folder set to: {0}", mscPath));
                 File.WriteAllText("MSCFolder.txt", mscPath);
                 Log.Write(string.Format("Game folder is saved as: {0}{1}", mscPath, Environment.NewLine));
-                MainData.loadMainData(OutputlogLabel, resDialogLabel, resDialogCheck);
-                checkPatchStatus();
-                debugStatusInfo();
-                check64Info();
+                MainData.LoadMainData(OutputlogLabel, resDialogLabel, resDialogCheck);
+                CheckPatchStatus();
+                DebugStatusInfo();
+                Check64Info();
             }
 
         }
-        void checkPatchStatus()
+        void CheckPatchStatus()
         {
             mscloaderUpdate = false;
             isgameUpdated = false;
@@ -606,34 +453,40 @@ namespace MSCPatcher
             button3.Enabled = false;
             bool newpatchfound = false;
             bool oldpatchfound = false;
-            TypeDefinition typeToPatch = AssemblyDefinition.ReadAssembly(AssemblyFullPath).MainModule.Types.FirstOrDefault(t => t.Name == "PlayMakerArrayListProxy");
-            MethodDefinition methodToPatch = typeToPatch.Methods.FirstOrDefault(m => m.Name == "Awake");
-            Mono.Cecil.Cil.MethodBody methodBody = methodToPatch.Body;
-            // MessageBox.Show(methodBody.CodeSize.ToString()); //debug
-            if (methodBody.CodeSize == 24)
+            try
             {
-                //not patched
-                newpatchfound = false;
+                bool isInjected = false;
+                if (MDradio.Checked)
+                    isInjected = IsPatched(Path.Combine(mscPath, @"mysummercar_Data\Managed\Assembly-CSharp.dll"), "PlayMakerArrayListProxy", "Awake", "MSCLoader.dll", "MSCLoader.ModLoader", "Init_MD");
+                else if (GFradio.Checked)
+                    isInjected = IsPatched(Path.Combine(mscPath, @"mysummercar_Data\Managed\Assembly-CSharp.dll"), "PlayMakerArrayListProxy", "Awake", "MSCLoader.dll", "MSCLoader.ModLoader", "Init_GF");
+                else if (ADradio.Checked)
+                    isInjected = IsPatched(Path.Combine(mscPath, @"mysummercar_Data\Managed\Assembly-CSharp.dll"), "PlayMakerArrayListProxy", "Awake", "MSCLoader.dll", "MSCLoader.ModLoader", "Init_AD");
+
+                if (isInjected)
+                    newpatchfound = true;
+                else
+                    newpatchfound = false;
             }
-            else if (methodBody.CodeSize == 29)
+            catch (Exception ex)
             {
-                //patch found
-                newpatchfound = true;
+                MessageBox.Show(string.Format("Patch checking error: {0}",ex.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Log.Write(string.Format("Patch checking error: {0}", ex.Message));
             }
             if (!newpatchfound)
             {
-                TypeDefinition typeToPatch2 = AssemblyDefinition.ReadAssembly(AssemblyFullPath).MainModule.Types.FirstOrDefault(t => t.Name == "StartGame");
-                MethodDefinition methodToPatch2 = typeToPatch2.Methods.FirstOrDefault(m => m.Name == ".ctor");
-                Mono.Cecil.Cil.MethodBody methodBody2 = methodToPatch2.Body;
-                if (methodBody2.CodeSize == 18)
+                try
                 {
-                    //not patched
-                    oldpatchfound = false;
+                    bool isInjected = IsPatched(Path.Combine(mscPath, @"mysummercar_Data\Managed\Assembly-CSharp.dll"), "StartGame", ".ctor", "MSCLoader.dll", "MSCLoader.ModLoader", "Init");
+                    if (isInjected)
+                        oldpatchfound = true;
+                    else
+                        oldpatchfound = false;
                 }
-                else if (methodBody2.CodeSize == 23)
+                catch (Exception ex)
                 {
-                    //0.1 patch found
-                    oldpatchfound = true;
+                    MessageBox.Show(string.Format("Patch checking error: {0}", ex.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Log.Write(string.Format("Patch checking error: {0}", ex.Message));
                 }
             }
             if (!newpatchfound && !oldpatchfound)
@@ -662,7 +515,6 @@ namespace MSCPatcher
                     button1.Enabled = true;
                 }
                 statusLabelText.ForeColor = Color.Red;
-
             }
             else if (newpatchfound)
             {
@@ -710,10 +562,10 @@ namespace MSCPatcher
                     button3.Enabled = false;
                     Log.Write("Removing MSCLoader from game", true, true);
 
-                    if (File.Exists(String.Format("{0}.backup", AssemblyFullPath)))
+                    if (File.Exists(string.Format("{0}.backup", AssemblyFullPath)))
                     {
                         Patcher.DeleteIfExists(AssemblyFullPath);
-                        File.Move(String.Format("{0}.backup", AssemblyFullPath), AssemblyFullPath);
+                        File.Move(string.Format("{0}.backup", AssemblyFullPath), AssemblyFullPath);
                         Log.Write("Recovering.....Assembly-CSharp.dll.backup");
 
                         Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll"));
@@ -737,7 +589,7 @@ namespace MSCPatcher
                         MessageBox.Show(string.Format("Backup file not found in:{1}{0}{1}Can't continue{1}{1}Please check integrity files in steam, to recover original file.", String.Format("{0}.backup", AssemblyFullPath), Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     }
-                    checkPatchStatus();
+                    CheckPatchStatus();
                 }
                 catch (Exception ex)
                 {
@@ -770,7 +622,7 @@ namespace MSCPatcher
             MainData.ApplyChanges(enOutputlog.Checked, resDialogCheck.Checked);
 
             //check if everything is ok
-            MainData.loadMainData(OutputlogLabel, resDialogLabel, resDialogCheck);
+            MainData.LoadMainData(OutputlogLabel, resDialogLabel, resDialogCheck);
 
         }
 
@@ -779,7 +631,7 @@ namespace MSCPatcher
             if(debugCheckbox.Checked)
             {
                 DebugStuff.EnableDebugging(is64bin, modPath);
-                debugStatusInfo();
+                DebugStatusInfo();
             }
             else
             {
@@ -790,7 +642,7 @@ namespace MSCPatcher
         private void disDebug_Click(object sender, EventArgs e)
         {
             DebugStuff.DisableDebugging();
-            debugStatusInfo();
+            DebugStatusInfo();
         }
 
         private void linkDebug_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -807,16 +659,55 @@ namespace MSCPatcher
 
         private void install64_Click(object sender, EventArgs e)
         {
-            Patch64.install64();
-            check64Info();
-            debugStatusInfo();
+            Patch64.Install64();
+            Check64Info();
+            DebugStatusInfo();
         }
 
         private void remove64_Click(object sender, EventArgs e)
         {
-            Patch64.remove64();
-            check64Info();
-            debugStatusInfo();
+            Patch64.Remove64();
+            Check64Info();
+            DebugStatusInfo();
+        }
+
+        private void PatchThis(string mainPath, string assemblyToPatch, string assemblyType, string assemblyMethod, string loaderAssembly, string loaderType, string loaderMethod)
+        {
+            DefaultAssemblyResolver resolver = new DefaultAssemblyResolver();
+            resolver.AddSearchDirectory(mainPath);
+
+            ModuleDefinition assembly = ModuleDefinition.ReadModule(mainPath + "/" + assemblyToPatch, new ReaderParameters { ReadWrite = true, AssemblyResolver = resolver });
+            ModuleDefinition loader = ModuleDefinition.ReadModule(mainPath + "/" + loaderAssembly);
+            MethodDefinition methodToInject = loader.GetType(loaderType).Methods.Single(x => x.Name == loaderMethod);
+            MethodDefinition methodToHook = assembly.GetType(assemblyType).Methods.First(x => x.Name == assemblyMethod);
+
+            Instruction loaderInit = Instruction.Create(OpCodes.Call, assembly.ImportReference(methodToInject));
+            ILProcessor processor = methodToHook.Body.GetILProcessor();
+            processor.InsertBefore(methodToHook.Body.Instructions[0], loaderInit);
+            assembly.Write();
+            assembly.Dispose();
+            loader.Dispose();
+        }
+        private bool IsPatched(string assemblyToPatch, string assemblyType, string assemblyMethod, string loaderAssembly, string loaderType, string loaderMethod)
+        {
+
+            ModuleDefinition assembly = ModuleDefinition.ReadModule(assemblyToPatch);
+            ModuleDefinition loader = ModuleDefinition.ReadModule(loaderAssembly);
+            MethodDefinition methodToInject = loader.GetType(loaderType).Methods.Single(x => x.Name == loaderMethod);
+            MethodDefinition methodToHook = assembly.GetType(assemblyType).Methods.First(x => x.Name == assemblyMethod);
+
+            foreach (Instruction instruction in methodToHook.Body.Instructions)
+            {
+                if (instruction.OpCode.Equals(OpCodes.Call) && instruction.Operand.ToString().Equals($"System.Void {loaderType}::{loaderMethod}()"))
+                {
+                    assembly.Dispose();
+                    loader.Dispose();
+                    return true;
+                }
+            }
+            assembly.Dispose();
+            loader.Dispose();
+            return false;
         }
     }
 }
