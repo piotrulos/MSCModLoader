@@ -12,7 +12,7 @@ namespace MSCPatcher
         static long offset = 0;
         static string mainDataPath = null;
 
-        public static void loadMainData(Label outputlog, Label resDialog, CheckBox resDialogCheck)
+        public static void LoadMainData(Label outputlog, Label resDialog, CheckBox resDialogCheck)
         {
             if (Form1.mscPath != "(unknown)")
             {

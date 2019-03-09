@@ -28,7 +28,7 @@ namespace MSCPatcher
             return 0;
         }
 
-        public static void install64()
+        public static void Install64()
         {
             if (Form1.mscPath != "(unknown)")
             {
@@ -60,7 +60,7 @@ namespace MSCPatcher
                 MessageBox.Show("64-bit patch installed successfully!", "Success!", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
-        public static void remove64()
+        public static void Remove64()
         {
             if (Form1.mscPath != "(unknown)")
             {
