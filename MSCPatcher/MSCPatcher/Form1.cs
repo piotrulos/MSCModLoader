@@ -18,7 +18,7 @@ namespace MSCPatcher
 
         private string AssemblyPath = @"mysummercar_Data\Managed\Assembly-CSharp.dll";
         private string AssemblyFullPath = null;
-        private string InitMethod = "MSCPatcher.Modifications_MD.xml";
+        private string InitMethod = "Init_MD";
         private string mdPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"MySummerCar\Mods");
         private string adPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"..\LocalLow\Amistech\My Summer Car\Mods"));
         private string gfPath = "?";
@@ -36,7 +36,7 @@ namespace MSCPatcher
             form1 = this;
             InitializeComponent();
             Log.logBox = logBox;
-            if (File.Exists("Assembly-CSharp.dll") || File.Exists("UnityEngine.dll")) //check if idiot unpacked this to managed folder.
+            if (File.Exists("Assembly-CSharp.dll") || File.Exists("UnityEngine.dll") || File.Exists("mysummercar.exe")) //check if idiot unpacked this to game folder.
             {
                 if (MessageBox.Show("Did you read the instructions? (Readme.txt)", "Question for you!", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
@@ -79,7 +79,6 @@ namespace MSCPatcher
                 else
                     currentVersion = string.Format("{0}.{1}", mscLoaderVersion.FileMajorPart, mscLoaderVersion.FileMinorPart);
 
-                //TODO: replace with async
                 string version;
                 using (WebClient client = new WebClient())
                 {
@@ -120,11 +119,7 @@ namespace MSCPatcher
                 Log.Write(string.Format("Check for new version failed with error: {0}", e.Message));
                 statusBarLabel.Text = "MSCPatcher Ready!";
             }
-            if (!Directory.Exists("64bit"))
-            {
-                groupBox6.Visible = false;
-                basic64info.Visible = true;
-            }
+
             if (!Directory.Exists("Debug"))
             {
                 groupBox5.Visible = false;
@@ -152,47 +147,8 @@ namespace MSCPatcher
                 DebugStatusInfo();
                 CheckPatchStatus();
             }
+        }
 
-            if(!Environment.Is64BitOperatingSystem)
-            {
-                status64.Text = "You are not running 64-bit Windows.";
-                status64.ForeColor = Color.Red;
-                status64g.Text = "64-bit patch cannot be installed.";
-                status64g.ForeColor = Color.Red;
-            }
-            else
-            {
-                status64.Text = "You are running 64-bit Windows.";
-                status64.ForeColor = Color.Green;
-                Check64Info();
-            }
-        }
-        void Check64Info()
-        {
-            install64.Enabled = false;
-            remove64.Enabled = false;
-            switch(Patch64.check64status())
-            {
-                case 1:
-                    status64g.ForeColor = Color.Red;
-                    status64g.Text = "64-bit patch is not installed";
-                    install64.Enabled = true;
-                    break;
-                case 2:
-                    status64g.ForeColor = Color.Green;
-                    status64g.Text = "64-bit patch is installed!";
-                    remove64.Enabled = true;
-                    break;
-                case 3:
-                    status64g.ForeColor = Color.Green;
-                    status64g.Text = "Original 64-bit binary detected!";
-                    break;
-                default:
-                    status64g.ForeColor = Color.Red;
-                    status64g.Text = "Unknown mysummercar.exe detected.";
-                    break;
-            }
-        }
         void DebugStatusInfo()
         {
             enDebug.Enabled = false;
@@ -439,7 +395,7 @@ namespace MSCPatcher
                 MainData.LoadMainData(OutputlogLabel, resDialogLabel, resDialogCheck);
                 CheckPatchStatus();
                 DebugStatusInfo();
-                Check64Info();
+                //Check64Info();
             }
 
         }
@@ -655,20 +611,6 @@ namespace MSCPatcher
             {
                 MessageBox.Show(string.Format("Failed to open url!{1}{1}Error details:{1}{0}", ex.Message, Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private void install64_Click(object sender, EventArgs e)
-        {
-            Patch64.Install64();
-            Check64Info();
-            DebugStatusInfo();
-        }
-
-        private void remove64_Click(object sender, EventArgs e)
-        {
-            Patch64.Remove64();
-            Check64Info();
-            DebugStatusInfo();
         }
 
         private void PatchThis(string mainPath, string assemblyToPatch, string assemblyType, string assemblyMethod, string loaderAssembly, string loaderType, string loaderMethod)
