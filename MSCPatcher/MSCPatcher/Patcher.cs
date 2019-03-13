@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using Ionic.Zip;
+using System;
+using System.IO;
+using System.Windows.Forms;
 
 namespace MSCPatcher
 {
@@ -12,13 +15,43 @@ namespace MSCPatcher
                 Log.Write(string.Format("Removing.....{0}", Path.GetFileName(filename)));
             }
         }
+        public static void DeleteReferences(string mscPath)
+        {
+            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll"));
+            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll.mdb"));
+            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.pdb"));
+            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\uAudio.dll"));
+            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\Ionic.Zip.dll"));
+            try
+            {
+                if (!File.Exists(Path.Combine("References.zip", "")))
+                    throw new Exception("References.zip not found");
+                string zip = Path.Combine("References.zip", "");
+                if (!ZipFile.IsZipFile(zip))
+                {
+                    throw new Exception("Failed to read zip file");
+                }
+                ZipFile zip1 = ZipFile.Read(zip);
+                foreach (ZipEntry zz in zip1)
+                {
+                    Log.Write("Removing file....." + zz.FileName);
+                    DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\" + zz.FileName));
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(string.Format("Error while reading references: {0}", ex.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Log.Write(string.Format("Error while reading references: {0}", ex.Message));
+            }
 
+        }
         public static void CopyReferences(string mscPath)
         {
             DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll"));
             DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll.mdb"));
             DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.pdb"));
             DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\uAudio.dll"));
+            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\Ionic.Zip.dll"));
 
             if (File.Exists(Path.GetFullPath(Path.Combine("MSCLoader.dll", ""))))
             {
@@ -37,35 +70,31 @@ namespace MSCPatcher
                 File.Copy(Path.GetFullPath(Path.Combine("MSCLoader.pdb", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.pdb"));
                 Log.Write("Copying new file.....MSCLoader.pdb");
             }
-            if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll")))
+            if (File.Exists(Path.GetFullPath(Path.Combine("Ionic.Zip.dll", ""))))
             {
-                File.Copy(Path.GetFullPath(Path.Combine("System.Xml.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll"));
-                Log.Write("Copying new file.....System.Xml.dll");
+                File.Copy(Path.GetFullPath(Path.Combine("Ionic.Zip.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\Ionic.Zip.dll"));
+                Log.Write("Copying new file.....Ionic.Zip.dll");
             }
-            if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\Newtonsoft.Json.dll")))
+            try
             {
-                File.Copy(Path.GetFullPath(Path.Combine("Newtonsoft.Json.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\Newtonsoft.Json.dll"));
-                Log.Write("Copying new file.....Newtonsoft.Json.dll");
+                if (!File.Exists(Path.Combine("References.zip", "")))
+                    throw new Exception("References.zip not found");
+                string zip = Path.Combine("References.zip","");
+                if (!ZipFile.IsZipFile(zip))
+                {
+                    throw new Exception("Failed read zip file");
+                }
+                ZipFile zip1 = ZipFile.Read(zip);
+                foreach (ZipEntry zz in zip1)
+                {
+                    Log.Write("Copying new file....." + zz.FileName);
+                    zz.Extract(Path.Combine(mscPath, @"mysummercar_Data\Managed\"), ExtractExistingFileAction.OverwriteSilently);
+                }
             }
-            if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Data.dll")))
+            catch (Exception ex)
             {
-                File.Copy(Path.GetFullPath(Path.Combine("System.Data.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Data.dll"));
-                Log.Write("Copying new file.....System.Data.dll");
-            }
-            if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Runtime.Serialization.dll")))
-            {
-                File.Copy(Path.GetFullPath(Path.Combine("System.Runtime.Serialization.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Runtime.Serialization.dll"));
-                Log.Write("Copying new file.....System.Runtime.Serialization.dll");
-            }
-            if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\NAudio.dll")))
-            {
-                File.Copy(Path.GetFullPath(Path.Combine("NAudio.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\NAudio.dll"));
-                Log.Write("Copying new file.....NAudio.dll");
-            }
-            if (!File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\NVorbis.dll")))
-            {
-                File.Copy(Path.GetFullPath(Path.Combine("NVorbis.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\NVorbis.dll"));
-                Log.Write("Copying new file.....NVorbis.dll");
+                MessageBox.Show(string.Format("Error while unpacking references: {0}", ex.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Log.Write(string.Format("Error while unpacking references: {0}", ex.Message));
             }
         }
 
