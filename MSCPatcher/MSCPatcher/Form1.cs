@@ -78,7 +78,7 @@ namespace MSCPatcher
                     currentVersion = string.Format("{0}.{1}.{2}", mscLoaderVersion.FileMajorPart, mscLoaderVersion.FileMinorPart, mscLoaderVersion.FileBuildPart);
                 else
                     currentVersion = string.Format("{0}.{1}", mscLoaderVersion.FileMajorPart, mscLoaderVersion.FileMinorPart);
-
+ 
                 string version;
                 using (WebClient client = new WebClient())
                 {
@@ -524,14 +524,7 @@ namespace MSCPatcher
                         File.Move(string.Format("{0}.backup", AssemblyFullPath), AssemblyFullPath);
                         Log.Write("Recovering.....Assembly-CSharp.dll.backup");
 
-                        Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll"));
-                        Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\uAudio.dll"));
-                        Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Xml.dll"));
-                        Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\Newtonsoft.Json.dll"));
-                        Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Data.dll"));
-                        Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\System.Runtime.Serialization.dll"));
-                        Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\NAudio.dll"));
-                        Patcher.DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\NVorbis.dll"));
+                        Patcher.DeleteReferences(mscPath);
 
                         Log.Write("", false, true);
                         Log.Write("MSCLoader removed successfully!");
