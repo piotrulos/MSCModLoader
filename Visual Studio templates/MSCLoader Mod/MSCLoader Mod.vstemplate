@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <VSTemplate Version="3.0.0" Type="Project" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
-  <TemplateData>
+  <TemplateData>  
     <Name>MSCLoader Mod</Name>
     <Description>A new mod for My Summer Car</Description>
     <Icon>MSCLoader Mod.ico</Icon>
@@ -14,9 +14,11 @@
     <EnableLocationBrowseButton>true</EnableLocationBrowseButton>
   </TemplateData>
   <TemplateContent>
+    
     <Project TargetFileName="$safeprojectname$.csproj" File="ProjectTemplate.csproj" ReplaceParameters="true">
       <ProjectItem ReplaceParameters="true" TargetFileName="Properties\AssemblyInfo.cs">AssemblyInfo.cs</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="$safeprojectname$.cs">Class1.cs</ProjectItem>
     </Project>
   </TemplateContent>
+  
 </VSTemplate>

@@ -1,15 +1,14 @@
 ﻿<?xml version="1.0" ?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="MSCLoaderTemplates.Piotrulos.40e0e374-6a16-47ae-87f8-009138faa324" Version="0.4.2" Language="en-US" Publisher="Piotrulos" />
-        <DisplayName>MSCLoaderTemplates</DisplayName>
-        <Description xml:space="preserve">MSCLoader Templates for VS2017</Description>
+        <Identity Id="MSCLoaderTemplates.Piotrulos.40e0e374-6a16-47ae-87f8-009138faa324" Version="0.4.7" Language="en-US" Publisher="Piotrulos" />
+        <DisplayName>MSCLoader Templates</DisplayName>
+        <Description xml:space="preserve">MSCLoader Templates for vs2017 and vs2019</Description>
     </Metadata>
     <Installation>
-        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0]" />
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0,16.0]" />
     </Installation>
     <Dependencies>
-        <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
     </Dependencies>
     <Assets>
         <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="MSCLoader Mod" d:TargetPath="|MSCLoader Mod;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
@@ -17,6 +16,6 @@
         <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="Console Command" d:TargetPath="|Console Command;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
     </Assets>
     <Prerequisites>
-        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0,16.0)" DisplayName="Visual Studio core editor" />
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0,17.0)" DisplayName="Visual Studio core editor" />
     </Prerequisites>
 </PackageManifest>
