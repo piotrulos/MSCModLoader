@@ -582,7 +582,6 @@ namespace MSCLoader
                             throw new Exception("Database connection error");
                         default:
                             throw new Exception("Unknown error");
-
                     }
 
                 }
@@ -593,14 +592,14 @@ namespace MSCLoader
                     int i = expBuild.CompareTo(result[1].Trim());
                     if (i != 0)
                         if (experimental)
-                            info.text = string.Format("Mod Loader MSCLoader v{0} is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>] (<color=orange>New build available: <b>{2}</b></color>)", Version, expBuild, result[1]);
+                            info.text = string.Format("MSCLoader v{0} is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>] (<color=orange>New build available: <b>{2}</b></color>)", Version, expBuild, result[1]);
                         else
-                            info.text = string.Format("Mod Loader MSCLoader v{0} is ready! (<color=orange>New version available: <b>v{1}</b></color>)", Version, result[1].Trim());
+                            info.text = string.Format("MSCLoader v{0} is ready! (<color=orange>New version available: <b>v{1}</b></color>)", Version, result[1].Trim());
                     else if (i == 0)
                         if (experimental)
-                            info.text = string.Format("Mod Loader MSCLoader v{0} is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>]", Version, expBuild);
+                            info.text = string.Format("MSCLoader v{0} is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>]", Version, expBuild);
                         else
-                            info.text = string.Format("Mod Loader MSCLoader v{0} is ready! (<color=lime>Up to date</color>)", Version);
+                            info.text = string.Format("MSCLoader v{0} is ready! (<color=lime>Up to date</color>)", Version);
                 }
                 else
                 {
@@ -615,9 +614,9 @@ namespace MSCLoader
                     ModConsole.Error(ex.ToString());
                 UnityEngine.Debug.Log(ex);
                 if (experimental)
-                    info.text = string.Format("Mod Loader MSCLoader v{0} is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>]", Version, expBuild);
+                    info.text = string.Format("MSCLoader v{0} is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>]", Version, expBuild);
                 else
-                    info.text = string.Format("Mod Loader MSCLoader v{0} is ready!", Version);
+                    info.text = string.Format("MSCLoader v{0} is ready!", Version);
 
             }
             if (devMode)
@@ -740,12 +739,30 @@ namespace MSCLoader
                 foreach (string dir in Directory.GetDirectories(ConfigFolder))
                 {
                     if (!LoadedMods.Exists(x => x.ID == new DirectoryInfo(dir).Name))
-                        Directory.Delete(dir, true);
+                    {
+                        try
+                        {
+                            Directory.Delete(dir, true);
+                        }
+                        catch (Exception ex)
+                        {
+                            ModConsole.Error(string.Format("{0} (corrupted file?)", ex.Message));
+                        }
+                    }
                 }
                 foreach (string dir in Directory.GetDirectories(AssetsFolder))
                 {
                     if (!LoadedMods.Exists(x => x.ID == new DirectoryInfo(dir).Name) && new DirectoryInfo(dir).Name != "MSCLoader_Core")
-                        Directory.Delete(dir, true);
+                    {
+                        try
+                        {
+                            Directory.Delete(dir, true);
+                        }
+                        catch (Exception ex)
+                        {
+                            ModConsole.Error(string.Format("{0} (corrupted file?)", ex.Message));
+                        }
+                    }
                 }
             }
 
