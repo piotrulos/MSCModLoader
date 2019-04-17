@@ -6,7 +6,7 @@ using System.Threading;
 using UnityEngine;
 
 #pragma warning disable CS1591 
-namespace RuntimeAudioClipLoader
+namespace AudioLibrary
 {
     public class Manager : MonoBehaviour
     {
@@ -14,7 +14,7 @@ namespace RuntimeAudioClipLoader
         {
             public AudioClip audioClip;
 
-            public CustomAudioFileReader reader;
+            public AudioFileReader reader;
 
             public float[] dataToSet;
 
@@ -65,7 +65,7 @@ namespace RuntimeAudioClipLoader
                 Debug.LogError("Could not load AudioClip at path '" + filePath + "' it's extensions marks unsupported format, supported formats are: " + string.Join(", ", Enum.GetNames(typeof(AudioFormat))));
                 return null;
             }
-            AudioClip audioClip = null;
+            AudioClip audioClip;
             if (useCache && cache.TryGetValue(filePath, out audioClip) && audioClip)
             {
                 return audioClip;
@@ -82,10 +82,10 @@ namespace RuntimeAudioClipLoader
         public static AudioClip Load(Stream dataStream, AudioFormat audioFormat, string unityAudioClipName, bool doStream = false, bool loadInBackground = true, bool diposeDataStreamIfNotNeeded = true)
         {
             AudioClip audioClip = null;
-            CustomAudioFileReader reader = null;
+            AudioFileReader reader = null;
             try
             {
-                reader = new CustomAudioFileReader(dataStream, audioFormat);
+                reader = new AudioFileReader(dataStream, audioFormat);
                 AudioInstance audioInstance = new AudioInstance
                 {
                     reader = reader,

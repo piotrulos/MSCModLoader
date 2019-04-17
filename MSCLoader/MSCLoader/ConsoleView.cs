@@ -72,7 +72,7 @@ namespace MSCLoader
         // Event that should be called by anything wanting to submit the current input to the console.
         public void runCommand()
         {
-            controller.runCommandString(inputField.text);
+            controller.RunCommandString(inputField.text);
             inputField.text = string.Empty;
             //keep active input field
             inputField.ActivateInputField();

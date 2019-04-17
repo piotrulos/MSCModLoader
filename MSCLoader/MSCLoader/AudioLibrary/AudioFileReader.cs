@@ -1,12 +1,20 @@
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using NVorbis.NAudioSupport;
+using NAudio.Vorbis;
 using System.IO;
 using UnityEngine;
 
-namespace RuntimeAudioClipLoader
+namespace AudioLibrary
 {
-    internal class CustomAudioFileReader : WaveStream, ISampleProvider
+    public enum AudioFormat
+    {
+        wav,
+        mp3,
+        aiff,
+        ogg,
+        unknown = -1
+    }
+    internal class AudioFileReader : WaveStream, ISampleProvider
     {
         private WaveStream readerStream;
 
@@ -43,7 +51,7 @@ namespace RuntimeAudioClipLoader
             set => sampleChannel.Volume = value;
         }
 
-        public CustomAudioFileReader(Stream stream, AudioFormat format)
+        public AudioFileReader(Stream stream, AudioFormat format)
         {
             lockObject = new object();
             CreateReaderStream(stream, format);
@@ -55,30 +63,28 @@ namespace RuntimeAudioClipLoader
 
         private void CreateReaderStream(Stream stream, AudioFormat format)
         {
-            if (format == AudioFormat.wav)
+            switch (format)
             {
-                readerStream = new WaveFileReader(stream);
-                if (readerStream.WaveFormat.Encoding != WaveFormatEncoding.Pcm && readerStream.WaveFormat.Encoding != WaveFormatEncoding.IeeeFloat)
-                {
-                    readerStream = WaveFormatConversionStream.CreatePcmStream(readerStream);
-                    readerStream = new BlockAlignReductionStream(readerStream);
-                }
-            }
-            else if (format == AudioFormat.mp3)
-            {
-                readerStream = new Mp3FileReader(stream);
-            }
-            else if (format == AudioFormat.aiff)
-            {
-                readerStream = new AiffFileReader(stream);
-            }
-            else if (format == AudioFormat.ogg)
-            {
-                readerStream = new VorbisWaveReader(stream);
-            }
-            else
-            {
-                Debug.LogWarning("Audio format " + format + " is not supported");
+                case AudioFormat.wav:
+                    readerStream = new WaveFileReader(stream);
+                    if (readerStream.WaveFormat.Encoding != WaveFormatEncoding.Pcm && readerStream.WaveFormat.Encoding != WaveFormatEncoding.IeeeFloat)
+                    {
+                        readerStream = WaveFormatConversionStream.CreatePcmStream(readerStream);
+                        readerStream = new BlockAlignReductionStream(readerStream);
+                    }
+                    break;
+                case AudioFormat.mp3:
+                    readerStream = new Mp3FileReader(stream);
+                    break;
+                case AudioFormat.aiff:
+                    readerStream = new AiffFileReader(stream);
+                    break;
+                case AudioFormat.ogg:
+                    readerStream = new VorbisWaveReader(stream);
+                    break;
+                default:
+                    Debug.LogWarning("Audio format " + format + " is not supported");
+                    break;
             }
         }
 

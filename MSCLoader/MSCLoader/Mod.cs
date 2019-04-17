@@ -16,12 +16,12 @@
         /// Number of Errors/Exceptions thrown by this mod (in Update or FixedUpdate)
         /// If there is too many errors thrown each frame, mod will be disabled to prevent FPS drop.
         /// </summary>
-        public virtual int modErrors { get => errorCount; set => errorCount = value; }
+        public virtual int modErrors { get => errorCount; internal set => errorCount = value; }
 
         /// <summary>
         /// If true, mod will never call OnLoad/Update/OnGui (used only by settings)
         /// </summary>
-        public virtual bool isDisabled { get => disabled; set => disabled = value; }
+        public virtual bool isDisabled { get => disabled; internal set => disabled = value; }
 
         /// <summary>
         /// If true, mod will indicate that there is update available.
