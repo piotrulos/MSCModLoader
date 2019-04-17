@@ -104,7 +104,7 @@ namespace MSCLoader
         /// title="Example Code" /></example>
         public static void Print(string str)
         {
-            console.controller.appendLogLine(str);
+            console.controller.AppendLogLine(str);
             Debug.Log(string.Format("MSCLoader Message: {0}", Regex.Replace(str, "<.*?>", string.Empty)));
         }
         /// <summary>
@@ -115,7 +115,7 @@ namespace MSCLoader
         /// title="Example Code" /></example>
         public static void Print(object obj)
         {
-            console.controller.appendLogLine(obj.ToString());
+            console.controller.AppendLogLine(obj.ToString());
             Debug.Log(string.Format("MSCLoader Message: {0}", obj));
         }
         /// <summary>
@@ -127,7 +127,7 @@ namespace MSCLoader
         public static void Error(string str)
         {
             console.setVisibility(true);
-            console.controller.appendLogLine(string.Format("<color=red><b>Error: </b>{0}</color>", str));
+            console.controller.AppendLogLine(string.Format("<color=red><b>Error: </b>{0}</color>", str));
             Debug.Log(string.Format("MSCLoader ERROR: {0}", Regex.Replace(str, "<.*?>", string.Empty)));
         }
     }

@@ -85,6 +85,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AudioLibrary\MP3_Streaming\MP3Stream.cs" />
+    <Compile Include="AudioLibrary\MP3_Streaming\ReadFullyStream.cs" />
     <Compile Include="Commands\CommandVersion.cs" />
     <Compile Include="Commands\CommandLogAll.cs" />
     <Compile Include="ConsoleCommand.cs" />
@@ -97,6 +99,7 @@
     <Compile Include="LoadAssets.cs" />
     <Compile Include="Mod.cs" />
     <Compile Include="ModAudio.cs" />
+    <Compile Include="ModAudioStream.cs" />
     <Compile Include="ModConsole.cs" />
     <Compile Include="ModCore.cs" />
     <Compile Include="ModInfo.cs" />
@@ -105,16 +108,16 @@
     <Compile Include="ModUI.cs" />
     <Compile Include="ModUIDrag.cs" />
     <Compile Include="MSCUnloader.cs" />
-    <Compile Include="NVorbis.NAudioSupport\VorbisWaveReader.cs" />
+    <Compile Include="AudioLibrary\NAudio.Vorbis\VorbisWaveReader.cs" />
     <Compile Include="OBJLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RuntimeAudioClipLoader\AudioFormat.cs" />
-    <Compile Include="RuntimeAudioClipLoader\CustomAudioFileReader.cs" />
-    <Compile Include="RuntimeAudioClipLoader\Manager.cs" />
+    <Compile Include="AudioLibrary\AudioFileReader.cs" />
+    <Compile Include="AudioLibrary\Manager.cs" />
     <Compile Include="SaveLoad.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SettingsView.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if "$(ConfigurationName)" == "Release" (

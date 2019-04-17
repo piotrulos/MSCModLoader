@@ -45,27 +45,27 @@ namespace MSCLoader
 
         public ConsoleController()
         {
-            registerCommand("help", help, "This screen", "?");
-            registerCommand("clear", clearConsole, "Clears console screen");
+            RegisterCommand("help", HelpCommand, "This screen", "?");
+            RegisterCommand("clear", ClearConsole, "Clears console screen");
         }
 
-        public void registerCommand(string command, CommandHandler handler, string help)
+        public void RegisterCommand(string command, CommandHandler handler, string help)
         {
             commands.Add(command, new CommandRegistration(command, handler, help));
         }
-        public void registerCommand(string command, CommandHandler handler, string help, string alias)
+        public void RegisterCommand(string command, CommandHandler handler, string help, string alias)
         {
             commands.Add(command, new CommandRegistration(command, handler, help));
             commands.Add(alias, new CommandRegistration(command, handler, help));
         }
-        void clearConsole(string[] args)
+        void ClearConsole(string[] args)
         {
             scrollback.Clear();
             log = scrollback.ToArray();
             logChanged(log);
         }
 
-        public void appendLogLine(string line)
+        public void AppendLogLine(string line)
         {
             if (scrollback.Count >= scrollbackSize)
             {
@@ -77,17 +77,17 @@ namespace MSCLoader
             logChanged?.Invoke(log);
         }
 
-        public void runCommandString(string commandString)
+        public void RunCommandString(string commandString)
         {
             if (!string.IsNullOrEmpty(commandString))
             {
-                appendLogLine(string.Format("{1}<b><color=orange>></color></b> {0}", commandString, Environment.NewLine));
+                AppendLogLine(string.Format("{1}<b><color=orange>></color></b> {0}", commandString, Environment.NewLine));
 
-                string[] commandSplit = parseArguments(commandString);
+                string[] commandSplit = ParseArguments(commandString);
                 string[] args = new string[0];
                 if (commandSplit.Length < 1)
                 {
-                    appendLogLine(string.Format("<color=red>Unable to process command:</color> <b>{0}</b>", commandString));
+                    AppendLogLine(string.Format("<color=red>Unable to process command:</color> <b>{0}</b>", commandString));
                     return;
 
                 }
@@ -97,24 +97,24 @@ namespace MSCLoader
                     args = new string[numArgs];
                     Array.Copy(commandSplit, 1, args, 0, numArgs);
                 }
-                runCommand(commandSplit[0].ToLower(), args);
+                RunCommand(commandSplit[0].ToLower(), args);
                 commandHistory.Add(commandString);
             }
         }
 
-        void runCommand(string command, string[] args)
+        void RunCommand(string command, string[] args)
         {
             if (!string.IsNullOrEmpty(command))
             {
                 if (!commands.TryGetValue(command, out CommandRegistration reg))
                 {
-                    appendLogLine(string.Format("Unknown command <b><color=red>{0}</color></b>, type <color=lime><b>help</b></color> for list.", command));
+                    AppendLogLine(string.Format("Unknown command <b><color=red>{0}</color></b>, type <color=lime><b>help</b></color> for list.", command));
                 }
                 else
                 {
                     if (reg.handler == null)
                     {
-                        appendLogLine(string.Format("<color=red>Unable to process command:</color> <b>{0}</b>, <color=red>handler was null.</color>", command));
+                        AppendLogLine(string.Format("<color=red>Unable to process command:</color> <b>{0}</b>, <color=red>handler was null.</color>", command));
                     }
                     else
                     {
@@ -124,7 +124,7 @@ namespace MSCLoader
             }
         }
 
-        static string[] parseArguments(string commandString)
+        static string[] ParseArguments(string commandString)
         {
             LinkedList<char> parmChars = new LinkedList<char>(commandString.ToCharArray());
             bool inQuote = false;
@@ -148,13 +148,13 @@ namespace MSCLoader
             return (new string(parmCharsArr)).Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
         }
 
-        void help(string[] args)
+        void HelpCommand(string[] args)
         {
             ModConsole.Print("<color=green><b>Available commands:</b></color>");
             List<CommandRegistration> cmds = commands.Values.GroupBy(x => x.command).Select(g => g.First()).Distinct().ToList();
             foreach (CommandRegistration reg in cmds)
             {
-                appendLogLine(string.Format("<color=orange><b>{0}</b></color>: {1}", reg.command, reg.help));
+                AppendLogLine(string.Format("<color=orange><b>{0}</b></color>: {1}", reg.command, reg.help));
             }
         }
     }

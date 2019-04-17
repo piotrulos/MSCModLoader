@@ -620,7 +620,7 @@ namespace MSCLoader
 
             }
             if (devMode)
-                info.text = info.text + " [<color=red><b>Dev Mode!</b></color>]";
+                info.text += " [<color=red><b>Dev Mode!</b></color>]";
         }
 
         IEnumerator NewGameMods()
@@ -954,7 +954,7 @@ namespace MSCLoader
             }
             else
             {
-                ModConsole.Print(string.Format("<color=orange><b>Mod already loaded (or duplicated ID):</b></color><color=red><b>{0}</b></color>", mod.ID));
+                ModConsole.Error(string.Format("<color=orange><b>Mod already loaded (or duplicated ID):</b></color><color=red><b>{0}</b></color>", mod.ID));
             }
         }
 

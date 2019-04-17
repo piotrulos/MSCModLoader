@@ -1,4 +1,4 @@
-﻿using RuntimeAudioClipLoader;
+﻿using AudioLibrary;
 using System;
 using System.IO;
 using UnityEngine;
@@ -6,7 +6,7 @@ using UnityEngine;
 namespace MSCLoader
 {
     /// <summary>
-    /// Audio library (*.mp3, *.ogg, *.wav, *.aiff)
+    /// Audio library (play local *.mp3, *.ogg, *.wav, *.aiff)
     /// </summary>
     public class ModAudio : MonoBehaviour
     {
@@ -21,7 +21,7 @@ namespace MSCLoader
         /// Load audio from file
         /// </summary>
         /// <param name="path">Full path to audio file</param>
-        /// <param name="doStream">Stream from HDD instead of loading to memory</param>
+        /// <param name="doStream">Stream from HDD instead of loading to memory (recommended)</param>
         /// <param name="background">Load file in background</param>
         public void LoadAudioFromFile(string path, bool doStream, bool background)
         {
