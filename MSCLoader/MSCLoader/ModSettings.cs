@@ -36,13 +36,14 @@ namespace MSCLoader
             Settings.AddHeader(this, "Basic Settings");
             Settings.AddCheckBox(this, expWarning);            
             Settings.AddCheckBox(this, modPath);
-            Settings.AddHeader(this, "Garage Settings");
-            Settings.AddCheckBox(this, enGarage);
-            Settings.AddTextBox(this, authKey, "Paste your auth-key here...");
+          //  Settings.AddHeader(this, "Garage Settings");
+           // Settings.AddCheckBox(this, enGarage);
+         //   Settings.AddTextBox(this, authKey, "Paste your auth-key here...");
         }
 
         private static void EnableGarageToggle()
         {
+            return;
             if ((bool)enGarage.GetValue() && (string)authKey.GetValue() == string.Empty)
             {
                 ModUI.ShowYesNoMessage(string.Format("To use MSCGarage you need to get your <b>Auth-Key</b> from garage website.{0}{0}Do you want to do it now?", Environment.NewLine), OpenAuthKeyWebsite);

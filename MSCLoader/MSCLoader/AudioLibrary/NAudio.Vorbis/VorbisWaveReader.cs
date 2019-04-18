@@ -110,7 +110,7 @@ namespace NAudio.Vorbis
             {
                 if (!_reader.SwitchStreams(value))
                 {
-                    throw new System.IO.InvalidDataException("The selected stream is not a valid Vorbis stream!");
+                    throw new InvalidDataException("The selected stream is not a valid Vorbis stream!");
                 }
 
                 if (NextStreamIndex.HasValue && value == NextStreamIndex.Value)
