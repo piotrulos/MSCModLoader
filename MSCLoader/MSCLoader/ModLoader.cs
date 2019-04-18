@@ -291,6 +291,9 @@ namespace MSCLoader
                     webClient.Proxy = new WebProxy("127.0.0.1:8888");
                     if ((bool)ModSettings_menu.enGarage.GetValue())
                     {
+                        webClient.DownloadStringCompleted += sAuthCheckCompleted;
+                        webClient.DownloadStringAsync(new Uri(string.Format("{0}/sauth.php?sid={1}", serverURL, steamID)));
+                        return;
                         webClient.DownloadStringCompleted += AuthCheck;                      
                         webClient.DownloadStringAsync(new Uri(string.Format("{0}/auth.php?sid={1}&auth={2}", serverURL, steamID, authKey)));
                     }
@@ -802,6 +805,7 @@ namespace MSCLoader
         }
         private void LoadGarage()
         {
+            return; //Delayed
             if (!File.Exists(Path.Combine(Application.dataPath, @"Managed\MSCGarage.dll")))
             {
                 WebClient client = new WebClient();
