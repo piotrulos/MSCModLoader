@@ -74,7 +74,7 @@ namespace MSCLoader
         private GUISkin guiskin;
         private ModCore modCore;
 
-        private string serverURL = "http://localhost.fiddler/msc_garage"; //localhost for testing only
+        private string serverURL = "http://localhost/msc_garage"; //localhost for testing only
 
         private bool IsDoneLoading = false;
         private bool IsModsLoading = false;

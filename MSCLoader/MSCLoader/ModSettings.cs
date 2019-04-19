@@ -30,6 +30,7 @@ namespace MSCLoader
         public GameObject ModLabel;
         public GameObject KeyBind;
         public GameObject Checkbox, setBtn, slider, textBox, header;
+        public GameObject Button_ms;
 
         public override void ModSettings()
         {
@@ -72,6 +73,7 @@ namespace MSCLoader
 
             KeyBind = ab.LoadAsset<GameObject>("KeyBind.prefab");
 
+            Button_ms = ab.LoadAsset<GameObject>("Button_ms");
             //For mod settings
             Checkbox = ab.LoadAsset<GameObject>("Checkbox.prefab");
             setBtn = ab.LoadAsset<GameObject>("Button.prefab");
@@ -81,6 +83,7 @@ namespace MSCLoader
 
             UI = GameObject.Instantiate(UI);
             UI.AddComponent<ModUIDrag>();
+
 
             settings = UI.AddComponent<SettingsView>();
             settings.ms = this;
@@ -98,7 +101,7 @@ namespace MSCLoader
             settings.noOfMods = settings.settingViewContainer.transform.GetChild(6).GetChild(1).GetComponent<Text>();
             settings.goBackBtn = settings.settingViewContainer.transform.GetChild(0).GetChild(1).gameObject;
             settings.goBackBtn.GetComponent<Button>().onClick.AddListener(() => settings.goBack());
-            settings.settingViewContainer.transform.GetChild(0).GetChild(2).GetComponent<Button>().onClick.AddListener(() => settings.setVisibility(false));
+            settings.settingViewContainer.transform.GetChild(0).GetChild(2).GetComponent<Button>().onClick.AddListener(() => settings.toggleVisibility());
             settings.DisableMod = ModSettingsView.transform.GetChild(5).GetComponent<Toggle>();
             settings.DisableMod.onValueChanged.AddListener(settings.disableMod);
 
@@ -109,6 +112,9 @@ namespace MSCLoader
 
             UI.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
             settings.setVisibility(false);
+            Button_ms = GameObject.Instantiate(Button_ms);
+            Button_ms.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
+            Button_ms.GetComponent<Button>().onClick.AddListener(() => settings.toggleVisibility());
             ab.Unload(false);
         }
 
@@ -273,6 +279,21 @@ namespace MSCLoader
             if (menuKey.IsDown())
             {
                 settings.toggleVisibility();
+            }
+            if (Application.loadedLevelName != "MainMenu")
+            {
+                if (GameObject.Find("Systems/OptionsMenu/Menu") != null)
+                {
+                    if (!Button_ms.activeSelf)
+                        Button_ms.SetActive(true);
+                }
+                else
+                {
+                    if(Button_ms.activeSelf)
+                        Button_ms.SetActive(false);
+
+                }
+
             }
         }
     }
