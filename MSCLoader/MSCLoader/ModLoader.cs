@@ -14,6 +14,16 @@ namespace MSCLoader
 {
 
     /// <summary>
+    /// List of possible scenes
+    /// </summary>
+    public enum CurrentScene
+    {
+        MainMenu,
+        Game,
+        NewGameIntro,
+    }
+
+    /// <summary>
     /// This is main Mod Loader class.
     /// </summary>
     public class ModLoader : MonoBehaviour
@@ -83,7 +93,7 @@ namespace MSCLoader
         private bool allModsLoaded = false;
         private bool IsModsResetting = false;
         private bool IsModsDoneResetting = false;
-        // private bool introCheck;
+        private static CurrentScene CurrentGameScene;
 
         public static bool unloader = false;
 
@@ -99,6 +109,14 @@ namespace MSCLoader
                 return false;
         }
 
+        /// <summary>
+        /// Get Current Game Scene
+        /// </summary>
+        /// <returns>CurrentScene enum</returns>
+        public static CurrentScene GetCurrentScene()
+        {
+            return CurrentGameScene;
+        }
         /// <summary>
         /// Mod config folder, use this if you want save something. 
         /// </summary>
@@ -177,8 +195,9 @@ namespace MSCLoader
         {
             if (Application.loadedLevelName == "MainMenu")
             {
-                QualitySettings.vSyncCount = 1; //vsync in menu (test)
+                CurrentGameScene = CurrentScene.MainMenu;
 
+                QualitySettings.vSyncCount = 1; //vsync in menu (test)
                 if (IsDoneLoading && GameObject.Find("MSCLoader Info") == null)
                 {
                     MainMenuInfo();
@@ -193,6 +212,8 @@ namespace MSCLoader
             }
             else if (Application.loadedLevelName == "Intro")
             {
+                CurrentGameScene = CurrentScene.NewGameIntro;
+
                 if (!IsModsDoneResetting && !IsModsResetting)
                 {
                     IsModsResetting = true;
@@ -201,6 +222,8 @@ namespace MSCLoader
             }
             else if (Application.loadedLevelName == "GAME")
             {
+                CurrentGameScene = CurrentScene.Game;
+
                 QualitySettings.vSyncCount = 0;
 
                 if (IsDoneLoading)
@@ -1013,7 +1036,7 @@ namespace MSCLoader
         {
             if (!fullyLoaded)
             {
-                //check if camera is active.
+                //check if camera is active. 
                 if (GameObject.Find("PLAYER/Pivot/Camera/FPSCamera") != null)
                 {
                     //load mods
