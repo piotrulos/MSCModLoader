@@ -20,6 +20,7 @@ namespace MSCLoader
         private Keybind menuKey = new Keybind("Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
         public static Settings expWarning = new Settings("mscloader_expWarning", "Show experimental warning", true);
         public static Settings modPath = new Settings("mscloader_modPath", "Show mods folder", true);
+        private static Settings modSetButton = new Settings("mscloader_modSetButton", "Show settings button in bottom right corner", true, ModSettingsToggle);
         public static Settings enGarage = new Settings("mscloader_enGarage", "Enable \"MSC Garage\"", false,EnableGarageToggle);
         private static Settings authKey = new Settings("mscloader_authKey", "\"MSC Garage\" Auth-key",string.Empty);
 
@@ -32,14 +33,23 @@ namespace MSCLoader
         public GameObject Checkbox, setBtn, slider, textBox, header;
         public GameObject Button_ms;
 
+       static ModSettings_menu instance;
+
         public override void ModSettings()
         {
+            instance = this;
             Settings.AddHeader(this, "Basic Settings");
             Settings.AddCheckBox(this, expWarning);            
             Settings.AddCheckBox(this, modPath);
-          //  Settings.AddHeader(this, "Garage Settings");
-           // Settings.AddCheckBox(this, enGarage);
-         //   Settings.AddTextBox(this, authKey, "Paste your auth-key here...");
+            Settings.AddCheckBox(this, modSetButton);
+          //Settings.AddHeader(this, "Garage Settings");
+          //Settings.AddCheckBox(this, enGarage);
+          //Settings.AddTextBox(this, authKey, "Paste your auth-key here...");
+        }
+
+        private static void ModSettingsToggle()
+        {
+            instance.Button_ms.SetActive((bool)modSetButton.GetValue());
         }
 
         private static void EnableGarageToggle()
@@ -115,6 +125,8 @@ namespace MSCLoader
             Button_ms = GameObject.Instantiate(Button_ms);
             Button_ms.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
             Button_ms.GetComponent<Button>().onClick.AddListener(() => settings.toggleVisibility());
+            if (!(bool)modSetButton.GetValue())
+                Button_ms.SetActive(false);
             ab.Unload(false);
         }
 
@@ -280,7 +292,7 @@ namespace MSCLoader
             {
                 settings.toggleVisibility();
             }
-            if (Application.loadedLevelName != "MainMenu")
+            if (Application.loadedLevelName != "MainMenu" && (bool)modSetButton.GetValue())
             {
                 if (GameObject.Find("Systems/OptionsMenu/Menu") != null)
                 {
