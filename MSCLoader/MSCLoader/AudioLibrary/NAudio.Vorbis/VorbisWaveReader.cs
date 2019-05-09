@@ -5,6 +5,7 @@ using System.IO;
 
 namespace NAudio.Vorbis
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public class VorbisWaveReader : WaveStream, IDisposable, ISampleProvider, IWaveProvider
     {
         private VorbisReader _reader;
@@ -36,6 +37,7 @@ namespace NAudio.Vorbis
         }
 
         public override WaveFormat WaveFormat => _waveFormat;
+
 
         public override long Length => (long)(_reader.TotalTime.TotalSeconds * _waveFormat.SampleRate * _waveFormat.Channels * sizeof(float));
 
@@ -120,39 +122,40 @@ namespace NAudio.Vorbis
             }
         }
 
-        /// <summary>
-        /// Gets the encoder's upper bitrate of the current selected Vorbis stream
-        /// </summary>
+        // <summary>
+        // Gets the encoder's upper bitrate of the current selected Vorbis stream
+        // </summary>
         public int UpperBitrate => _reader.UpperBitrate;
 
-        /// <summary>
-        /// Gets the encoder's nominal bitrate of the current selected Vorbis stream
-        /// </summary>
+        // <summary>
+        // Gets the encoder's nominal bitrate of the current selected Vorbis stream
+        // </summary>
         public int NominalBitrate => _reader.NominalBitrate;
 
-        /// <summary>
-        /// Gets the encoder's lower bitrate of the current selected Vorbis stream
-        /// </summary>
+        // <summary>
+        // Gets the encoder's lower bitrate of the current selected Vorbis stream
+        // </summary>
         public int LowerBitrate => _reader.LowerBitrate;
 
-        /// <summary>
-        /// Gets the encoder's vendor string for the current selected Vorbis stream
-        /// </summary>
+        // <summary>
+        // Gets the encoder's vendor string for the current selected Vorbis stream
+        // </summary>
         public string Vendor => _reader.Vendor;
 
-        /// <summary>
-        /// Gets the comments in the current selected Vorbis stream
-        /// </summary>
+        // <summary>
+        // Gets the comments in the current selected Vorbis stream
+        // </summary>
         public string[] Comments => _reader.Comments;
 
-        /// <summary>
-        /// Gets the number of bits read that are related to framing and transport alone
-        /// </summary>
+        // <summary>
+        // Gets the number of bits read that are related to framing and transport alone
+        // </summary>
         public long ContainerOverheadBits => _reader.ContainerOverheadBits;
 
-        /// <summary>
-        /// Gets stats from each decoder stream available
-        /// </summary>
+        // <summary>
+        // Gets stats from each decoder stream available
+        // </summary>
         public IVorbisStreamStatus[] Stats => _reader.Stats;
     }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

@@ -16,13 +16,16 @@ namespace MSCLoader
         public override string Name => "Settings (Main)";
         public override string Version => ModLoader.Version;
         public override string Author => "piotrulos";
-   
+
         private Keybind menuKey = new Keybind("Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
+
         public static Settings expWarning = new Settings("mscloader_expWarning", "Show experimental warning", true);
-        public static Settings modPath = new Settings("mscloader_modPath", "Show mods folder", true);
+        public static Settings modPath = new Settings("mscloader_modPath", "Show mods folder", true, ModLoader.MainMenuPath);
         private static Settings modSetButton = new Settings("mscloader_modSetButton", "Show settings button in bottom right corner", true, ModSettingsToggle);
-        public static Settings enGarage = new Settings("mscloader_enGarage", "Enable \"MSC Garage\"", false,EnableGarageToggle);
-        private static Settings authKey = new Settings("mscloader_authKey", "\"MSC Garage\" Auth-key",string.Empty);
+        public static Settings forceMenuVsync = new Settings("mscloader_forceMenuVsync", "60FPS limit in Main Menu", true, VSyncSwitchCheckbox);
+
+        public static Settings enGarage = new Settings("mscloader_enGarage", "Enable \"MSC Garage\"", false, EnableGarageToggle);
+        private static Settings authKey = new Settings("mscloader_authKey", "\"MSC Garage\" Auth-key", string.Empty);
 
         public SettingsView settings;
         public GameObject UI;
@@ -33,18 +36,19 @@ namespace MSCLoader
         public GameObject Checkbox, setBtn, slider, textBox, header;
         public GameObject Button_ms;
 
-       static ModSettings_menu instance;
+        static ModSettings_menu instance;
 
         public override void ModSettings()
         {
             instance = this;
             Settings.AddHeader(this, "Basic Settings");
-            Settings.AddCheckBox(this, expWarning);            
+            Settings.AddCheckBox(this, expWarning);
             Settings.AddCheckBox(this, modPath);
             Settings.AddCheckBox(this, modSetButton);
-          //Settings.AddHeader(this, "Garage Settings");
-          //Settings.AddCheckBox(this, enGarage);
-          //Settings.AddTextBox(this, authKey, "Paste your auth-key here...");
+            Settings.AddCheckBox(this, forceMenuVsync);
+            //Settings.AddHeader(this, "Garage Settings");
+            //Settings.AddCheckBox(this, enGarage);
+            //Settings.AddTextBox(this, authKey, "Paste your auth-key here...");
         }
 
         private static void ModSettingsToggle()
@@ -63,6 +67,17 @@ namespace MSCLoader
         private static void OpenAuthKeyWebsite()
         {
             Steamworks.SteamFriends.ActivateGameOverlayToWebPage("http://localhost/msc_garage/");
+        }
+
+        private static void VSyncSwitchCheckbox()
+        {
+            if (ModLoader.GetCurrentScene() == CurrentScene.MainMenu)
+            {
+                if ((bool)forceMenuVsync.GetValue())
+                    QualitySettings.vSyncCount = 1;
+                else
+                    QualitySettings.vSyncCount = 0;
+            }
         }
         public override void OnMenuLoad()
         {
@@ -173,7 +188,7 @@ namespace MSCLoader
 
             KeybindList list = new KeybindList();
             string path = Path.Combine(ModLoader.GetModConfigFolder(mod), "keybinds.json");
-            
+
             foreach (Keybind bind in Keybind.Get(mod))
             {
                 Keybinds keybinds = new Keybinds
@@ -190,7 +205,7 @@ namespace MSCLoader
             File.WriteAllText(path, serializedData);
 
         }
-   
+
         // Save settings for a single mod to config file.
         public static void SaveSettings(Mod mod)
         {
@@ -241,7 +256,7 @@ namespace MSCLoader
                 keybinds = JsonConvert.DeserializeObject<KeybindList>(serializedData);
                 if (keybinds.keybinds.Count == 0)
                     continue;
-                foreach(var kb in keybinds.keybinds)
+                foreach (var kb in keybinds.keybinds)
                 {
                     Keybind bind = Keybind.Keybinds.Find(x => x.Mod == mod && x.ID == kb.ID);
                     if (bind == null)
@@ -301,7 +316,7 @@ namespace MSCLoader
                 }
                 else
                 {
-                    if(Button_ms.activeSelf)
+                    if (Button_ms.activeSelf)
                         Button_ms.SetActive(false);
 
                 }

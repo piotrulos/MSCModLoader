@@ -6,6 +6,8 @@ using UnityEngine;
 
 namespace AudioLibrary
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
     public enum AudioFormat
     {
         wav,
@@ -127,4 +129,6 @@ namespace AudioLibrary
             base.Dispose(disposing);
         }
     }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+
 }

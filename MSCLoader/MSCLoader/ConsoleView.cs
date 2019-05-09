@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace MSCLoader
@@ -17,7 +18,6 @@ namespace MSCLoader
         {
             if (controller != null)
             {
-                controller.visibilityChanged += onVisibilityChanged;
                 controller.logChanged += onLogChanged;
             }
             updateLogStr(controller.log);
@@ -25,7 +25,6 @@ namespace MSCLoader
 
         ~ConsoleView()
         {
-            controller.visibilityChanged -= onVisibilityChanged;
             controller.logChanged -= onLogChanged;
         }
 
@@ -47,11 +46,6 @@ namespace MSCLoader
             viewContainer.SetActive(visible);
         }
 
-        void onVisibilityChanged(bool visible)
-        {
-            setVisibility(visible);
-        }
-
         void onLogChanged(string[] newLog)
         {
             updateLogStr(newLog);
@@ -65,7 +59,7 @@ namespace MSCLoader
             }
             else
             {
-                logTextArea.text = string.Join("\n", newLog);
+                logTextArea.text = string.Join(Environment.NewLine, newLog);
             }
         }
 

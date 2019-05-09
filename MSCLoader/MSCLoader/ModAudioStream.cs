@@ -28,6 +28,10 @@ namespace MSCLoader
         private bool done = false;
         private string bufferInfo;
 
+        /// <summary>
+        /// Plays the stream
+        /// </summary>
+        /// <param name="streamURL">stream url</param>
         public void PlayStream(string streamURL)
         {
             if(audioSource == null)
@@ -37,6 +41,9 @@ namespace MSCLoader
             if(showDebug)
                 showDebugInfo = true;
         }
+        /// <summary>
+        /// Stops the stream
+        /// </summary>
         public void StopStream()
         {
             mp3s.Dispose();

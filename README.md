@@ -22,6 +22,14 @@ A documentation for MSCLoader is avaliable [here](https://github.com/piotrulos/M
 7. Navigate to your selected Mods folder 
 8. Put your plugins in the mods folder and your ready!
 
+## License
+MSCLoader is licensed under **GNU General Public License v3.0 (GPL v3)**   
+
+## Used Libriaries
+[NAudio](https://github.com/naudio/NAudio)/[NVorbis](https://github.com/ioctlLR/NVorbis) - **Microsoft Public License (Ms-PL)**   
+[Ionic.Zip](https://archive.codeplex.com/?p=dotnetzip) (DotNetZip) - **Microsoft Public License (Ms-PL)**   
+[Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json) - **MIT License (MIT)**    
+
 ## Like My Work?
 If you want you can buy me a beer :)   
 Paypal: [Paypal.me](https://www.paypal.me/piotrulos/0eur)  
@@ -29,4 +37,4 @@ BTC/BCH: 1NLRvUXHLhuLz5erVWyXdY7i8KmfCSjJgP
 Thanks for all donations, even small ammount helps.
 
 #### Credit
-**djoe45** for MSCLoader that was based on **Longwelwind** and **TheNoob454** work ([PhiPatcher](https://github.com/Longwelwind/PhiScript) and [PBLoader](https://github.com/TheNoob454/PBLoader))
+**djoe45** for MSCLoader v0.1 that was based on **Longwelwind** and **TheNoob454** work ([PhiPatcher](https://github.com/Longwelwind/PhiScript) and [PBLoader](https://github.com/TheNoob454/PBLoader))

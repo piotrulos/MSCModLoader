@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace MSCLoader
@@ -102,7 +101,12 @@ namespace MSCLoader
                     break;
                 }
             }
-            modButton.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = name;
+
+            if (name.Length > 24)
+                modButton.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = string.Format("{0}...", name.Substring(0, 22));
+            else
+                modButton.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = name;
+
             modButton.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = string.Format("by <color=orange>{0}</color>", author);
             modButton.transform.GetChild(1).GetChild(2).GetComponent<Text>().text = version;
             modButton.transform.SetParent(modView.transform, false);

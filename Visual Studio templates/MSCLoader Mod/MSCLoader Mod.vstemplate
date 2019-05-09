@@ -12,6 +12,10 @@
     <ProvideDefaultName>true</ProvideDefaultName>
     <LocationField>Enabled</LocationField>
     <EnableLocationBrowseButton>true</EnableLocationBrowseButton>
+    <LanguageTag>C#</LanguageTag>
+    <PlatformTag>windows</PlatformTag>
+    <PlatformTag>unity</PlatformTag>
+    <ProjectTypeTag>Game Mod</ProjectTypeTag>
   </TemplateData>
   <TemplateContent>
     
