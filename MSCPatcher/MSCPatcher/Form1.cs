@@ -214,7 +214,7 @@ namespace MSCPatcher
             {
                 //Remove old backup and patch new game file.
                 Log.Write("Removing old backup!", true, true);
-                Patcher.DeleteIfExists(String.Format("{0}.backup", AssemblyFullPath));
+                Patcher.DeleteIfExists(string.Format("{0}.backup", AssemblyFullPath));
 
                 StartPatching();
             }

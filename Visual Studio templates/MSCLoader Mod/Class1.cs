@@ -14,6 +14,11 @@ namespace $safeprojectname$
         // This will create subfolder in Assets folder for your mod.
         public override bool UseAssetsFolder => false;
 
+        public override void OnNewGame()
+        {
+            // Called once, when starting a New Game, you can reset your saves here
+        }
+
         public override void OnLoad()
         {
             // Called once, when mod is loading after game is fully loaded

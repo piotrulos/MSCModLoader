@@ -4,6 +4,7 @@ using System.Text;
 
 namespace AudioLibrary.MP3_Streaming
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public delegate void StreamTitleChangedEventHandler(object sender, StreamTitleChangedEventArgs e);
     public class StreamTitleChangedEventArgs : EventArgs
     {
@@ -33,9 +34,9 @@ namespace AudioLibrary.MP3_Streaming
 
         private long pos;
 
-        /// <summary>
-        /// Is fired, when a new StreamTitle is received
-        /// </summary>
+        // <summary>
+        // Is fired, when a new StreamTitle is received
+        // </summary>
         public event StreamTitleChangedEventHandler StreamTitleChanged;
 
         public ReadFullyStream(Stream respStream)
@@ -44,10 +45,10 @@ namespace AudioLibrary.MP3_Streaming
             connected = true;
         }
 
-        /// <summary>
-        /// Parses the received Meta Info
-        /// </summary>
-        /// <param name="metaInfo"></param>
+        // <summary>
+        // Parses the received Meta Info
+        // </summary>
+        // <param name="metaInfo"></param>
         private void ParseMetaInfo(byte[] metaInfo)
         {
             string metaString = Encoding.ASCII.GetString(metaInfo);
@@ -59,64 +60,64 @@ namespace AudioLibrary.MP3_Streaming
             }
         }
 
-        /// <summary>
-        /// Fires the StreamTitleChanged event
-        /// </summary>
+        // <summary>
+        // Fires the StreamTitleChanged event
+        // </summary>
         protected virtual void OnStreamTitleChanged()
         {
             StreamTitleChanged?.Invoke(this, new StreamTitleChangedEventArgs(StreamTitle));
         }
 
-        /// <summary>
-        /// Gets a value that indicates whether the ShoutcastStream supports reading.
-        /// </summary>
+        // <summary>
+        // Gets a value that indicates whether the ShoutcastStream supports reading.
+        // </summary>
         public override bool CanRead => connected;
 
-        /// <summary>
-        /// Gets a value that indicates whether the ShoutcastStream supports seeking.
-        /// This property will always be false.
-        /// </summary>
+        // <summary>
+        // Gets a value that indicates whether the ShoutcastStream supports seeking.
+        // This property will always be false.
+        // </summary>
         public override bool CanSeek => false;
 
-        /// <summary>
-        /// Gets a value that indicates whether the ShoutcastStream supports writing.
-        /// This property will always be false.
-        /// </summary>
+        // <summary>
+        // Gets a value that indicates whether the ShoutcastStream supports writing.
+        // This property will always be false.
+        // </summary>
         public override bool CanWrite => false;
 
 
-        /// <summary>
-        /// Flushes data from the stream.
-        /// This method is currently not supported
-        /// </summary>
+        // <summary>
+        // Flushes data from the stream.
+        // This method is currently not supported
+        // </summary>
         public override void Flush()
         {
             return;
         }
 
-        /// <summary>
-        /// Gets the length of the data available on the Stream.
-        /// This property is not currently supported and always thows a <see cref="NotSupportedException"/>.
-        /// </summary>
+        // <summary>
+        // Gets the length of the data available on the Stream.
+        // This property is not currently supported and always thows a <see cref="NotSupportedException"/>.
+        // </summary>
         public override long Length => pos;
 
-        /// <summary>
-        /// Gets or sets the current position in the stream.
-        /// This property is not currently supported and always thows a <see cref="NotSupportedException"/>.
-        /// </summary>
+        // <summary>
+        // Gets or sets the current position in the stream.
+        // This property is not currently supported and always thows a <see cref="NotSupportedException"/>.
+        // </summary>
         public override long Position
         {
             get => pos;
             set => throw new NotSupportedException();
         }
 
-        /// <summary>
-        /// Reads data from the ShoutcastStream.
-        /// </summary>
-        /// <param name="buffer">An array of bytes to store the received data from the ShoutcastStream.</param>
-        /// <param name="offset">The location in the buffer to begin storing the data to.</param>
-        /// <param name="count">The number of bytes to read from the ShoutcastStream.</param>
-        /// <returns>The number of bytes read from the ShoutcastStream.</returns>
+        // <summary>
+        // Reads data from the ShoutcastStream.
+        // </summary>
+        // <param name="buffer">An array of bytes to store the received data from the ShoutcastStream.</param>
+        // <param name="offset">The location in the buffer to begin storing the data to.</param>
+        // <param name="count">The number of bytes to read from the ShoutcastStream.</param>
+        // <returns>The number of bytes read from the ShoutcastStream.</returns>
         public override int Read(byte[] buffer, int offset, int count)
         {
             try
@@ -167,38 +168,40 @@ namespace AudioLibrary.MP3_Streaming
             }
         }
 
-        /// <summary>
-        /// Closes the ShoutcastStream.
-        /// </summary>
+        // <summary>
+        // Closes the ShoutcastStream.
+        // </summary>
         public override void Close()
         {
             connected = false;
             netStream.Close();
         }
 
-        /// <summary>
-        /// Sets the current position of the stream to the given value.
-        /// This Method is not currently supported and always throws a <see cref="NotSupportedException"/>.
-        /// </summary>
-        /// <param name="offset"></param>
-        /// <param name="origin"></param>
-        /// <returns></returns>
+        // <summary>
+        // Sets the current position of the stream to the given value.
+        // This Method is not currently supported and always throws a <see cref="NotSupportedException"/>.
+        // </summary>
+        // <param name="offset"></param>
+        // <param name="origin"></param>
+        // <returns></returns>
         public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
 
-        /// <summary>
-        /// Sets the length of the stream.
-        /// This Method always throws a <see cref="NotSupportedException"/>.
-        /// </summary>
-        /// <param name="value"></param>
+        // <summary>
+        // Sets the length of the stream.
+        // This Method always throws a <see cref="NotSupportedException"/>.
+        // </summary>
+        // <param name="value"></param>
         public override void SetLength(long value) => throw new NotSupportedException();
 
-        /// <summary>
-        /// Writes data to the ShoutcastStream.
-        /// This method is not currently supported and always throws a <see cref="NotSupportedException"/>.
-        /// </summary>
-        /// <param name="buffer"></param>
-        /// <param name="offset"></param>
-        /// <param name="count"></param>
+        // <summary>
+        // Writes data to the ShoutcastStream.
+        // This method is not currently supported and always throws a <see cref="NotSupportedException"/>.
+        // </summary>
+        // <param name="buffer"></param>
+        // <param name="offset"></param>
+        // <param name="count"></param>
         public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
     }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+
 }

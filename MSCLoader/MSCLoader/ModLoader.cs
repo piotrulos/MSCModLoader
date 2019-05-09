@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Reflection;
 using UnityEngine;
@@ -18,8 +17,17 @@ namespace MSCLoader
     /// </summary>
     public enum CurrentScene
     {
+        /// <summary>
+        /// Main Menu
+        /// </summary>
         MainMenu,
+        /// <summary>
+        /// Game Scene
+        /// </summary>
         Game,
+        /// <summary>
+        /// Intro for new game
+        /// </summary>
         NewGameIntro,
     }
 
@@ -52,12 +60,12 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string Version = "0.4.7";
+        public static readonly string Version = "1.0";
 
         /// <summary>
         /// Is this version of ModLoader experimental (this is NOT game experimental branch)
         /// </summary>
-        public static readonly bool experimental = true;
+        public static readonly bool experimental = false;
 
         /// <summary>
         /// Is DevMode active
@@ -84,7 +92,7 @@ namespace MSCLoader
         private GUISkin guiskin;
         private ModCore modCore;
 
-        private string serverURL = "http://localhost/msc_garage"; //localhost for testing only
+        private string serverURL = "http://my-summer-car.ml"; //localhost for testing only
 
         private bool IsDoneLoading = false;
         private bool IsModsLoading = false;
@@ -95,7 +103,9 @@ namespace MSCLoader
         private bool IsModsDoneResetting = false;
         private static CurrentScene CurrentGameScene;
 
+#pragma warning disable CS1591 
         public static bool unloader = false;
+#pragma warning restore CS1591 
 
         /// <summary>
         /// Check if steam is present
@@ -117,6 +127,7 @@ namespace MSCLoader
         {
             return CurrentGameScene;
         }
+
         /// <summary>
         /// Mod config folder, use this if you want save something. 
         /// </summary>
@@ -196,8 +207,8 @@ namespace MSCLoader
             if (Application.loadedLevelName == "MainMenu")
             {
                 CurrentGameScene = CurrentScene.MainMenu;
-
-                QualitySettings.vSyncCount = 1; //vsync in menu (test)
+                if ((bool)ModSettings_menu.forceMenuVsync.GetValue())
+                    QualitySettings.vSyncCount = 1; //vsync in menu
                 if (IsDoneLoading && GameObject.Find("MSCLoader Info") == null)
                 {
                     MainMenuInfo();
@@ -223,8 +234,8 @@ namespace MSCLoader
             else if (Application.loadedLevelName == "GAME")
             {
                 CurrentGameScene = CurrentScene.Game;
-
-                QualitySettings.vSyncCount = 0;
+                if ((bool)ModSettings_menu.forceMenuVsync.GetValue())
+                    QualitySettings.vSyncCount = 0;
 
                 if (IsDoneLoading)
                 {
@@ -244,6 +255,10 @@ namespace MSCLoader
             }
         }
 
+        /// <summary>
+        /// Set Auth key (not used)
+        /// </summary>
+        /// <param name="ak">auth key</param>
         public static void SetAuthKey(string ak) => authKey = ak;
 
         private void Init()
@@ -311,12 +326,12 @@ namespace MSCLoader
                     steamID = Steamworks.SteamUser.GetSteamID().ToString();
                     ModConsole.Print(string.Format("<color=orange>Hello <color=green><b>{0}</b></color>!</color>", Steamworks.SteamFriends.GetPersonaName()));
                     WebClient webClient = new WebClient();
-                    webClient.Proxy = new WebProxy("127.0.0.1:8888");
-                    if ((bool)ModSettings_menu.enGarage.GetValue())
+                    //  webClient.Proxy = new WebProxy("127.0.0.1:8888"); //ONLY FOR TESTING
+                    webClient.DownloadStringCompleted += sAuthCheckCompleted;
+                    webClient.DownloadStringAsync(new Uri(string.Format("{0}/sauth.php?sid={1}", serverURL, steamID)));
+                    //return;//Temporary 
+                   /* if ((bool)ModSettings_menu.enGarage.GetValue())
                     {
-                        webClient.DownloadStringCompleted += sAuthCheckCompleted;
-                        webClient.DownloadStringAsync(new Uri(string.Format("{0}/sauth.php?sid={1}", serverURL, steamID)));
-                        return;
                         webClient.DownloadStringCompleted += AuthCheck;                      
                         webClient.DownloadStringAsync(new Uri(string.Format("{0}/auth.php?sid={1}&auth={2}", serverURL, steamID, authKey)));
                     }
@@ -324,7 +339,7 @@ namespace MSCLoader
                     {
                         webClient.DownloadStringCompleted += sAuthCheckCompleted;
                         webClient.DownloadStringAsync(new Uri(string.Format("{0}/sauth.php?sid={1}", serverURL, steamID)));
-                    }
+                    }*/
                 }
                 catch (Exception e)
                 {
@@ -509,6 +524,10 @@ namespace MSCLoader
                             steamID = null;
                             ModConsole.Error("SteamAPI failed with error: " + ex.Message);
                         }
+                        else
+                        {
+                            UnityEngine.Debug.Log("offline");
+                        }
                     }
                     else
                     {
@@ -562,6 +581,13 @@ namespace MSCLoader
             ab.Unload(false); //freeup memory
         }
 
+        /// <summary>
+        /// Toggle main menu path via settings
+        /// </summary>
+        public static void MainMenuPath()
+        {
+            Instance.mainMenuInfo.transform.GetChild(1).gameObject.SetActive((bool)ModSettings_menu.modPath.GetValue());
+        }
         private void MainMenuInfo()
         {
             Text info, mf, modUpdates;
@@ -572,9 +598,9 @@ namespace MSCLoader
             info = mainMenuInfo.transform.GetChild(0).gameObject.GetComponent<Text>();
             mf = mainMenuInfo.transform.GetChild(1).gameObject.GetComponent<Text>();
             modUpdates = mainMenuInfo.transform.GetChild(2).gameObject.GetComponent<Text>();
-            info.text = string.Format("Mod Loader MSCLoader v{0} is ready! (<color=orange>Checking for updates...</color>)", Version);
+            info.text = string.Format("Mod Loader MSCLoader <color=cyan>v{0}</color> is ready! (<color=orange>Checking for updates...</color>)", Version);
             WebClient client = new WebClient();
-            client.Proxy = new WebProxy("127.0.0.1:8888"); //ONLY FOR TESTING
+            //client.Proxy = new WebProxy("127.0.0.1:8888"); //ONLY FOR TESTING
             client.DownloadStringCompleted += VersionCheckCompleted;
             string branch = "unknown";
             if (experimental)
@@ -583,8 +609,8 @@ namespace MSCLoader
                 branch = "stable";
             client.DownloadStringAsync(new Uri(string.Format("{0}/ver.php?core={1}", serverURL, branch)));
 
-            if ((bool)ModSettings_menu.modPath.GetValue())
-                mf.text = string.Format("Mods folder: {0}", ModsFolder);
+            mf.text = string.Format("<color=orange>Mods folder:</color> {0}", ModsFolder);
+            MainMenuPath();
             modUpdates.text = string.Empty;
             mainMenuInfo.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
         }
@@ -618,14 +644,14 @@ namespace MSCLoader
                     int i = expBuild.CompareTo(result[1].Trim());
                     if (i != 0)
                         if (experimental)
-                            info.text = string.Format("MSCLoader v{0} is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>] (<color=orange>New build available: <b>{2}</b></color>)", Version, expBuild, result[1]);
+                            info.text = string.Format("MSCLoader <color=cyan>v{0}</color> is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>] (<color=orange>New build available: <b>{2}</b></color>)", Version, expBuild, result[1]);
                         else
-                            info.text = string.Format("MSCLoader v{0} is ready! (<color=orange>New version available: <b>v{1}</b></color>)", Version, result[1].Trim());
+                            info.text = string.Format("MSCLoader <color=cyan>v{0}</color> is ready! (<color=orange>New version available: <b>v{1}</b></color>)", Version, result[1].Trim());
                     else if (i == 0)
                         if (experimental)
-                            info.text = string.Format("MSCLoader v{0} is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>]", Version, expBuild);
+                            info.text = string.Format("MSCLoader <color=cyan>v{0}</color> is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>]", Version, expBuild);
                         else
-                            info.text = string.Format("MSCLoader v{0} is ready! (<color=lime>Up to date</color>)", Version);
+                            info.text = string.Format("MSCLoader <color=cyan>v{0}</color> is ready! (<color=lime>Up to date</color>)", Version);
                 }
                 else
                 {
@@ -640,9 +666,9 @@ namespace MSCLoader
                     ModConsole.Error(ex.ToString());
                 UnityEngine.Debug.Log(ex);
                 if (experimental)
-                    info.text = string.Format("MSCLoader v{0} is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>]", Version, expBuild);
+                    info.text = string.Format("MSCLoader <color=cyan>v{0}</color> is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>]", Version, expBuild);
                 else
-                    info.text = string.Format("MSCLoader v{0} is ready!", Version);
+                    info.text = string.Format("MSCLoader <color=cyan>v{0}</color> is ready!", Version);
 
             }
             if (devMode)
@@ -832,7 +858,7 @@ namespace MSCLoader
             if (!File.Exists(Path.Combine(Application.dataPath, @"Managed\MSCGarage.dll")))
             {
                 WebClient client = new WebClient();
-                client.Proxy = new WebProxy("127.0.0.1:8888"); //ONLY FOR TESTING
+                //client.Proxy = new WebProxy("127.0.0.1:8888"); //ONLY FOR TESTING
                 client.DownloadFileCompleted += DownloadGarageCompleted;
                 client.DownloadProgressChanged += DownloadGarageProgress;
                 client.DownloadFileAsync(new Uri(string.Format("{0}/Garage/test.zip",serverURL)), Path.Combine(Application.dataPath, @"Managed\test.zip"),loading);
@@ -1036,8 +1062,8 @@ namespace MSCLoader
         {
             if (!fullyLoaded)
             {
-                //check if camera is active. 
-                if (GameObject.Find("PLAYER/Pivot/Camera/FPSCamera") != null)
+                //check if camera is active.
+                if (GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera") != null)
                 {
                     //load mods
                     allModsLoaded = false;

@@ -1,12 +1,10 @@
-﻿using UnityEngine;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 
 namespace MSCLoader
 {
-    #pragma warning disable CS1591 
+#pragma warning disable CS1591
     public delegate void CommandHandler(string[] args);
 
     public class ConsoleController
@@ -14,9 +12,6 @@ namespace MSCLoader
         // Used to communicate with ConsoleView
         public delegate void LogChangedHandler(string[] log);
         public event LogChangedHandler logChanged;
-        public delegate void VisibilityChangedHandler(bool visible);
-        public event VisibilityChangedHandler visibilityChanged;
-
         
         // Object to hold information about each command
         class CommandRegistration
