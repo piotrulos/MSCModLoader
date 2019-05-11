@@ -60,7 +60,7 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string Version = "1.0";
+        public static readonly string Version = "1.0.1";
 
         /// <summary>
         /// Is this version of ModLoader experimental (this is NOT game experimental branch)
@@ -641,7 +641,11 @@ namespace MSCLoader
                 {
                     if (result[1].Trim().Length > 8)
                         throw new Exception("Parse Error, please report that problem!");
-                    int i = expBuild.CompareTo(result[1].Trim());
+                    int i;
+                    if (experimental)
+                        i = expBuild.CompareTo(result[1].Trim());
+                    else
+                        i = Version.CompareTo(result[1].Trim());
                     if (i != 0)
                         if (experimental)
                             info.text = string.Format("MSCLoader <color=cyan>v{0}</color> is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>] (<color=orange>New build available: <b>{2}</b></color>)", Version, expBuild, result[1]);
@@ -997,13 +1001,26 @@ namespace MSCLoader
                         Directory.CreateDirectory(AssetsFolder + mod.ID);
                     }
                 }
-                if (mod.LoadInMenu)
-                {
-                    mod.OnMenuLoad();
-                    ModSettings_menu.LoadBinds();
-                }
                 mod.compiledVersion = msver;
                 LoadedMods.Add(mod);
+                try
+                {
+                    if (mod.LoadInMenu)
+                    {
+                        mod.OnMenuLoad();
+                        ModSettings_menu.LoadBinds();
+                    }
+                }
+                catch (Exception e)
+                {
+                    StackFrame frame = new StackTrace(e, true).GetFrame(0);
+
+                    string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
+                    ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
+                    if (devMode)
+                        ModConsole.Error(e.ToString());
+                    UnityEngine.Debug.Log(e);
+                }
             }
             else
             {

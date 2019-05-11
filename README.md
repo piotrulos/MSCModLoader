@@ -1,6 +1,7 @@
 [![](https://img.shields.io/github/release/piotrulos/MSCModLoader.svg?style=flat-square)](#) 
-[![](https://img.shields.io/badge/experimental-v1.0-yellow.svg?style=flat-square)](#) 
+[![](https://img.shields.io/badge/experimental-v1.0.1-yellow.svg?style=flat-square)](#) 
 [![](https://img.shields.io/github/downloads/piotrulos/MSCModLoader/total.svg?style=flat-square)](#) 
+[![](https://img.shields.io/github/license/piotrulos/MSCModLoader.svg?style=flat-square)](#) 
 
 # MSCLoader
 A mod loader for My Summer Car 
@@ -14,7 +15,7 @@ A documentation for MSCLoader is avaliable [here](https://github.com/piotrulos/M
 
 ## Installation
 1. Download the latest release of MSCLoader from [here](https://github.com/piotrulos/MSCModLoader/releases)
-2. Unpack anywhere you want
+2. Unpack anywhere you want **outside game folder**
 3. Open MSCPatcher.exe and click on "MSC Folder" to select game folder (in \Steam\steamapps\common\My Summer Car\)
 4. MSCPatcher will detect what version of MSCLoader you have, and allow you to update.
 5. You can select location of Mods folder if you want, or leave default

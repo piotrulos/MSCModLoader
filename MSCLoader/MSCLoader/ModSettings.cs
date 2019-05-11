@@ -98,7 +98,7 @@ namespace MSCLoader
 
             KeyBind = ab.LoadAsset<GameObject>("KeyBind.prefab");
 
-            Button_ms = ab.LoadAsset<GameObject>("Button_ms");
+            Button_ms = ab.LoadAsset<GameObject>("Button_ms.prefab");
             //For mod settings
             Checkbox = ab.LoadAsset<GameObject>("Checkbox.prefab");
             setBtn = ab.LoadAsset<GameObject>("Button.prefab");
@@ -140,6 +140,7 @@ namespace MSCLoader
             Button_ms = GameObject.Instantiate(Button_ms);
             Button_ms.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
             Button_ms.GetComponent<Button>().onClick.AddListener(() => settings.toggleVisibility());
+            Button_ms.SetActive(true);
             if (!(bool)modSetButton.GetValue())
                 Button_ms.SetActive(false);
             ab.Unload(false);
