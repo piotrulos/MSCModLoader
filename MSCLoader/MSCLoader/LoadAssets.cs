@@ -36,8 +36,7 @@ namespace MSCLoader
 
             if (!File.Exists(fn))
             {
-                ModConsole.Error(string.Format("<b>LoadTexture() Error:</b>{1}File not found: {0}", fn, Environment.NewLine));
-                return null;
+                throw new FileNotFoundException(string.Format("<b>LoadTexture() Error:</b> File not found: {0}{1}", fn, Environment.NewLine), fn);
             }
             string ext = Path.GetExtension(fn).ToLower();
             if (ext == ".png" || ext == ".jpg")
@@ -64,9 +63,8 @@ namespace MSCLoader
             }
             else
             {
-                ModConsole.Error(string.Format("<b>LoadTexture() Error:</b>{1}Texture not supported: {0}", fileName, Environment.NewLine));
+                throw new NotSupportedException(string.Format("<b>LoadTexture() Error:</b> Texture not supported: {0}{1}", fileName, Environment.NewLine));
             }
-            return null;
         }
 
         /// <summary>
@@ -80,7 +78,7 @@ namespace MSCLoader
         /// <example>Example Code
         /// <code source="Examples.cs" region="LoadOBJ" lang="C#" />
         /// </example>
-        [Obsolete("LoadOBJ is deprecated, please use AssetBundles instead.")]
+        [Obsolete("LoadOBJ is deprecated, please use AssetBundles instead.", true)]
         public static GameObject LoadOBJ(Mod mod, string fileName, bool collider = true, bool rigidbody = false)
         {
             Mesh mesh = LoadOBJMesh(mod, fileName);
@@ -113,14 +111,13 @@ namespace MSCLoader
         /// <example>Example Code
         /// <code source="Examples.cs" region="LoadOBJMesh" lang="C#" />
         /// </example>
-        [Obsolete("LoadOBJMesh is deprecated, please use AssetBundles instead.")]
+        [Obsolete("LoadOBJMesh is deprecated, please use AssetBundles instead.", true)]
         public static Mesh LoadOBJMesh(Mod mod, string fileName)
         {
             string fn = Path.Combine(ModLoader.GetModAssetsFolder(mod), fileName);
             if (!File.Exists(fn))
             {
-                ModConsole.Error(string.Format("<b>LoadOBJ() Error:</b>{1}File not found: {0}", fn, Environment.NewLine));
-                return null;
+                throw new FileNotFoundException(string.Format("<b>LoadOBJ() Error:</b> File not found: {0}{1}", fn, Environment.NewLine), fn);
             }
             string ext = Path.GetExtension(fn).ToLower();
             if (ext == ".obj")
@@ -131,8 +128,7 @@ namespace MSCLoader
                 return mesh;
             }
             else
-                ModConsole.Error(string.Format("<b>LoadOBJ() Error:</b>{0}Only (*.obj) files are supported", Environment.NewLine));
-            return null;
+                throw new NotSupportedException(string.Format("<b>LoadOBJ() Error:</b> Only (*.obj) files are supported{0}", Environment.NewLine));
         }
 
 
@@ -164,8 +160,7 @@ namespace MSCLoader
             }
             else
             {
-                ModConsole.Error(string.Format("<b>LoadBundle() Error:</b>{1}File not found: {0}", bundleName, Environment.NewLine));
-                return null;
+                throw new FileNotFoundException(string.Format("<b>LoadBundle() Error:</b> File not found: <b>{0}</b>{1}", bundleName, Environment.NewLine), bundleName);
             }
         }
 
@@ -315,7 +310,7 @@ namespace MSCLoader
                 }
                 else
                 {
-                    ModConsole.Error(string.Format("<b>LoadTexture() Error:</b>{0}TGA texture is not 32 or 24 bit depth.", Environment.NewLine));
+                    throw new Exception(string.Format("<b>LoadTexture() Error:</b> TGA texture is not 32 or 24 bit depth.{0}", Environment.NewLine));
                 }
 
                 tex.SetPixels32(pulledColors);

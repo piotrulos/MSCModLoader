@@ -19,12 +19,12 @@ namespace MSCLoader
 
         private Keybind menuKey = new Keybind("Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
 
-        public static Settings expWarning = new Settings("mscloader_expWarning", "Show experimental warning", true);
-        public static Settings modPath = new Settings("mscloader_modPath", "Show mods folder", true, ModLoader.MainMenuPath);
+        internal static Settings expWarning = new Settings("mscloader_expWarning", "Show experimental warning", true);
+        internal static Settings modPath = new Settings("mscloader_modPath", "Show mods folder", true, ModLoader.MainMenuPath);
         private static Settings modSetButton = new Settings("mscloader_modSetButton", "Show settings button in bottom right corner", true, ModSettingsToggle);
-        public static Settings forceMenuVsync = new Settings("mscloader_forceMenuVsync", "60FPS limit in Main Menu", true, VSyncSwitchCheckbox);
+        internal static Settings forceMenuVsync = new Settings("mscloader_forceMenuVsync", "60FPS limit in Main Menu", true, VSyncSwitchCheckbox);
 
-        public static Settings enGarage = new Settings("mscloader_enGarage", "Enable \"MSC Garage\"", false, EnableGarageToggle);
+        internal static Settings enGarage = new Settings("mscloader_enGarage", "Enable \"MSC Garage\"", false, EnableGarageToggle);
         private static Settings authKey = new Settings("mscloader_authKey", "\"MSC Garage\" Auth-key", string.Empty);
 
         public SettingsView settings;
@@ -50,7 +50,10 @@ namespace MSCLoader
             //Settings.AddCheckBox(this, enGarage);
             //Settings.AddTextBox(this, authKey, "Paste your auth-key here...");
         }
-
+        public override void ModSettingsLoaded()
+        {
+            ModSettingsToggle();
+        }
         private static void ModSettingsToggle()
         {
             instance.Button_ms.SetActive((bool)modSetButton.GetValue());
@@ -98,7 +101,7 @@ namespace MSCLoader
 
             KeyBind = ab.LoadAsset<GameObject>("KeyBind.prefab");
 
-            Button_ms = ab.LoadAsset<GameObject>("Button_ms");
+            Button_ms = ab.LoadAsset<GameObject>("Button_ms.prefab");
             //For mod settings
             Checkbox = ab.LoadAsset<GameObject>("Checkbox.prefab");
             setBtn = ab.LoadAsset<GameObject>("Button.prefab");
@@ -140,6 +143,7 @@ namespace MSCLoader
             Button_ms = GameObject.Instantiate(Button_ms);
             Button_ms.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
             Button_ms.GetComponent<Button>().onClick.AddListener(() => settings.toggleVisibility());
+            Button_ms.SetActive(true);
             if (!(bool)modSetButton.GetValue())
                 Button_ms.SetActive(false);
             ab.Unload(false);
