@@ -10,10 +10,10 @@ namespace MSCLoader
 
     public class MSCUnloader : MonoBehaviour
     {
-        public bool reset;
+        internal bool reset;
         bool doReset = false;
 
-        public void MSCLoaderReset()
+        internal void MSCLoaderReset()
         {
             if (!reset) //to avoid endless loop
             {

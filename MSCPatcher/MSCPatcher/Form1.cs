@@ -36,7 +36,7 @@ namespace MSCPatcher
             form1 = this;
             InitializeComponent();
             Log.logBox = logBox;
-            if (File.Exists("Assembly-CSharp.dll") || File.Exists("UnityEngine.dll") || File.Exists("mysummercar.exe")) //check if idiot unpacked this to game folder.
+            if (File.Exists("Assembly-CSharp.dll") || File.Exists("UnityEngine.dll") || File.Exists("mysummercar.exe") || File.Exists("mainData") || File.Exists("mono.dll") || File.Exists("CSteamworks.dll")) //check if idiot unpacked this to game folder.
             {
                 if (MessageBox.Show("Did you read the instructions? (Readme.txt)", "Question for you!", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
@@ -80,13 +80,35 @@ namespace MSCPatcher
                     currentVersion = string.Format("{0}.{1}", mscLoaderVersion.FileMajorPart, mscLoaderVersion.FileMinorPart);
  
                 string version;
+                string res;
                 using (WebClient client = new WebClient())
                 {
                     client.QueryString.Add("core", "stable");
-                    version = client.DownloadString("http://my-summer-car.ml/ver.php");
+                    res = client.DownloadString("http://my-summer-car.ml/ver.php");
                 }
-                if (version.Trim().Length > 8)
-                    throw new Exception("Parse Error, please report that problem!");
+                string[] result = res.Split('|');
+                if (result[0] == "error")
+                {
+                    switch (result[1])
+                    {
+                        case "0":
+                            throw new Exception("Unknown branch");
+                        case "1":
+                            throw new Exception("Database connection error");
+                        default:
+                            throw new Exception("Unknown error");
+                    }
+                }
+                else if (result[0] == "ok")
+                {
+                    if (result[1].Trim().Length > 8)
+                        throw new Exception("Parse Error, please report that problem!");
+                    version = result[1].Trim();
+                }
+                else
+                {
+                    throw new Exception("Unknown server response.");
+                }
                 int i = currentVersion.CompareTo(version.Trim());
                 if (i != 0)
                 {
