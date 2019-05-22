@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" ?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="MSCLoaderTemplates.Piotrulos.40e0e374-6a16-47ae-87f8-009138faa324" Version="1.0" Language="en-US" Publisher="Piotrulos" />
+        <Identity Id="MSCLoaderTemplates.Piotrulos.40e0e374-6a16-47ae-87f8-009138faa324" Version="1.0.1" Language="en-US" Publisher="Piotrulos" />
         <DisplayName>MSCLoader Templates</DisplayName>
         <Description xml:space="preserve">MSCLoader Templates for vs2017 and vs2019</Description>
     </Metadata>
     <Installation>
-        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0,16.0]" />
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0,17.0)" />
     </Installation>
     <Dependencies>
     </Dependencies>

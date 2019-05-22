@@ -14,8 +14,9 @@
     <EnableLocationBrowseButton>true</EnableLocationBrowseButton>
     <LanguageTag>C#</LanguageTag>
     <PlatformTag>windows</PlatformTag>
-    <PlatformTag>unity</PlatformTag>
+    <PlatformTag>Unity</PlatformTag>
     <ProjectTypeTag>Game Mod</ProjectTypeTag>
+    <ProjectTypeTag>Plugin</ProjectTypeTag>
   </TemplateData>
   <TemplateContent>
     
