@@ -19,12 +19,14 @@ namespace MSCLoader
             public string command { get; private set; }
             public CommandHandler handler { get; private set; }
             public string help { get; private set; }
+            public bool showInHelp { get; private set; }
 
-            public CommandRegistration(string command, CommandHandler handler, string help)
+            public CommandRegistration(string command, CommandHandler handler, string help, bool showInHelp)
             {
                 this.command = command;
                 this.handler = handler;
                 this.help = help;
+                this.showInHelp = showInHelp;
             }
         }
 
@@ -41,17 +43,18 @@ namespace MSCLoader
         public ConsoleController()
         {
             RegisterCommand("help", HelpCommand, "This screen", "?");
-            RegisterCommand("clear", ClearConsole, "Clears console screen");
+            RegisterCommand("clear", ClearConsole, "Clears console screen", "cls");
         }
 
-        public void RegisterCommand(string command, CommandHandler handler, string help)
+        public void RegisterCommand(string command, CommandHandler handler, string help, bool inHelp = true)
         {
-            commands.Add(command, new CommandRegistration(command, handler, help));
+            commands.Add(command, new CommandRegistration(command, handler, help, inHelp));
         }
-        public void RegisterCommand(string command, CommandHandler handler, string help, string alias)
+        public void RegisterCommand(string command, CommandHandler handler, string help, string alias, bool inHelp = true)
         {
-            commands.Add(command, new CommandRegistration(command, handler, help));
-            commands.Add(alias, new CommandRegistration(command, handler, help));
+            CommandRegistration cmd = new CommandRegistration(command, handler, help, inHelp);
+            commands.Add(command, cmd);
+            commands.Add(alias, cmd);
         }
         void ClearConsole(string[] args)
         {
@@ -123,10 +126,10 @@ namespace MSCLoader
         {
             LinkedList<char> parmChars = new LinkedList<char>(commandString.ToCharArray());
             bool inQuote = false;
-            var node = parmChars.First;
+            LinkedListNode<char> node = parmChars.First;
             while (node != null)
             {
-                var next = node.Next;
+                LinkedListNode<char> next = node.Next;
                 if (node.Value == '"')
                 {
                     inQuote = !inQuote;
@@ -140,7 +143,7 @@ namespace MSCLoader
             }
             char[] parmCharsArr = new char[parmChars.Count];
             parmChars.CopyTo(parmCharsArr, 0);
-            return (new string(parmCharsArr)).Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            return new string(parmCharsArr).Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
         }
 
         void HelpCommand(string[] args)
@@ -149,7 +152,12 @@ namespace MSCLoader
             List<CommandRegistration> cmds = commands.Values.GroupBy(x => x.command).Select(g => g.First()).Distinct().ToList();
             foreach (CommandRegistration reg in cmds)
             {
-                AppendLogLine(string.Format("<color=orange><b>{0}</b></color>: {1}", reg.command, reg.help));
+                if(reg.showInHelp)
+                    AppendLogLine(string.Format("<color=orange><b>{0}</b></color>: {1}", reg.command, reg.help));
+            }
+            if(ModLoader.GetCurrentScene() != CurrentScene.Game)
+            {
+                AppendLogLine("<b><color=red>More commands may appear after you load a save...</color></b>");
             }
         }
     }

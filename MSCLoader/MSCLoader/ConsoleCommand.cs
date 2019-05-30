@@ -7,10 +7,7 @@
     /// title="Example ConsoleCommand Class" /></example>
     public abstract class ConsoleCommand
 	{
-        /// <summary>
-        /// ConsoleController Instance
-        /// </summary>
-        public static ConsoleController cc;
+        internal static ConsoleController cc;
 
 		/// <summary>
 		/// The name of the ConsoleCommand (What the user will have to type in console to trigger the command). Cannot contain spaces!
@@ -21,6 +18,12 @@
 		/// The help message that will be displayed for the command when the user types "help"
 		/// </summary>
 		public abstract string Help { get; }
+
+        /// <summary>
+        /// Show this command in help screen.
+        /// (Default true).
+        /// </summary>
+        public virtual bool ShowInHelp => true;
 
         /// <summary>
         /// The function that will get called when the command is ran.
@@ -39,7 +42,7 @@
         /// title="ConsoleCommand Add" /></example>
         public static void Add(ConsoleCommand cmd)
 		{
-            cc.RegisterCommand(cmd.Name.ToLower(), cmd.Run, cmd.Help);
+            cc.RegisterCommand(cmd.Name.ToLower(), cmd.Run, cmd.Help, cmd.ShowInHelp);
         }
 	}
 }
