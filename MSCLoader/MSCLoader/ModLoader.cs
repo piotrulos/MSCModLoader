@@ -65,7 +65,11 @@ namespace MSCLoader
         /// <summary>
         /// Is this version of ModLoader experimental (this is NOT game experimental branch)
         /// </summary>
+#if Debug
+        public static readonly bool experimental = true;
+#else
         public static readonly bool experimental = false;
+#endif
 
         /// <summary>
         /// Is DevMode active
