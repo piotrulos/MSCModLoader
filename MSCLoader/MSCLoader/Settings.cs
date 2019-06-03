@@ -182,10 +182,35 @@ namespace MSCLoader
         /// <param name="description">Short optional description for this button</param>
         /// <example><code source="SettingsExamples.cs" region="AddButton" lang="C#" 
         /// title="Add button" /></example>
-        public static void AddButton(Mod mod, Settings setting, string description = null)
+        public static void AddButton(Mod mod, Settings setting, string description = null) => AddButton(mod, setting, new UnityEngine.Color32(0, 113, 166, 255), new UnityEngine.Color32(0, 153, 166, 255), new UnityEngine.Color32(0, 183, 166, 255), description);
+        /// <summary>
+        /// Add button that can execute function.
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="setting">Your settings variable</param>
+        /// <param name="normalColor">Button color</param>
+        /// <param name="highlightedColor">Button color when highlighted</param>
+        /// <param name="pressedColor">Button color when pressed</param>
+        /// <param name="description">Short optional description for this button</param>
+        /// <example><code source="SettingsExamples.cs" region="AddButton" lang="C#" 
+        /// title="Add button" /></example>
+        public static void AddButton(Mod mod, Settings setting, UnityEngine.Color normalColor, UnityEngine.Color highlightedColor, UnityEngine.Color pressedColor, string description = null) => AddButton(mod, setting, normalColor, highlightedColor, pressedColor, UnityEngine.Color.white, description);
+        /// <summary>
+        /// Add button that can execute function.
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="setting">Your settings variable</param>
+        /// <param name="normalColor">Button color</param>
+        /// <param name="highlightedColor">Button color when highlighted</param>
+        /// <param name="pressedColor">Button color when pressed</param>
+        /// <param name="buttonTextColor">Text color on Button</param>
+        /// <param name="description">Short optional description for this button</param>
+        /// <example><code source="SettingsExamples.cs" region="AddButton" lang="C#" 
+        /// title="Add button" /></example>
+        public static void AddButton(Mod mod, Settings setting, UnityEngine.Color normalColor, UnityEngine.Color highlightedColor, UnityEngine.Color pressedColor, UnityEngine.Color buttonTextColor, string description = null)
         {
             setting.Mod = mod;
-            setting.Vals = new object[1];
+            setting.Vals = new object[5];
             if (description == null)
                 description = string.Empty;
 
@@ -193,6 +218,10 @@ namespace MSCLoader
             {
                 setting.type = SettingsType.Button;
                 setting.Vals[0] = description;
+                setting.Vals[1] = normalColor;
+                setting.Vals[2] = highlightedColor;
+                setting.Vals[3] = pressedColor;
+                setting.Vals[4] = buttonTextColor;
                 modSettings.Add(setting);
             }
             else
@@ -264,12 +293,22 @@ namespace MSCLoader
         /// <param name="mod">Your mod instance</param>
         /// <param name="setting">Your settings variable</param>
         /// <param name="placeholderText">Placeholder text (like "Enter text...")</param>
-        public static void AddTextBox(Mod mod, Settings setting, string placeholderText)
+        public static void AddTextBox(Mod mod, Settings setting, string placeholderText) => AddTextBox(mod, setting, placeholderText, UnityEngine.Color.white);
+
+        /// <summary>
+        /// Add TextBox where user can type any text
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="setting">Your settings variable</param>
+        /// <param name="placeholderText">Placeholder text (like "Enter text...")</param>
+        /// <param name="titleTextColor">Text color of title</param>
+        public static void AddTextBox(Mod mod, Settings setting, string placeholderText, UnityEngine.Color titleTextColor)
         {
             setting.Mod = mod;
-            setting.Vals = new object[1];
+            setting.Vals = new object[2];
             setting.type = SettingsType.TextBox;
             setting.Vals[0] = placeholderText;
+            setting.Vals[1] = titleTextColor;
             modSettings.Add(setting);
         }
 
@@ -278,13 +317,32 @@ namespace MSCLoader
         /// </summary>
         /// <param name="mod">Your mod instance</param>
         /// <param name="HeaderTitle">Title of your header</param>
-        public static void AddHeader(Mod mod, string HeaderTitle)
+        public static void AddHeader(Mod mod, string HeaderTitle) => AddHeader(mod, HeaderTitle, UnityEngine.Color.blue, UnityEngine.Color.white);
+
+        /// <summary>
+        /// Add Header, blue title bar that can be used to separate settings.
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="HeaderTitle">Title of your header</param>
+        /// <param name="backgroundColor">Background color of header</param>
+        public static void AddHeader(Mod mod, string HeaderTitle, UnityEngine.Color backgroundColor) => AddHeader(mod, HeaderTitle, backgroundColor, UnityEngine.Color.white);
+
+        /// <summary>
+        /// Add Header, blue title bar that can be used to separate settings.
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="HeaderTitle">Title of your header</param>
+        /// <param name="backgroundColor">Background color of header</param>
+        /// <param name="textColor">Text Color of header</param>
+        public static void AddHeader(Mod mod, string HeaderTitle, UnityEngine.Color backgroundColor, UnityEngine.Color textColor)
         {
             Settings setting = new Settings(null, HeaderTitle, null);
             setting.Mod = mod;
-            setting.Vals = new object[1];
+            setting.Vals = new object[3];
             setting.type = SettingsType.Header;
             setting.Vals[0] = HeaderTitle;
+            setting.Vals[1] = backgroundColor;
+            setting.Vals[2] = textColor;
             modSettings.Add(setting);
         }
 

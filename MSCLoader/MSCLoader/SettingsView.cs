@@ -181,7 +181,13 @@ namespace MSCLoader
                     GameObject btn = Instantiate(ms.setBtn);
                     btn.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = setting.Name;
                     btn.transform.GetChild(1).GetComponent<Text>().text = setting.Vals[0].ToString();
+                    btn.transform.GetChild(1).GetComponent<Text>().color = (Color)setting.Vals[4];
                     btn.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(setting.DoAction.Invoke);
+                    ColorBlock cb = btn.transform.GetChild(0).GetComponent<Button>().colors;
+                    cb.normalColor = (Color)setting.Vals[1];
+                    cb.highlightedColor = (Color)setting.Vals[2];
+                    cb.pressedColor = (Color)setting.Vals[3];
+                    btn.transform.GetChild(0).GetComponent<Button>().colors = cb; 
                     btn.transform.SetParent(modSettingsList.transform, false);
                     break;
                 case SettingsType.Slider:
@@ -206,6 +212,7 @@ namespace MSCLoader
                 case SettingsType.TextBox:
                     GameObject modViewLabels = Instantiate(ms.ModLabel);
                     modViewLabels.GetComponent<Text>().text = setting.Name;
+                    modViewLabels.GetComponent<Text>().color = (Color)setting.Vals[1];
                     modViewLabels.transform.SetParent(modSettingsList.transform, false);
                     GameObject txt = Instantiate(ms.textBox);
                     txt.transform.GetChild(0).GetComponent<Text>().text = setting.Vals[0].ToString();
@@ -219,6 +226,8 @@ namespace MSCLoader
                 case SettingsType.Header:
                     GameObject hdr = Instantiate(ms.header);
                     hdr.transform.GetChild(0).GetComponent<Text>().text = setting.Name;
+                    hdr.GetComponent<Image>().color = (Color)setting.Vals[1];
+                    hdr.transform.GetChild(0).GetComponent<Text>().color = (Color)setting.Vals[2];
                     hdr.transform.SetParent(modSettingsList.transform, false);
                     break;
             }

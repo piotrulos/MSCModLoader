@@ -41,7 +41,7 @@ namespace MSCLoader
         public override void ModSettings()
         {
             instance = this;
-            Settings.AddHeader(this, "Basic Settings");
+            Settings.AddHeader(this, "Basic Settings", new Color32(0, 128, 0, 255));
             Settings.AddCheckBox(this, expWarning);
             Settings.AddCheckBox(this, modPath);
             Settings.AddCheckBox(this, modSetButton);
