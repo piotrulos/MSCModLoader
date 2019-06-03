@@ -87,8 +87,11 @@ namespace MSCLoader
         private static string authKey;
         private static bool loaderPrepared = false;
         private static string ModsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"MySummerCar\Mods");
-        private static string ConfigFolder = Path.Combine(ModsFolder, @"Config\");
-        private static string AssetsFolder = Path.Combine(ModsFolder, @"Assets\");
+        private static string ConfigFolder = Path.Combine(ModsFolder, "Config");
+        private static string SettingsFolder = Path.Combine(ConfigFolder, "Mod Settings");
+        private static string ManifestsFolder = Path.Combine(ConfigFolder, "Mod Metadata");
+        private static string ModSaveFolder = Path.Combine(ConfigFolder, "Mod Saves");
+        private static string AssetsFolder = Path.Combine(ModsFolder, "Assets");
 
         private GameObject mainMenuInfo;
         private GameObject loading;
@@ -130,6 +133,10 @@ namespace MSCLoader
             return CurrentGameScene;
         }
 
+        internal static string GetModSettingsFolder(Mod mod)
+        {
+            return Path.Combine(SettingsFolder, mod.ID);
+        }
         /// <summary>
         /// Mod config folder, use this if you want save something. 
         /// </summary>
@@ -140,9 +147,10 @@ namespace MSCLoader
         /// Example from other than Mod subclass.
         /// <code source="Examples.cs" region="GetModConfigFolder2" lang="C#" />
         /// </example>
+        [Obsolete("For saves use GetModSaveFolder()", false)]
         public static string GetModConfigFolder(Mod mod)
         {
-            return Path.Combine(ConfigFolder, mod.ID);
+            return Path.Combine(SettingsFolder, mod.ID);
         }
 
         /// <summary>
@@ -266,8 +274,32 @@ namespace MSCLoader
         private void Init()
         {
             //Set config and Assets folder in selected mods folder
-            ConfigFolder = Path.Combine(ModsFolder, @"Config\");
-            AssetsFolder = Path.Combine(ModsFolder, @"Assets\");
+            ConfigFolder = Path.Combine(ModsFolder, "Config");
+            SettingsFolder = Path.Combine(ConfigFolder, "Mod Settings");
+            AssetsFolder = Path.Combine(ModsFolder, "Assets");
+
+            //Move from old to new location if updated from before 1.1
+            if (!Directory.Exists(SettingsFolder) && Directory.Exists(ConfigFolder))
+            {
+                Directory.CreateDirectory(SettingsFolder);
+                foreach (string dir in Directory.GetDirectories(ConfigFolder))
+                {
+                    if (new DirectoryInfo(dir).Name != "Mod Settings")
+                    {
+                        try
+                        {
+                            Directory.Move(dir, Path.Combine(SettingsFolder, new DirectoryInfo(dir).Name));
+                        }
+                        catch (Exception ex)
+                        {
+                            UnityEngine.Debug.Log(string.Format("{0} (Failed to update folder structure)", ex.Message));
+                        }
+                    }
+                }
+            }
+            ManifestsFolder = Path.Combine(ConfigFolder, "Mod Metadata");
+            
+            // ModsFolder = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"..\LocalLow\Amistech\My Summer Car\Mods"));
 
             if (GameObject.Find("MSCUnloader") == null)
             {
@@ -298,9 +330,17 @@ namespace MSCLoader
                 if (!Directory.Exists(ModsFolder))
                     Directory.CreateDirectory(ModsFolder);
                 if (!Directory.Exists(ConfigFolder))
+                {
                     Directory.CreateDirectory(ConfigFolder);
+                    Directory.CreateDirectory(SettingsFolder);
+                    Directory.CreateDirectory(ManifestsFolder);
+                }
+                if(!Directory.Exists(ManifestsFolder))
+                    Directory.CreateDirectory(ManifestsFolder);
+
                 if (!Directory.Exists(AssetsFolder))
                     Directory.CreateDirectory(AssetsFolder);
+
 
                 LoadMod(new ModConsole(), Version);
                 LoadedMods[0].ModSettings();
@@ -400,7 +440,7 @@ namespace MSCLoader
                         s.k1 = ed[1];
                         s.k2 = ed[2];
                         System.Runtime.Serialization.Formatters.Binary.BinaryFormatter f = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-                        string sp = Path.Combine(ConfigFolder, @"MSCLoader_Settings\otk.bin");
+                        string sp = Path.Combine(SettingsFolder, @"MSCLoader_Settings\otk.bin");
                         FileStream st = new FileStream(sp, FileMode.Create);
                         f.Serialize(st, s);
                         st.Close();
@@ -422,7 +462,7 @@ namespace MSCLoader
             }
             catch (Exception ex)
             {
-                string sp = Path.Combine(ConfigFolder, @"MSCLoader_Settings\otk.bin");
+                string sp = Path.Combine(SettingsFolder, @"MSCLoader_Settings\otk.bin");
                 if (e.Error != null)
                 {
                     if (File.Exists(sp))
@@ -489,7 +529,7 @@ namespace MSCLoader
                         s.k1 = ed[1];
                         s.k2 = ed[2];
                         System.Runtime.Serialization.Formatters.Binary.BinaryFormatter f = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-                        string sp = Path.Combine(ConfigFolder, @"MSCLoader_Settings\otk.bin");
+                        string sp = Path.Combine(SettingsFolder, @"MSCLoader_Settings\otk.bin");
                         FileStream st = new FileStream(sp, FileMode.Create);
                         f.Serialize(st, s);
                         st.Close();
@@ -510,7 +550,7 @@ namespace MSCLoader
             }
             catch (Exception ex)
             {
-                string sp = Path.Combine(ConfigFolder, @"MSCLoader_Settings\otk.bin");
+                string sp = Path.Combine(SettingsFolder, @"MSCLoader_Settings\otk.bin");
                 if (e.Error != null)
                 {
                     if (File.Exists(sp))
@@ -556,7 +596,7 @@ namespace MSCLoader
             if (Directory.Exists(Path.Combine(ModsFolder, "References")))
             {
                 string[] files = Directory.GetFiles(Path.Combine(ModsFolder, "References"), "*.dll");
-                foreach (var file in files)
+                foreach (string file in files)
                 {
                     Assembly.LoadFrom(file);
                 }
@@ -794,7 +834,7 @@ namespace MSCLoader
             //cleanup files if not in dev mode
             if (!devMode)
             {
-                foreach (string dir in Directory.GetDirectories(ConfigFolder))
+                foreach (string dir in Directory.GetDirectories(SettingsFolder))
                 {
                     if (!LoadedMods.Exists(x => x.ID == new DirectoryInfo(dir).Name))
                     {
@@ -992,15 +1032,15 @@ namespace MSCLoader
             if (!LoadedMods.Contains(mod))
             {
                 // Create config folder
-                if (!Directory.Exists(ConfigFolder + mod.ID))
+                if (!Directory.Exists(Path.Combine(SettingsFolder,mod.ID)))
                 {
-                    Directory.CreateDirectory(ConfigFolder + mod.ID);
+                    Directory.CreateDirectory(Path.Combine(SettingsFolder, mod.ID));
                 }
                 if (mod.UseAssetsFolder)
                 {
-                    if (!Directory.Exists(AssetsFolder + mod.ID))
+                    if (!Directory.Exists(Path.Combine(AssetsFolder, mod.ID)))
                     {
-                        Directory.CreateDirectory(AssetsFolder + mod.ID);
+                        Directory.CreateDirectory(Path.Combine(AssetsFolder, mod.ID));
                     }
                 }
                 mod.compiledVersion = msver;

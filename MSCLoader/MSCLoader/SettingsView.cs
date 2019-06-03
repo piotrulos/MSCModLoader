@@ -19,10 +19,7 @@ namespace MSCLoader
         public GameObject keybindsList;
         public GameObject modSettingsList;
         
-        public Text IDtxt;
-        public Text Nametxt;
-        public Text Versiontxt;
-        public Text Authortxt;
+        public Text InfoTxt;
         public Text noOfMods;
 
         public Toggle DisableMod;
@@ -80,7 +77,8 @@ namespace MSCLoader
                     }
                 }
             }
-
+            if (mod.ID.StartsWith("MSCLoader_")) //No details is needed for core modules
+                modButton.transform.GetChild(1).GetChild(4).GetChild(0).GetComponent<Button>().interactable = false;
             modButton.transform.GetChild(1).GetChild(4).GetChild(0).GetComponent<Button>().onClick.AddListener(() => ms.settings.ModDetailsShow(mod));
 
             foreach (Settings set in Settings.modSettings)
@@ -339,19 +337,19 @@ namespace MSCLoader
             if (selected.ID.StartsWith("MSCLoader_"))
                 core = true; //can't disable core components
             goBackBtn.SetActive(true);
-            IDtxt.text = string.Format("<color=yellow>ID:</color> <b><color=lime>{0}</color></b>", selected.ID);
-            Nametxt.text = string.Format("<color=yellow>Name:</color> <b><color=lime>{0}</color></b>", selected.Name);
+            InfoTxt.text = string.Format("<color=yellow>ID:</color> <b><color=lime>{0}</color></b>{1}", selected.ID, Environment.NewLine);
+            InfoTxt.text += string.Format("<color=yellow>Name:</color> <b><color=lime>{0}</color></b>{1}", selected.Name, Environment.NewLine);
             if (core)
-                Versiontxt.text = string.Format("<color=yellow>Version:</color> <b><color=lime>{0}</color></b>", selected.Version);
+                InfoTxt.text += string.Format("<color=yellow>Version:</color> <b><color=lime>{0}</color></b>{1}", selected.Version, Environment.NewLine);
             else
             {
                 if (selected.hasUpdate)
-                    Versiontxt.text = string.Format("<color=yellow>Version:</color> <b><color=orange>{0}</color></b> (<color=lime>Update available</color>){2}(designed for <b><color=lime>v{1}</color></b>)", selected.Version, selected.compiledVersion, Environment.NewLine);
+                    InfoTxt.text += string.Format("<color=yellow>Version:</color> <b><color=orange>{0}</color></b> (<color=lime>Update available</color>){2}(designed for <b><color=lime>v{1}</color></b>){2}", selected.Version, selected.compiledVersion, Environment.NewLine);
                 else
-                    Versiontxt.text = string.Format("<color=yellow>Version:</color> <b><color=lime>{0}</color></b>{2}(designed for <b><color=lime>v{1}</color></b>)", selected.Version, selected.compiledVersion, Environment.NewLine);
+                    InfoTxt.text += string.Format("<color=yellow>Version:</color> <b><color=lime>{0}</color></b>{2}(designed for <b><color=lime>v{1}</color></b>){2}", selected.Version, selected.compiledVersion, Environment.NewLine);
 
             }
-            Authortxt.text = string.Format("<color=yellow>Author:</color> <b><color=lime>{0}</color></b>", selected.Author);
+            InfoTxt.text += string.Format("<color=yellow>Author:</color> <b><color=lime>{0}</color></b>", selected.Author);
             if (Application.loadedLevelName == "MainMenu" && !core)
                 DisableMod.interactable = true;
             else

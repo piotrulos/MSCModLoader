@@ -164,44 +164,6 @@ namespace MSCLoader
             }
         }
 
-
-        /*/// <summary>
-        /// A Coroutine for Loading AssetBundles asynchronously (prefered to call from another Corountine)
-        /// </summary>
-        /// <example>
-        /// You need to enter file name from your mod's asset folder.
-        /// <note type="important">
-        /// Only coroutine waits for other coroutine to finish. Starting this coroutine from function will always return null.
-        /// </note>
-        /// Example based on loading settings assets.
-        /// <code source="Examples.cs" region="LoadBundleAsync" lang="C#"/></example>
-        /// <param name="mod">Mod instance.</param>
-        /// <param name="bundleName">File name to load (for example "something.unity3d")</param>
-        /// <param name="ab">Returned AssetBundle</param>
-        /// <returns>Returns AssetBundle to your coroutine</returns>
-        public IEnumerator LoadBundleAsync(Mod mod, string bundleName, Action<AssetBundle> ab)
-        {
-            using (WWW www = new WWW("file:///" + Path.Combine(ModLoader.GetModAssetsFolder(mod), bundleName)))
-            {
-                while (www.progress < 1)
-                {
-                    ModConsole.Print(string.Format("Loading Asset: {0}...",bundleName)); 
-                    yield return new WaitForSeconds(.1f);
-                }
-                yield return www;
-                if (www.error != null)
-                {
-                    ModConsole.Error(www.error);
-                    yield break;
-                }
-                else
-                {
-                    ab(www.assetBundle);
-                    yield return www.assetBundle;
-                }
-            }
-        }*/
-
         static Texture2D LoadTGA(string fileName)
         {
             using (var imageFile = File.OpenRead(fileName))
