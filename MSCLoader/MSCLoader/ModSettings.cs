@@ -130,13 +130,13 @@ namespace MSCLoader
             settings.goBackBtn = settings.settingViewContainer.transform.GetChild(0).GetChild(1).gameObject;
             settings.goBackBtn.GetComponent<Button>().onClick.AddListener(() => settings.goBack());
             settings.settingViewContainer.transform.GetChild(0).GetChild(2).GetComponent<Button>().onClick.AddListener(() => settings.toggleVisibility());
-            settings.DisableMod = ModSettingsView.transform.GetChild(5).GetComponent<Toggle>();
+            settings.DisableMod = ModSettingsView.transform.GetChild(2).GetComponent<Toggle>();
             settings.DisableMod.onValueChanged.AddListener(settings.disableMod);
 
-            settings.IDtxt = ModSettingsView.transform.GetChild(0).GetComponent<Text>();
-            settings.Nametxt = ModSettingsView.transform.GetChild(1).GetComponent<Text>();
+            settings.InfoTxt = ModSettingsView.transform.GetChild(0).GetComponent<Text>();
+           /* settings.Nametxt = ModSettingsView.transform.GetChild(1).GetComponent<Text>();
             settings.Versiontxt = ModSettingsView.transform.GetChild(2).GetComponent<Text>();
-            settings.Authortxt = ModSettingsView.transform.GetChild(3).GetComponent<Text>();
+            settings.Authortxt = ModSettingsView.transform.GetChild(3).GetComponent<Text>();*/
 
             UI.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
             settings.setVisibility(false);
@@ -155,7 +155,7 @@ namespace MSCLoader
             if (mod != null)
             {
                 // Delete file
-                string path = Path.Combine(ModLoader.GetModConfigFolder(mod), "keybinds.json");
+                string path = Path.Combine(ModLoader.GetModSettingsFolder(mod), "keybinds.json");
 
                 // Revert binds
                 foreach (Keybind bind in Keybind.Get(mod))
@@ -191,7 +191,7 @@ namespace MSCLoader
         {
 
             KeybindList list = new KeybindList();
-            string path = Path.Combine(ModLoader.GetModConfigFolder(mod), "keybinds.json");
+            string path = Path.Combine(ModLoader.GetModSettingsFolder(mod), "keybinds.json");
 
             foreach (Keybind bind in Keybind.Get(mod))
             {
@@ -215,7 +215,7 @@ namespace MSCLoader
         {
             SettingsList list = new SettingsList();
             list.isDisabled = mod.isDisabled;
-            string path = Path.Combine(ModLoader.GetModConfigFolder(mod), "settings.json");
+            string path = Path.Combine(ModLoader.GetModSettingsFolder(mod), "settings.json");
 
             foreach (Settings set in Settings.Get(mod))
             {
@@ -242,12 +242,12 @@ namespace MSCLoader
             foreach (Mod mod in ModLoader.LoadedMods)
             {
                 //delete old xml file (if exists)
-                string path = Path.Combine(ModLoader.GetModConfigFolder(mod), "keybinds.xml");
+                string path = Path.Combine(ModLoader.GetModSettingsFolder(mod), "keybinds.xml");
                 if (File.Exists(path))
                     File.Delete(path);
 
                 // Check if there is custom keybinds file (if not, create)
-                path = Path.Combine(ModLoader.GetModConfigFolder(mod), "keybinds.json");
+                path = Path.Combine(ModLoader.GetModSettingsFolder(mod), "keybinds.json");
                 if (!File.Exists(path))
                 {
                     SaveModBinds(mod);
@@ -277,7 +277,7 @@ namespace MSCLoader
             foreach (Mod mod in ModLoader.LoadedMods)
             {
                 // Check if there is custom settings file (if not, ignore)
-                string path = Path.Combine(ModLoader.GetModConfigFolder(mod), "settings.json");
+                string path = Path.Combine(ModLoader.GetModSettingsFolder(mod), "settings.json");
                 if (!File.Exists(path))
                     continue;
 

@@ -26,7 +26,13 @@
         /// <summary>
         /// If true, mod will indicate that there is update available.
         /// </summary>
-        public virtual bool hasUpdate { get => update; set => update = value; }
+        public virtual bool hasUpdate { get => update; internal set => update = value; }
+     
+        /// <summary>
+        /// Compiled MSCLoader version 
+        /// (for what version this mod was compiled, visible in settings)
+        /// </summary>
+        public virtual string compiledVersion { get => compiledVer; internal set => compiledVer = value; }
 
         /// <summary>
         /// Load this mod in Main Menu.
@@ -57,12 +63,6 @@
         /// </summary>
         public abstract string Version { get; }
    
-        /// <summary>
-        /// Compiled MSCLoader version 
-        /// (for what version this mod was compiled, visible in settings)
-        /// </summary>
-        public virtual string compiledVersion { get => compiledVer; set => compiledVer = value; }
-
         /// <summary>
         /// Author of the mod
         /// (Enter your nickname in this variable)
@@ -107,7 +107,7 @@
         /// <summary>
         /// Standard unity OnGUI().
         /// </summary>
-        /// <example>See: https://docs.unity3d.com/530/Documentation/Manual/GUIScriptingGuide.html
+        /// <example>See: https://docs.unity3d.com/500/Documentation/Manual/GUIScriptingGuide.html
         /// </example>
         public virtual void OnGUI() { }
 

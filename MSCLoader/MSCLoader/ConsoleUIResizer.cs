@@ -59,7 +59,7 @@ namespace MSCLoader
         }
         public void LoadConsoleSize()
         {
-            string path = ModLoader.GetModConfigFolder(new ModConsole());
+            string path = ModLoader.GetModSettingsFolder(new ModConsole());
             if (File.Exists(Path.Combine(path, "console.data")))
             {
                 try
@@ -86,7 +86,7 @@ namespace MSCLoader
         }
         public void SaveConsoleSize()
         {
-            string path = ModLoader.GetModConfigFolder(new ModConsole());
+            string path = ModLoader.GetModSettingsFolder(new ModConsole());
             string data = string.Format("{0},{1},{2},{3},{4}", m_transform.anchoredPosition.y, m_logview.anchoredPosition.y, m_scrollbar.anchoredPosition.y, m_logview.sizeDelta.y, m_scrollbar.sizeDelta.y);
             File.WriteAllText(Path.Combine(path, "console.data"), data);
         }

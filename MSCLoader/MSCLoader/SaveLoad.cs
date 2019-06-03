@@ -33,7 +33,7 @@ namespace MSCLoader
         /// <param name="fileName">Name of the save file</param>
         public static void SaveGameObject(Mod mod, GameObject g, string fileName)
         {
-            string path = Path.Combine(ModLoader.GetModConfigFolder(mod), fileName);
+            string path = Path.Combine(ModLoader.GetModSettingsFolder(mod), fileName);
             SaveData save = new SaveData();
             SaveDataList s = new SaveDataList
             {
@@ -78,7 +78,7 @@ namespace MSCLoader
             var config = new JsonSerializerSettings();
             config.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             config.Formatting = Formatting.Indented;
-            string path = Path.Combine(ModLoader.GetModConfigFolder(mod), fileName);
+            string path = Path.Combine(ModLoader.GetModSettingsFolder(mod), fileName);
             string serializedData = JsonConvert.SerializeObject(saveDataClass, config);
             File.WriteAllText(path, serializedData);
         }
@@ -94,7 +94,7 @@ namespace MSCLoader
         /// title="Example of loading class" /></example>
         public static T DeserializeSaveFile<T>(Mod mod, string fileName) where T : new()
         {
-            string path = Path.Combine(ModLoader.GetModConfigFolder(mod), fileName);
+            string path = Path.Combine(ModLoader.GetModSettingsFolder(mod), fileName);
             if (File.Exists(path))
             {
                 string serializedData = File.ReadAllText(path);
