@@ -10,6 +10,7 @@
         bool disabled = false;
         bool update = false;
         string compiledVer = null;
+        string filePath = null;
         int errorCount = 0;
 
         /// <summary>
@@ -33,6 +34,10 @@
         /// (for what version this mod was compiled, visible in settings)
         /// </summary>
         public virtual string compiledVersion { get => compiledVer; internal set => compiledVer = value; }
+        /// <summary>
+        /// File Name (internal only)
+        /// </summary>
+        public virtual string fileName { get => filePath; internal set => filePath = value; }
 
         /// <summary>
         /// Load this mod in Main Menu.
