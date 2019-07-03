@@ -94,6 +94,7 @@ namespace MSCLoader
             console.viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().LoadConsoleSize();
             ConsoleCommand.Add(new CommandVersion());
             ConsoleCommand.Add(new CommandLogAll());
+            ConsoleCommand.Add(new ManifestCommand());
         }
 #pragma warning restore CS1591
         /// <summary>

@@ -170,6 +170,8 @@ namespace MSCLoader
             return Path.Combine(AssetsFolder, mod.ID);
         }
 
+        internal static string GetMetadataFolder(string fn) => Path.Combine(ManifestsFolder, fn);
+
         /// <summary>
         /// Initialize ModLoader with Mods folder in My Documents (like it was in 0.1)
         /// </summary>
@@ -1001,7 +1003,7 @@ namespace MSCLoader
                             }
                         }
                         isMod = true;
-                        LoadMod((Mod)Activator.CreateInstance(type), msVer);
+                        LoadMod((Mod)Activator.CreateInstance(type), msVer, file);
                         break;
                     }
                     else
@@ -1026,7 +1028,7 @@ namespace MSCLoader
 
         }
 
-        private void LoadMod(Mod mod, string msver)
+        private void LoadMod(Mod mod, string msver, string fname = null)
         {
             // Check if mod already exists
             if (!LoadedMods.Contains(mod))
@@ -1044,6 +1046,7 @@ namespace MSCLoader
                     }
                 }
                 mod.compiledVersion = msver;
+                mod.fileName = fname;
                 LoadedMods.Add(mod);
                 try
                 {
