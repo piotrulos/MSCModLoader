@@ -18,7 +18,7 @@ namespace AudioLibrary.MP3_Streaming
     public class ReadFullyStream : Stream
     {
         public int MetaInt;
-        public string StreamTitle;
+        private string StreamTitle;
 
         private int receivedBytes;
         private Stream netStream;
@@ -41,6 +41,7 @@ namespace AudioLibrary.MP3_Streaming
 
         public ReadFullyStream(Stream respStream)
         {
+            StreamTitle = string.Empty;
             netStream = respStream;
             connected = true;
         }
@@ -55,8 +56,8 @@ namespace AudioLibrary.MP3_Streaming
             string newStreamTitle = metaString.Split(new string[] { "';" }, StringSplitOptions.None)[0].Replace("StreamTitle='", string.Empty);
             if (!newStreamTitle.Equals(StreamTitle))
             {
-                StreamTitle = newStreamTitle;
-                OnStreamTitleChanged();
+               StreamTitle = newStreamTitle;
+               OnStreamTitleChanged();
             }
         }
 

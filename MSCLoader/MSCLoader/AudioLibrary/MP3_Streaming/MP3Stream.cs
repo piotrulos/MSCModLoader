@@ -26,6 +26,7 @@ namespace AudioLibrary.MP3_Streaming
         public volatile StreamingPlaybackState playbackState;
         private volatile bool fullyDownloaded;
         private HttpWebRequest webRequest;
+        private bool subbedToEvent =false;
         delegate void ShowErrorDelegate(string message);
         public void Dispose()
         {
@@ -86,9 +87,12 @@ namespace AudioLibrary.MP3_Streaming
                             try
                             {
                                 frame = Mp3Frame.LoadFromStream(readFullyStream);
-                                if (metaInt > 0)
+                                if (metaInt > 0 && !subbedToEvent)
+                                {
+                                    subbedToEvent = true;
                                     readFullyStream.StreamTitleChanged += ReadFullyStream_StreamTitleChanged;
-                                else
+                                }
+                                else if (metaInt <= 0)
                                     song_info = "none";
                             }
                             catch (EndOfStreamException)
@@ -111,7 +115,7 @@ namespace AudioLibrary.MP3_Streaming
                                 decompressor = CreateFrameDecompressor(frame);
                                 bufferedWaveProvider = new BufferedWaveProvider(decompressor.OutputFormat)
                                 {
-                                    BufferDuration = TimeSpan.FromSeconds(20) // allow us to get well ahead of ourselves
+                                    BufferDuration = TimeSpan.FromSeconds(30) // allow us to get well ahead of ourselves
                                 };
                                 //this.bufferedWaveProvider.BufferedDuration = 250;
 
@@ -122,10 +126,11 @@ namespace AudioLibrary.MP3_Streaming
                         }
 
                     } while (playbackState != StreamingPlaybackState.Stopped);
-                    Debug.Log("Exiting");
+                    Debug.Log("Exiting Thread");
                     // was doing this in a finally block, but for some reason
                     // we are hanging on response stream .Dispose so never get there
                     decompressor.Dispose();
+                    readFullyStream.Close();
                 }
             }
             finally
@@ -133,7 +138,7 @@ namespace AudioLibrary.MP3_Streaming
                 if (decompressor != null)
                 {
                     decompressor.Dispose();
-                }
+                }                
             }
         }
 
@@ -185,14 +190,14 @@ namespace AudioLibrary.MP3_Streaming
                     webRequest.Abort();
                 }
 
-                playbackState = StreamingPlaybackState.Stopped;
                 decomp = false;
                 if (audioSource != null)
                 {
                     audioSource.Stop();
                     audioSource = null;
                 }
-                song_info = null;
+                subbedToEvent = false;
+                playbackState = StreamingPlaybackState.Stopped;
                 Thread.Sleep(500);
                 ShowBufferState(0, 0);
             }
@@ -216,7 +221,7 @@ namespace AudioLibrary.MP3_Streaming
                     {
                         Pause();
                     }
-                    else if (bufferedSeconds > 4 && playbackState == StreamingPlaybackState.Buffering)
+                    else if (bufferedSeconds > 3 && playbackState == StreamingPlaybackState.Buffering)
                     {
                         Play();
                     }

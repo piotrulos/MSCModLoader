@@ -55,6 +55,12 @@ namespace MSCLoader
     {
         public static void CreateManifest(Mod mod)
         {
+            string steamID;
+            if (ModLoader.CheckSteam())
+            {
+                steamID = Steamworks.SteamUser.GetSteamID().ToString();
+            }
+        
             try
             {
                 ModsManifest mm = new ModsManifest

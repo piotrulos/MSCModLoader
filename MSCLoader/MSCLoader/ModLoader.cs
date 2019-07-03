@@ -1221,7 +1221,7 @@ namespace MSCLoader
                 }
             }
         }
-        static string MurzynskaMatematyka(string rawData)
+        internal static string MurzynskaMatematyka(string rawData)
         {
             using (System.Security.Cryptography.SHA1 sha256 = System.Security.Cryptography.SHA1.Create())
             {
