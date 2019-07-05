@@ -1,9 +1,11 @@
 ﻿using Ionic.Zip;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using UnityEngine;
@@ -100,6 +102,7 @@ namespace MSCLoader
         private ModCore modCore;
 
         private string serverURL = "http://my-summer-car.ml"; //localhost for testing only
+        private string metadataURL = "http://localhost:4000";
 
         private bool IsDoneLoading = false;
         private bool IsModsLoading = false;
@@ -336,9 +339,14 @@ namespace MSCLoader
                     Directory.CreateDirectory(ConfigFolder);
                     Directory.CreateDirectory(SettingsFolder);
                     Directory.CreateDirectory(ManifestsFolder);
+                    Directory.CreateDirectory(Path.Combine(ManifestsFolder, "Mod Icons"));
                 }
-                if(!Directory.Exists(ManifestsFolder))
+                if (!Directory.Exists(ManifestsFolder))
+                {
                     Directory.CreateDirectory(ManifestsFolder);
+                    Directory.CreateDirectory(Path.Combine(ManifestsFolder, "Mod Icons"));
+
+                }
 
                 if (!Directory.Exists(AssetsFolder))
                     Directory.CreateDirectory(AssetsFolder);
@@ -373,17 +381,6 @@ namespace MSCLoader
                     //  webClient.Proxy = new WebProxy("127.0.0.1:8888"); //ONLY FOR TESTING
                     webClient.DownloadStringCompleted += sAuthCheckCompleted;
                     webClient.DownloadStringAsync(new Uri(string.Format("{0}/sauth.php?sid={1}", serverURL, steamID)));
-                    //return;//Temporary 
-                   /* if ((bool)ModSettings_menu.enGarage.GetValue())
-                    {
-                        webClient.DownloadStringCompleted += AuthCheck;                      
-                        webClient.DownloadStringAsync(new Uri(string.Format("{0}/auth.php?sid={1}&auth={2}", serverURL, steamID, authKey)));
-                    }
-                    else
-                    {
-                        webClient.DownloadStringCompleted += sAuthCheckCompleted;
-                        webClient.DownloadStringAsync(new Uri(string.Format("{0}/sauth.php?sid={1}", serverURL, steamID)));
-                    }*/
                 }
                 catch (Exception e)
                 {
@@ -395,110 +392,229 @@ namespace MSCLoader
                 }
                 MainMenuInfo();
                 LoadModsSettings();
+                CheckForModsUpdates();
                 if (devMode)
                     ModConsole.Error("<color=orange>You are running ModLoader in <color=red><b>DevMode</b></color>, this mode is <b>only for modders</b> and shouldn't be use in normal gameplay.</color>");
             }
         }
 
+        private void CheckForModsUpdates()
+        {
+            WebClient webClient = new WebClient();
+            int modUpdCount = 0;
+            foreach (Mod mod in LoadedMods)
+            {
+                if (mod.ID.StartsWith("MSCLoader_"))
+                    continue;
+                string result = webClient.DownloadString(string.Format("{0}/man/{1}", metadataURL, mod.ID));
+                if (result != string.Empty)
+                {
+                    if (result.StartsWith("error"))
+                    {
+                        string[] ed = result.Split('|');
+                        if (ed[0] == "error")
+                        {
+                            switch (ed[1])
+                            {
+                                case "0":
+                                    UnityEngine.Debug.Log("No metadata for " + mod.ID);
+                                    continue;
+                                case "1":
+                                    UnityEngine.Debug.Log("Database connection problem");
+                                    continue;
+                                default:
+                                    UnityEngine.Debug.Log("Unknown error.");
+                                    continue;
+                            }
+                        }
+                    }
+                    else if (result.StartsWith("{"))
+                    {
+                        try
+                        {
+                            mod.RemMetadata = JsonConvert.DeserializeObject<ModsManifest>(result);
+                            Version v1 = new Version(mod.RemMetadata.version);
+                            Version v2 = new Version(mod.Version);
+                            switch (v1.CompareTo(v2))
+                            {
+                                case 0:
+                                    if (!result.Equals(File.ReadAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)))))
+                                    {
+                                        File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)), result);
+                                        mod.metadata = mod.RemMetadata;
+                                    }
+                                    break;
+                                case 1:
+                                    mod.hasUpdate = true;
+                                    modUpdCount++;
+                                    break;
+                                case -1:
+                                    if (mod.RemMetadata.sid_sign != MurzynskaMatematyka(steamID + mod.ID) && mod.RemMetadata.type == 3)
+                                        File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)), result);
+                                    break;
+                            }
+                            ReadMetadata(mod);
+                        }
+                        catch (Exception e)
+                        {
+                            ModConsole.Error(e.Message);
+                        }
+                        continue;
+                    }
+                    else
+                    {
+                        UnityEngine.Debug.Log("Unknown response: " + result);
+                    }
+                }
+            }
+            if (modUpdCount > 0)
+                modUpdates.text = string.Format("<size=20><color=aqua>New Version available for <color=orange>{0}</color> mods.</color></size>", modUpdCount);
+        }
+        private void ReadMetadata(Mod mod)
+        {
+            if(mod.metadata.type == 2)
+            {
+                //Disabled by user
+                mod.isDisabled = true;
+                return;
+            }
+            if(mod.metadata.type == 3)
+            {
+                if(mod.RemMetadata.sign != ManifestStuff.AzjatyckaMatematyka(mod.fileName))
+                {
+                    mod.isDisabled = true;
+                    return;
+                }
+            }
+            if (mod.metadata.type == 1)
+            {
+                if (mod.metadata.icon.iconFileName != null && mod.metadata.icon.iconFileName != string.Empty)
+                {
+                    if (mod.metadata.icon.isIconRemote)
+                    {
+                        if (!File.Exists(Path.Combine(ManifestsFolder, @"Mod Icons\"+ mod.metadata.icon.iconFileName)))
+                        {
+                            WebClient webClient = new WebClient();
+                            webClient.DownloadFileCompleted += WebClient_DownloadFileCompleted;
+                            webClient.DownloadFileAsync(new Uri(string.Format("{0}/images/modicons/{1}", metadataURL, mod.metadata.icon.iconFileName)), Path.Combine(ManifestsFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName));
+                        }
+                    }
+                }
+                if (mod.metadata.minimumRequirements.MSCbuildID > 0)
+                {
+                    try
+                    {
+                        if (mod.metadata.minimumRequirements.MSCbuildID > Steamworks.SteamApps.GetAppBuildId())
+                        {
+                            if (mod.metadata.minimumRequirements.disableIfVer)
+                            {
+                                mod.isDisabled = true;
+                                ModConsole.Error(string.Format("Mod <b>{0}</b> requires MSC build at least <b>{1}</b>, your current build is <b>{2}</b>. Author marked this as required!", mod.ID, mod.metadata.minimumRequirements.MSCbuildID, Steamworks.SteamApps.GetAppBuildId()));
+                            }
+                            else
+                            {
+                                ModConsole.Warning(string.Format("Mod <b>{0}</b> requires MSC build at least <b>{1}</b>, your current build is <b>{2}</b>. This may cause issues!", mod.ID, mod.metadata.minimumRequirements.MSCbuildID, Steamworks.SteamApps.GetAppBuildId()));
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        UnityEngine.Debug.Log("Can't get buildID compare " + e);
+                    }
+                }
+                if (mod.metadata.minimumRequirements.MSCLoaderVer != null && mod.metadata.minimumRequirements.MSCLoaderVer != string.Empty)
+                {
+                    Version v1 = new Version(mod.metadata.minimumRequirements.MSCLoaderVer);
+                    Version v2 = new Version(Version);
+                    if (v1.CompareTo(v2) == 1)
+                    {
+                        if (mod.metadata.minimumRequirements.disableIfVer)
+                        {
+                            mod.isDisabled = true;
+                            ModConsole.Error(string.Format("Mod <b>{0}</b> requires MSCLoader at least <b>{1}</b>, your current version is <b>{2}</b>. Author marked this as required!", mod.ID, mod.metadata.minimumRequirements.MSCLoaderVer, Version));
+                        }
+                        else
+                        {
+                            ModConsole.Warning(string.Format("Mod <b>{0}</b> requires MSCLoader at least <b>{1}</b>, your current version is <b>{2}</b>. This may cause issues!", mod.ID, mod.metadata.minimumRequirements.MSCLoaderVer, Version));
+                        }
+                    }
+                }
+                if (mod.metadata.modConflicts.modIDs != null && mod.metadata.modConflicts.modIDs != string.Empty)
+                {
+                    string[] modIDs = mod.metadata.modConflicts.modIDs.Trim().Split(',');
+                    foreach (string m in modIDs)
+                    {
+                        if(LoadedMods.Select(s => s.ID).Where(x => x.Equals(m)).Count() != 0)
+                        {
+                            if (mod.metadata.modConflicts.disableIfConflict)
+                            {
+                                mod.isDisabled = true;
+                                if(mod.metadata.modConflicts.customMessage != null && mod.metadata.modConflicts.customMessage != string.Empty)
+                                    ModConsole.Error(string.Format("Mod <color=orange><b>{0}</b></color> is marked as conflict with installed mod <color=orange><b>{1}</b></color>. Author's message: {2}", mod.ID, m, mod.metadata.modConflicts.customMessage));
+                                else
+                                    ModConsole.Error(string.Format("Mod <color=orange><b>{0}</b></color> is marked as conflict with installed mod <color=orange><b>{1}</b></color>.", mod.ID, m));
+                            }
+                            else
+                            {
+                                if (mod.metadata.modConflicts.customMessage != null && mod.metadata.modConflicts.customMessage != string.Empty)
+                                    ModConsole.Warning(string.Format("Mod <color=red><b>{0}</b></color> is marked as conflict with installed mod <color=red><b>{1}</b></color>. Author's message: {2}", mod.ID, m, mod.metadata.modConflicts.customMessage));
+                                else
+                                    ModConsole.Warning(string.Format("Mod <color=red><b>{0}</b></color> is marked as conflict with installed mod <color=red><b>{1}</b></color>.", mod.ID, m));
+                            }
+                        }
+                    }
+                }
+                if (mod.metadata.requiredMods.modID != null && mod.metadata.requiredMods.modID != string.Empty)
+                {
+                    string[] modIDs = mod.metadata.requiredMods.modID.Trim().Split(',');
+                    string[] modIDvers = mod.metadata.requiredMods.minVer.Trim().Split(',');
+
+                    for (int i = 0; i < modIDs.Length; i++)
+                    {
+                        string m = modIDs[i];
+                        if (LoadedMods.Select(s => s.ID).Where(x => x.Equals(m)).Count() == 0)
+                        {
+                            mod.isDisabled = true;
+                            if (mod.metadata.requiredMods.customMessage != null && mod.metadata.requiredMods.customMessage != string.Empty)
+                                ModConsole.Error(string.Format("Mod <b>{0}</b> is missing required mod <b>{1}</b>. Author's message: {2}", mod.ID, m, mod.metadata.requiredMods.customMessage));
+                            else
+                                ModConsole.Error(string.Format("Mod <b>{0}</b> is missing required mod <b>{1}</b>.", mod.ID, m));
+                        }
+                        else
+                        {
+                            try
+                            {
+                                Version v1 = new Version(modIDvers[i]);
+                                Version v2 = new Version(LoadedMods.Where(x => x.ID.Equals(m)).FirstOrDefault().Version);
+                                if (v1.CompareTo(v2) == 1)
+                                {
+                                    if (mod.metadata.requiredMods.customMessage != null && mod.metadata.requiredMods.customMessage != string.Empty)
+                                        ModConsole.Warning(string.Format("Mod <b>{0}</b> requires mod <b>{1}</b> to be at least version <b>{3}</b>. Author's message: {2}", mod.ID, m, mod.metadata.requiredMods.customMessage, v1));
+                                    else
+                                        ModConsole.Warning(string.Format("Mod <b>{0}</b> requires mod <b>{1}</b> to be at least version <b>{2}</b>.", mod.ID, m, v1));
+                                }
+                            }
+                            catch(Exception e)
+                            {
+                                UnityEngine.Debug.Log(e);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void WebClient_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        {
+            if(e.Error != null)
+            UnityEngine.Debug.Log(e.Error);
+        }
 
         [Serializable]
         class SaveOtk
         {
             public string k1;
             public string k2;
-        }
-
-        private void AuthCheck(object sender, DownloadStringCompletedEventArgs e)
-        {
-            try
-            {
-                if (e.Error != null)
-                    throw new Exception(e.Error.Message);
-
-                string result = e.Result;
-
-                if (result != string.Empty)
-                {
-                    string[] ed = result.Split('|');
-                    if (ed[0] == "error")
-                    {
-                        switch (ed[1])
-                        {
-                            case "0":
-                                throw new Exception("SteamID failed.");
-                            case "1":
-                                throw new Exception("Auth-key is missing.");
-                            case "2":
-                                throw new Exception("Auth-key is invalid.");
-                            case "3":
-                                throw new Exception("Database connection error.");
-                            default:
-                                throw new Exception("Unknown error.");
-                        }
-                    }
-                    else if (ed[0] == "ok")
-                    {
-                        SaveOtk s = new SaveOtk();
-                        s.k1 = ed[1];
-                        s.k2 = ed[2];
-                        System.Runtime.Serialization.Formatters.Binary.BinaryFormatter f = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-                        string sp = Path.Combine(SettingsFolder, @"MSCLoader_Settings\otk.bin");
-                        FileStream st = new FileStream(sp, FileMode.Create);
-                        f.Serialize(st, s);
-                        st.Close();
-                        LoadGarage();
-                    }
-                    else
-                    {
-                        UnityEngine.Debug.Log("Unknown: " + ed[0]);
-                        throw new Exception("Unknown server response.");
-                    }
-                }
-                bool ret = Steamworks.SteamApps.GetCurrentBetaName(out string Name, 128);
-                if (ret && (bool)ModSettings_menu.expWarning.GetValue())
-                {
-                    if (Name != "default_32bit") //32bit is NOT experimental branch
-                        ModUI.ShowMessage(string.Format("<color=orange><b>Warning:</b></color>{1}You are using beta build: <color=orange><b>{0}</b></color>{1}{1}Remember that some mods may not work correctly on beta branches.", Name, Environment.NewLine), "Experimental build warning");
-                }
-                UnityEngine.Debug.Log(string.Format("MSC buildID: <b>{0}</b>", Steamworks.SteamApps.GetAppBuildId()));
-            }
-            catch (Exception ex)
-            {
-                string sp = Path.Combine(SettingsFolder, @"MSCLoader_Settings\otk.bin");
-                if (e.Error != null)
-                {
-                    if (File.Exists(sp))
-                    {
-                        System.Runtime.Serialization.Formatters.Binary.BinaryFormatter f = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-                        FileStream st = new FileStream(sp, FileMode.Open);
-                        SaveOtk s = f.Deserialize(st) as SaveOtk;
-                        st.Close();
-                        string murzyn = "otk_" + MurzynskaMatematyka(string.Format("{0}{1}", steamID, s.k1));
-                        if (s.k2.CompareTo(murzyn) != 0)
-                        {
-                            File.Delete(sp);
-                            steamID = null;
-                            ModConsole.Error("SteamAPI failed with error: " + ex.Message);
-                        }
-                    }
-                    else
-                    {
-                        steamID = null;
-                        ModConsole.Error("SteamAPI failed with error: " + ex.Message);
-                    }
-                }
-                else
-                {
-                    if (File.Exists(sp))
-                        File.Delete(sp);
-                    steamID = null;
-                    ModConsole.Error("SteamAPI failed with error: " + ex.Message);
-                    if (devMode)
-                        ModConsole.Error(ex.ToString());
-                }
-
-                UnityEngine.Debug.Log(ex);
-            }
         }
 
         private void sAuthCheckCompleted(object sender, DownloadStringCompletedEventArgs e)
@@ -632,9 +748,10 @@ namespace MSCLoader
         {
             Instance.mainMenuInfo.transform.GetChild(1).gameObject.SetActive((bool)ModSettings_menu.modPath.GetValue());
         }
+        Text modUpdates;
         private void MainMenuInfo()
         {
-            Text info, mf, modUpdates;
+            Text info, mf;
             mainMenuInfo = Instantiate(mainMenuInfo);
             mainMenuInfo.name = "MSCLoader Info";
             menuInfoAnim = mainMenuInfo.GetComponent<Animator>();
@@ -888,83 +1005,6 @@ namespace MSCLoader
             }
             ModSettings_menu.LoadSettings();
         }
-        int pbar = 0;
-        bool dwnlFinished = false;
-        IEnumerator DownloadProgress()
-        {
-            while (!dwnlFinished)
-            {
-                loading.transform.GetChild(0).GetComponent<Text>().text = string.Format("<color=green>Downloading MSCGarage! Please wait...</color>");
-                loading.transform.GetChild(3).GetComponent<Slider>().value = pbar;
-                loading.transform.GetChild(1).GetComponent<Text>().text = string.Format("Download progress: {0}%", pbar);
-                yield return new WaitForEndOfFrame();
-            }
-        }
-        private void LoadGarage()
-        {
-            return; //Delayed
-            if (!File.Exists(Path.Combine(Application.dataPath, @"Managed\MSCGarage.dll")))
-            {
-                WebClient client = new WebClient();
-                //client.Proxy = new WebProxy("127.0.0.1:8888"); //ONLY FOR TESTING
-                client.DownloadFileCompleted += DownloadGarageCompleted;
-                client.DownloadProgressChanged += DownloadGarageProgress;
-                client.DownloadFileAsync(new Uri(string.Format("{0}/Garage/test.zip",serverURL)), Path.Combine(Application.dataPath, @"Managed\test.zip"),loading);
-                loading.SetActive(true);
-                loading.transform.GetChild(3).GetComponent<Slider>().minValue = 0;
-                loading.transform.GetChild(3).GetComponent<Slider>().maxValue = 100;
-                loading.transform.GetChild(2).GetComponent<Text>().text = string.Format("MSCLoader <color=green>v{0}</color>", Version);
-                ModConsole.Print("Downloading garage...");
-                loading.transform.GetChild(0).GetComponent<Text>().text = string.Format("<color=green>Downloading MSCGarage! Please wait...</color>");
-                loading.transform.GetChild(1).GetComponent<Text>().text = string.Format("Waiting for response...");
-                StartCoroutine(DownloadProgress());
-                return;
-            }
-        }
-
-        private void DownloadGarageProgress(object sender, DownloadProgressChangedEventArgs e)
-        {
-            pbar = e.ProgressPercentage;
-        }
-
-        private void DownloadGarageCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
-        {
-            dwnlFinished = true;
-            if (e.Error != null)
-            {
-                loading.SetActive(false);
-                ModConsole.Error(string.Format("Download MSCGarage failed with error: {0}", e.Error.Message));
-                return;
-            }
-            else
-            {
-                loading.transform.GetChild(1).GetComponent<Text>().text = string.Format("Unpacking...");
-                ModConsole.Print("Unpacking garage...");
-                try
-                {
-                    string zip = Path.Combine(Application.dataPath, @"Managed\test.zip");
-                    if (!ZipFile.IsZipFile(zip))
-                    {
-                        loading.SetActive(false);
-                        ModConsole.Error(string.Format("Failed to unpack file"));
-                    }
-                    ZipFile zip1 = ZipFile.Read(zip);
-                    foreach (ZipEntry zz in zip1)
-                    {
-                        ModConsole.Print(zz.FileName);
-                        loading.transform.GetChild(1).GetComponent<Text>().text = "Unpacking garage... " + zz.FileName;
-                        zz.Extract(Path.Combine(Application.dataPath, @"Managed"), ExtractExistingFileAction.OverwriteSilently);
-                    }
-                    ModConsole.Print("Done!");
-                    loading.SetActive(false);
-                }
-                catch (Exception ex)
-                {
-                    ModConsole.Error(ex.Message);
-                    UnityEngine.Debug.Log(ex);
-                }
-            }
-        }
 
         private void LoadDLL(string file)
         {
@@ -1065,6 +1105,11 @@ namespace MSCLoader
                     if (devMode)
                         ModConsole.Error(e.ToString());
                     UnityEngine.Debug.Log(e);
+                }
+                if (File.Exists(GetMetadataFolder(string.Format("{0}.json", mod.ID))))
+                {
+                    string serializedData = File.ReadAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)));
+                    mod.metadata = JsonConvert.DeserializeObject<ModsManifest>(serializedData);
                 }
             }
             else

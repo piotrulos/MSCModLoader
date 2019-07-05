@@ -196,6 +196,7 @@ namespace AudioLibrary.MP3_Streaming
                     audioSource.Stop();
                     audioSource = null;
                 }
+                song_info = null;
                 subbedToEvent = false;
                 playbackState = StreamingPlaybackState.Stopped;
                 Thread.Sleep(500);

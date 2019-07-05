@@ -59,31 +59,35 @@ namespace MSCLoader
             if (ModLoader.CheckSteam())
             {
                 steamID = Steamworks.SteamUser.GetSteamID().ToString();
-            }
-        
-            try
-            {
-                ModsManifest mm = new ModsManifest
+                try
                 {
-                    modID = mod.ID,
-                    version = mod.Version,
-                    description = "<i>No description provided...</i>",
-                    sign = AzjatyckaMatematyka(mod.fileName),
-                    type = 0                    
-                };
-                string path = ModLoader.GetMetadataFolder(string.Format("{0}.json", mod.ID));
-                if(File.Exists(path))
-                {
-                    ModConsole.Error("Metadata file already exists");
-                    return;
+                    ModsManifest mm = new ModsManifest
+                    {
+                        modID = mod.ID,
+                        version = mod.Version,
+                        description = "<i>No description provided...</i>",
+                        sign = AzjatyckaMatematyka(mod.fileName),
+                        sid_sign = ModLoader.MurzynskaMatematyka(steamID+mod.ID),
+                        type = 0
+                    };
+                    string path = ModLoader.GetMetadataFolder(string.Format("{0}.json", mod.ID));
+                    if (File.Exists(path))
+                    {
+                        ModConsole.Error("Metadata file already exists, to update use update command");
+                        return;
+                    }
+                    string serializedData = JsonConvert.SerializeObject(mm, Formatting.Indented);
+                    File.WriteAllText(path, serializedData);
+                    ModConsole.Print("<color=green>Raw metadata file created successfully</color>");
                 }
-                string serializedData = JsonConvert.SerializeObject(mm, Formatting.Indented);
-                File.WriteAllText(path, serializedData);
-                ModConsole.Print("<color=green>Raw metadata file created successfully</color>");
+                catch (Exception e)
+                {
+                    ModConsole.Error(e.Message);
+                }
             }
-            catch (Exception e)
+            else
             {
-                ModConsole.Error(e.Message);
+                ModConsole.Error("No valid steam detected");
             }
 
         }
