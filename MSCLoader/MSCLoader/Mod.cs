@@ -12,6 +12,8 @@
         string compiledVer = null;
         string filePath = null;
         int errorCount = 0;
+        ModsManifest modMetadata = null;
+        ModsManifest rmodMetadata = null;
 
         /// <summary>
         /// Number of Errors/Exceptions thrown by this mod (in Update or FixedUpdate)
@@ -24,20 +26,14 @@
         /// </summary>
         public virtual bool isDisabled { get => disabled; internal set => disabled = value; }
 
-        /// <summary>
-        /// If true, mod will indicate that there is update available.
-        /// </summary>
-        public virtual bool hasUpdate { get => update; internal set => update = value; }
-     
-        /// <summary>
-        /// Compiled MSCLoader version 
-        /// (for what version this mod was compiled, visible in settings)
-        /// </summary>
-        public virtual string compiledVersion { get => compiledVer; internal set => compiledVer = value; }
-        /// <summary>
-        /// File Name (internal only)
-        /// </summary>
-        public virtual string fileName { get => filePath; internal set => filePath = value; }
+        internal virtual bool hasUpdate { get => update;  set => update = value; }
+
+        internal virtual string compiledVersion { get => compiledVer;  set => compiledVer = value; }
+
+        internal virtual string fileName { get => filePath;  set => filePath = value; }
+
+        internal virtual ModsManifest metadata { get => modMetadata; set => modMetadata = value; }
+        internal virtual ModsManifest RemMetadata { get => rmodMetadata; set => rmodMetadata = value; }
 
         /// <summary>
         /// Load this mod in Main Menu.

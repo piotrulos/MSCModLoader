@@ -119,6 +119,7 @@ namespace MSCLoader
             console.controller.AppendLogLine(obj.ToString());
             Debug.Log(string.Format("MSCLoader Message: {0}", obj));
         }
+
         /// <summary>
         /// Print an error to the console.
         /// </summary>
@@ -130,6 +131,19 @@ namespace MSCLoader
             console.setVisibility(true);
             console.controller.AppendLogLine(string.Format("<color=red><b>Error: </b>{0}</color>", str));
             Debug.Log(string.Format("MSCLoader ERROR: {0}", Regex.Replace(str, "<.*?>", string.Empty)));
+        }
+
+        /// <summary>
+        /// Print an warning to the console.
+        /// </summary>
+        /// <param name="str">Text to print to error log.</param>
+        /// <example><code source="Examples.cs" region="ModConsoleError" lang="C#" 
+        /// title="Example Code" /></example>
+        public static void Warning(string str)
+        {
+            console.setVisibility(true);
+            console.controller.AppendLogLine(string.Format("<color=orange><b>Warning: </b>{0}</color>", str));
+            Debug.Log(string.Format("MSCLoader WARNING: {0}", Regex.Replace(str, "<.*?>", string.Empty)));
         }
     }
 }
