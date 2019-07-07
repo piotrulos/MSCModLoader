@@ -33,7 +33,8 @@ namespace MSCLoader
 
         public override void ModSettings()
         {
-            Settings.AddHeader(this, "Console Settings");
+            Settings.AddHeader(this, "Console Settings", new Color32(0, 128, 0, 255));
+            Settings.AddText(this, "Basic settings for console");
             Settings.AddCheckBox(this, typing);
             Settings.AddSlider(this, ConsoleFontSize, 10, 20);
         }
@@ -55,6 +56,7 @@ namespace MSCLoader
             Texture2D cursor = ab.LoadAsset<Texture2D>("resizeCur.png");
             ab.Unload(false);
             UI = Object.Instantiate(UI);
+            UI.name = "MSCLoader Console";
             console = UI.AddComponent<ConsoleView>();
             console.viewContainer = UI.transform.GetChild(0).gameObject;
             console.inputField = console.viewContainer.transform.GetChild(0).gameObject.GetComponent<InputField>();
@@ -73,7 +75,7 @@ namespace MSCLoader
             entry.callback.AddListener((eventData) => { console.viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().OnMouseExit(); });
             trigger.delegates.Add(entry);
 
-            UI.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
+            UI.transform.SetParent(ModUI.GetCanvas().transform, false);
         }
         
         public override void Update()
