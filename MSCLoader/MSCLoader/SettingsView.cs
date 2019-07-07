@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,11 +22,15 @@ namespace MSCLoader
         
         public Text InfoTxt;
         public Text noOfMods;
+        public Text descriptionTxt;
 
         public Toggle DisableMod;
         public Toggle coreModCheckbox;
 
-
+        public Button nexusLink;
+        public Button rdLink;
+        public Button ghLink;
+        
         int page = 0;
 
         Mod selected_mod;
@@ -108,9 +113,58 @@ namespace MSCLoader
             modButton.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = string.Format("by <color=orange>{0}</color>", author);
             modButton.transform.GetChild(1).GetChild(2).GetComponent<Text>().text = version;
             modButton.transform.SetParent(modView.transform, false);
+            if (mod.metadata != null && mod.metadata.icon.iconFileName != null && mod.metadata.icon.iconFileName != string.Empty)
+            {
+                Texture2D t2d = new Texture2D(1, 1);
+                if (mod.metadata.icon.isIconRemote)
+                {
+                    if (File.Exists(Path.Combine(ModLoader.ManifestsFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName)))
+                    {
+                        try
+                        {
+                            t2d.LoadImage(File.ReadAllBytes(Path.Combine(ModLoader.ManifestsFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName)));
+                            modButton.transform.GetChild(0).GetChild(0).GetComponent<RawImage>().texture = t2d;
+                        }
+                        catch (Exception e)
+                        {
+                            ModConsole.Error(e.Message);
+                            Debug.Log(e);
+                        }
+                    }
+                }
+                else if (mod.metadata.icon.isIconUrl)
+                {
+                    try
+                    {
+                        WWW www = new WWW(mod.metadata.icon.iconFileName);
+                        modButton.transform.GetChild(0).GetChild(0).GetComponent<RawImage>().texture = www.texture;
+                    }
+                    catch (Exception e)
+                    {
+                        ModConsole.Error(e.Message);
+                        Debug.Log(e);
+                    }
+                }
+                else
+                {
+                    if (File.Exists(Path.Combine(ModLoader.GetModAssetsFolder(mod), mod.metadata.icon.iconFileName)))
+                    {
+                        try
+                        {
+                            t2d.LoadImage(File.ReadAllBytes(Path.Combine(ModLoader.GetModAssetsFolder(mod), mod.metadata.icon.iconFileName)));
+                            modButton.transform.GetChild(0).GetChild(0).GetComponent<RawImage>().texture = t2d;
+                        }
+                        catch (Exception e)
+                        {
+                            ModConsole.Error(e.Message);
+                            Debug.Log(e);
+                        }
+                    }
+                }
+            }
             if (mod.hasUpdate)
             {
-               //modButton.transform.GetChild(3).GetChild(0).gameObject.SetActive(true); //Add Update Icon
+                modButton.transform.GetChild(1).GetChild(3).GetComponent<Text>().text = "<color=green>UPDATE AVAILABLE!</color>";
             }
             if (mod.UseAssetsFolder)
             {
@@ -344,36 +398,85 @@ namespace MSCLoader
             }
         }
 
-        public void ModDetailsShow(Mod selected)
+        public void ModDetailsShow(Mod mod)
         {
-            bool core = false;
-            selected_mod = selected;
-            if (selected.ID.StartsWith("MSCLoader_"))
-                core = true; //can't disable core components
+            //  bool core = false;
+            selected_mod = mod;
+            // if (selected.ID.StartsWith("MSCLoader_"))
+            //      core = true; //can't disable core components
             goBackBtn.SetActive(true);
-            InfoTxt.text = string.Format("<color=yellow>ID:</color> <b><color=lime>{0}</color></b>{1}", selected.ID, Environment.NewLine);
-            InfoTxt.text += string.Format("<color=yellow>Name:</color> <b><color=lime>{0}</color></b>{1}", selected.Name, Environment.NewLine);
-            if (core)
-                InfoTxt.text += string.Format("<color=yellow>Version:</color> <b><color=lime>{0}</color></b>{1}", selected.Version, Environment.NewLine);
+            InfoTxt.text = string.Format("<color=yellow>ID:</color> <b><color=lime>{0}</color></b>{1}", mod.ID, Environment.NewLine);
+            InfoTxt.text += string.Format("<color=yellow>Name:</color> <b><color=lime>{0}</color></b>{1}", mod.Name, Environment.NewLine);
+            //if (core)
+            //     InfoTxt.text += string.Format("<color=yellow>Version:</color> <b><color=lime>{0}</color></b>{1}", selected.Version, Environment.NewLine);
+            // else
+            //{
+            if (mod.hasUpdate)
+                InfoTxt.text += string.Format("<color=yellow>Version:</color> <b><color=orange>{0}</color></b> (<color=lime>{3} available</color>){2}(designed for <b><color=lime>v{1}</color></b>){2}", mod.Version, mod.compiledVersion, Environment.NewLine, mod.RemMetadata.version);
             else
-            {
-                if (selected.hasUpdate)
-                    InfoTxt.text += string.Format("<color=yellow>Version:</color> <b><color=orange>{0}</color></b> (<color=lime>Update available</color>){2}(designed for <b><color=lime>v{1}</color></b>){2}", selected.Version, selected.compiledVersion, Environment.NewLine);
-                else
-                    InfoTxt.text += string.Format("<color=yellow>Version:</color> <b><color=lime>{0}</color></b>{2}(designed for <b><color=lime>v{1}</color></b>){2}", selected.Version, selected.compiledVersion, Environment.NewLine);
+                InfoTxt.text += string.Format("<color=yellow>Version:</color> <b><color=lime>{0}</color></b>{2}(designed for <b><color=lime>v{1}</color></b>){2}", mod.Version, mod.compiledVersion, Environment.NewLine);
 
-            }
-            InfoTxt.text += string.Format("<color=yellow>Author:</color> <b><color=lime>{0}</color></b>", selected.Author);
-            if (Application.loadedLevelName == "MainMenu" && !core)
+            //}
+            InfoTxt.text += string.Format("<color=yellow>Author:</color> <b><color=lime>{0}</color></b>", mod.Author);
+            if (Application.loadedLevelName == "MainMenu")
                 DisableMod.interactable = true;
             else
                 DisableMod.interactable = false;
-            DisableMod.isOn = selected.isDisabled;
+            DisableMod.isOn = mod.isDisabled;
+            nexusLink.gameObject.SetActive(false);
+            rdLink.gameObject.SetActive(false);
+            ghLink.gameObject.SetActive(false);
+            descriptionTxt.text = "<i>No description provided...</i>";
+            if (mod.metadata != null)
+            {
+                if (!string.IsNullOrEmpty(mod.metadata.links.nexusLink))
+                {
+                    nexusLink.gameObject.SetActive(true);
+                    nexusLink.onClick.RemoveAllListeners();
+                    nexusLink.onClick.AddListener(() => OpenModLink(mod.metadata.links.nexusLink));
+                }
+                if (!string.IsNullOrEmpty(mod.metadata.links.rdLink))
+                {
+                    rdLink.gameObject.SetActive(true);
+                    rdLink.onClick.RemoveAllListeners();
+                    rdLink.onClick.AddListener(() => OpenModLink(mod.metadata.links.rdLink));
+                }
+                if (!string.IsNullOrEmpty(mod.metadata.links.githubLink))
+                {
+                    ghLink.gameObject.SetActive(true);
+                    ghLink.onClick.RemoveAllListeners();
+                    ghLink.onClick.AddListener(() => OpenModLink(mod.metadata.links.githubLink));
+                }
+                descriptionTxt.text = mod.metadata.description;
+            }
             settingViewContainer.GetComponent<Animator>().SetBool("goDetails", true);
+            
             page = 1;
             SetScrollRect();
         }
-
+        private void OpenModLink(string url)
+        {
+            if ((bool)ModSettings_menu.openLinksOverlay.GetValue())
+            {
+                //try opening in steam overlay
+                try
+                {                 
+                    Steamworks.SteamFriends.ActivateGameOverlayToWebPage(url);
+                }
+                catch (Exception e)
+                {
+                    ModConsole.Error(e.Message);
+                    Debug.Log(e);
+                    Application.OpenURL(url);
+                    Debug.Log(url);
+                }
+            }
+            else
+            {
+                Application.OpenURL(url);
+                Debug.Log(url);
+            }
+        }
         public void ModKeybindsShow(Mod selected)
         {
             goBackBtn.SetActive(true);

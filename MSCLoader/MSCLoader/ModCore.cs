@@ -7,7 +7,7 @@ namespace MSCLoader
         public override string ID => "MSCLoader_Core"; 
         public override string Name => "MSCLoader (Assets)"; 
         public override string Author => "Piotrulos";
-        public override string Version => ModLoader.Version;
+        public override string Version => ModLoader.MSCLoader_Ver;
         public override bool UseAssetsFolder => true;
     }
 #pragma warning restore CS1591

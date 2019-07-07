@@ -30,7 +30,15 @@ namespace MSCLoader.Commands
                 }
                 else if (args[0].ToLower() == "update")
                 {
-                    ModConsole.Error("Add update logic here");
+                    Mod mod = ModLoader.LoadedMods.Where(w => w.ID == args[1]).FirstOrDefault();
+                    if (mod != null)
+                    {
+                        ManifestStuff.UpdateManifest(mod);
+                    }
+                    else
+                    {
+                        ModConsole.Error("Invalid ModID (ModID is case sensitive)");
+                    }
                 }
             }
             else
