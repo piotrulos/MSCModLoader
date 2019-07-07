@@ -736,7 +736,8 @@ namespace MSCLoader
             loading = ab.LoadAsset<GameObject>("LoadingMods.prefab");
             loading.SetActive(false);
             loading = GameObject.Instantiate(loading);
-            loading.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
+            loading.name = "MSCLoader loading screen";
+            loading.transform.SetParent(ModUI.GetCanvas().transform, false);
             ModConsole.Print("Loading core assets completed!");
             ab.Unload(false); //freeup memory
         }
@@ -773,7 +774,7 @@ namespace MSCLoader
             mf.text = string.Format("<color=orange>Mods folder:</color> {0}", ModsFolder);
             MainMenuPath();
             modUpdates.text = string.Empty;
-            mainMenuInfo.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
+            mainMenuInfo.transform.SetParent(ModUI.GetCanvas().transform, false);
         }
 
         private void VersionCheckCompleted(object sender, DownloadStringCompletedEventArgs e)

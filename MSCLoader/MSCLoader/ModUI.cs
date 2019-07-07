@@ -12,9 +12,10 @@ namespace MSCLoader
     {
 #pragma warning disable CS1591
         //canvas for UI
+        static GameObject canvasGO;
         public static void CreateCanvas()
         {
-            GameObject canvasGO = new GameObject();
+            canvasGO = new GameObject();
             canvasGO.name = "MSCLoader Canvas";
             canvasGO.layer = 5;
             canvasGO.AddComponent<Canvas>();
@@ -34,6 +35,8 @@ namespace MSCLoader
             GameObject.DontDestroyOnLoad(evSys);
         }
 #pragma warning restore CS1591
+
+        public static GameObject GetCanvas() => canvasGO;
         /// <summary>
         /// Message box GameObject
         /// </summary>
@@ -57,7 +60,7 @@ namespace MSCLoader
             mb.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = message;
             mb.transform.GetChild(1).GetChild(1).gameObject.SetActive(true);
             mb.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Button>().onClick.AddListener(() => GameObject.Destroy(mb));
-            mb.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
+            mb.transform.SetParent(GetCanvas().transform, false);
             mb.SetActive(true);
         }
 
@@ -82,7 +85,7 @@ namespace MSCLoader
             mb.transform.GetChild(1).GetChild(2).gameObject.SetActive(true);
             mb.transform.GetChild(1).GetChild(2).GetChild(1).GetComponent<Button>().onClick.AddListener(() => { ifYes.Invoke(); GameObject.Destroy(mb); });
             mb.transform.GetChild(1).GetChild(2).GetChild(0).GetComponent<Button>().onClick.AddListener(() =>  GameObject.Destroy(mb));
-            mb.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
+            mb.transform.SetParent(GetCanvas().transform, false);
             mb.SetActive(true);
         }
     }

@@ -230,6 +230,11 @@ namespace MSCLoader
                     hdr.transform.GetChild(0).GetComponent<Text>().color = (Color)setting.Vals[2];
                     hdr.transform.SetParent(modSettingsList.transform, false);
                     break;
+                case SettingsType.Text:
+                    GameObject tx = Instantiate(ms.ModLabel);
+                    tx.GetComponent<Text>().text = setting.Name;
+                    tx.transform.SetParent(modSettingsList.transform, false);
+                    break;
             }
         }
 

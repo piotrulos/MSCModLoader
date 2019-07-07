@@ -21,7 +21,8 @@ namespace MSCLoader
         Button,
         Slider,
         TextBox,
-        Header
+        Header,
+        Text
     }
 #pragma warning restore CS1591
 
@@ -346,6 +347,13 @@ namespace MSCLoader
             modSettings.Add(setting);
         }
 
+        public static void AddText(Mod mod, string text)
+        {
+            Settings setting = new Settings(null, text, null);
+            setting.Mod = mod;
+            setting.type = SettingsType.Text;
+            modSettings.Add(setting);
+        }
         /// <summary>
         /// Get value of setting.
         /// </summary>

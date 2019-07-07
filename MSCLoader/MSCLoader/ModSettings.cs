@@ -23,9 +23,10 @@ namespace MSCLoader
         internal static Settings modPath = new Settings("mscloader_modPath", "Show mods folder", true, ModLoader.MainMenuPath);
         private static Settings modSetButton = new Settings("mscloader_modSetButton", "Show settings button in bottom right corner", true, ModSettingsToggle);
         internal static Settings forceMenuVsync = new Settings("mscloader_forceMenuVsync", "60FPS limit in Main Menu", true, VSyncSwitchCheckbox);
+        internal static Settings openLinksOverlay = new Settings("mscloader_openLinksOverlay", "Open URLs in steam overlay", true);
 
-        internal static Settings enGarage = new Settings("mscloader_enGarage", "Enable \"MSC Garage\"", false, EnableGarageToggle);
-        private static Settings authKey = new Settings("mscloader_authKey", "\"MSC Garage\" Auth-key", string.Empty);
+        private static Settings expUIScaling = new Settings("mscloader_expUIScaling", "Ultra-widescreen UI scaling", false, ExpUIScaling);
+        private static Settings tuneScaling = new Settings("mscloader_tuneScale", "Tune scaling:", 1f, ChangeUIScaling);
 
         public SettingsView settings;
         public GameObject UI;
@@ -42,29 +43,44 @@ namespace MSCLoader
         {
             instance = this;
             Settings.AddHeader(this, "Basic Settings", new Color32(0, 128, 0, 255));
+            Settings.AddText(this, "All basic settings for MSCLoader");
             Settings.AddCheckBox(this, expWarning);
             Settings.AddCheckBox(this, modPath);
             Settings.AddCheckBox(this, modSetButton);
             Settings.AddCheckBox(this, forceMenuVsync);
-            //Settings.AddHeader(this, "Garage Settings");
-            //Settings.AddCheckBox(this, enGarage);
-            //Settings.AddTextBox(this, authKey, "Paste your auth-key here...");
+            Settings.AddCheckBox(this, openLinksOverlay);
+            Settings.AddHeader(this, "Experimental Scaling", new Color32(101, 34, 18, 255), new Color32(254, 254, 0, 255));
+            Settings.AddText(this, "This option enables <color=orange>experimental UI scaling</color> for <color=orange>ultra-widescreen monitor setup</color>. Turn on this checkbox first, then run game in ultra-widescreen resolution. You can then tune scaling using slider below, but default value (1) should be ok.");
+            Settings.AddCheckBox(this, expUIScaling);
+            Settings.AddSlider(this, tuneScaling, 0f, 1f);
         }
         public override void ModSettingsLoaded()
         {
             ModSettingsToggle();
+            ExpUIScaling();
         }
         private static void ModSettingsToggle()
         {
             instance.Button_ms.SetActive((bool)modSetButton.GetValue());
         }
 
-        private static void EnableGarageToggle()
+        private static void ChangeUIScaling()
         {
-            return;
-            if ((bool)enGarage.GetValue() && (string)authKey.GetValue() == string.Empty)
+            if ((bool)expUIScaling.GetValue())
             {
-                ModUI.ShowYesNoMessage(string.Format("To use MSCGarage you need to get your <b>Auth-Key</b> from garage website.{0}{0}Do you want to do it now?", Environment.NewLine), OpenAuthKeyWebsite);
+                ModUI.GetCanvas().GetComponent<CanvasScaler>().matchWidthOrHeight = float.Parse(tuneScaling.GetValue().ToString());
+            }
+        }
+        private static void ExpUIScaling()
+        {
+            if ((bool)expUIScaling.GetValue())
+            {
+                ModUI.GetCanvas().GetComponent<CanvasScaler>().screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+                ChangeUIScaling();
+            }
+            else
+            {
+                ModUI.GetCanvas().GetComponent<CanvasScaler>().screenMatchMode = CanvasScaler.ScreenMatchMode.Shrink;
             }
         }
         private static void OpenAuthKeyWebsite()
@@ -111,7 +127,7 @@ namespace MSCLoader
 
             UI = GameObject.Instantiate(UI);
             UI.AddComponent<ModUIDrag>();
-
+            UI.name = "MSCLoader Settings";
 
             settings = UI.AddComponent<SettingsView>();
             settings.ms = this;
@@ -134,14 +150,12 @@ namespace MSCLoader
             settings.DisableMod.onValueChanged.AddListener(settings.disableMod);
 
             settings.InfoTxt = ModSettingsView.transform.GetChild(0).GetComponent<Text>();
-           /* settings.Nametxt = ModSettingsView.transform.GetChild(1).GetComponent<Text>();
-            settings.Versiontxt = ModSettingsView.transform.GetChild(2).GetComponent<Text>();
-            settings.Authortxt = ModSettingsView.transform.GetChild(3).GetComponent<Text>();*/
 
-            UI.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
+            UI.transform.SetParent(ModUI.GetCanvas().transform, false);
             settings.setVisibility(false);
             Button_ms = GameObject.Instantiate(Button_ms);
-            Button_ms.transform.SetParent(GameObject.Find("MSCLoader Canvas").transform, false);
+            Button_ms.name = "MSCLoader Settings button";
+            Button_ms.transform.SetParent(ModUI.GetCanvas().transform, false);
             Button_ms.GetComponent<Button>().onClick.AddListener(() => settings.toggleVisibility());
             Button_ms.SetActive(true);
             if (!(bool)modSetButton.GetValue())
@@ -299,7 +313,6 @@ namespace MSCLoader
 
                 mod.ModSettingsLoaded();
             }
-            ModLoader.SetAuthKey((string)authKey.GetValue()); //Trick to keep authKey variable as private.
         }
 
 
