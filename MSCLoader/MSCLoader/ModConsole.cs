@@ -15,7 +15,7 @@ namespace MSCLoader
 
         public override string ID => "MSCLoader_Console";
         public override string Name => "Console";
-        public override string Version => ModLoader.Version;
+        public override string Version => ModLoader.MSCLoader_Ver;
         public override string Author => "piotrulos";
 
         public override bool UseAssetsFolder => true;

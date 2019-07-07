@@ -91,6 +91,55 @@ namespace MSCLoader
             }
 
         }
+        public static void UpdateManifest(Mod mod)
+        {
+            if (!File.Exists(ModLoader.GetMetadataFolder(string.Format("{0}.json", mod.ID))))
+            {
+                ModConsole.Error("Metadata file doesn't exists, to create use create command");
+                return;
+            }
+            string steamID;
+            if (ModLoader.CheckSteam())
+            {
+                steamID = Steamworks.SteamUser.GetSteamID().ToString();
+                if (mod.RemMetadata.sid_sign != ModLoader.MurzynskaMatematyka(steamID + mod.ID))
+                {
+                    ModConsole.Error("This mod doesn't belong to you, can't continue");
+                    return;
+                }
+                try
+                {
+                    ModsManifest umm = mod.metadata;
+                    Version v1 = new Version(mod.Version);
+                    Version v2 = new Version(mod.metadata.version);
+                    switch (v1.CompareTo(v2))
+                    {
+                        case 0:
+                            ModConsole.Error(string.Format("Mod version {0} is same as current metadata version {1}, nothing to update.",mod.Version, mod.metadata.version));
+                            break;
+                        case 1:
+                            umm.version = mod.Version;
+                            umm.sign = AzjatyckaMatematyka(mod.fileName);
+                            string msad = ModLoader.GetMetadataFolder(string.Format("{0}.json", mod.ID));
+                            string serializedData = JsonConvert.SerializeObject(umm, Formatting.Indented);
+                            File.WriteAllText(msad, serializedData);
+                            ModConsole.Print("<color=green>Metadata file updated successfully, you can upload it now!</color>");
+                            break;
+                        case -1:
+                            ModConsole.Error(string.Format("Mod version {0} is <b>earlier</b> than current metadata version {1}, cannot update.", mod.Version, mod.metadata.version));
+                            break;
+                    }
+                }
+                catch (Exception e)
+                {
+                    ModConsole.Error(e.Message);
+                }
+            }
+            else
+            {
+                ModConsole.Error("No valid steam detected");
+            }
+        }
         internal static string AzjatyckaMatematyka(string fn)
         {
             byte[] hash = System.Security.Cryptography.MD5.Create().ComputeHash(File.ReadAllBytes(fn));

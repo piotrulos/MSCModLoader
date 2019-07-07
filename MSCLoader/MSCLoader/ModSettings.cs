@@ -14,7 +14,7 @@ namespace MSCLoader
         public override bool UseAssetsFolder => true;
         public override string ID => "MSCLoader_Settings";
         public override string Name => "Settings (Main)";
-        public override string Version => ModLoader.Version;
+        public override string Version => ModLoader.MSCLoader_Ver;
         public override string Author => "piotrulos";
 
         private Keybind menuKey = new Keybind("Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
@@ -150,6 +150,11 @@ namespace MSCLoader
             settings.DisableMod.onValueChanged.AddListener(settings.disableMod);
 
             settings.InfoTxt = ModSettingsView.transform.GetChild(0).GetComponent<Text>();
+            settings.descriptionTxt = ModSettingsView.transform.GetChild(8).GetComponent<Text>();
+
+            settings.nexusLink = ModSettingsView.transform.GetChild(4).GetComponent<Button>();
+            settings.rdLink = ModSettingsView.transform.GetChild(5).GetComponent<Button>();
+            settings.ghLink = ModSettingsView.transform.GetChild(6).GetComponent<Button>();
 
             UI.transform.SetParent(ModUI.GetCanvas().transform, false);
             settings.setVisibility(false);

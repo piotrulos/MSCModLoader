@@ -62,7 +62,7 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string Version = "1.0.1";
+        public static readonly string MSCLoader_Ver = "1.0.1";
 
         /// <summary>
         /// Is this version of ModLoader experimental (this is NOT game experimental branch)
@@ -86,12 +86,11 @@ namespace MSCLoader
         private MSCUnloader mscUnloader;
 
         private static string steamID;
-        private static string authKey;
         private static bool loaderPrepared = false;
         private static string ModsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"MySummerCar\Mods");
         private static string ConfigFolder = Path.Combine(ModsFolder, "Config");
         private static string SettingsFolder = Path.Combine(ConfigFolder, "Mod Settings");
-        private static string ManifestsFolder = Path.Combine(ConfigFolder, "Mod Metadata");
+        internal static string ManifestsFolder = Path.Combine(ConfigFolder, "Mod Metadata");
         private static string ModSaveFolder = Path.Combine(ConfigFolder, "Mod Saves");
         private static string AssetsFolder = Path.Combine(ModsFolder, "Assets");
 
@@ -270,12 +269,6 @@ namespace MSCLoader
             }
         }
 
-        /// <summary>
-        /// Set Auth key (not used)
-        /// </summary>
-        /// <param name="ak">auth key</param>
-        public static void SetAuthKey(string ak) => authKey = ak;
-
         private void Init()
         {
             //Set config and Assets folder in selected mods folder
@@ -352,17 +345,17 @@ namespace MSCLoader
                     Directory.CreateDirectory(AssetsFolder);
 
 
-                LoadMod(new ModConsole(), Version);
+                LoadMod(new ModConsole(), MSCLoader_Ver);
                 LoadedMods[0].ModSettings();
-                LoadMod(new ModSettings_menu(), Version);
+                LoadMod(new ModSettings_menu(), MSCLoader_Ver);
                 LoadedMods[1].ModSettings();
                 ModSettings_menu.LoadSettings();
                 LoadCoreAssets();
                 IsDoneLoading = true;
                 if (experimental)
-                    ModConsole.Print(string.Format("<color=green>ModLoader <b>v{0}</b> ready</color> [<color=magenta>Experimental</color> <color=lime>build {1}</color>]", Version, expBuild));
+                    ModConsole.Print(string.Format("<color=green>ModLoader <b>v{0}</b> ready</color> [<color=magenta>Experimental</color> <color=lime>build {1}</color>]", MSCLoader_Ver, expBuild));
                 else
-                    ModConsole.Print(string.Format("<color=green>ModLoader <b>v{0}</b> ready</color>", Version));
+                    ModConsole.Print(string.Format("<color=green>ModLoader <b>v{0}</b> ready</color>", MSCLoader_Ver));
                 LoadReferences();
                 PreLoadMods();
                 ModConsole.Print(string.Format("<color=orange>Found <color=green><b>{0}</b></color> mods!</color>", LoadedMods.Count - 2));
@@ -525,17 +518,17 @@ namespace MSCLoader
                 if (mod.metadata.minimumRequirements.MSCLoaderVer != null && mod.metadata.minimumRequirements.MSCLoaderVer != string.Empty)
                 {
                     Version v1 = new Version(mod.metadata.minimumRequirements.MSCLoaderVer);
-                    Version v2 = new Version(Version);
+                    Version v2 = new Version(MSCLoader_Ver);
                     if (v1.CompareTo(v2) == 1)
                     {
                         if (mod.metadata.minimumRequirements.disableIfVer)
                         {
                             mod.isDisabled = true;
-                            ModConsole.Error(string.Format("Mod <b>{0}</b> requires MSCLoader at least <b>{1}</b>, your current version is <b>{2}</b>. Author marked this as required!", mod.ID, mod.metadata.minimumRequirements.MSCLoaderVer, Version));
+                            ModConsole.Error(string.Format("Mod <b>{0}</b> requires MSCLoader at least <b>{1}</b>, your current version is <b>{2}</b>. Author marked this as required!", mod.ID, mod.metadata.minimumRequirements.MSCLoaderVer, MSCLoader_Ver));
                         }
                         else
                         {
-                            ModConsole.Warning(string.Format("Mod <b>{0}</b> requires MSCLoader at least <b>{1}</b>, your current version is <b>{2}</b>. This may cause issues!", mod.ID, mod.metadata.minimumRequirements.MSCLoaderVer, Version));
+                            ModConsole.Warning(string.Format("Mod <b>{0}</b> requires MSCLoader at least <b>{1}</b>, your current version is <b>{2}</b>. This may cause issues!", mod.ID, mod.metadata.minimumRequirements.MSCLoaderVer, MSCLoader_Ver));
                         }
                     }
                 }
@@ -760,7 +753,7 @@ namespace MSCLoader
             info = mainMenuInfo.transform.GetChild(0).gameObject.GetComponent<Text>();
             mf = mainMenuInfo.transform.GetChild(1).gameObject.GetComponent<Text>();
             modUpdates = mainMenuInfo.transform.GetChild(2).gameObject.GetComponent<Text>();
-            info.text = string.Format("Mod Loader MSCLoader <color=cyan>v{0}</color> is ready! (<color=orange>Checking for updates...</color>)", Version);
+            info.text = string.Format("Mod Loader MSCLoader <color=cyan>v{0}</color> is ready! (<color=orange>Checking for updates...</color>)", MSCLoader_Ver);
             WebClient client = new WebClient();
             //client.Proxy = new WebProxy("127.0.0.1:8888"); //ONLY FOR TESTING
             client.DownloadStringCompleted += VersionCheckCompleted;
@@ -807,17 +800,17 @@ namespace MSCLoader
                     if (experimental)
                         i = expBuild.CompareTo(result[1].Trim());
                     else
-                        i = Version.CompareTo(result[1].Trim());
+                        i = MSCLoader_Ver.CompareTo(result[1].Trim());
                     if (i != 0)
                         if (experimental)
-                            info.text = string.Format("MSCLoader <color=cyan>v{0}</color> is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>] (<color=orange>New build available: <b>{2}</b></color>)", Version, expBuild, result[1]);
+                            info.text = string.Format("MSCLoader <color=cyan>v{0}</color> is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>] (<color=orange>New build available: <b>{2}</b></color>)", MSCLoader_Ver, expBuild, result[1]);
                         else
-                            info.text = string.Format("MSCLoader <color=cyan>v{0}</color> is ready! (<color=orange>New version available: <b>v{1}</b></color>)", Version, result[1].Trim());
+                            info.text = string.Format("MSCLoader <color=cyan>v{0}</color> is ready! (<color=orange>New version available: <b>v{1}</b></color>)", MSCLoader_Ver, result[1].Trim());
                     else if (i == 0)
                         if (experimental)
-                            info.text = string.Format("MSCLoader <color=cyan>v{0}</color> is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>]", Version, expBuild);
+                            info.text = string.Format("MSCLoader <color=cyan>v{0}</color> is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>]", MSCLoader_Ver, expBuild);
                         else
-                            info.text = string.Format("MSCLoader <color=cyan>v{0}</color> is ready! (<color=lime>Up to date</color>)", Version);
+                            info.text = string.Format("MSCLoader <color=cyan>v{0}</color> is ready! (<color=lime>Up to date</color>)", MSCLoader_Ver);
                 }
                 else
                 {
@@ -832,9 +825,9 @@ namespace MSCLoader
                     ModConsole.Error(ex.ToString());
                 UnityEngine.Debug.Log(ex);
                 if (experimental)
-                    info.text = string.Format("MSCLoader <color=cyan>v{0}</color> is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>]", Version, expBuild);
+                    info.text = string.Format("MSCLoader <color=cyan>v{0}</color> is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>]", MSCLoader_Ver, expBuild);
                 else
-                    info.text = string.Format("MSCLoader <color=cyan>v{0}</color> is ready!", Version);
+                    info.text = string.Format("MSCLoader <color=cyan>v{0}</color> is ready!", MSCLoader_Ver);
 
             }
             if (devMode)
@@ -843,7 +836,7 @@ namespace MSCLoader
 
         IEnumerator NewGameMods()
         {
-            loading.transform.GetChild(2).GetComponent<Text>().text = string.Format("MSCLoader <color=green>v{0}</color>", Version);
+            loading.transform.GetChild(2).GetComponent<Text>().text = string.Format("MSCLoader <color=green>v{0}</color>", MSCLoader_Ver);
             ModConsole.Print("Resetting mods...");
             loading.SetActive(true);
             loading.transform.GetChild(3).GetComponent<Slider>().minValue = 1;
@@ -886,7 +879,7 @@ namespace MSCLoader
 
         IEnumerator LoadMods()
         {
-            loading.transform.GetChild(2).GetComponent<Text>().text = string.Format("MSCLoader <color=green>v{0}</color>", Version);
+            loading.transform.GetChild(2).GetComponent<Text>().text = string.Format("MSCLoader <color=green>v{0}</color>", MSCLoader_Ver);
             ModConsole.Print("Loading mods...");
             Stopwatch s = new Stopwatch();
             s.Start();

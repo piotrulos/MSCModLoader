@@ -22,7 +22,7 @@ namespace MSCLoader.Commands
                 ModConsole.Print(string.Format("<color=red>Failed to get build ID:</color> <b>{0}</b>", e.Message)); //Show steamworks error
 
             }
-            ModConsole.Print(string.Format("MSCLoader: <b>{0}</b>", ModLoader.Version));
+            ModConsole.Print(string.Format("MSCLoader: <b>{0}</b>", ModLoader.MSCLoader_Ver));
         }
     }
 #pragma warning restore CS1591
