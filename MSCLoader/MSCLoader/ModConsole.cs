@@ -144,7 +144,7 @@ namespace MSCLoader
         public static void Warning(string str)
         {
             console.setVisibility(true);
-            console.controller.AppendLogLine(string.Format("<color=orange><b>Warning: </b>{0}</color>", str));
+            console.controller.AppendLogLine(string.Format("<color=yellow><b>Warning: </b>{0}</color>", str));
             Debug.Log(string.Format("MSCLoader WARNING: {0}", Regex.Replace(str, "<.*?>", string.Empty)));
         }
     }

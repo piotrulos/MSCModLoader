@@ -1010,6 +1010,11 @@ namespace MSCLoader
                 AssemblyName[] list = asm.GetReferencedAssemblies();
                 if (File.ReadAllText(file).Contains("RegistryKey"))
                     throw new FileLoadException();
+
+                //Warn about wrong .net target, source of some mod crashes.
+                if (!asm.ImageRuntimeVersion.Equals(Assembly.GetExecutingAssembly().ImageRuntimeVersion))
+                    ModConsole.Warning(string.Format("File <b>{0}</b> is targeting runtime version <b>{1}</b> which is different that current running version <b>{2}</b>. This may cause unexpected behaviours, check your target assembly.", Path.GetFileName(file), asm.ImageRuntimeVersion, Assembly.GetExecutingAssembly().ImageRuntimeVersion));
+                
                 // Look through all public classes                
                 foreach (Type type in asm.GetTypes())
                 {
