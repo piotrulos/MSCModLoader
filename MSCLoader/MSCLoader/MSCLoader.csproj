@@ -87,6 +87,7 @@
   <ItemGroup>
     <Compile Include="AudioLibrary\MP3_Streaming\MP3Stream.cs" />
     <Compile Include="AudioLibrary\MP3_Streaming\ReadFullyStream.cs" />
+    <Compile Include="AudioLibrary\Playlists.cs" />
     <Compile Include="Commands\CommandVersion.cs" />
     <Compile Include="Commands\CommandLogAll.cs" />
     <Compile Include="Commands\ManifestCommand.cs" />

@@ -36,7 +36,12 @@ namespace MSCLoader
         }
 #pragma warning restore CS1591
 
+        /// <summary>
+        /// Get UI canvas
+        /// </summary>
+        /// <returns>Canvas GameObject</returns>
         public static GameObject GetCanvas() => canvasGO;
+    
         /// <summary>
         /// Message box GameObject
         /// </summary>

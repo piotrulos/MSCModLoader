@@ -274,7 +274,7 @@ namespace MSCLoader
             setting.Mod = mod;
             setting.Vals = new object[3];
 
-            if (setting.Value is float)
+            if (setting.Value is float || setting.Value is double)
             {
                 setting.type = SettingsType.Slider;
                 setting.Vals[0] = minValue;
@@ -346,7 +346,11 @@ namespace MSCLoader
             setting.Vals[2] = textColor;
             modSettings.Add(setting);
         }
-
+        /// <summary>
+        /// Add just a text
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="text">Just a text (supports unity rich text)</param>
         public static void AddText(Mod mod, string text)
         {
             Settings setting = new Settings(null, text, null);

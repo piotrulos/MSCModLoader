@@ -62,7 +62,7 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string MSCLoader_Ver = "1.0.1";
+        public static readonly string MSCLoader_Ver = "1.1";
 
         /// <summary>
         /// Is this version of ModLoader experimental (this is NOT game experimental branch)
@@ -91,17 +91,17 @@ namespace MSCLoader
         private static string ConfigFolder = Path.Combine(ModsFolder, "Config");
         private static string SettingsFolder = Path.Combine(ConfigFolder, "Mod Settings");
         internal static string ManifestsFolder = Path.Combine(ConfigFolder, "Mod Metadata");
-        private static string ModSaveFolder = Path.Combine(ConfigFolder, "Mod Saves");
         private static string AssetsFolder = Path.Combine(ModsFolder, "Assets");
 
         private GameObject mainMenuInfo;
         private GameObject loading;
+        private GameObject loadingMeta;
         private Animator menuInfoAnim;
         private GUISkin guiskin;
         private ModCore modCore;
 
         private string serverURL = "http://my-summer-car.ml"; //localhost for testing only
-        private string metadataURL = "http://localhost:4000";
+        private string metadataURL = "http://my-summer-car.ml:4000";
 
         private bool IsDoneLoading = false;
         private bool IsModsLoading = false;
@@ -113,7 +113,7 @@ namespace MSCLoader
         private static CurrentScene CurrentGameScene;
 
         internal static bool unloader = false;
-
+        internal static bool rtmm = false;
         /// <summary>
         /// Check if steam is present
         /// </summary>
@@ -149,7 +149,6 @@ namespace MSCLoader
         /// Example from other than Mod subclass.
         /// <code source="Examples.cs" region="GetModConfigFolder2" lang="C#" />
         /// </example>
-        [Obsolete("For saves use GetModSaveFolder()", false)]
         public static string GetModConfigFolder(Mod mod)
         {
             return Path.Combine(SettingsFolder, mod.ID);
@@ -215,13 +214,15 @@ namespace MSCLoader
                 Instance.Init();
             }
         }
-
+        bool vse = false;
         private void OnLevelWasLoaded(int level)
         {
             if (Application.loadedLevelName == "MainMenu")
             {
                 CurrentGameScene = CurrentScene.MainMenu;
-                if ((bool)ModSettings_menu.forceMenuVsync.GetValue())
+                if (QualitySettings.vSyncCount != 0)
+                    vse = true;
+                if ((bool)ModSettings_menu.forceMenuVsync.GetValue() && !vse)
                     QualitySettings.vSyncCount = 1; //vsync in menu
                 if (IsDoneLoading && GameObject.Find("MSCLoader Info") == null)
                 {
@@ -248,7 +249,7 @@ namespace MSCLoader
             else if (Application.loadedLevelName == "GAME")
             {
                 CurrentGameScene = CurrentScene.Game;
-                if ((bool)ModSettings_menu.forceMenuVsync.GetValue())
+                if ((bool)ModSettings_menu.forceMenuVsync.GetValue() && !vse)
                     QualitySettings.vSyncCount = 0;
 
                 if (IsDoneLoading)
@@ -296,8 +297,6 @@ namespace MSCLoader
                 }
             }
             ManifestsFolder = Path.Combine(ConfigFolder, "Mod Metadata");
-            
-            // ModsFolder = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"..\LocalLow\Amistech\My Summer Car\Mods"));
 
             if (GameObject.Find("MSCUnloader") == null)
             {
@@ -371,6 +370,7 @@ namespace MSCLoader
                     steamID = Steamworks.SteamUser.GetSteamID().ToString();
                     ModConsole.Print(string.Format("<color=orange>Hello <color=green><b>{0}</b></color>!</color>", Steamworks.SteamFriends.GetPersonaName()));
                     WebClient webClient = new WebClient();
+                    webClient.Headers.Add("user-agent", string.Format("MSCLoader/{0} ({1})", MSCLoader_Ver, SystemInfo.operatingSystem));
                     //  webClient.Proxy = new WebProxy("127.0.0.1:8888"); //ONLY FOR TESTING
                     webClient.DownloadStringCompleted += sAuthCheckCompleted;
                     webClient.DownloadStringAsync(new Uri(string.Format("{0}/sauth.php?sid={1}", serverURL, steamID)));
@@ -385,21 +385,55 @@ namespace MSCLoader
                 }
                 MainMenuInfo();
                 LoadModsSettings();
-                CheckForModsUpdates();
+                ModSettings_menu.LoadBinds();
+                if (!rtmm)
+                    StartCoroutine(CheckForModsUpdates());
+
                 if (devMode)
                     ModConsole.Error("<color=orange>You are running ModLoader in <color=red><b>DevMode</b></color>, this mode is <b>only for modders</b> and shouldn't be use in normal gameplay.</color>");
             }
         }
 
-        private void CheckForModsUpdates()
+        IEnumerator CheckForModsUpdates()
         {
-            WebClient webClient = new WebClient();
             int modUpdCount = 0;
-            foreach (Mod mod in LoadedMods)
+
+            loadingMeta.transform.GetChild(1).GetComponent<Slider>().minValue = 1;
+            loadingMeta.transform.GetChild(1).GetComponent<Slider>().maxValue = LoadedMods.Count - 2;
+            loadingMeta.transform.GetChild(2).GetComponent<Text>().text = string.Format("{0}/{1}", 0, LoadedMods.Count - 2);
+            loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("Connecting...");
+            loadingMeta.transform.GetChild(4).GetComponent<Text>().text = "...";
+            loadingMeta.SetActive(true);
+
+            int i = 1;
+            bool errored = false;
+            foreach (Mod mod in LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")))
             {
-                if (mod.ID.StartsWith("MSCLoader_"))
+                if (errored)
+                {
+                    ReadMetadata(mod);
                     continue;
-                string result = webClient.DownloadString(string.Format("{0}/man/{1}", metadataURL, mod.ID));
+                }
+                loadingMeta.transform.GetChild(2).GetComponent<Text>().text = string.Format("{0}/{1}", i, LoadedMods.Count - 2);
+                loadingMeta.transform.GetChild(1).GetComponent<Slider>().value = i;
+                loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("Mod: <color=orange>{0}</color>", mod.Name);
+
+                WebClient webClient = new WebClient();
+                webClient.Headers.Add("user-agent", string.Format("MSCLoader/{0} ({1})", MSCLoader_Ver, SystemInfo.operatingSystem));
+                string result;
+                try
+                {
+                    result = webClient.DownloadString(string.Format("{0}/man/{1}", metadataURL, mod.ID));
+                }
+                catch (Exception e)
+                {
+                    ModConsole.Error("Failed to check for mod updates!");
+                    ModConsole.Error(e.Message);
+                    UnityEngine.Debug.Log(e);
+                    errored = true;
+                    ReadMetadata(mod);
+                    continue;
+                }
                 if (result != string.Empty)
                 {
                     if (result.StartsWith("error"))
@@ -411,12 +445,21 @@ namespace MSCLoader
                             {
                                 case "0":
                                     UnityEngine.Debug.Log("No metadata for " + mod.ID);
+                                    i++;
+
+                                    yield return null;
                                     continue;
                                 case "1":
                                     UnityEngine.Debug.Log("Database connection problem");
+                                    i++;
+
+                                    yield return null;
                                     continue;
                                 default:
                                     UnityEngine.Debug.Log("Unknown error.");
+                                    i++;
+
+                                    yield return null;
                                     continue;
                             }
                         }
@@ -431,7 +474,12 @@ namespace MSCLoader
                             switch (v1.CompareTo(v2))
                             {
                                 case 0:
-                                    if (!result.Equals(File.ReadAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)))))
+                                    if (File.Exists(GetMetadataFolder(string.Format("{0}.json", mod.ID))) && !result.Equals(File.ReadAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)))))
+                                    {
+                                        File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)), result);
+                                        mod.metadata = mod.RemMetadata;
+                                    }
+                                    else
                                     {
                                         File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)), result);
                                         mod.metadata = mod.RemMetadata;
@@ -440,10 +488,28 @@ namespace MSCLoader
                                 case 1:
                                     mod.hasUpdate = true;
                                     modUpdCount++;
+                                    if (mod.RemMetadata.type != 3)
+                                    {
+                                        if (File.Exists(GetMetadataFolder(string.Format("{0}.json", mod.ID))) && !result.Equals(File.ReadAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)))))
+                                        {
+                                            File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)), result);
+                                            mod.metadata = mod.RemMetadata;
+                                        }
+                                        else
+                                        {
+                                            File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)), result);
+                                            mod.metadata = mod.RemMetadata;
+                                        }
+                                    }
                                     break;
                                 case -1:
                                     if (mod.RemMetadata.sid_sign != MurzynskaMatematyka(steamID + mod.ID) && mod.RemMetadata.type == 3)
                                         File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)), result);
+                                    if (!File.Exists(GetMetadataFolder(string.Format("{0}.json", mod.ID))) && !result.Equals(File.ReadAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)))))
+                                    {
+                                        mod.hasUpdate = true;
+                                        modUpdCount++;
+                                    }
                                     break;
                             }
                             ReadMetadata(mod);
@@ -451,29 +517,54 @@ namespace MSCLoader
                         catch (Exception e)
                         {
                             ModConsole.Error(e.Message);
+                            UnityEngine.Debug.Log(e);
+
                         }
+                        i++;
+                        yield return null;
                         continue;
                     }
                     else
                     {
                         UnityEngine.Debug.Log("Unknown response: " + result);
+                        i++;
+                        yield return null;
+                        continue;
                     }
                 }
+                if (modUpdCount > 0)
+                    loadingMeta.transform.GetChild(4).GetComponent<Text>().text = string.Format("<color=green>{0}</color>", modUpdCount);
             }
             if (modUpdCount > 0)
+            {
                 modUpdates.text = string.Format("<size=20><color=aqua>New Version available for <color=orange>{0}</color> mods.</color></size>", modUpdCount);
+                loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("Done! <color=lime>{0} updates available</color>", modUpdCount);
+            }
+            else
+                loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("Done!");
+            if(errored)
+                loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("<color=red>Connection error!</color>");
+            yield return new WaitForSeconds(4f);
+            loadingMeta.SetActive(false);
+
         }
         private void ReadMetadata(Mod mod)
         {
-            if(mod.metadata.type == 2)
+            if (mod.metadata == null && mod.RemMetadata != null)
+                mod.metadata = mod.RemMetadata;
+            else if (mod.metadata != null && mod.RemMetadata == null)
+                mod.RemMetadata = mod.metadata;
+            else if (mod.metadata == null && mod.RemMetadata == null)
+                return;
+            if (mod.metadata.type == 2)
             {
                 //Disabled by user
                 mod.isDisabled = true;
                 return;
             }
-            if(mod.metadata.type == 3)
+            if (mod.RemMetadata.type == 3 && !mod.hasUpdate)
             {
-                if(mod.RemMetadata.sign != ManifestStuff.AzjatyckaMatematyka(mod.fileName))
+                if (mod.RemMetadata.sign != ManifestStuff.AzjatyckaMatematyka(mod.fileName))
                 {
                     mod.isDisabled = true;
                     return;
@@ -485,9 +576,10 @@ namespace MSCLoader
                 {
                     if (mod.metadata.icon.isIconRemote)
                     {
-                        if (!File.Exists(Path.Combine(ManifestsFolder, @"Mod Icons\"+ mod.metadata.icon.iconFileName)))
+                        if (!File.Exists(Path.Combine(ManifestsFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName)))
                         {
                             WebClient webClient = new WebClient();
+                            webClient.Headers.Add("user-agent", string.Format("MSCLoader/{0} ({1})", MSCLoader_Ver, SystemInfo.operatingSystem));
                             webClient.DownloadFileCompleted += WebClient_DownloadFileCompleted;
                             webClient.DownloadFileAsync(new Uri(string.Format("{0}/images/modicons/{1}", metadataURL, mod.metadata.icon.iconFileName)), Path.Combine(ManifestsFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName));
                         }
@@ -537,12 +629,12 @@ namespace MSCLoader
                     string[] modIDs = mod.metadata.modConflicts.modIDs.Trim().Split(',');
                     foreach (string m in modIDs)
                     {
-                        if(LoadedMods.Select(s => s.ID).Where(x => x.Equals(m)).Count() != 0)
+                        if (LoadedMods.Select(s => s.ID).Where(x => x.Equals(m)).Count() != 0)
                         {
                             if (mod.metadata.modConflicts.disableIfConflict)
                             {
                                 mod.isDisabled = true;
-                                if(mod.metadata.modConflicts.customMessage != null && mod.metadata.modConflicts.customMessage != string.Empty)
+                                if (mod.metadata.modConflicts.customMessage != null && mod.metadata.modConflicts.customMessage != string.Empty)
                                     ModConsole.Error(string.Format("Mod <color=orange><b>{0}</b></color> is marked as conflict with installed mod <color=orange><b>{1}</b></color>. Author's message: {2}", mod.ID, m, mod.metadata.modConflicts.customMessage));
                                 else
                                     ModConsole.Error(string.Format("Mod <color=orange><b>{0}</b></color> is marked as conflict with installed mod <color=orange><b>{1}</b></color>.", mod.ID, m));
@@ -587,7 +679,7 @@ namespace MSCLoader
                                         ModConsole.Warning(string.Format("Mod <b>{0}</b> requires mod <b>{1}</b> to be at least version <b>{2}</b>.", mod.ID, m, v1));
                                 }
                             }
-                            catch(Exception e)
+                            catch (Exception e)
                             {
                                 UnityEngine.Debug.Log(e);
                             }
@@ -727,10 +819,15 @@ namespace MSCLoader
             ModUI.messageBox = ab.LoadAsset<GameObject>("MSCLoader MB.prefab");
             mainMenuInfo = ab.LoadAsset<GameObject>("MSCLoader Info.prefab");
             loading = ab.LoadAsset<GameObject>("LoadingMods.prefab");
-            loading.SetActive(false);
+            loadingMeta = ab.LoadAsset<GameObject>("MSCLoader pbar.prefab");         
             loading = GameObject.Instantiate(loading);
+            loading.SetActive(false);
             loading.name = "MSCLoader loading screen";
             loading.transform.SetParent(ModUI.GetCanvas().transform, false);
+            loadingMeta = GameObject.Instantiate(loadingMeta);
+            loadingMeta.SetActive(false);
+            loadingMeta.name = "MSCLoader pbar";
+            loadingMeta.transform.SetParent(ModUI.GetCanvas().transform, false);
             ModConsole.Print("Loading core assets completed!");
             ab.Unload(false); //freeup memory
         }
@@ -755,6 +852,8 @@ namespace MSCLoader
             modUpdates = mainMenuInfo.transform.GetChild(2).gameObject.GetComponent<Text>();
             info.text = string.Format("Mod Loader MSCLoader <color=cyan>v{0}</color> is ready! (<color=orange>Checking for updates...</color>)", MSCLoader_Ver);
             WebClient client = new WebClient();
+            client.Headers.Add("user-agent", string.Format("MSCLoader/{0} ({1})", MSCLoader_Ver, SystemInfo.operatingSystem));
+
             //client.Proxy = new WebProxy("127.0.0.1:8888"); //ONLY FOR TESTING
             client.DownloadStringCompleted += VersionCheckCompleted;
             string branch = "unknown";
@@ -1089,10 +1188,9 @@ namespace MSCLoader
                 LoadedMods.Add(mod);
                 try
                 {
-                    if (mod.LoadInMenu)
+                    if (mod.LoadInMenu && mod.fileName == null)
                     {
                         mod.OnMenuLoad();
-                        ModSettings_menu.LoadBinds();
                     }
                 }
                 catch (Exception e)

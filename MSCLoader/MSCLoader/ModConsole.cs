@@ -29,7 +29,7 @@ namespace MSCLoader
         private Keybind consoleKey = new Keybind("Open", "Open console", KeyCode.BackQuote);
 
         public static Settings typing = new Settings("typeConsole", "Start typing when you open console", false);
-        static Settings ConsoleFontSize = new Settings("consoleFont", "Change console font size:", 14, ChangeFontSize);
+        static Settings ConsoleFontSize = new Settings("consoleFont", "Change console font size:", 12, ChangeFontSize);
 
         public override void ModSettings()
         {
