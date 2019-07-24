@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Diagnostics;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
@@ -305,6 +306,24 @@ namespace MSCLoader
                 string serializedData = File.ReadAllText(path);
                 settings = JsonConvert.DeserializeObject<SettingsList>(serializedData);
                 mod.isDisabled = settings.isDisabled;
+                try
+                {
+                    if (mod.LoadInMenu && !mod.isDisabled && mod.fileName != null)
+                    {
+                        mod.OnMenuLoad();
+                    }
+                }
+                catch (Exception e)
+                {
+                    StackFrame frame = new StackTrace(e, true).GetFrame(0);
+
+                    string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
+                    ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
+                    if (ModLoader.devMode)
+                        ModConsole.Error(e.ToString());
+                    UnityEngine.Debug.Log(e);
+                }
+
                 if (settings.settings.Count == 0)
                     continue;
 
@@ -315,7 +334,6 @@ namespace MSCLoader
                         continue;
                     set.Value = kb.Value;
                 }
-
                 mod.ModSettingsLoaded();
             }
         }

@@ -3,6 +3,8 @@ using System.Linq;
 
 namespace MSCLoader.Commands
 {
+#pragma warning disable CS1591
+
     public class ManifestCommand : ConsoleCommand
     {
         // What the player has to type into the console to execute your commnad
@@ -48,4 +50,6 @@ namespace MSCLoader.Commands
         }
 
     }
+#pragma warning restore CS1591
+
 }

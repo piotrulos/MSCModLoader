@@ -164,7 +164,7 @@ namespace MSCLoader
             }
             if (mod.hasUpdate)
             {
-                modButton.transform.GetChild(1).GetChild(3).GetComponent<Text>().text = "<color=green>UPDATE AVAILABLE!</color>";
+                modButton.transform.GetChild(1).GetChild(3).GetComponent<Text>().text = "<color=lime>UPDATE AVAILABLE!</color>";
             }
             if (mod.UseAssetsFolder)
             {
