@@ -99,6 +99,11 @@ namespace MSCLoader
                 ModConsole.Error("Metadata file doesn't exists, to create use create command");
                 return;
             }
+            if(mod.RemMetadata == null)
+            {
+                ModConsole.Error(string.Format("Your metadata file doesn't seem to be public, you need to upload first before you can update file.{0}If you want to just recreate metadata, delete old file and use create command", Environment.NewLine));
+                return;
+            }
             string steamID;
             if (ModLoader.CheckSteam())
             {

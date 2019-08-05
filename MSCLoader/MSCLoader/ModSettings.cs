@@ -298,8 +298,9 @@ namespace MSCLoader
             {
                 // Check if there is custom settings file (if not, ignore)
                 string path = Path.Combine(ModLoader.GetModSettingsFolder(mod), "settings.json");
-                if (!File.Exists(path))
-                    continue;
+                if (!File.Exists(path))            
+                    SaveSettings(mod); //create settings file if not exists.
+                
 
                 //Load and deserialize 
                 SettingsList settings = new SettingsList();
