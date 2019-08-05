@@ -62,7 +62,7 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string MSCLoader_Ver = "1.1";
+        public static readonly string MSCLoader_Ver = "1.1.1";
 
         /// <summary>
         /// Is this version of ModLoader experimental (this is NOT game experimental branch)

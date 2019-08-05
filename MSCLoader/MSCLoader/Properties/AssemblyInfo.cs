@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("MSCLoader")]
 [assembly: AssemblyDescription("My Summer Car Mod Loader")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Kosmo Softwware")]
+[assembly: AssemblyCompany("Kosmo Software")]
 [assembly: AssemblyProduct("MSCLoader")]
-[assembly: AssemblyCopyright("Copyright © 2017 by Kosmo Softwware")]
+[assembly: AssemblyCopyright("Copyright © 2019 by Kosmo Software")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.1.0.180")]
-[assembly: AssemblyFileVersion("1.1.0.180")]
+[assembly: AssemblyVersion("1.1.1.181")]
+[assembly: AssemblyFileVersion("1.1.1.181")]
