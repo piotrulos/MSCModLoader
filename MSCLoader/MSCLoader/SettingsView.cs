@@ -250,9 +250,9 @@ namespace MSCLoader
                     modViewLabel.transform.SetParent(modSettingsList.transform, false);
                     GameObject slidr = Instantiate(ms.slider);
                     slidr.transform.GetChild(1).GetComponent<Text>().text = setting.Value.ToString();
-                    slidr.transform.GetChild(0).GetComponent<Slider>().value = float.Parse(setting.Value.ToString());
                     slidr.transform.GetChild(0).GetComponent<Slider>().minValue = float.Parse(setting.Vals[0].ToString());
                     slidr.transform.GetChild(0).GetComponent<Slider>().maxValue = float.Parse(setting.Vals[1].ToString());
+                    slidr.transform.GetChild(0).GetComponent<Slider>().value = float.Parse(setting.Value.ToString());
                     slidr.transform.GetChild(0).GetComponent<Slider>().wholeNumbers = (bool)setting.Vals[2];
                     slidr.transform.GetChild(0).GetComponent<Slider>().onValueChanged.AddListener(delegate
                     {
