@@ -391,9 +391,13 @@ namespace MSCLoader
 
                 if (devMode)
                     ModConsole.Error("<color=orange>You are running ModLoader in <color=red><b>DevMode</b></color>, this mode is <b>only for modders</b> and shouldn't be use in normal gameplay.</color>");
+                UnityEngine.Debug.Log(SystemInfo.operatingSystem); //operating system version to output_log.txt
             }
         }
-
+     
+        private bool cfmuErrored = false;
+        private bool cfmuInProgress = false;
+        private string cfmuResult = string.Empty;
         IEnumerator CheckForModsUpdates()
         {
             int modUpdCount = 0;
@@ -406,10 +410,9 @@ namespace MSCLoader
             loadingMeta.SetActive(true);
 
             int i = 1;
-            bool errored = false;
             foreach (Mod mod in LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")))
             {
-                if (errored)
+                if (cfmuErrored)
                 {
                     ReadMetadata(mod);
                     continue;
@@ -420,25 +423,22 @@ namespace MSCLoader
 
                 WebClient webClient = new WebClient();
                 webClient.Headers.Add("user-agent", string.Format("MSCLoader/{0} ({1})", MSCLoader_Ver, SystemInfo.operatingSystem));
-                string result;
-                try
+                webClient.DownloadStringCompleted += cfmuDownloadCompl;
+                webClient.DownloadStringAsync(new Uri(string.Format("{0}/man/{1}", metadataURL, mod.ID)));
+
+                cfmuInProgress = true;
+                while (cfmuInProgress)
+                    yield return null;
+                if (cfmuErrored)
                 {
-                    result = webClient.DownloadString(string.Format("{0}/man/{1}", metadataURL, mod.ID));
-                }
-                catch (Exception e)
-                {
-                    ModConsole.Error("Failed to check for mod updates!");
-                    ModConsole.Error(e.Message);
-                    UnityEngine.Debug.Log(e);
-                    errored = true;
                     ReadMetadata(mod);
                     continue;
-                }
-                if (result != string.Empty)
+                }                
+                if (cfmuResult != string.Empty)
                 {
-                    if (result.StartsWith("error"))
+                    if (cfmuResult.StartsWith("error"))
                     {
-                        string[] ed = result.Split('|');
+                        string[] ed = cfmuResult.Split('|');
                         if (ed[0] == "error")
                         {
                             switch (ed[1])
@@ -464,24 +464,24 @@ namespace MSCLoader
                             }
                         }
                     }
-                    else if (result.StartsWith("{"))
+                    else if (cfmuResult.StartsWith("{"))
                     {
                         try
                         {
-                            mod.RemMetadata = JsonConvert.DeserializeObject<ModsManifest>(result);
+                            mod.RemMetadata = JsonConvert.DeserializeObject<ModsManifest>(cfmuResult);
                             Version v1 = new Version(mod.RemMetadata.version);
                             Version v2 = new Version(mod.Version);
                             switch (v1.CompareTo(v2))
                             {
                                 case 0:
-                                    if (File.Exists(GetMetadataFolder(string.Format("{0}.json", mod.ID))) && !result.Equals(File.ReadAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)))))
+                                    if (File.Exists(GetMetadataFolder(string.Format("{0}.json", mod.ID))) && !cfmuResult.Equals(File.ReadAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)))))
                                     {
-                                        File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)), result);
+                                        File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)), cfmuResult);
                                         mod.metadata = mod.RemMetadata;
                                     }
                                     else
                                     {
-                                        File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)), result);
+                                        File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)), cfmuResult);
                                         mod.metadata = mod.RemMetadata;
                                     }
                                     break;
@@ -490,22 +490,22 @@ namespace MSCLoader
                                     modUpdCount++;
                                     if (mod.RemMetadata.type != 3)
                                     {
-                                        if (File.Exists(GetMetadataFolder(string.Format("{0}.json", mod.ID))) && !result.Equals(File.ReadAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)))))
+                                        if (File.Exists(GetMetadataFolder(string.Format("{0}.json", mod.ID))) && !cfmuResult.Equals(File.ReadAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)))))
                                         {
-                                            File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)), result);
+                                            File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)), cfmuResult);
                                             mod.metadata = mod.RemMetadata;
                                         }
                                         else
                                         {
-                                            File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)), result);
+                                            File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)), cfmuResult);
                                             mod.metadata = mod.RemMetadata;
                                         }
                                     }
                                     break;
                                 case -1:
                                     if (mod.RemMetadata.sid_sign != MurzynskaMatematyka(steamID + mod.ID) && mod.RemMetadata.type == 3)
-                                        File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)), result);
-                                    if (!File.Exists(GetMetadataFolder(string.Format("{0}.json", mod.ID))) && !result.Equals(File.ReadAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)))))
+                                        File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)), cfmuResult);
+                                    if (!File.Exists(GetMetadataFolder(string.Format("{0}.json", mod.ID))) && !cfmuResult.Equals(File.ReadAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)))))
                                     {
                                         mod.hasUpdate = true;
                                         modUpdCount++;
@@ -526,7 +526,7 @@ namespace MSCLoader
                     }
                     else
                     {
-                        UnityEngine.Debug.Log("Unknown response: " + result);
+                        UnityEngine.Debug.Log("Unknown response: " + cfmuResult);
                         i++;
                         yield return null;
                         continue;
@@ -542,12 +542,32 @@ namespace MSCLoader
             }
             else
                 loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("Done!");
-            if(errored)
+            if(cfmuErrored)
                 loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("<color=red>Connection error!</color>");
             yield return new WaitForSeconds(4f);
             loadingMeta.SetActive(false);
 
         }
+
+        private void cfmuDownloadCompl(object sender, DownloadStringCompletedEventArgs e)
+        {
+            if (e.Error != null)
+            {
+                cfmuErrored = true;
+                cfmuInProgress = false;
+                cfmuResult = string.Empty;
+                ModConsole.Error("Failed to check for mod updates!");
+                ModConsole.Error(e.Error.Message);
+                UnityEngine.Debug.Log(e.Error);
+            }
+            else
+            {
+                cfmuErrored = false;
+                cfmuResult = e.Result;
+                cfmuInProgress = false;
+            }
+        }
+
         private void ReadMetadata(Mod mod)
         {
             if (mod.metadata == null && mod.RemMetadata != null)
