@@ -1,5 +1,4 @@
-﻿using Ionic.Zip;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -62,7 +61,7 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string MSCLoader_Ver = "1.1.1";
+        public static readonly string MSCLoader_Ver = "1.1.2";
 
         /// <summary>
         /// Is this version of ModLoader experimental (this is NOT game experimental branch)
@@ -114,6 +113,7 @@ namespace MSCLoader
 
         internal static bool unloader = false;
         internal static bool rtmm = false;
+
         /// <summary>
         /// Check if steam is present
         /// </summary>
@@ -386,8 +386,39 @@ namespace MSCLoader
                 MainMenuInfo();
                 LoadModsSettings();
                 ModSettings_menu.LoadBinds();
+
                 if (!rtmm)
-                    StartCoroutine(CheckForModsUpdates());
+                {
+                    if (ModSettings_menu.cfmu_set != 0)
+                    {
+                        string sp = Path.Combine(SettingsFolder, @"MSCLoader_Settings\lastCheck");
+                        if (File.Exists(sp))
+                        {
+                            DateTime lastCheck;
+                            string lastCheckS = File.ReadAllText(sp);
+                            DateTime.TryParse(lastCheckS, out lastCheck);
+                            if ((DateTime.Now - lastCheck).TotalDays >= ModSettings_menu.cfmu_set || (DateTime.Now - lastCheck).TotalDays <0)
+                            {
+                                StartCoroutine(CheckForModsUpdates());
+                                File.WriteAllText(sp, DateTime.Now.ToString());
+                            }
+                            else
+                            {
+                                foreach (Mod mod in LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")))
+                                    ReadMetadata(mod);
+                            }
+                        }
+                        else
+                        {
+                            StartCoroutine(CheckForModsUpdates());
+                            File.WriteAllText(sp, DateTime.Now.ToString());
+                        }
+                    }
+                    else
+                    {
+                        StartCoroutine(CheckForModsUpdates());
+                    }
+                }
 
                 if (devMode)
                     ModConsole.Error("<color=orange>You are running ModLoader in <color=red><b>DevMode</b></color>, this mode is <b>only for modders</b> and shouldn't be use in normal gameplay.</color>");

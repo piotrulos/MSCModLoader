@@ -223,6 +223,8 @@ namespace MSCLoader
                     checkboxG.transform.GetChild(1).GetComponent<Text>().text = setting.Name;
                     checkboxG.GetComponent<Toggle>().group = group.GetComponent<ToggleGroup>();
                     checkboxG.GetComponent<Toggle>().isOn = (bool)setting.Value;
+                    if((bool)setting.Value)
+                        checkboxG.GetComponent<Toggle>().group.NotifyToggleOn(checkboxG.GetComponent<Toggle>());
                     checkboxG.GetComponent<Toggle>().onValueChanged.AddListener(delegate
                     {
                         setting.Value = checkboxG.GetComponent<Toggle>().isOn;
@@ -339,6 +341,7 @@ namespace MSCLoader
                     ModSettings_menu.SaveSettings(selected_mod);
                     anim.SetBool("goModSetting", false);
                     goBackBtn.SetActive(false);
+                    RemoveChildren(modSettingsList.transform);
                     break;
             }
 
@@ -400,23 +403,16 @@ namespace MSCLoader
 
         public void ModDetailsShow(Mod mod)
         {
-            //  bool core = false;
             selected_mod = mod;
-            // if (selected.ID.StartsWith("MSCLoader_"))
-            //      core = true; //can't disable core components
             goBackBtn.SetActive(true);
             InfoTxt.text = string.Format("<color=yellow>ID:</color> <b><color=lime>{0}</color></b>{1}", mod.ID, Environment.NewLine);
             InfoTxt.text += string.Format("<color=yellow>Name:</color> <b><color=lime>{0}</color></b>{1}", mod.Name, Environment.NewLine);
-            //if (core)
-            //     InfoTxt.text += string.Format("<color=yellow>Version:</color> <b><color=lime>{0}</color></b>{1}", selected.Version, Environment.NewLine);
-            // else
-            //{
+
             if (mod.hasUpdate)
                 InfoTxt.text += string.Format("<color=yellow>Version:</color> <b><color=orange>{0}</color></b> (<color=lime>{3} available</color>){2}(designed for <b><color=lime>v{1}</color></b>){2}", mod.Version, mod.compiledVersion, Environment.NewLine, mod.RemMetadata.version);
             else
                 InfoTxt.text += string.Format("<color=yellow>Version:</color> <b><color=lime>{0}</color></b>{2}(designed for <b><color=lime>v{1}</color></b>){2}", mod.Version, mod.compiledVersion, Environment.NewLine);
 
-            //}
             InfoTxt.text += string.Format("<color=yellow>Author:</color> <b><color=lime>{0}</color></b>", mod.Author);
             if (Application.loadedLevelName == "MainMenu")
                 DisableMod.interactable = true;
@@ -574,8 +570,11 @@ namespace MSCLoader
             }
             else
             {
-                if(page==3)
+                if (page == 3)
+                {
                     ModSettings_menu.SaveSettings(selected_mod);
+                    RemoveChildren(modSettingsList.transform);
+                }
                 setVisibility(!settingViewContainer.activeSelf);
             }
         }

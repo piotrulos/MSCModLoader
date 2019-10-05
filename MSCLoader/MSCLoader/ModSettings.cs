@@ -29,6 +29,10 @@ namespace MSCLoader
         private static Settings expUIScaling = new Settings("mscloader_expUIScaling", "Ultra-widescreen UI scaling", false, ExpUIScaling);
         private static Settings tuneScaling = new Settings("mscloader_tuneScale", "Tune scaling:", 1f, ChangeUIScaling);
 
+        private static Settings checkLaunch = new Settings("mscloader_checkLaunch", "Every launch", true);
+        private static Settings checkDaily = new Settings("mscloader_checkDaily", "Daily", false);
+        private static Settings checkWeekly = new Settings("mscloader_checkWeekly", "Weekly", false);
+
         public SettingsView settings;
         public GameObject UI;
         public GameObject ModButton;
@@ -37,6 +41,7 @@ namespace MSCLoader
         public GameObject KeyBind;
         public GameObject Checkbox, setBtn, slider, textBox, header;
         public GameObject Button_ms;
+        internal static byte cfmu_set = 0;
 
         static ModSettings_menu instance;
 
@@ -50,6 +55,11 @@ namespace MSCLoader
             Settings.AddCheckBox(this, modSetButton);
             Settings.AddCheckBox(this, forceMenuVsync);
             Settings.AddCheckBox(this, openLinksOverlay);
+            Settings.AddHeader(this, "Mod Update Check", new Color32(0, 128, 0, 255));
+            Settings.AddText(this, "Check for mod updates:");
+            Settings.AddCheckBox(this, checkLaunch, "cfmu_set");
+            Settings.AddCheckBox(this, checkDaily, "cfmu_set");
+            Settings.AddCheckBox(this, checkWeekly, "cfmu_set");
             Settings.AddHeader(this, "Experimental Scaling", new Color32(101, 34, 18, 255), new Color32(254, 254, 0, 255));
             Settings.AddText(this, "This option enables <color=orange>experimental UI scaling</color> for <color=orange>ultra-widescreen monitor setup</color>. Turn on this checkbox first, then run game in ultra-widescreen resolution. You can then tune scaling using slider below, but default value (1) should be ok.");
             Settings.AddCheckBox(this, expUIScaling);
@@ -59,6 +69,13 @@ namespace MSCLoader
         {
             ModSettingsToggle();
             ExpUIScaling();
+            if ((bool)checkLaunch.GetValue())
+                cfmu_set = 0;
+            if ((bool)checkDaily.GetValue())
+                cfmu_set = 1;
+            if ((bool)checkWeekly.GetValue())
+                cfmu_set = 7;
+
         }
         private static void ModSettingsToggle()
         {
@@ -83,10 +100,6 @@ namespace MSCLoader
             {
                 ModUI.GetCanvas().GetComponent<CanvasScaler>().screenMatchMode = CanvasScaler.ScreenMatchMode.Shrink;
             }
-        }
-        private static void OpenAuthKeyWebsite()
-        {
-            Steamworks.SteamFriends.ActivateGameOverlayToWebPage("http://localhost/msc_garage/");
         }
 
         private static void VSyncSwitchCheckbox()
@@ -239,7 +252,7 @@ namespace MSCLoader
 
             foreach (Settings set in Settings.Get(mod))
             {
-                if (set.type == SettingsType.Button || set.type == SettingsType.Header)
+                if (set.type == SettingsType.Button || set.type == SettingsType.Header || set.type == SettingsType.Text)
                     continue;
 
                 Setting sets = new Setting
@@ -324,8 +337,7 @@ namespace MSCLoader
                         ModConsole.Error(e.ToString());
                     UnityEngine.Debug.Log(e);
                 }
-
-                if (settings.settings.Count == 0)
+                if (Settings.Get(mod).Count == 0)
                     continue;
 
                 foreach (var kb in settings.settings)
