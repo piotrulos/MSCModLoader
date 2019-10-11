@@ -1056,7 +1056,6 @@ namespace MSCLoader
                     if (!mod.isDisabled)
                     {
                         mod.OnLoad();
-                        FsmHook.FsmInject(GameObject.Find("ITEMS"), "Save game", mod.OnSave);
                     }
                 }
                 catch (Exception e)
@@ -1071,6 +1070,10 @@ namespace MSCLoader
                 }
 
             }
+            
+            if (i > 1)
+                FsmHook.FsmInject(GameObject.Find("ITEMS"), "Save game", SaveMods);
+            
             loading.SetActive(false);
             ModConsole.Print("</color>");
             allModsLoaded = true;
@@ -1081,6 +1084,31 @@ namespace MSCLoader
                 ModConsole.Print(string.Format("Loading mods completed in {0}ms!", s.ElapsedMilliseconds));
             else
                 ModConsole.Print(string.Format("Loading mods completed in {0} sec(s)!", s.Elapsed.Seconds));
+        }
+
+        private void SaveMods()
+        {
+            foreach (Mod mod in LoadedMods)
+            {
+                try
+                {
+                    if (mod.ID.StartsWith("MSCLoader_"))
+                        continue;
+                        
+                    if (!mod.isDisabled)
+                        mod.OnSave();
+                }
+                catch (Exception e)
+                {
+                    StackFrame frame = new StackTrace(e, true).GetFrame(0);
+
+                    string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
+                    ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
+                    if (devMode)
+                        ModConsole.Error(e.ToString());
+                    UnityEngine.Debug.Log(e);
+                }
+            }
         }
 
         private void PreLoadMods()
