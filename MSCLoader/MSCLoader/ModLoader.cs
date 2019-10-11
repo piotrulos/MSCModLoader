@@ -61,7 +61,7 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string MSCLoader_Ver = "1.1.2";
+        public static readonly string MSCLoader_Ver = "1.1.3";
 
         /// <summary>
         /// Is this version of ModLoader experimental (this is NOT game experimental branch)
@@ -113,6 +113,7 @@ namespace MSCLoader
 
         internal static bool unloader = false;
         internal static bool rtmm = false;
+        internal static List<string> saveErrors;
 
         /// <summary>
         /// Check if steam is present
@@ -423,6 +424,16 @@ namespace MSCLoader
                 if (devMode)
                     ModConsole.Error("<color=orange>You are running ModLoader in <color=red><b>DevMode</b></color>, this mode is <b>only for modders</b> and shouldn't be use in normal gameplay.</color>");
                 UnityEngine.Debug.Log(SystemInfo.operatingSystem); //operating system version to output_log.txt
+
+                if (saveErrors.Count > 0 && wasSaving)
+                {
+                    ModUI.ShowMessage(string.Format("Some mod thrown an error during saving{0}Check console for more information!", Environment.NewLine));
+                    for (int i = 0; i < saveErrors.Count; i++)
+                    {
+                        ModConsole.Error(saveErrors[i]);
+                    }
+                }
+                wasSaving = false;
             }
         }
      
@@ -1070,10 +1081,9 @@ namespace MSCLoader
                 }
 
             }
-            
-            if (i > 1)
-                FsmHook.FsmInject(GameObject.Find("ITEMS"), "Save game", SaveMods);
-            
+
+            FsmHook.FsmInject(GameObject.Find("ITEMS"), "Save game", SaveMods);
+
             loading.SetActive(false);
             ModConsole.Print("</color>");
             allModsLoaded = true;
@@ -1086,8 +1096,11 @@ namespace MSCLoader
                 ModConsole.Print(string.Format("Loading mods completed in {0} sec(s)!", s.Elapsed.Seconds));
         }
 
+        private static bool wasSaving = false;
         private void SaveMods()
         {
+            saveErrors = new List<string>();
+            wasSaving = true;
             foreach (Mod mod in LoadedMods)
             {
                 try
@@ -1103,9 +1116,9 @@ namespace MSCLoader
                     StackFrame frame = new StackTrace(e, true).GetFrame(0);
 
                     string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
-                    ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
+                    saveErrors.Add(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
                     if (devMode)
-                        ModConsole.Error(e.ToString());
+                        saveErrors.Add(e.ToString());
                     UnityEngine.Debug.Log(e);
                 }
             }
