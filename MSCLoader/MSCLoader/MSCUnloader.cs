@@ -31,6 +31,9 @@ namespace MSCLoader
                         continue;
                     Destroy(o);                    
                 }
+				
+                ModLoader.allModsLoaded = false; // FREDTWEAK
+				
                 Keybind.Keybinds = new List<Keybind>();
                 Keybind.DefaultKeybinds = new List<Keybind>();
                 Settings.modSettings = new List<Settings>();

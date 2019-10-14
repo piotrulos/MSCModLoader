@@ -48,6 +48,21 @@ namespace MSCLoader
         public static List<Mod> LoadedMods;
 
         /// <summary>
+        /// A list of all mods using Mod.OnGUI() method.
+        /// </summary>
+        public static List<Mod> OnGUIMods;
+
+        /// <summary>
+        /// A list of all mods using Mod.Update() method.
+        /// </summary>
+        public static List<Mod> UpdateMods;
+
+        /// <summary>
+        /// A list of all mods using Mod.FixedUpdate() method.
+        /// </summary>
+        public static List<Mod> FixedUpdateMods;
+
+        /// <summary>
         /// A list of invalid mod files 
         /// (like random dll in Mods Folder that isn't a mod).
         /// </summary>
@@ -106,7 +121,7 @@ namespace MSCLoader
         private bool IsModsLoading = false;
         private bool IsModsDoneLoading = false;
         private bool fullyLoaded = false;
-        private bool allModsLoaded = false;
+        internal static bool allModsLoaded = false; // FRED TWEAK
         private bool IsModsResetting = false;
         private bool IsModsDoneResetting = false;
         private static CurrentScene CurrentGameScene;
@@ -434,6 +449,18 @@ namespace MSCLoader
                     }
                 }
                 wasSaving = false;
+				
+				//FRED TWEAK
+                ModConsole.Print(OnGUIMods.Count() + " Mods using OnGUI.");
+                foreach (Mod mod in OnGUIMods)
+                    ModConsole.Print("  " + mod.Name);
+                ModConsole.Print(FixedUpdateMods.Count() + " Mods using FixedUpdate.");
+                foreach (Mod mod in FixedUpdateMods)
+                    ModConsole.Print("  " + mod.Name);
+                ModConsole.Print(UpdateMods.Count() + " Mods using Update.");
+                foreach (Mod mod in UpdateMods)
+                    ModConsole.Print("  " + mod.Name);
+				//FRED TWEAK
             }
         }
      
@@ -1082,7 +1109,8 @@ namespace MSCLoader
 
             }
 
-            FsmHook.FsmInject(GameObject.Find("ITEMS"), "Save game", SaveMods);
+            if (i > 1) // FREDTWEAK
+                FsmHook.FsmInject(GameObject.Find("ITEMS"), "Save game", SaveMods);
 
             loading.SetActive(false);
             ModConsole.Print("</color>");
@@ -1278,6 +1306,19 @@ namespace MSCLoader
                 mod.compiledVersion = msver;
                 mod.fileName = fname;
                 LoadedMods.Add(mod);
+
+                // FRED TWEAK
+                // Check if OnGUI, Update or FixedUpdate are override methods and add them to list if so.
+                MethodInfo onGUIMethod = mod.GetType().GetMethod("OnGUI");
+                if (onGUIMethod.IsVirtual && onGUIMethod.DeclaringType == mod.GetType()) OnGUIMods.Add(mod);
+
+                MethodInfo updateMethod = mod.GetType().GetMethod("Update");
+                if (updateMethod.IsVirtual && updateMethod.DeclaringType == mod.GetType()) UpdateMods.Add(mod);
+
+                MethodInfo fixedUpdateMethod = mod.GetType().GetMethod("FixedUpdate");
+                if (fixedUpdateMethod.IsVirtual && fixedUpdateMethod.DeclaringType == mod.GetType()) FixedUpdateMods.Add(mod);
+                // FRED TWEAK
+
                 try
                 {
                     if (mod.LoadInMenu && mod.fileName == null)
@@ -1310,14 +1351,12 @@ namespace MSCLoader
         private void OnGUI()
         {
             GUI.skin = guiskin;
-            for (int i = 0; i < LoadedMods.Count; i++)
+            // FREDTWEAK
+            foreach (Mod mod in OnGUIMods)
             {
-                Mod mod = LoadedMods[i];
                 try
                 {
-                    if (mod.LoadInMenu && !mod.isDisabled)
-                        mod.OnGUI();
-                    else if (Application.loadedLevelName == "GAME" && !mod.isDisabled && allModsLoaded)
+                    if (!mod.isDisabled && (allModsLoaded || mod.LoadInMenu))
                         mod.OnGUI();
                 }
                 catch (Exception e)
@@ -1368,14 +1407,12 @@ namespace MSCLoader
                 }
             }
 
-            for (int i = 0; i < LoadedMods.Count; i++)
+            // FREDTWEAK
+            foreach (Mod mod in UpdateMods)
             {
-                Mod mod = LoadedMods[i];
                 try
                 {
-                    if (mod.LoadInMenu && !mod.isDisabled)
-                        mod.Update();
-                    else if (Application.loadedLevelName == "GAME" && !mod.isDisabled && allModsLoaded)
+                    if (!mod.isDisabled && (allModsLoaded || mod.LoadInMenu))
                         mod.Update();
                 }
                 catch (Exception e)
@@ -1413,14 +1450,12 @@ namespace MSCLoader
 
         private void FixedUpdate()
         {
-            for (int i = 0; i < LoadedMods.Count; i++)
+            // FREDTWEAK
+            foreach (Mod mod in FixedUpdateMods)
             {
-                Mod mod = LoadedMods[i];
                 try
                 {
-                    if (mod.LoadInMenu && !mod.isDisabled)
-                        mod.FixedUpdate();
-                    else if (Application.loadedLevelName == "GAME" && !mod.isDisabled && allModsLoaded)
+                    if (!mod.isDisabled && (allModsLoaded || mod.LoadInMenu))
                         mod.FixedUpdate();
                 }
                 catch (Exception e)
@@ -1455,6 +1490,7 @@ namespace MSCLoader
                 }
             }
         }
+
         internal static string MurzynskaMatematyka(string rawData)
         {
             using (System.Security.Cryptography.SHA1 sha256 = System.Security.Cryptography.SHA1.Create())
