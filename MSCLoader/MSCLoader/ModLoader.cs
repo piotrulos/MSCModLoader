@@ -1352,8 +1352,9 @@ namespace MSCLoader
         {
             GUI.skin = guiskin;
             // FREDTWEAK
-            foreach (Mod mod in OnGUIMods)
+            for(int i = 0;i < OnGUIMods.Count; i++)
             {
+                Mod mod = OnGUIMods[i];
                 try
                 {
                     if (!mod.isDisabled && (allModsLoaded || mod.LoadInMenu))
@@ -1408,8 +1409,9 @@ namespace MSCLoader
             }
 
             // FREDTWEAK
-            foreach (Mod mod in UpdateMods)
+            for (int i = 0; i < UpdateMods.Count; i++)
             {
+                Mod mod = UpdateMods[i];
                 try
                 {
                     if (!mod.isDisabled && (allModsLoaded || mod.LoadInMenu))
@@ -1451,8 +1453,9 @@ namespace MSCLoader
         private void FixedUpdate()
         {
             // FREDTWEAK
-            foreach (Mod mod in FixedUpdateMods)
+            for (int i = 0; i < FixedUpdateMods.Count; i++)
             {
+                Mod mod = FixedUpdateMods[i];
                 try
                 {
                     if (!mod.isDisabled && (allModsLoaded || mod.LoadInMenu))
