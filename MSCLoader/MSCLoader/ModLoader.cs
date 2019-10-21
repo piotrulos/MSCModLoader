@@ -40,18 +40,18 @@ namespace MSCLoader
         /// <summary>
         /// When true, it prints all errors from Update() and OnGUI() class.
         /// </summary>
-        public static bool LogAllErrors = false;
+        internal static bool LogAllErrors = false;
 
         /// <summary>
         /// A list of all loaded mods.
         /// </summary>
-        public static List<Mod> LoadedMods;
+        public static List<Mod> LoadedMods { get; internal set; }
 
         /// <summary>
         /// A list of invalid mod files 
         /// (like random dll in Mods Folder that isn't a mod).
         /// </summary>
-        public static List<string> InvalidMods;
+        internal static List<string> InvalidMods;
 
         /// <summary>
         /// The instance of ModLoader.
@@ -80,6 +80,10 @@ namespace MSCLoader
 #else
         public static readonly bool devMode = false;
 #endif
+        internal static bool unloader = false;
+        internal static bool rtmm = false;
+        internal static List<string> saveErrors;
+
 
         private string expBuild = Assembly.GetExecutingAssembly().GetName().Version.Revision.ToString();
         private MSCUnloader mscUnloader;
@@ -97,23 +101,17 @@ namespace MSCLoader
         private GameObject loadingMeta;
         private Animator menuInfoAnim;
         private GUISkin guiskin;
-        private ModCore modCore;
 
         private string serverURL = "http://my-summer-car.ml"; //localhost for testing only
         private string metadataURL = "http://my-summer-car.ml:4000";
 
         private bool IsDoneLoading = false;
         private bool IsModsLoading = false;
-        private bool IsModsDoneLoading = false;
         private bool fullyLoaded = false;
         private bool allModsLoaded = false;
         private bool IsModsResetting = false;
         private bool IsModsDoneResetting = false;
         private static CurrentScene CurrentGameScene;
-
-        internal static bool unloader = false;
-        internal static bool rtmm = false;
-        internal static List<string> saveErrors;
 
         /// <summary>
         /// Check if steam is present
@@ -229,7 +227,7 @@ namespace MSCLoader
                 {
                     MainMenuInfo();
                 }
-                if (IsModsDoneLoading)
+                if (allModsLoaded)
                 {
                     loaderPrepared = false;
                     mscUnloader.MSCLoaderReset();
@@ -263,7 +261,7 @@ namespace MSCLoader
         private void StartLoadingMods()
         {
             menuInfoAnim.SetBool("isHidden", true);
-            if (!IsModsDoneLoading && !IsModsLoading)
+            if (!allModsLoaded && !IsModsLoading)
             {
                 //introCheck = true;
                 IsModsLoading = true;
@@ -311,17 +309,10 @@ namespace MSCLoader
             {
                 mscUnloader = GameObject.Find("MSCUnloader").GetComponent<MSCUnloader>();
             }
-            if (IsDoneLoading) //Remove this.
-            {
-
-                if (Application.loadedLevelName != "MainMenu")
-                    menuInfoAnim.SetBool("isHidden", true);
-            }
-            else
+            if (!IsDoneLoading)
             {
                 ModUI.CreateCanvas();
-                IsDoneLoading = false;
-                IsModsDoneLoading = false;
+                allModsLoaded = false;
                 LoadedMods = new List<Mod>();
                 InvalidMods = new List<string>();
                 mscUnloader.reset = false;
@@ -372,7 +363,6 @@ namespace MSCLoader
                     ModConsole.Print(string.Format("<color=orange>Hello <color=green><b>{0}</b></color>!</color>", Steamworks.SteamFriends.GetPersonaName()));
                     WebClient webClient = new WebClient();
                     webClient.Headers.Add("user-agent", string.Format("MSCLoader/{0} ({1})", MSCLoader_Ver, SystemInfo.operatingSystem));
-                    //  webClient.Proxy = new WebProxy("127.0.0.1:8888"); //ONLY FOR TESTING
                     webClient.DownloadStringCompleted += sAuthCheckCompleted;
                     webClient.DownloadStringAsync(new Uri(string.Format("{0}/sauth.php?sid={1}", serverURL, steamID)));
                 }
@@ -398,7 +388,7 @@ namespace MSCLoader
                             DateTime lastCheck;
                             string lastCheckS = File.ReadAllText(sp);
                             DateTime.TryParse(lastCheckS, out lastCheck);
-                            if ((DateTime.Now - lastCheck).TotalDays >= ModSettings_menu.cfmu_set || (DateTime.Now - lastCheck).TotalDays <0)
+                            if ((DateTime.Now - lastCheck).TotalDays >= ModSettings_menu.cfmu_set || (DateTime.Now - lastCheck).TotalDays < 0)
                             {
                                 StartCoroutine(CheckForModsUpdates());
                                 File.WriteAllText(sp, DateTime.Now.ToString());
@@ -424,19 +414,21 @@ namespace MSCLoader
                 if (devMode)
                     ModConsole.Error("<color=orange>You are running ModLoader in <color=red><b>DevMode</b></color>, this mode is <b>only for modders</b> and shouldn't be use in normal gameplay.</color>");
                 UnityEngine.Debug.Log(SystemInfo.operatingSystem); //operating system version to output_log.txt
-
-                if (saveErrors.Count > 0 && wasSaving)
+                if (saveErrors != null)
                 {
-                    ModUI.ShowMessage(string.Format("Some mod thrown an error during saving{0}Check console for more information!", Environment.NewLine));
-                    for (int i = 0; i < saveErrors.Count; i++)
+                    if (saveErrors.Count > 0 && wasSaving)
                     {
-                        ModConsole.Error(saveErrors[i]);
+                        ModUI.ShowMessage(string.Format("Some mod thrown an error during saving{0}Check console for more information!", Environment.NewLine));
+                        for (int i = 0; i < saveErrors.Count; i++)
+                        {
+                            ModConsole.Error(saveErrors[i]);
+                        }
                     }
+                    wasSaving = false;
                 }
-                wasSaving = false;
             }
         }
-     
+
         private bool cfmuErrored = false;
         private bool cfmuInProgress = false;
         private string cfmuResult = string.Empty;
@@ -475,7 +467,7 @@ namespace MSCLoader
                 {
                     ReadMetadata(mod);
                     continue;
-                }                
+                }
                 if (cfmuResult != string.Empty)
                 {
                     if (cfmuResult.StartsWith("error"))
@@ -584,7 +576,7 @@ namespace MSCLoader
             }
             else
                 loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("Done!");
-            if(cfmuErrored)
+            if (cfmuErrored)
                 loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("<color=red>Connection error!</color>");
             yield return new WaitForSeconds(4f);
             loadingMeta.SetActive(false);
@@ -753,8 +745,8 @@ namespace MSCLoader
 
         private void WebClient_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
-            if(e.Error != null)
-            UnityEngine.Debug.Log(e.Error);
+            if (e.Error != null)
+                UnityEngine.Debug.Log(e.Error);
         }
 
         [Serializable]
@@ -812,6 +804,8 @@ namespace MSCLoader
                         ModUI.ShowMessage(string.Format("<color=orange><b>Warning:</b></color>{1}You are using beta build: <color=orange><b>{0}</b></color>{1}{1}Remember that some mods may not work correctly on beta branches.", Name, Environment.NewLine), "Experimental build warning");
                 }
                 UnityEngine.Debug.Log(string.Format("MSC buildID: <b>{0}</b>", Steamworks.SteamApps.GetAppBuildId()));
+                if (Steamworks.SteamApps.GetAppBuildId() == 1)
+                    throw new DivideByZeroException();
             }
             catch (Exception ex)
             {
@@ -825,7 +819,7 @@ namespace MSCLoader
                         SaveOtk s = f.Deserialize(st) as SaveOtk;
                         st.Close();
                         string murzyn = "otk_" + MurzynskaMatematyka(string.Format("{0}{1}", steamID, s.k1));
-                        if(s.k2.CompareTo(murzyn) != 0)
+                        if (s.k2.CompareTo(murzyn) != 0)
                         {
                             File.Delete(sp);
                             steamID = null;
@@ -874,14 +868,13 @@ namespace MSCLoader
 
         private void LoadCoreAssets()
         {
-            modCore = new ModCore();
             ModConsole.Print("Loading core assets...");
-            AssetBundle ab = LoadAssets.LoadBundle(modCore, "core.unity3d");
+            AssetBundle ab = LoadAssets.LoadBundle(new ModCore(), "core.unity3d");
             guiskin = ab.LoadAsset<GUISkin>("MSCLoader.guiskin");
             ModUI.messageBox = ab.LoadAsset<GameObject>("MSCLoader MB.prefab");
             mainMenuInfo = ab.LoadAsset<GameObject>("MSCLoader Info.prefab");
             loading = ab.LoadAsset<GameObject>("LoadingMods.prefab");
-            loadingMeta = ab.LoadAsset<GameObject>("MSCLoader pbar.prefab");         
+            loadingMeta = ab.LoadAsset<GameObject>("MSCLoader pbar.prefab");
             loading = GameObject.Instantiate(loading);
             loading.SetActive(false);
             loading.name = "MSCLoader loading screen";
@@ -1086,9 +1079,8 @@ namespace MSCLoader
 
             loading.SetActive(false);
             ModConsole.Print("</color>");
-            allModsLoaded = true;
             ModSettings_menu.LoadBinds();
-            IsModsDoneLoading = true;
+            allModsLoaded = true;
             s.Stop();
             if (s.ElapsedMilliseconds < 1000)
                 ModConsole.Print(string.Format("Loading mods completed in {0}ms!", s.ElapsedMilliseconds));
@@ -1107,7 +1099,7 @@ namespace MSCLoader
                 {
                     if (mod.ID.StartsWith("MSCLoader_"))
                         continue;
-                        
+
                     if (!mod.isDisabled)
                         mod.OnSave();
                 }
@@ -1134,7 +1126,9 @@ namespace MSCLoader
                     LoadDLL(file);
                 }
             }
-
+            OnGUImods = LoadedMods.Where(x => x.GetType().GetMethod("OnGUI").GetMethodBody().GetILAsByteArray().Length > 2).ToArray();
+            UpdateMods = LoadedMods.Where(x => x.GetType().GetMethod("Update").GetMethodBody().GetILAsByteArray().Length > 2).ToArray();
+            FixedUpdateMods = LoadedMods.Where(x => x.GetType().GetMethod("FixedUpdate").GetMethodBody().GetILAsByteArray().Length > 2).ToArray();
             //cleanup files if not in dev mode
             if (!devMode)
             {
@@ -1205,7 +1199,7 @@ namespace MSCLoader
                 //Warn about wrong .net target, source of some mod crashes.
                 if (!asm.ImageRuntimeVersion.Equals(Assembly.GetExecutingAssembly().ImageRuntimeVersion))
                     ModConsole.Warning(string.Format("File <b>{0}</b> is targeting runtime version <b>{1}</b> which is different that current running version <b>{2}</b>. This may cause unexpected behaviours, check your target assembly.", Path.GetFileName(file), asm.ImageRuntimeVersion, Assembly.GetExecutingAssembly().ImageRuntimeVersion));
-                
+
                 // Look through all public classes                
                 foreach (Type type in asm.GetTypes())
                 {
@@ -1264,7 +1258,7 @@ namespace MSCLoader
             if (!LoadedMods.Contains(mod))
             {
                 // Create config folder
-                if (!Directory.Exists(Path.Combine(SettingsFolder,mod.ID)))
+                if (!Directory.Exists(Path.Combine(SettingsFolder, mod.ID)))
                 {
                     Directory.CreateDirectory(Path.Combine(SettingsFolder, mod.ID));
                 }
@@ -1307,46 +1301,44 @@ namespace MSCLoader
             }
         }
 
+        Mod[] OnGUImods = new Mod[0];
         private void OnGUI()
         {
             GUI.skin = guiskin;
-            for (int i = 0; i < LoadedMods.Count; i++)
+            for (int i = 0; i < OnGUImods.Length; i++)
             {
-                Mod mod = LoadedMods[i];
+                if (OnGUImods[i].isDisabled)
+                    continue;
                 try
                 {
-                    if (mod.LoadInMenu && !mod.isDisabled)
-                        mod.OnGUI();
-                    else if (Application.loadedLevelName == "GAME" && !mod.isDisabled && allModsLoaded)
-                        mod.OnGUI();
+                    if (allModsLoaded || OnGUImods[i].LoadInMenu)
+                        OnGUImods[i].OnGUI();
                 }
                 catch (Exception e)
                 {
                     if (LogAllErrors)
                     {
-                        StackFrame frame = new StackTrace(e, true).GetFrame(0);
-
-                        string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
-                        ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
+                        string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, new StackTrace(e, true).GetFrame(0).GetMethod(), Environment.NewLine);
+                        ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", OnGUImods[i].ID, errorDetails));
                     }
                     UnityEngine.Debug.Log(e);
                     if (allModsLoaded && fullyLoaded)
-                        mod.modErrors++;
+                        OnGUImods[i].modErrors++;
                     if (devMode)
                     {
-                        if (mod.modErrors == 30)
+                        if (OnGUImods[i].modErrors == 30)
                         {
-                            ModConsole.Error(string.Format("Mod <b>{0}</b> thrown <b>too many errors</b>!", mod.ID));
+                            ModConsole.Error(string.Format("Mod <b>{0}</b> thrown <b>too many errors</b>!", OnGUImods[i].ID));
                             ModConsole.Error(e.ToString());
                         }
 
                     }
                     else
                     {
-                        if (mod.modErrors > 30)
+                        if (OnGUImods[i].modErrors > 30)
                         {
-                            mod.isDisabled = true;
-                            ModConsole.Error(string.Format("Mod <b>{0}</b> has been <b>disabled!</b> Because it thrown too many errors!{1}Report this problem to mod author.", mod.ID, Environment.NewLine));
+                            OnGUImods[i].isDisabled = true;
+                            ModConsole.Error(string.Format("Mod <b>{0}</b> has been <b>disabled!</b> Because it thrown too many errors!{1}Report this problem to mod author.", OnGUImods[i].ID, Environment.NewLine));
                         }
                     }
 
@@ -1354,6 +1346,7 @@ namespace MSCLoader
             }
         }
 
+        Mod[] UpdateMods = new Mod[0];
         private void Update()
         {
             if (!fullyLoaded)
@@ -1367,89 +1360,83 @@ namespace MSCLoader
                     StartLoadingMods();
                 }
             }
-
-            for (int i = 0; i < LoadedMods.Count; i++)
+            for (int i = 0; i < UpdateMods.Length; i++)
             {
-                Mod mod = LoadedMods[i];
+                if (UpdateMods[i].isDisabled)
+                    continue;
                 try
                 {
-                    if (mod.LoadInMenu && !mod.isDisabled)
-                        mod.Update();
-                    else if (Application.loadedLevelName == "GAME" && !mod.isDisabled && allModsLoaded)
-                        mod.Update();
+                    if (allModsLoaded || UpdateMods[i].LoadInMenu)
+                        UpdateMods[i].Update();
                 }
                 catch (Exception e)
                 {
                     if (LogAllErrors)
                     {
-                        StackFrame frame = new StackTrace(e, true).GetFrame(0);
-
-                        string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
-                        ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
+                        string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, new StackTrace(e, true).GetFrame(0).GetMethod(), Environment.NewLine);
+                        ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", UpdateMods[i].ID, errorDetails));
                     }
                     UnityEngine.Debug.Log(e);
                     if (allModsLoaded && fullyLoaded)
-                        mod.modErrors++;
+                        UpdateMods[i].modErrors++;
                     if (devMode)
                     {
-                        if (mod.modErrors == 30)
+                        if (UpdateMods[i].modErrors == 30)
                         {
-                            ModConsole.Error(string.Format("Mod <b>{0}</b> thrown <b>too many errors</b>!", mod.ID));
+                            ModConsole.Error(string.Format("Mod <b>{0}</b> thrown <b>too many errors</b>!", UpdateMods[i].ID));
                             ModConsole.Error(e.ToString());
                         }
 
                     }
                     else
                     {
-                        if (mod.modErrors > 30)
+                        if (UpdateMods[i].modErrors > 30)
                         {
-                            mod.isDisabled = true;
-                            ModConsole.Error(string.Format("Mod <b>{0}</b> has been <b>disabled!</b> Because it thrown too many errors!{1}Report this problem to mod author.", mod.ID, Environment.NewLine));
+                            UpdateMods[i].isDisabled = true;
+                            ModConsole.Error(string.Format("Mod <b>{0}</b> has been <b>disabled!</b> Because it thrown too many errors!{1}Report this problem to mod author.", UpdateMods[i].ID, Environment.NewLine));
                         }
                     }
                 }
             }
         }
 
+        Mod[] FixedUpdateMods = new Mod[0];
         private void FixedUpdate()
         {
-            for (int i = 0; i < LoadedMods.Count; i++)
+            for (int i = 0; i < FixedUpdateMods.Length; i++)
             {
-                Mod mod = LoadedMods[i];
+                if (FixedUpdateMods[i].isDisabled)
+                    continue;
                 try
                 {
-                    if (mod.LoadInMenu && !mod.isDisabled)
-                        mod.FixedUpdate();
-                    else if (Application.loadedLevelName == "GAME" && !mod.isDisabled && allModsLoaded)
-                        mod.FixedUpdate();
+                    if (allModsLoaded || FixedUpdateMods[i].LoadInMenu)
+                        FixedUpdateMods[i].FixedUpdate();
                 }
                 catch (Exception e)
                 {
                     if (LogAllErrors)
                     {
-                        StackFrame frame = new StackTrace(e, true).GetFrame(0);
-
-                        string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
-                        ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
+                        string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, new StackTrace(e, true).GetFrame(0).GetMethod(), Environment.NewLine);
+                        ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", FixedUpdateMods[i].ID, errorDetails));
                     }
                     UnityEngine.Debug.Log(e);
                     if (allModsLoaded && fullyLoaded)
-                        mod.modErrors++;
+                        FixedUpdateMods[i].modErrors++;
                     if (devMode)
                     {
-                        if (mod.modErrors == 30)
+                        if (FixedUpdateMods[i].modErrors == 30)
                         {
-                            ModConsole.Error(string.Format("Mod <b>{0}</b> thrown <b>too many errors</b>!", mod.ID));
+                            ModConsole.Error(string.Format("Mod <b>{0}</b> thrown <b>too many errors</b>!", FixedUpdateMods[i].ID));
                             ModConsole.Error(e.ToString());
                         }
 
                     }
                     else
                     {
-                        if (mod.modErrors > 30)
+                        if (FixedUpdateMods[i].modErrors > 30)
                         {
-                            mod.isDisabled = true;
-                            ModConsole.Error(string.Format("Mod <b>{0}</b> has been <b>disabled!</b> Because it thrown too many errors!{1}Report this problem to mod author.", mod.ID, Environment.NewLine));
+                            FixedUpdateMods[i].isDisabled = true;
+                            ModConsole.Error(string.Format("Mod <b>{0}</b> has been <b>disabled!</b> Because it thrown too many errors!{1}Report this problem to mod author.", FixedUpdateMods[i].ID, Environment.NewLine));
                         }
                     }
                 }

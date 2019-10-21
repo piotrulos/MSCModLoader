@@ -6,7 +6,7 @@ using System.IO;
 namespace NAudio.Vorbis
 {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-    public class VorbisWaveReader : WaveStream, IDisposable, ISampleProvider, IWaveProvider
+    public class VorbisWaveReader : WaveStream, ISampleProvider, IWaveProvider
     {
         private VorbisReader _reader;
         private WaveFormat _waveFormat;
