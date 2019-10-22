@@ -1050,7 +1050,10 @@ namespace MSCLoader
                 loading.transform.GetChild(3).GetComponent<Slider>().value = i;
                 loading.transform.GetChild(3).GetChild(1).GetChild(0).GetComponent<Image>().color = new Color32(0, 113, 0, 255);
                 if (mod.ID.StartsWith("MSCLoader_"))
+                {
+                    mod.OnLoad();
                     continue;
+                }
                 i++;
                 if (!mod.isDisabled)
                     loading.transform.GetChild(1).GetComponent<Text>().text = mod.Name;
