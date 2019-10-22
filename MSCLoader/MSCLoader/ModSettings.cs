@@ -360,20 +360,28 @@ namespace MSCLoader
             {
                 settings.toggleVisibility();
             }
-            if (Application.loadedLevelName != "MainMenu" && (bool)modSetButton.GetValue())
+        }
+        
+        // SETUP LOGIC FOR THE MOD SETTINGS BUTTON (FREDTWEAK)
+        public override void OnLoad()
+        {
+            GameObject.Find("Systems").transform.Find("OptionsMenu").gameObject.AddComponent<ModSettingButtonHandler>().modSettingButton = Button_ms;
+            Button_ms.SetActive(false);
+        }
+
+        public class ModSettingButtonHandler : MonoBehaviour
+        {
+            public GameObject modSettingButton;
+
+            void OnEnable()
             {
-                if (GameObject.Find("Systems/OptionsMenu/Menu") != null)
-                {
-                    if (!Button_ms.activeSelf)
-                        Button_ms.SetActive(true);
-                }
-                else
-                {
-                    if (Button_ms.activeSelf)
-                        Button_ms.SetActive(false);
+                if ((bool)modSetButton.GetValue())
+                    modSettingButton.SetActive(true);
+            }
 
-                }
-
+            void OnDisable()
+            {
+                modSettingButton.SetActive(false);
             }
         }
     }
