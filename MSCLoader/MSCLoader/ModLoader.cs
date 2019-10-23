@@ -61,7 +61,7 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string MSCLoader_Ver = "1.1.3";
+        public static readonly string MSCLoader_Ver = "1.1.4";
 
         /// <summary>
         /// Is this version of ModLoader experimental (this is NOT game experimental branch)
@@ -263,7 +263,6 @@ namespace MSCLoader
             menuInfoAnim.SetBool("isHidden", true);
             if (!allModsLoaded && !IsModsLoading)
             {
-                //introCheck = true;
                 IsModsLoading = true;
                 StartCoroutine(LoadMods());
             }
@@ -1055,21 +1054,17 @@ namespace MSCLoader
                     continue;
                 }
                 i++;
-                if (!mod.isDisabled)
-                    loading.transform.GetChild(1).GetComponent<Text>().text = mod.Name;
+                if (mod.isDisabled) continue;
+                loading.transform.GetChild(1).GetComponent<Text>().text = mod.Name;
                 yield return new WaitForSeconds(.05f);
                 try
                 {
-                    if (!mod.isDisabled)
-                    {
-                        mod.OnLoad();
-                    }
+                    mod.OnLoad();
                 }
                 catch (Exception e)
                 {
-                    StackFrame frame = new StackTrace(e, true).GetFrame(0);
 
-                    string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
+                    string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, new StackTrace(e, true).GetFrame(0).GetMethod(), Environment.NewLine);
                     ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
                     if (devMode)
                         ModConsole.Error(e.ToString());
@@ -1108,9 +1103,7 @@ namespace MSCLoader
                 }
                 catch (Exception e)
                 {
-                    StackFrame frame = new StackTrace(e, true).GetFrame(0);
-
-                    string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
+                    string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, new StackTrace(e, true).GetFrame(0).GetMethod(), Environment.NewLine);
                     saveErrors.Add(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
                     if (devMode)
                         saveErrors.Add(e.ToString());
