@@ -134,6 +134,15 @@ namespace MSCLoader
             return CurrentGameScene;
         }
 
+        /// <summary>
+        /// Check if all mods are finished loading.
+        /// </summary>
+        /// <returns>true if all mods are finished loading</returns>
+        public static bool ModLoadingFinished()
+        {
+            return allModsLoaded;
+        }
+
         internal static string GetModSettingsFolder(Mod mod)
         {
             return Path.Combine(SettingsFolder, mod.ID);
