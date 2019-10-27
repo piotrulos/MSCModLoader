@@ -17,7 +17,7 @@
 
         internal virtual int modErrors { get => errorCount; set => errorCount = value; }
 
-        internal virtual bool isDisabled { get => disabled; set => disabled = value; }
+        public virtual bool isDisabled { get => disabled; internal set => disabled = value; }
 
         internal virtual bool hasUpdate { get => update;  set => update = value; }
 
