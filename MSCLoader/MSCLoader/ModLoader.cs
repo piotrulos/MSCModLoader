@@ -222,11 +222,21 @@ namespace MSCLoader
                 Instance.Init();
             }
         }
+
+        void Awake()
+        {
+            if (GameObject.Find("Music") && Application.loadedLevelName == "MainMenu")
+                GameObject.Find("Music").GetComponent<AudioSource>().Stop();
+        }
+        
         bool vse = false;
         private void OnLevelWasLoaded(int level)
         {
             if (Application.loadedLevelName == "MainMenu")
             {
+                if (GameObject.Find("Music"))
+                    GameObject.Find("Music").GetComponent<AudioSource>().Play();
+                    
                 CurrentGameScene = CurrentScene.MainMenu;
                 if (QualitySettings.vSyncCount != 0)
                     vse = true;
