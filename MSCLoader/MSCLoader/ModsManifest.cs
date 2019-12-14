@@ -58,6 +58,15 @@ namespace MSCLoader
             string steamID;
             if (ModLoader.CheckSteam())
             {
+                try
+                {
+                    new Version(mod.Version);
+                }
+                catch
+                {
+                    ModConsole.Error(string.Format("Invalid version: {0}{1}Please use proper version format: (0.0 or 0.0.0 or 0.0.0.0)",mod.Version,Environment.NewLine));
+                    return;
+                }
                 steamID = Steamworks.SteamUser.GetSteamID().ToString();
                 try
                 {
@@ -107,6 +116,15 @@ namespace MSCLoader
             string steamID;
             if (ModLoader.CheckSteam())
             {
+                try
+                {
+                    new Version(mod.Version);
+                }
+                catch
+                {
+                    ModConsole.Error(string.Format("Invalid version: {0}{1}Please use proper version format: (0.0 or 0.0.0 or 0.0.0.0)", mod.Version, Environment.NewLine));
+                    return;
+                }
                 steamID = Steamworks.SteamUser.GetSteamID().ToString();
                 if (mod.RemMetadata.sid_sign != ModLoader.MurzynskaMatematyka(steamID + mod.ID))
                 {

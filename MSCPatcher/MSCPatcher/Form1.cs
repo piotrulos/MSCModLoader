@@ -51,7 +51,23 @@ namespace MSCPatcher
             if (File.Exists("MSCFolder.txt"))
             {
                 mscPath = File.ReadAllText("MSCFolder.txt");
-                Log.Write(string.Format("Loaded saved MSC Folder: {0}", mscPath));
+                if (!Directory.Exists(mscPath))
+                {
+                    Log.Write(string.Format("Saved MSC Folder, doesn't exists: {0}", mscPath));
+                    mscPath = "(unknown)";
+                    try
+                    {
+                        File.Delete("MSCFolder.txt");
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Write(e.Message);
+                    }
+                }
+                else
+                {
+                    Log.Write(string.Format("Loaded saved MSC Folder: {0}", mscPath));
+                }
             }
             mscPathLabel.Text = mscPath;
             MDlabel.Text = mdPath;
