@@ -61,7 +61,7 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string MSCLoader_Ver = "1.1.4";
+        public static readonly string MSCLoader_Ver = "1.1.5";
 
         /// <summary>
         /// Is this version of ModLoader experimental (this is NOT game experimental branch)
@@ -83,6 +83,7 @@ namespace MSCLoader
         internal static bool unloader = false;
         internal static bool rtmm = false;
         internal static List<string> saveErrors;
+        private List<Mod> secondPassMods;
 
 
         private string expBuild = Assembly.GetExecutingAssembly().GetName().Version.Revision.ToString();
@@ -113,6 +114,12 @@ namespace MSCLoader
         private bool IsModsDoneResetting = false;
         private static CurrentScene CurrentGameScene;
 
+        void Awake()
+        {
+            //TG should fix this, but whatever
+            if (GameObject.Find("Music") != null)
+                GameObject.Find("Music").GetComponent<AudioSource>().Stop();
+        }
         /// <summary>
         /// Check if steam is present
         /// </summary>
@@ -132,6 +139,24 @@ namespace MSCLoader
         public static CurrentScene GetCurrentScene()
         {
             return CurrentGameScene;
+        }
+
+        /// <summary>
+        /// Check if other ModID is present and enabled
+        /// </summary>
+        /// <param name="ModID">Mod ID of other mod to check (Case sensitive)</param>
+        /// <returns>true if mod ID is present</returns>
+        public static bool IsModPresent(string ModID)
+        {
+            Mod m = LoadedMods.Where(x => x.ID.Equals(ModID)).FirstOrDefault();
+            if(m != null)
+            {
+                if (m.isDisabled)
+                    return false;
+                else
+                    return true;
+            }
+            return false;
         }
 
         internal static string GetModSettingsFolder(Mod mod)
@@ -165,7 +190,7 @@ namespace MSCLoader
         /// </example> 
         public static string GetModAssetsFolder(Mod mod)
         {
-            if (mod.UseAssetsFolder == false)
+            if (!mod.UseAssetsFolder)
                 ModConsole.Error(string.Format("<b>{0}:</b> Please set variable <b>UseAssetsFolder</b> to <b>true</b>", mod.ID));
             return Path.Combine(AssetsFolder, mod.ID);
         }
@@ -219,6 +244,8 @@ namespace MSCLoader
             if (Application.loadedLevelName == "MainMenu")
             {
                 CurrentGameScene = CurrentScene.MainMenu;
+                if (GameObject.Find("Music"))
+                    GameObject.Find("Music").GetComponent<AudioSource>().Play();
                 if (QualitySettings.vSyncCount != 0)
                     vse = true;
                 if ((bool)ModSettings_menu.forceMenuVsync.GetValue() && !vse)
@@ -1032,6 +1059,7 @@ namespace MSCLoader
 
         IEnumerator LoadMods()
         {
+            secondPassMods = new List<Mod>();
             loading.transform.GetChild(2).GetComponent<Text>().text = string.Format("MSCLoader <color=green>v{0}</color>", MSCLoader_Ver);
             ModConsole.Print("Loading mods...");
             Stopwatch s = new Stopwatch();
@@ -1060,6 +1088,9 @@ namespace MSCLoader
                 try
                 {
                     mod.OnLoad();
+                    if (mod.SecondPass)
+                        secondPassMods.Add(mod);
+
                 }
                 catch (Exception e)
                 {
@@ -1072,14 +1103,44 @@ namespace MSCLoader
                 }
 
             }
-
-            FsmHook.FsmInject(GameObject.Find("ITEMS"), "Save game", SaveMods);
-
-            loading.SetActive(false);
-            ModConsole.Print("</color>");
             ModSettings_menu.LoadBinds();
-            allModsLoaded = true;
+            if (secondPassMods.Count > 0)
+            {
+                loading.transform.GetChild(3).GetComponent<Slider>().value = 1;
+                ModConsole.Print("Loading mods (second pass)...");
+                loading.transform.GetChild(3).GetComponent<Slider>().minValue = 1;
+                loading.transform.GetChild(3).GetComponent<Slider>().maxValue = secondPassMods.Count;
+                int j = 1;
+                foreach (Mod mod in secondPassMods)
+                {
+
+                    loading.transform.GetChild(0).GetComponent<Text>().text = string.Format("Loading mods (second pass): <color=orage><b>{0}</b></color> of <color=orage><b>{1}</b></color>. Please wait...", j, secondPassMods.Count);
+                    loading.transform.GetChild(3).GetComponent<Slider>().value = j;
+                    loading.transform.GetChild(3).GetChild(1).GetChild(0).GetComponent<Image>().color = new Color32(0, 113, 0, 255);
+                    j++;
+                    loading.transform.GetChild(1).GetComponent<Text>().text = mod.Name;
+                    yield return new WaitForSeconds(.05f);
+                    try
+                    {
+                        mod.SecondPassOnLoad();
+                    }
+                    catch (Exception e)
+                    {
+                        string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, new StackTrace(e, true).GetFrame(0).GetMethod(), Environment.NewLine);
+                        ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
+                        if (devMode)
+                            ModConsole.Error(e.ToString());
+                        UnityEngine.Debug.Log(e);
+                    }
+
+                }
+            }
+            FsmHook.FsmInject(GameObject.Find("ITEMS"), "Save game", SaveMods);
+            allModsLoaded = true;   
             s.Stop();
+            yield return new WaitForSeconds(.05f);
+            ModConsole.Print("</color>");
+            loading.SetActive(false);
             if (s.ElapsedMilliseconds < 1000)
                 ModConsole.Print(string.Format("Loading mods completed in {0}ms!", s.ElapsedMilliseconds));
             else

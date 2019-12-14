@@ -41,6 +41,11 @@
         public virtual bool UseAssetsFolder => false;
 
         /// <summary>
+        /// Enable SecondPassOnLoad() that will execute after all mods have been loaded.
+        /// </summary>
+        public virtual bool SecondPass => false;
+
+        /// <summary>
         /// The ID for your mod (This should be unique).
         /// </summary>
         public abstract string ID { get; }
@@ -73,6 +78,11 @@
         /// </summary>
         public virtual void ModSettingsLoaded() { }
 
+        /// <summary>
+        /// Called once after starting "New Game"
+        /// You can reset/delete your saves here
+        /// </summary>
+        public virtual void OnNewGame() { }
 
         /// <summary>
         /// Called once in main menu (only when LoadInMenu is true).
@@ -83,15 +93,15 @@
         }
 
         /// <summary>
-        /// Called once after starting "New Game"
-        /// You can reset/delete your saves here
-        /// </summary>
-        public virtual void OnNewGame() { }
-
-        /// <summary>
         /// Called once, after GAME scene is fully loaded.
         /// </summary>
         public virtual void OnLoad() { }
+
+        /// <summary>
+        /// Called once, after ALL mods has finished OnLoad() and when SecondPass is set to true
+        /// (Executed still before first pass of Update(), but NOT exectued if OnLoad() failed with error)
+        /// </summary>
+        public virtual void SecondPassOnLoad() { }
 
         /// <summary>
         /// Called once, when save and quit.
