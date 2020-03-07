@@ -238,6 +238,8 @@ namespace MSCLoader
                     btn.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = setting.Name;
                     btn.transform.GetChild(1).GetComponent<Text>().text = setting.Vals[0].ToString();
                     btn.transform.GetChild(1).GetComponent<Text>().color = (Color)setting.Vals[4];
+                    if (setting.Vals[0].ToString() == null || setting.Vals[0].ToString() == string.Empty)
+                        btn.transform.GetChild(1).gameObject.SetActive(false);
                     btn.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(setting.DoAction.Invoke);
                     ColorBlock cb = btn.transform.GetChild(0).GetComponent<Button>().colors;
                     cb.normalColor = (Color)setting.Vals[1];
@@ -293,19 +295,26 @@ namespace MSCLoader
                     break;
             }
         }
-
-        public void KeyBindsList(string name, KeyCode modifier, KeyCode key, string ID)
+        public void KeyBindHeader(Keybind key)
+        {
+            GameObject hdr = Instantiate(ms.header);
+            hdr.transform.GetChild(0).GetComponent<Text>().text = key.Name;
+            hdr.GetComponent<Image>().color = (Color)key.Vals[1];
+            hdr.transform.GetChild(0).GetComponent<Text>().color = (Color)key.Vals[2];
+            hdr.transform.SetParent(keybindsList.transform, false);
+        }
+        public void KeyBindsList(Keybind key)
         {
             GameObject keyBind = Instantiate(ms.KeyBind);
-            keyBind.transform.GetChild(0).GetComponent<Text>().text = name;
+            keyBind.transform.GetChild(0).GetComponent<Text>().text = key.Name;
             keyBind.AddComponent<KeyBinding>().modifierButton = keyBind.transform.GetChild(1).gameObject;
             keyBind.GetComponent<KeyBinding>().modifierDisplay = keyBind.transform.GetChild(1).GetChild(0).GetComponent<Text>();
             keyBind.GetComponent<KeyBinding>().keyButton = keyBind.transform.GetChild(3).gameObject;
             keyBind.GetComponent<KeyBinding>().keyDisplay = keyBind.transform.GetChild(3).GetChild(0).GetComponent<Text>();
-            keyBind.GetComponent<KeyBinding>().key = key;
-            keyBind.GetComponent<KeyBinding>().modifierKey = modifier;
-            keyBind.GetComponent<KeyBinding>().mod = selected_mod;
-            keyBind.GetComponent<KeyBinding>().id = ID;
+            keyBind.GetComponent<KeyBinding>().key = key.Key;
+            keyBind.GetComponent<KeyBinding>().modifierKey = key.Modifier;
+            keyBind.GetComponent<KeyBinding>().mod = key.Mod;
+            keyBind.GetComponent<KeyBinding>().id = key.ID;
             keyBind.GetComponent<KeyBinding>().LoadBind();
             keyBind.transform.SetParent(keybindsList.transform, false);
         }
@@ -482,7 +491,10 @@ namespace MSCLoader
             {
                 if (key.Mod == selected)
                 {
-                    KeyBindsList(key.Name, key.Modifier, key.Key, key.ID);
+                    if (key.ID == null && key.Vals != null)
+                        KeyBindHeader(key);
+                    else
+                        KeyBindsList(key);
                 }
             }
             ModKeyBinds.transform.GetChild(0).GetChild(6).GetComponent<Button>().onClick.RemoveAllListeners();

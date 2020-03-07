@@ -33,6 +33,8 @@ namespace MSCLoader
 
         public override void ModSettings()
         {
+            Keybind.Add(this, consoleKey);
+
             Settings.AddHeader(this, "Console Settings", new Color32(0, 128, 0, 255));
             Settings.AddText(this, "Basic settings for console");
             Settings.AddCheckBox(this, typing);
@@ -80,7 +82,7 @@ namespace MSCLoader
         
         public override void Update()
         {
-            if (consoleKey.IsDown())
+            if (consoleKey.GetKeybindDown())
             {
                 console.toggleVisibility();
             }
@@ -88,7 +90,6 @@ namespace MSCLoader
 
         public override void OnMenuLoad()
         {
-            Keybind.Add(this, consoleKey);
             CreateConsoleUI();
             console.controller = new ConsoleController();
             ConsoleCommand.cc = console.controller;

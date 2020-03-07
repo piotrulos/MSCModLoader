@@ -61,7 +61,7 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string MSCLoader_Ver = "1.1.5";
+        public static readonly string MSCLoader_Ver = "1.1.6";
 
         /// <summary>
         /// Is this version of ModLoader experimental (this is NOT game experimental branch)
@@ -1250,7 +1250,7 @@ namespace MSCLoader
                 bool isMod = false;
 
                 AssemblyName[] list = asm.GetReferencedAssemblies();
-                if (File.ReadAllText(file).Contains("RegistryKey"))
+                if (File.ReadAllText(file).Contains("RegistryKey") || File.ReadAllText(file).Contains("Steamworks"))
                     throw new FileLoadException();
 
                 //Warn about wrong .net target, source of some mod crashes.
@@ -1267,7 +1267,8 @@ namespace MSCLoader
                         {
                             if (list[i].Name == "Assembly-CSharp-firstpass")
                             {
-                                throw new Exception("Targeting forbidden reference");
+                                if (File.ReadAllText(file).Contains("Steamworks") || File.ReadAllText(file).Contains("GetSteamID"))
+                                    throw new Exception("Targeting forbidden reference");
                             }
                             if (list[i].Name == "MSCLoader")
                             {

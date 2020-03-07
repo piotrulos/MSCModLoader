@@ -48,6 +48,8 @@ namespace MSCLoader
         public override void ModSettings()
         {
             instance = this;
+            Keybind.Add(this, menuKey);
+
             Settings.AddHeader(this, "Basic Settings", new Color32(0, 128, 0, 255));
             Settings.AddText(this, "All basic settings for MSCLoader");
             Settings.AddCheckBox(this, expWarning);
@@ -64,6 +66,7 @@ namespace MSCLoader
             Settings.AddText(this, "This option enables <color=orange>experimental UI scaling</color> for <color=orange>ultra-widescreen monitor setup</color>. Turn on this checkbox first, then run game in ultra-widescreen resolution. You can then tune scaling using slider below, but default value (1) should be ok.");
             Settings.AddCheckBox(this, expUIScaling);
             Settings.AddSlider(this, tuneScaling, 0f, 1f);
+
         }
         public override void ModSettingsLoaded()
         {
@@ -115,7 +118,6 @@ namespace MSCLoader
         public override void OnMenuLoad()
         {
             CreateSettingsUI();
-            Keybind.Add(this, menuKey);
         }
 
         public void CreateSettingsUI()
@@ -228,6 +230,8 @@ namespace MSCLoader
 
             foreach (Keybind bind in Keybind.Get(mod))
             {
+                if (bind.ID == null || bind.Vals != null)
+                    continue;
                 Keybinds keybinds = new Keybinds
                 {
                     ID = bind.ID,
@@ -356,7 +360,7 @@ namespace MSCLoader
         public override void Update()
         {
             // Open menu
-            if (menuKey.IsDown())
+            if (menuKey.GetKeybindDown())
             {
                 settings.toggleVisibility();
             }
