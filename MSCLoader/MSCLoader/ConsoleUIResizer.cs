@@ -69,6 +69,10 @@ namespace MSCLoader
                     m_scrollbar = scrollbar.GetComponent<RectTransform>();
                     string data = File.ReadAllText(Path.Combine(path, "console.data"));
                     string[] values = data.Trim().Split(',');
+                    if (float.Parse(values[0], CultureInfo.InvariantCulture) <= -60) //don't go offscreen
+                    {
+                        values[0] = "-60"; values[1] = "-60"; values[2] = "-60"; values[3] = "60"; values[4] = "60";
+                    }
                     m_transform.anchoredPosition = new Vector3(0f, float.Parse(values[0], CultureInfo.InvariantCulture));
                     m_logview.anchoredPosition = new Vector3(0f, float.Parse(values[1], CultureInfo.InvariantCulture));
                     m_scrollbar.anchoredPosition = new Vector3(0f, float.Parse(values[2], CultureInfo.InvariantCulture));

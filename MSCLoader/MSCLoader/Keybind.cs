@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MSCLoader
@@ -42,6 +43,10 @@ namespace MSCLoader
 		/// </summary>
 		public Mod Mod { get; set; }
 
+        /// <summary>
+        /// Helpful additional variables.
+        /// </summary>
+        public object[] Vals { get; set; }
 
         /// <summary>
         /// Add a keybind.
@@ -56,7 +61,38 @@ namespace MSCLoader
 			Keybinds.Add(key);
 			DefaultKeybinds.Add(new Keybind(key.ID, key.Name, key.Key, key.Modifier) { Mod = mod });
 		}
+        /// <summary>
+        /// Add Header, blue title bar that can be used to separate settings.
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="HeaderTitle">Title of your header</param>
+        public static void AddHeader(Mod mod, string HeaderTitle) => AddHeader(mod, HeaderTitle, Color.blue, Color.white);
 
+        /// <summary>
+        /// Add Header, blue title bar that can be used to separate settings.
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="HeaderTitle">Title of your header</param>
+        /// <param name="backgroundColor">Background color of header</param>
+        public static void AddHeader(Mod mod, string HeaderTitle, Color backgroundColor) => AddHeader(mod, HeaderTitle, backgroundColor, Color.white);
+
+        /// <summary>
+        /// Add Header, blue title bar that can be used to separate settings.
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="HeaderTitle">Title of your header</param>
+        /// <param name="backgroundColor">Background color of header</param>
+        /// <param name="textColor">Text Color of header</param>
+        public static void AddHeader(Mod mod, string HeaderTitle, Color backgroundColor, Color textColor)
+        {
+            Keybind kb = new Keybind(null, HeaderTitle, KeyCode.None, KeyCode.None);
+            kb.Mod = mod;
+            kb.Vals = new object[3];
+            kb.Vals[0] = HeaderTitle;
+            kb.Vals[1] = backgroundColor;
+            kb.Vals[2] = textColor;
+            Keybinds.Add(kb);
+        }
         /// <summary>
         /// Return all keybinds for mod.
         /// </summary>
@@ -105,35 +141,76 @@ namespace MSCLoader
 		}
 
         /// <summary>
-        /// Checks if the Keybind is being held down.
+        /// Check if keybind is being hold down. (Same behaviour as GetKey)
         /// </summary>
-        /// <returns>If the Keybind is being held down.</returns>
-        /// <example><code source="Examples.cs" region="KeyBindPress" lang="C#" 
+        /// <returns>true, if the keybind is being hold down.</returns>
+        /// <example><code source="Examples.cs" region="GetKeybind" lang="C#" 
         /// title="Keybind and modifier" /></example>
-        public bool IsPressed()
-		{
-			if (Modifier != KeyCode.None)
-			{
-				return Input.GetKey(Modifier) && Input.GetKey(Key);
-			}
+        public bool GetKeybind()
+        {
+            if (Modifier != KeyCode.None)
+            {
+                return Input.GetKey(Modifier) && Input.GetKey(Key);
+            }
 
-			return Input.GetKey(Key);
-		}
+            return Input.GetKey(Key);
+        }
 
         /// <summary>
-        /// Checks if the Keybind was just pressed.
+        /// Check if the keybind was just pressed once. (Same behaviour as GetKeyDown)
         /// </summary>
-        /// <returns>If the Keybind is being pressed.</returns>
+        /// <returns>true, Check if the keybind was just pressed.</returns>
+        /// <example><code source="Examples.cs" region="GetKeybindDown" lang="C#" 
+        /// title="Keybind and modifier" /></example>
+        public bool GetKeybindDown()
+        {
+            if (Modifier != KeyCode.None)
+            {
+                return Input.GetKey(Modifier) && Input.GetKeyDown(Key);
+            }
+
+            return Input.GetKeyDown(Key);
+        }
+
+        /// <summary>
+        /// Check if the keybind was just released. (Same behaviour as GetKeyUp)
+        /// </summary>
+        /// <returns>true, Check if the keybind was just released.</returns>
+        /// <example><code source="Examples.cs" region="GetKeybindUp" lang="C#" 
+        /// title="Keybind and modifier" /></example>
+        public bool GetKeybindUp()
+        {
+            if (Modifier != KeyCode.None)
+            {
+                return Input.GetKey(Modifier) && Input.GetKeyUp(Key);
+            }
+
+            return Input.GetKeyUp(Key);
+        }
+
+        /// <summary>
+        /// [DEPRECATED] Checks if the Keybind is being held down.
+        /// </summary>
+        /// <returns>true, if the Keybind is being held down.</returns>
+        /// <example><code source="Examples.cs" region="KeyBindPress" lang="C#" 
+        /// title="Keybind and modifier" /></example>
+        [Obsolete("IsPressed() is deprecated, just rename it to GetKeybind()", true)]
+        public bool IsPressed()
+		{
+            return GetKeybind();
+        }
+
+        /// <summary>
+        /// [DEPRECATED] Checks if the Keybind was just pressed.
+        /// </summary>
+        /// <returns>true, if the Keybind is being pressed.</returns>
         /// <example><code source="Examples.cs" region="KeyBindDown" lang="C#" 
         /// title="Keybind and modifier" /></example>
+        [Obsolete("IsDown() is deprecated, just rename it to GetKeybindDown()", true)]
         public bool IsDown()
 		{
-			if (Modifier != KeyCode.None)
-			{
-				return Input.GetKey(Modifier) && Input.GetKeyDown(Key);
-			}
-
-			return Input.GetKeyDown(Key);
-		}
+            return GetKeybindDown();
+        }   
+        
 	}
 }
