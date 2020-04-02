@@ -97,7 +97,6 @@
     <Compile Include="ModAudioStream.cs" />
     <Compile Include="ModConsole.cs" />
     <Compile Include="ModCore.cs" />
-    <Compile Include="ModInfo.cs" />
     <Compile Include="ModLoader.cs" />
     <Compile Include="ModSettings.cs" />
     <Compile Include="ModsManifest.cs" />

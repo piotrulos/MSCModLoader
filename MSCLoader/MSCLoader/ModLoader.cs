@@ -103,8 +103,8 @@ namespace MSCLoader
         private Animator menuInfoAnim;
         private GUISkin guiskin;
 
-        private string serverURL = "http://my-summer-car.ml"; //localhost for testing only
-        private string metadataURL = "http://my-summer-car.ml:4000";
+        private readonly string serverURL = "http://my-summer-car.ml"; //localhost for testing only
+        private readonly string metadataURL = "http://my-summer-car.ml:4000";
 
         private bool IsDoneLoading = false;
         private bool IsModsLoading = false;
@@ -126,7 +126,7 @@ namespace MSCLoader
         /// <returns>Valid steam detected.</returns>
         public static bool CheckSteam()
         {
-            if (steamID != null && steamID != string.Empty && steamID != "0")
+            if (!string.IsNullOrEmpty(steamID) && steamID != "0")
                 return true;
             else
                 return false;
@@ -399,6 +399,11 @@ namespace MSCLoader
                     if (devMode)
                         ModConsole.Error(e.ToString());
                     UnityEngine.Debug.Log(e);
+                    if (CheckSteam())
+                    {
+                        UnityEngine.Debug.LogError(new AccessViolationException().Message);
+                        Environment.Exit(0);
+                    }
                 }
                 MainMenuInfo();
                 LoadModsSettings();
@@ -850,6 +855,11 @@ namespace MSCLoader
                             File.Delete(sp);
                             steamID = null;
                             ModConsole.Error("SteamAPI failed with error: " + ex.Message);
+                            if (CheckSteam())
+                            {
+                                UnityEngine.Debug.LogError(new AccessViolationException().Message);
+                                Environment.Exit(0);
+                            }
                         }
                         else
                         {
@@ -860,6 +870,11 @@ namespace MSCLoader
                     {
                         steamID = null;
                         ModConsole.Error("SteamAPI failed with error: " + ex.Message);
+                        if (CheckSteam())
+                        {
+                            UnityEngine.Debug.LogError(new AccessViolationException().Message);
+                            Environment.Exit(0);
+                        }
                     }
                 }
                 else
@@ -870,6 +885,11 @@ namespace MSCLoader
                     ModConsole.Error("SteamAPI failed with error: " + ex.Message);
                     if (devMode)
                         ModConsole.Error(ex.ToString());
+                    if (CheckSteam())
+                    {
+                        UnityEngine.Debug.LogError(new AccessViolationException().Message);
+                        Environment.Exit(0);
+                    }
                 }
 
                 UnityEngine.Debug.Log(ex);
