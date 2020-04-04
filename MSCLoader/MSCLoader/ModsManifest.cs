@@ -20,6 +20,7 @@ namespace MSCLoader
         public string sign;
         public string sid_sign;
         public byte type;
+        public string msg = null;
     }
     internal class ManifestLinks
     {

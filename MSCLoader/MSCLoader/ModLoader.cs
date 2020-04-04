@@ -116,6 +116,7 @@ namespace MSCLoader
 
         void Awake()
         {
+            StopAskingForMscoSupport();
             //TG should fix this, but whatever
             if (GameObject.Find("Music") != null)
                 GameObject.Find("Music").GetComponent<AudioSource>().Stop();
@@ -499,7 +500,7 @@ namespace MSCLoader
                     ReadMetadata(mod);
                     continue;
                 }
-                if (cfmuResult != string.Empty)
+                if (!string.IsNullOrEmpty(cfmuResult))
                 {
                     if (cfmuResult.StartsWith("error"))
                     {
@@ -570,11 +571,13 @@ namespace MSCLoader
                                 case -1:
                                     if (mod.RemMetadata.sid_sign != MurzynskaMatematyka(steamID + mod.ID) && mod.RemMetadata.type == 3)
                                         File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)), cfmuResult);
-                                    if (!File.Exists(GetMetadataFolder(string.Format("{0}.json", mod.ID))) && !cfmuResult.Equals(File.ReadAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)))))
+                                    if (File.Exists(GetMetadataFolder(string.Format("{0}.json", mod.ID))) && !cfmuResult.Equals(File.ReadAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)))))
                                     {
                                         mod.hasUpdate = true;
                                         modUpdCount++;
                                     }
+                                    if(!File.Exists(GetMetadataFolder(string.Format("{0}.json", mod.ID))))
+                                        File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)), cfmuResult);
                                     break;
                             }
                             ReadMetadata(mod);
@@ -641,10 +644,24 @@ namespace MSCLoader
                 mod.RemMetadata = mod.metadata;
             else if (mod.metadata == null && mod.RemMetadata == null)
                 return;
+            if (mod.metadata.type == 9)
+            {
+                //Disabled by reason
+                mod.isDisabled = true;
+                if (!string.IsNullOrEmpty(mod.metadata.msg))
+                    ModConsole.Error(string.Format("Mod <b>{0}</b> has been disabled, Reason: <b>{1}</b>", mod.ID, mod.metadata.msg));
+                else
+                    ModConsole.Error(string.Format("Mod <b>{0}</b> has been disabled, Reason: <i>No reason given...</i>", mod.ID));
+                return;
+            }
             if (mod.metadata.type == 2)
             {
                 //Disabled by user
                 mod.isDisabled = true;
+                if (!string.IsNullOrEmpty(mod.metadata.msg))
+                    ModConsole.Error(string.Format("Mod <b>{0}</b> has been disabled by author, Reason: <b>{1}</b>", mod.ID, mod.metadata.msg));
+                else
+                    ModConsole.Error(string.Format("Mod <b>{0}</b> has been disabled by author, Reason: <i>No reason given...</i>", mod.ID));
                 return;
             }
             if (mod.RemMetadata.type == 3 && !mod.hasUpdate)
@@ -1531,6 +1548,15 @@ namespace MSCLoader
                     builder.Append(bytes[i].ToString("x2"));
                 }
                 return builder.ToString();
+            }
+        }
+        void StopAskingForMscoSupport()
+        {
+            if (File.Exists(Path.Combine("", @"mysummercar_Data\Managed\MSCOClient.dll")))
+            {
+                UnityEngine.Debug.LogError($"MSCOClient.dll - {new AccessViolationException().Message}");
+                File.Delete(Path.Combine("", @"mysummercar_Data\Managed\MSCOClient.dll"));
+                Application.Quit();
             }
         }
     }
