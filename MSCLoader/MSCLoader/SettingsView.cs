@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -34,7 +35,6 @@ namespace MSCLoader
         int page = 0;
 
         Mod selected_mod;
-        bool invalidLabel = false;
         public void modButton(string name, string version, string author, Mod mod)
         {
 
@@ -248,6 +248,24 @@ namespace MSCLoader
                     btn.transform.GetChild(0).GetComponent<Button>().colors = cb; 
                     btn.transform.SetParent(modSettingsList.transform, false);
                     break;
+                case SettingsType.RButton:
+                    GameObject rbtn = Instantiate(ms.setBtn);
+                    rbtn.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = setting.Name;
+                    rbtn.transform.GetChild(0).GetChild(0).GetComponent<Text>().color = Color.black;
+                    rbtn.transform.GetChild(1).gameObject.SetActive(false);
+                    rbtn.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(delegate
+                    {
+                        ModSettings_menu.ResetSpecificSettings(setting.Mod, (Settings[])setting.Vals[0]);
+                        ModSettingsShow(setting.Mod);
+                        setting.Mod.ModSettingsLoaded();
+                    });
+                    ColorBlock rcb = rbtn.transform.GetChild(0).GetComponent<Button>().colors;
+                    rcb.normalColor = new Color32(255, 187, 5, 255);
+                    rcb.highlightedColor = new Color32(255, 230, 5, 255);
+                    rcb.pressedColor = new Color32(255, 230, 5, 255);
+                    rbtn.transform.GetChild(0).GetComponent<Button>().colors = rcb;
+                    rbtn.transform.SetParent(modSettingsList.transform, false);
+                    break;
                 case SettingsType.Slider:
                     GameObject modViewLabel = Instantiate(ms.ModLabel);
                     modViewLabel.GetComponent<Text>().text = setting.Name;
@@ -258,10 +276,22 @@ namespace MSCLoader
                     slidr.transform.GetChild(0).GetComponent<Slider>().maxValue = float.Parse(setting.Vals[1].ToString());
                     slidr.transform.GetChild(0).GetComponent<Slider>().value = float.Parse(setting.Value.ToString());
                     slidr.transform.GetChild(0).GetComponent<Slider>().wholeNumbers = (bool)setting.Vals[2];
+                    if (setting.Vals[3] != null)
+                    {
+                        slidr.transform.GetChild(1).GetComponent<Text>().text = ((string[])setting.Vals[3])[int.Parse(setting.Value.ToString())];
+                    }
                     slidr.transform.GetChild(0).GetComponent<Slider>().onValueChanged.AddListener(delegate
                     {
-                        setting.Value = slidr.transform.GetChild(0).GetComponent<Slider>().value;
+                        if ((bool)setting.Vals[2])
+                            setting.Value = slidr.transform.GetChild(0).GetComponent<Slider>().value;
+                        else
+                            setting.Value = Math.Round(slidr.transform.GetChild(0).GetComponent<Slider>().value, 2);
+                        if(setting.Vals[3] == null)
                         slidr.transform.GetChild(1).GetComponent<Text>().text = setting.Value.ToString();
+                        else
+                        {
+                            slidr.transform.GetChild(1).GetComponent<Text>().text = ((string[])setting.Vals[3])[int.Parse(setting.Value.ToString())];
+                        }
                         if (setting.DoAction != null)
                             setting.DoAction.Invoke();
                     });
@@ -500,7 +530,7 @@ namespace MSCLoader
             ModKeyBinds.transform.GetChild(0).GetChild(6).GetComponent<Button>().onClick.RemoveAllListeners();
             ModKeyBinds.transform.GetChild(0).GetChild(6).GetComponent<Button>().onClick.AddListener(delegate 
             {
-                ms.ResetBinds(selected);
+                ModSettings_menu.ResetBinds(selected);
                 ModKeybindsShow(selected);
                 });
             goToKeybinds();
@@ -517,25 +547,74 @@ namespace MSCLoader
                     SettingsList(set);
                 }
             }
+            if (Settings.GetDefault(selected).Count == 0 || Settings.GetDefault(selected).Find(x => x.ID == "MSCL_HideResetAllButton") != null)
+            {
+                modSettings.transform.GetChild(0).GetChild(6).gameObject.SetActive(false);
+            }
+            else
+            {
+                modSettings.transform.GetChild(0).GetChild(6).gameObject.SetActive(true);
+                modSettings.transform.GetChild(0).GetChild(6).GetComponent<Button>().onClick.RemoveAllListeners();
+                modSettings.transform.GetChild(0).GetChild(6).GetComponent<Button>().onClick.AddListener(delegate
+                {
+                    ModSettings_menu.ResetSettings(selected);
+                    ModSettingsShow(selected);
+                    selected.ModSettingsLoaded();
+
+                });
+            }
             goToSettings();
+        }
+        void ModListHeader(string header,Color background, Color text)
+        {
+            GameObject hdr = Instantiate(ms.header);
+            hdr.transform.GetChild(0).GetComponent<Text>().text = header;
+            hdr.GetComponent<Image>().color = background;
+            hdr.transform.GetChild(0).GetComponent<Text>().color = text;
+            hdr.transform.SetParent(modView.transform, false);
         }
         void CreateList()
         {
-            invalidLabel = false;
             RemoveChildren(modView.transform);
-            foreach (Mod mod in ModLoader.LoadedMods)
+            if(coreModCheckbox.isOn)
             {
-                if (mod.hasUpdate && !mod.isDisabled)
+                ModListHeader("Core Mods", new Color32(101, 34, 18, 255), new Color32(254, 254, 0, 255));
+                foreach (Mod mod in ModLoader.LoadedMods.Where(x => x.ID.StartsWith("MSCLoader_")))
+                {
                     modButton(mod.Name, mod.Version, mod.Author, mod);
+                }
+            }
+            if (ModLoader.LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")).Count() == 0)
+            {
+                ModListHeader("No mods installed", Color.blue, Color.white);
+                if (ModLoader.InvalidMods.Count == 0)
+                    return;
+                ModListHeader("Invalid/Broken Mods", new Color32(101, 34, 18, 255), new Color32(254, 254, 0, 255));
+                foreach (string s in ModLoader.InvalidMods)
+                {
+                    GameObject invMod = Instantiate(ms.ModButton_Invalid);
+                    invMod.transform.GetChild(0).GetComponent<Text>().text = s;
+                    invMod.transform.SetParent(modView.transform, false);
+                }
+                return;
+            }
+            if (ModLoader.LoadedMods.Where(x => x.hasUpdate).Count() > 0)
+                ModListHeader("Mods with updates", new Color32(57, 57, 57, 255), new Color32(0, 255, 255, 255));
+            foreach (Mod mod in ModLoader.LoadedMods.Where(x => x.hasUpdate))
+            {
+                modButton(mod.Name, mod.Version, mod.Author, mod);
             }
             if (Application.loadedLevelName == "MainMenu")
             {
-                foreach (Mod mod in ModLoader.LoadedMods)
+                if (ModLoader.LoadedMods.Where(x => x.LoadInMenu && !x.ID.StartsWith("MSCLoader_")).Count() > 0)
+                    ModListHeader("Loaded Mods", new Color32(57, 57, 57, 255), new Color32(0, 255, 255, 255));
+                foreach (Mod mod in ModLoader.LoadedMods.Where(x => x.LoadInMenu && !x.ID.StartsWith("MSCLoader_")))
                 {
                     if (mod.LoadInMenu)
                         modButton(mod.Name, mod.Version, mod.Author, mod);
                 }
-                foreach (Mod mod in ModLoader.LoadedMods)
+                ModListHeader("Ready to load", new Color32(57, 57, 57, 255), new Color32(0, 255, 255, 255));
+                foreach (Mod mod in ModLoader.LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")))
                 {
                     if (!mod.LoadInMenu && !mod.isDisabled)
                         modButton(mod.Name, mod.Version, mod.Author, mod);
@@ -543,27 +622,25 @@ namespace MSCLoader
             }
             else
             {
-                foreach (Mod mod in ModLoader.LoadedMods)
+                ModListHeader("Loaded Mods", new Color32(57, 57, 57, 255), new Color32(0, 255, 255, 255));
+                foreach (Mod mod in ModLoader.LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")))
                 {
                     if (!mod.isDisabled)
                         modButton(mod.Name, mod.Version, mod.Author, mod);
                 }
             }
-
-            foreach (Mod mod in ModLoader.LoadedMods)
+            if (ModLoader.LoadedMods.Where(x => x.isDisabled).Count() > 0)
+                ModListHeader("Disabled mods", new Color32(101, 34, 18, 255), new Color32(254, 254, 0, 255));
+            foreach (Mod mod in ModLoader.LoadedMods.Where(x => x.isDisabled))
             {
                 if (mod.isDisabled)
                     modButton(mod.Name, mod.Version, mod.Author, mod);
             }
+            if (ModLoader.InvalidMods.Count == 0)
+                return;
+            ModListHeader("Invalid/Broken Mods", new Color32(101, 34, 18, 255), new Color32(254, 254, 0, 255));
             foreach (string s in ModLoader.InvalidMods)
             {
-                if (!invalidLabel)
-                {
-                    GameObject modViewLabel = Instantiate(ms.ModLabel);
-                    modViewLabel.GetComponent<Text>().text = "Invalid/Broken Mods:";
-                    modViewLabel.transform.SetParent(modView.transform, false);
-                    invalidLabel = true;
-                }
                 GameObject invMod = Instantiate(ms.ModButton_Invalid);
                 invMod.transform.GetChild(0).GetComponent<Text>().text = s;
                 invMod.transform.SetParent(modView.transform, false);

@@ -61,7 +61,7 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string MSCLoader_Ver = "1.1.6";
+        public static readonly string MSCLoader_Ver = "1.1.7";
 
         /// <summary>
         /// Is this version of ModLoader experimental (this is NOT game experimental branch)
@@ -131,6 +131,26 @@ namespace MSCLoader
                 return true;
             else
                 return false;
+        }
+
+        /// <summary>
+        /// Check if steam release is from experimental branch
+        /// </summary>
+        /// <returns>Experimental detected.</returns>
+        public static bool CheckIfExperimental()
+        {
+            if (!CheckSteam())
+            {
+                UnityEngine.Debug.Log("Cannot check if it is experimental branch or not, because not valid steam installation detected");
+                return false;
+            }
+            bool ret = Steamworks.SteamApps.GetCurrentBetaName(out string Name, 128);
+            if (ret)
+            {
+                if (Name != "default_32bit") //32bit is NOT experimental branch
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>
