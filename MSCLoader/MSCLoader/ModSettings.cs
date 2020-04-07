@@ -185,21 +185,17 @@ namespace MSCLoader
         }
 
         // Reset keybinds
-        public void ResetBinds(Mod mod)
+        public static void ResetBinds(Mod mod)
         {
             if (mod != null)
             {
-                // Delete file
-                string path = Path.Combine(ModLoader.GetModSettingsFolder(mod), "keybinds.json");
-
                 // Revert binds
                 foreach (Keybind bind in Keybind.Get(mod))
                 {
-                    Keybind original = Keybind.DefaultKeybinds.Find(x => x.Mod == mod && x.ID == bind.ID);
+                    Keybind original = Keybind.GetDefault(mod).Find(x => x.ID == bind.ID);
 
                     if (original != null)
                     {
-                        ModConsole.Print(original.Key.ToString() + " -> " + bind.Key.ToString());
                         bind.Key = original.Key;
                         bind.Modifier = original.Modifier;
                     }
@@ -247,6 +243,47 @@ namespace MSCLoader
 
         }
 
+        // Reset settings
+        public static void ResetSettings(Mod mod)
+        {
+            if (mod != null)
+            {
+                // Revert settings
+                foreach (Settings set in Settings.Get(mod))
+                {
+                    Settings original = Settings.GetDefault(mod).Find(x => x.ID == set.ID);
+
+                    if (original != null)
+                    {
+                       // ModConsole.Print(set.Value + " replaced " + original.Value);
+                        set.Value = original.Value;
+                    }
+                }
+
+                // Save settings
+                SaveSettings(mod);
+            }
+        }
+        public static void ResetSpecificSettings(Mod mod, Settings[] sets)
+        {
+            if (mod != null)
+            {
+                // Revert settings
+                foreach (Settings set in sets)
+                {
+                    Settings original = Settings.GetDefault(mod).Find(x => x.ID == set.ID);
+
+                    if (original != null)
+                    {
+                        ModConsole.Print(set.Value + " replaced " + original.Value);
+                        set.Value = original.Value;
+                    }
+                }
+
+                // Save settings
+                SaveSettings(mod);
+            }
+        }
         // Save settings for a single mod to config file.
         public static void SaveSettings(Mod mod)
         {
@@ -256,7 +293,7 @@ namespace MSCLoader
 
             foreach (Settings set in Settings.Get(mod))
             {
-                if (set.type == SettingsType.Button || set.type == SettingsType.Header || set.type == SettingsType.Text)
+                if (set.type == SettingsType.Button || set.type == SettingsType.RButton || set.type == SettingsType.Header || set.type == SettingsType.Text)
                     continue;
 
                 Setting sets = new Setting

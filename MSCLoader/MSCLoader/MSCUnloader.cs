@@ -34,6 +34,7 @@ namespace MSCLoader
                 Keybind.Keybinds = new List<Keybind>();
                 Keybind.DefaultKeybinds = new List<Keybind>();
                 Settings.modSettings = new List<Settings>();
+                Settings.modSettingsDefault = new List<Settings>();
                 PlayMakerGlobals.Instance.Variables.FindFsmBool("SongImported").Value = false; //stupid variable name.
                 ModLoader.unloader = false;
                 ModLoader.rtmm = true;

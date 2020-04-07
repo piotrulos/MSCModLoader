@@ -19,6 +19,7 @@ namespace MSCLoader
         CheckBoxGroup,
         CheckBox,
         Button,
+        RButton,
         Slider,
         TextBox,
         Header,
@@ -35,7 +36,12 @@ namespace MSCLoader
         /// List of settings
         /// </summary>
         public static List<Settings> modSettings = new List<Settings>();
-
+     
+        /// <summary>
+        /// List of default settings values
+        /// </summary>
+        public static List<Settings> modSettingsDefault = new List<Settings>();
+  
         /// <summary>
         /// The ID of the settings (Should only be used once in your mod).
         /// </summary>
@@ -74,14 +80,14 @@ namespace MSCLoader
         /// <summary>
         /// Constructor for Settings
         /// </summary>
-        /// <param name="iD">Unique settings ID for your mod</param>
+        /// <param name="id">Unique settings ID for your mod</param>
         /// <param name="name">Name of the setting</param>
         /// <param name="value">Default Value for this setting</param>
         /// <example><code source="SettingsExamples.cs" region="Constructor1" lang="C#" 
         /// title="Settings constructor" /></example>
-        public Settings(string iD, string name, object value)
+        public Settings(string id, string name, object value)
         {
-            ID = iD;
+            ID = id;
             Name = name;
             Value = value;
             DoAction = null;
@@ -90,14 +96,14 @@ namespace MSCLoader
         /// <summary>
         /// Constructor for Settings
         /// </summary>
-        /// <param name="iD">Unique settings ID for your mod</param>
+        /// <param name="id">Unique settings ID for your mod</param>
         /// <param name="name">Name of the setting</param>
         /// <param name="doAction">Function to execute for this setting</param>
         /// <example><code source="SettingsExamples.cs" region="Constructor2" lang="C#" 
         /// title="Settings constructor" /></example>
-        public Settings(string iD, string name, Action doAction)
+        public Settings(string id, string name, Action doAction)
         {
-            ID = iD;
+            ID = id;
             Name = name;
             Value = "DoAction";
             DoAction = doAction;
@@ -106,26 +112,37 @@ namespace MSCLoader
         /// <summary>
         /// Constructor for Settings
         /// </summary>
-        /// <param name="iD">Unique settings ID for your mod</param>
+        /// <param name="id">Unique settings ID for your mod</param>
         /// <param name="name">Name of the setting</param>
         /// <param name="value">Default Value for this setting</param>
         /// <param name="doAction">Function to execute for this setting</param>
         /// <example><code source="SettingsExamples.cs" region="Constructor3" lang="C#" 
         /// title="Settings constructor" /></example>
-        public Settings(string iD, string name, object value, Action doAction)
+        public Settings(string id, string name, object value, Action doAction)
         {
-            ID = iD;
+            ID = id;
             Name = name;
             Value = value;
             DoAction = doAction;
         }
 
         /// <summary>
+        /// Hides "reset all settings to default" button.
+        /// </summary>
+        public static void HideResetAllButton(Mod mod) => modSettingsDefault.Add(new Settings("MSCL_HideResetAllButton", null, null) { Mod = mod });
+        /// <summary>
         /// Return all settings for mod.
         /// </summary>
         /// <param name="mod">The mod to get the settings for.</param>
         /// <returns>List of Settings for the mod.</returns>
-        public static List<Settings> Get(Mod mod) => modSettings.FindAll(x => x.Mod == mod);
+        public static List<Settings> Get(Mod mod) => modSettings.FindAll(x => x.Mod == mod);      
+    
+        /// <summary> 
+        /// Return all default settings for mod.
+        /// </summary>
+        /// <param name="mod">The mod to get the settings for.</param>
+        /// <returns>List of Settings for the mod.</returns>
+        public static List<Settings> GetDefault(Mod mod) => modSettingsDefault.FindAll(x => x.Mod == mod);
 
         /// <summary>
         /// Add checkbox to settings menu (only <see langword="bool"/> Value accepted)
@@ -138,6 +155,7 @@ namespace MSCLoader
         public static void AddCheckBox(Mod mod, Settings setting)
         {
             setting.Mod = mod;
+            modSettingsDefault.Add(new Settings(setting.ID, setting.Name, setting.Value) { Mod = mod });
 
             if (setting.Value is bool)
             {
@@ -146,7 +164,7 @@ namespace MSCLoader
             }
             else
             {
-                ModConsole.Error("AddCheckBox: non-bool value.");
+                ModConsole.Error($"[<b>{mod.ID}</b>] AddCheckBox: non-bool value.");
             }
         }
 
@@ -161,20 +179,42 @@ namespace MSCLoader
         public static void AddCheckBox(Mod mod, Settings setting, string group)
         {
             setting.Mod = mod;
+            modSettingsDefault.Add(new Settings(setting.ID, setting.Name, setting.Value) { Mod = mod });
             setting.Vals = new object[1];
             
-            if (setting.Value is bool)
-            {
+            if (setting.Value is bool)            {
+                
                 setting.type = SettingsType.CheckBoxGroup;
                 setting.Vals[0] = group;
                 modSettings.Add(setting);
             }
             else
             {
-                ModConsole.Error("AddCheckBox: non-bool value.");
+                ModConsole.Error($"[<b>{mod.ID}</b>] AddCheckBox: non-bool value.");
             }
         }
-
+        /// <summary>
+        /// Add custom reset to default button
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="name">Button name</param>
+        /// <param name="sets">array of settings to reset</param>
+        public static void AddResetButton(Mod mod, string name, Settings[] sets)
+        {
+            if (sets != null)
+            {
+                Settings setting = new Settings("MSCL_ResetSpecificMod", name, null);
+                setting.Mod = mod;
+                setting.Vals = new object[5];
+                setting.type = SettingsType.RButton;
+                setting.Vals[0] = sets;
+                modSettings.Add(setting);
+            }
+            else
+            {
+                ModConsole.Error($"[<b>{mod.ID}</b>] AddResetButton: provide at least one setting to reset.");
+            }
+        }
         /// <summary>
         /// Add button that can execute function.
         /// </summary>
@@ -227,10 +267,9 @@ namespace MSCLoader
             }
             else
             {
-                ModConsole.Error("AddButton: Action cannot be null.");
+                ModConsole.Error($"[<b>{mod.ID}</b>] AddButton: Action cannot be null.");
             }
         }
-
         /// <summary>
         /// Add Slider, slider can execute action when its value is changed.
         /// </summary>
@@ -240,10 +279,23 @@ namespace MSCLoader
         /// <param name="minValue">Min value of slider</param>
         /// <example><code source="SettingsExamples.cs" region="AddSlider" lang="C#" 
         /// title="Add Slider" /></example>
-        public static void AddSlider(Mod mod, Settings setting, int minValue, int maxValue)
+        public static void AddSlider(Mod mod, Settings setting, int minValue, int maxValue) => AddSlider(mod, setting, minValue, maxValue, null);
+      
+        /// <summary>
+        /// Add Slider, slider can execute action when its value is changed.
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="setting">Your settings variable</param>
+        /// <param name="maxValue">Max value of slider</param>
+        /// <param name="minValue">Min value of slider</param>
+        /// <param name="textValues">Array of text values (array index equals to slider value)</param>
+        /// <example><code source="SettingsExamples.cs" region="AddSlider" lang="C#" 
+        /// title="Add Slider" /></example>
+        public static void AddSlider(Mod mod, Settings setting, int minValue, int maxValue, string[] textValues)
         {
             setting.Mod = mod;
-            setting.Vals = new object[3];
+            modSettingsDefault.Add(new Settings(setting.ID, setting.Name, setting.Value) { Mod = mod });
+            setting.Vals = new object[4];
 
             //sometimes is double or Single (this should fix that, exclude types)
             if (setting.Value.GetType() != typeof(float) || setting.Value.GetType() != typeof(string))
@@ -252,11 +304,24 @@ namespace MSCLoader
                 setting.Vals[0] = minValue;
                 setting.Vals[1] = maxValue;
                 setting.Vals[2] = true;
+                if (textValues == null)
+                {
+                    setting.Vals[3] = null;
+                }
+                else
+                {
+                    setting.Vals[3] = textValues;
+                    if (textValues.Length <= (maxValue - minValue))
+                    {
+                        ModConsole.Error($"[<b>{mod.ID}</b>] AddSlider: array of textValues is smaller than slider range (min to max).");
+                    }
+                }
+
                 modSettings.Add(setting);
             }
             else
             {
-                ModConsole.Error("AddSlider: only int allowed here");
+                ModConsole.Error($"[<b>{mod.ID}</b>] AddSlider: only int allowed here");
             }
         }
 
@@ -272,7 +337,8 @@ namespace MSCLoader
         public static void AddSlider(Mod mod, Settings setting, float minValue, float maxValue)
         {
             setting.Mod = mod;
-            setting.Vals = new object[3];
+            modSettingsDefault.Add(new Settings(setting.ID, setting.Name, setting.Value) { Mod = mod });
+            setting.Vals = new object[4];
 
             if (setting.Value is float || setting.Value is double)
             {
@@ -280,11 +346,12 @@ namespace MSCLoader
                 setting.Vals[0] = minValue;
                 setting.Vals[1] = maxValue;
                 setting.Vals[2] = false;
+                setting.Vals[3] = null;
                 modSettings.Add(setting);
             }
             else
             {
-                ModConsole.Error("AddSlider: only float allowed here");
+                ModConsole.Error($"[<b>{mod.ID}</b>] AddSlider: only float allowed here");
             }
         }
 
@@ -306,6 +373,8 @@ namespace MSCLoader
         public static void AddTextBox(Mod mod, Settings setting, string placeholderText, UnityEngine.Color titleTextColor)
         {
             setting.Mod = mod;
+            modSettingsDefault.Add(new Settings(setting.ID, setting.Name, setting.Value) { Mod = mod });
+
             setting.Vals = new object[2];
             setting.type = SettingsType.TextBox;
             setting.Vals[0] = placeholderText;
