@@ -16,7 +16,7 @@ namespace MSCPatcher
         {
             if (Form1.mscPath != "(unknown)")
             {
-                mainDataPath = Path.Combine(Form1.mscPath, @"mysummercar_Data\mainData");
+                mainDataPath = Path.Combine(Form1.mscPath, @"mysummercar_Data/mainData");
                 offset = FindBytes(mainDataPath, data);
                 try
                 {
