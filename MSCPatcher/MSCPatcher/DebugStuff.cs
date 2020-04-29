@@ -14,7 +14,7 @@ namespace MSCPatcher
         {
             if (Form1.mscPath != "(unknown)")
             {
-                monoPath = Path.Combine(Form1.mscPath, @"mysummercar_Data\Mono\mono.dll");
+                monoPath = Path.Combine(Form1.mscPath, @"mysummercar_Data/Mono/mono.dll");
                 switch(Form1.MD5HashFile(monoPath))
                 {
                     case MD5FileHashes.mono32normal:

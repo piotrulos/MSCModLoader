@@ -1,4 +1,5 @@
-﻿using Ionic.Zip;
+﻿//using Ionic.Zip;
+using System.IO.Compression;
 using System;
 using System.IO;
 using System.Windows.Forms;
@@ -17,25 +18,36 @@ namespace MSCPatcher
         }
         public static void DeleteReferences(string mscPath)
         {
-            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll"));
-            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll.mdb"));
-            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.pdb"));
-            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\uAudio.dll"));
-            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\Ionic.Zip.dll"));
+            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data/Managed/MSCLoader.dll"));
+            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data/Managed/MSCLoader.dll.mdb"));
+            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data/Managed/MSCLoader.pdb"));
+            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data/Managed/uAudio.dll"));
+            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data/Managed/Ionic.Zip.dll"));
             try
             {
-                if (!File.Exists(Path.Combine("References.zip", "")))
+                //if (!File.Exists(Path.Combine("References.zip", "")))
+                //    throw new Exception("References.zip not found");
+                //string zip = Path.Combine("References.zip", "");
+                //if (!ZipFile.IsZipFile(zip))
+                //{
+                //    throw new Exception("Failed to read zip file");
+                //}
+                //ZipFile zip1 = ZipFile.Read(zip);
+                //foreach (ZipEntry zz in zip1)
+                //{
+                //    Log.Write("Removing file....." + zz.FileName);
+                //    DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data/Managed/" + zz.FileName));
+                //}
+                if (!File.Exists("References.zip"))
+                {
                     throw new Exception("References.zip not found");
-                string zip = Path.Combine("References.zip", "");
-                if (!ZipFile.IsZipFile(zip))
-                {
-                    throw new Exception("Failed to read zip file");
                 }
-                ZipFile zip1 = ZipFile.Read(zip);
-                foreach (ZipEntry zz in zip1)
+                using (var zip = ZipFile.OpenRead("References.zip"))
                 {
-                    Log.Write("Removing file....." + zz.FileName);
-                    DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\" + zz.FileName));
+                    foreach(ZipArchiveEntry e in zip.Entries)
+                    {
+                        DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data/Managed/" + e.Name));
+                    }
                 }
             }
             catch (Exception ex)
@@ -47,53 +59,46 @@ namespace MSCPatcher
         }
         public static void CopyReferences(string mscPath)
         {
-            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll"));
-            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll.mdb"));
-            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.pdb"));
-            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\uAudio.dll"));
-            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data\Managed\Ionic.Zip.dll"));
+            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data/Managed/MSCLoader.dll"));
+            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data/Managed/MSCLoader.dll.mdb"));
+            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data/Managed/MSCLoader.pdb"));
+            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data/Managed/uAudio.dll"));
+            DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data/Managed/Ionic.Zip.dll"));
 
             if (File.Exists(Path.GetFullPath(Path.Combine("MSCLoader.dll", ""))))
             {
-                File.Copy(Path.GetFullPath(Path.Combine("MSCLoader.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll"));
+                File.Copy(Path.GetFullPath(Path.Combine("MSCLoader.dll", "")), Path.Combine(mscPath, @"mysummercar_Data/Managed/MSCLoader.dll"));
                 Log.Write("Copying new file.....MSCLoader.dll");
             }
 
             if (File.Exists(Path.GetFullPath(Path.Combine("MSCLoader.dll.mdb", ""))))
             {
-                File.Copy(Path.GetFullPath(Path.Combine("MSCLoader.dll.mdb", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll.mdb"));
+                File.Copy(Path.GetFullPath(Path.Combine("MSCLoader.dll.mdb", "")), Path.Combine(mscPath, @"mysummercar_Data/Managed/MSCLoader.dll.mdb"));
                 Log.Write("Copying new file.....MSCLoader.dll.mdb");
             }
 
             if (File.Exists(Path.GetFullPath(Path.Combine("MSCLoader.pdb", ""))))
             {
-                File.Copy(Path.GetFullPath(Path.Combine("MSCLoader.pdb", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.pdb"));
+                File.Copy(Path.GetFullPath(Path.Combine("MSCLoader.pdb", "")), Path.Combine(mscPath, @"mysummercar_Data/Managed/MSCLoader.pdb"));
                 Log.Write("Copying new file.....MSCLoader.pdb");
             }
             if (File.Exists(Path.GetFullPath(Path.Combine("Ionic.Zip.dll", ""))))
             {
-                File.Copy(Path.GetFullPath(Path.Combine("Ionic.Zip.dll", "")), Path.Combine(mscPath, @"mysummercar_Data\Managed\Ionic.Zip.dll"));
+                File.Copy(Path.GetFullPath(Path.Combine("Ionic.Zip.dll", "")), Path.Combine(mscPath, @"mysummercar_Data/Managed/Ionic.Zip.dll"));
                 Log.Write("Copying new file.....Ionic.Zip.dll");
             }
             try
             {
-                if (!File.Exists(Path.Combine("References.zip", "")))
+                if (!File.Exists("References.zip"))
                     throw new Exception("References.zip not found");
                 string zip = Path.Combine("References.zip","");
-                if (!ZipFile.IsZipFile(zip))
-                {
-                    throw new Exception("Failed read zip file");
-                }
-                ZipFile zip1 = ZipFile.Read(zip);
-                foreach (ZipEntry zz in zip1)
-                {
-                    Log.Write("Copying new file....." + zz.FileName);
-                    zz.Extract(Path.Combine(mscPath, @"mysummercar_Data\Managed\"), ExtractExistingFileAction.OverwriteSilently);
-                }
+
+                ZipFile.ExtractToDirectory("References.zip", Path.Combine(mscPath, @"mysummercar_Data/Managed/"));
+
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("Error while unpacking references: {0}", ex.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(string.Format("Error while unpacking references: {0}", ex), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Log.Write(string.Format("Error while unpacking references: {0}", ex.Message));
             }
         }
@@ -102,30 +107,30 @@ namespace MSCPatcher
         {
             Log.Write("Copying Core Assets.....MSCLoader_Core");
 
-            if (!Directory.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Core")))
-                Directory.CreateDirectory(Path.Combine(modPath, @"Assets\MSCLoader_Core"));
+            if (!Directory.Exists(Path.Combine(modPath, @"Assets/MSCLoader_Core")))
+                Directory.CreateDirectory(Path.Combine(modPath, @"Assets/MSCLoader_Core"));
             else
-                File.Delete(Path.Combine(modPath, @"Assets\MSCLoader_Core\core.unity3d"));
+                File.Delete(Path.Combine(modPath, @"Assets/MSCLoader_Core/core.unity3d"));
 
-            File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Core", "core.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Core\core.unity3d"));
+            File.Copy(Path.GetFullPath(Path.Combine(@"Assets/MSCLoader_Core", "core.unity3d")), Path.Combine(modPath, @"Assets/MSCLoader_Core/core.unity3d"));
 
             Log.Write("Copying Core Assets.....MSCLoader_Settings");
 
-            if (!Directory.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Settings")))
-                Directory.CreateDirectory(Path.Combine(modPath, @"Assets\MSCLoader_Settings"));
+            if (!Directory.Exists(Path.Combine(modPath, @"Assets/MSCLoader_Settings")))
+                Directory.CreateDirectory(Path.Combine(modPath, @"Assets/MSCLoader_Settings"));
             else
-                File.Delete(Path.Combine(modPath, @"Assets\MSCLoader_Settings\settingsui.unity3d"));
+                File.Delete(Path.Combine(modPath, @"Assets/MSCLoader_Settings/settingsui.unity3d"));
 
-            File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Settings", "settingsui.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Settings\settingsui.unity3d"));
+            File.Copy(Path.GetFullPath(Path.Combine(@"Assets/MSCLoader_Settings", "settingsui.unity3d")), Path.Combine(modPath, @"Assets/MSCLoader_Settings/settingsui.unity3d"));
 
             Log.Write("Copying Core Assets.....MSCLoader_Console");
 
-            if (!Directory.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Console")))
-                Directory.CreateDirectory(Path.Combine(modPath, @"Assets\MSCLoader_Console"));
+            if (!Directory.Exists(Path.Combine(modPath, @"Assets/MSCLoader_Console")))
+                Directory.CreateDirectory(Path.Combine(modPath, @"Assets/MSCLoader_Console"));
             else
-                File.Delete(Path.Combine(modPath, @"Assets\MSCLoader_Console\console.unity3d"));
+                File.Delete(Path.Combine(modPath, @"Assets/MSCLoader_Console/console.unity3d"));
 
-            File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Console", "console.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Console\console.unity3d"));
+            File.Copy(Path.GetFullPath(Path.Combine(@"Assets/MSCLoader_Console", "console.unity3d")), Path.Combine(modPath, @"Assets/MSCLoader_Console/console.unity3d"));
 
             Log.Write("Copying Core Assets Completed!", false, true);
         }
