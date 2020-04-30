@@ -1,4 +1,3 @@
-﻿//using Ionic.Zip;
 using System.IO.Compression;
 using System;
 using System.IO;
@@ -25,19 +24,6 @@ namespace MSCPatcher
             DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data/Managed/Ionic.Zip.dll"));
             try
             {
-                //if (!File.Exists(Path.Combine("References.zip", "")))
-                //    throw new Exception("References.zip not found");
-                //string zip = Path.Combine("References.zip", "");
-                //if (!ZipFile.IsZipFile(zip))
-                //{
-                //    throw new Exception("Failed to read zip file");
-                //}
-                //ZipFile zip1 = ZipFile.Read(zip);
-                //foreach (ZipEntry zz in zip1)
-                //{
-                //    Log.Write("Removing file....." + zz.FileName);
-                //    DeleteIfExists(Path.Combine(mscPath, @"mysummercar_Data/Managed/" + zz.FileName));
-                //}
                 if (!File.Exists("References.zip"))
                 {
                     throw new Exception("References.zip not found");
