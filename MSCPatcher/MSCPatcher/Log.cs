@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows.Forms;
 
 namespace MSCPatcher
@@ -17,6 +18,8 @@ namespace MSCPatcher
                 logBox.AppendText(string.Format("{0}{1}================={1}", log, Environment.NewLine));
             else
                 logBox.AppendText(string.Format("{0}{1}", log, Environment.NewLine));
+
+            File.WriteAllText(Path.Combine("Log.txt", ""), logBox.Text);
         }
     }
 }

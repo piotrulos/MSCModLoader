@@ -57,6 +57,9 @@ namespace MSCPatcher
                 catch (Exception e)
                 {
                     MessageBox.Show(string.Format("Failed to read data from file.{1}{1}Error details:{1}{0}", e.Message, Environment.NewLine), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Log.Write("Error", true, true);
+                    Log.Write(e.Message);
+                    Log.Write(e.ToString());
                 }
             }
         }
@@ -92,6 +95,9 @@ namespace MSCPatcher
                 {
                     //thrown when file is in use in other app (like game is running)
                     MessageBox.Show(string.Format("Failed to write data to file.{1}{1}Error details:{1}{0}", e.Message, Environment.NewLine), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Log.Write("Error", true, true);
+                    Log.Write(e.Message);
+                    Log.Write(e.ToString());
                 }
             }
         }

@@ -25,7 +25,8 @@ namespace MSCPatcher
         private string modPath = "";
 
         private bool is64bin = false;
-        private bool isgameUpdated = false; //game updated, remove backup and patch new Assembly-CSharp.dll
+        private bool newPatchFound = false; //nonproxy patch found, recover and upgrade
+        private bool isgameUpdated = false; //game updated, remove backup and patch new 
         private bool oldPatchFound = false; //0.1 patch found, recover and patch Assembly-CSharp.original.dll and cleanup unused files
         private bool oldFilesFound = false; //0.1 files found, but no patch, cleanup files and patch new Assembly-CSharp.dll
         private bool mscloaderUpdate = false; //new MSCLoader.dll found, but no new patch needed.
@@ -61,7 +62,9 @@ namespace MSCPatcher
                     }
                     catch (Exception e)
                     {
+                        Log.Write("Error", true, true);
                         Log.Write(e.Message);
+                        Log.Write(e.ToString());
                     }
                 }
                 else
@@ -142,6 +145,9 @@ namespace MSCPatcher
                         catch (Exception ex)
                         {
                             MessageBox.Show(string.Format("Failed to open update info!{1}{1}Error details:{1}{0}", ex.Message, Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            Log.Write("Error", true, true);
+                            Log.Write(ex.Message);
+                            Log.Write(ex.ToString());
                         }
                     }
                     statusBarLabel.Text = string.Format("New version available: v{0}", version.Trim());
@@ -154,8 +160,10 @@ namespace MSCPatcher
             }
             catch (Exception e)
             {
+                Log.Write("Error", true, true);
                 Log.Write(string.Format("Check for new version failed with error: {0}", e.Message));
                 statusBarLabel.Text = "MSCPatcher Ready!";
+                Log.Write(e.ToString());
             }
 
             if (!Directory.Exists("Debug"))
@@ -248,6 +256,22 @@ namespace MSCPatcher
 
                 StartPatching();
             }
+            else if (newPatchFound)
+            {
+                if (File.Exists(string.Format("{0}.backup", AssemblyFullPath)))
+                {
+                    Patcher.DeleteIfExists(AssemblyFullPath);
+                    File.Move(string.Format("{0}.backup", AssemblyFullPath), AssemblyFullPath);
+                    Log.Write("Recovering.....Assembly-CSharp.dll.backup");
+                }
+                else
+                {
+                    Log.Write("Error! Backup file not found");
+                    MessageBox.Show(string.Format("Backup file not found in:{1}{0}{1}Can't continue{1}{1}Please check integrity files in steam, to recover original file.", String.Format("{0}.backup", AssemblyFullPath), Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                StartPatching();
+
+            }
             else if (isgameUpdated)
             {
                 //Remove old backup and patch new game file.
@@ -296,10 +320,10 @@ namespace MSCPatcher
             {
                 Log.Write("MSCLoader.dll update!", true, true);
 
-                Patcher.CopyReferences(mscPath);
+                Patcher.ProcessReferences(mscPath, false);
                 Patcher.CopyCoreAssets(modPath);
 
-                Log.Write("MSCLoader.dll update successful!");
+                Log.Write("MSCLoader update successful!");
                 Log.Write("");
                 MessageBox.Show("Update successfull!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 statusBarLabel.Text = "Update successfull!";
@@ -313,28 +337,77 @@ namespace MSCPatcher
         }
         public void StartPatching()
         {
-            Log.Write("Start patching game files!", true, true);
+            Log.Write("Start installing MSCLoader!", true, true);
 
             try
             {
-                Patcher.CopyReferences(mscPath);
-                File.Copy(AssemblyFullPath, string.Format("{0}.backup", AssemblyFullPath));
-                Log.Write("Creating.....Assembly-CSharp.dll.backup");
-                Log.Write(string.Format("Patching.....{0}", Path.GetFileName(AssemblyFullPath)));
-                PatchThis(Path.Combine(mscPath, @"mysummercar_Data\Managed\"), "Assembly-CSharp.dll", "PlayMakerArrayListProxy", "Awake", "MSCLoader.dll", "MSCLoader.ModLoader", InitMethod);
-                Log.Write("Finished patching!");
+                Patcher.ProcessReferences(mscPath, false);
+                if (is64bin)
+                {
+                    Patcher.DeleteIfExists(Path.Combine(mscPath, @"winhttp.dll"));
+                    if (File.Exists(Path.GetFullPath(Path.Combine("w64.dll", ""))))
+                    {
+                        File.Copy(Path.GetFullPath(Path.Combine("w64.dll", "")), Path.Combine(mscPath, @"winhttp.dll"));
+                        Log.Write("Copying new file.....winhttp.dll");
+                    }
+                    else
+                    {
+                        throw new FileNotFoundException("File \"w64.dll\" not found, please redownload modlaoder and/or unpack all files", "w64.dll");
+                    }
+                }
+                else
+                {
+                    Patcher.DeleteIfExists(Path.Combine(mscPath, @"winhttp.dll"));
+                    if (File.Exists(Path.GetFullPath(Path.Combine("w32.dll", ""))))
+                    {
+                        File.Copy(Path.GetFullPath(Path.Combine("w32.dll", "")), Path.Combine(mscPath, @"winhttp.dll"));
+                        Log.Write("Copying new file.....winhttp.dll");
+                    }
+                    else
+                    {
+                        throw new FileNotFoundException("File \"w32.dll\" not found, please redownload modlaoder and/or unpack all files", "w32.dll");
+                    }
+                }
+                Patcher.CopyCoreAssets(modPath);               
+                Log.Write("Creating Config file!", true, true);
+                Patcher.DeleteIfExists(Path.Combine(mscPath, @"doorstop_config.ini"));
+                Log.Write("Generating config file.....doorstop_config.ini");
+                using (TextWriter tw = File.CreateText(Path.Combine(mscPath, @"doorstop_config.ini")))
+                {
+                    tw.WriteLine(@"[UnityDoorstop]");
+                    tw.WriteLine(@"enabled=true");
+                    tw.WriteLine(@"targetAssembly=mysummercar_Data\Managed\MSCLoader.dll");
+                    tw.WriteLine(@"redirectOutputLog=false");
+                    tw.WriteLine(@"ignoreDisableSwitch=false");
+                    switch (InitMethod)
+                    {
+                        case "Init_MD":
+                            tw.WriteLine(@"MD");
+                            break;
+                        case "Init_GF":
+                            tw.WriteLine(@"GF");
+                            break;
+                        case "Init_AD":
+                            tw.WriteLine(@"AD");
+                            break;
+                        default:
+                            tw.WriteLine(@"GF");
+                            break;
+                    }
+                    tw.Flush();
+                }
 
-                Patcher.CopyCoreAssets(modPath);
-
-                Log.Write("Patching successfull!");
+                Log.Write("Install successfull!");
                 Log.Write("");
-                MessageBox.Show("Patching successfull!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                statusBarLabel.Text = "Patching successfull!";
+                MessageBox.Show("Install successfull!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                statusBarLabel.Text = "Install successfull!";
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("Error while patching: {0}",ex.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Log.Write(string.Format("Error while patching: {0}", ex.Message));
+                MessageBox.Show(string.Format("Error while installing: {0}",ex.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Log.Write("Error", true, true);
+                Log.Write(ex.Message);
+                Log.Write(ex.ToString());
             }
             CheckPatchStatus();
         }
@@ -360,6 +433,9 @@ namespace MSCPatcher
                     catch (Exception ex)
                     {
                         MessageBox.Show(string.Format("Error:{1}{0}{1}{1}Please restart patcher!", ex.Message, Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Log.Write("Error", true, true);
+                        Log.Write(ex.Message);
+                        Log.Write(ex.ToString());
                     }
                 }
                 else if (GFradio.Checked)
@@ -378,6 +454,9 @@ namespace MSCPatcher
                     catch (Exception ex)
                     {
                         MessageBox.Show(string.Format("Error:{1}{0}{1}{1}Please restart patcher!", ex.Message, Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Log.Write("Error", true, true);
+                        Log.Write(ex.Message);
+                        Log.Write(ex.ToString());
                     }
                 }
                 else if (ADradio.Checked)
@@ -396,6 +475,9 @@ namespace MSCPatcher
                     catch (Exception ex)
                     {
                         MessageBox.Show(string.Format("Error:{1}{0}{1}{1}Please restart patcher!", ex.Message, Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Log.Write("Error", true, true);
+                        Log.Write(ex.Message);
+                        Log.Write(ex.ToString());
                     }
                 }
                 //Apply changes to mainData 
@@ -447,6 +529,7 @@ namespace MSCPatcher
             button3.Enabled = false;
             bool newpatchfound = false;
             bool oldpatchfound = false;
+            bool proxypatchfound = false;
             try
             {
                 bool isInjected = false;
@@ -465,7 +548,9 @@ namespace MSCPatcher
             catch (Exception ex)
             {
                 MessageBox.Show(string.Format("Patch checking error: {0}",ex.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Log.Write(string.Format("Patch checking error: {0}", ex.Message));
+                Log.Write("Error", true, true);
+                Log.Write(ex.Message);
+                Log.Write(ex.ToString());
             }
             if (!newpatchfound)
             {
@@ -480,23 +565,29 @@ namespace MSCPatcher
                 catch (Exception ex)
                 {
                     MessageBox.Show(string.Format("Patch checking error: {0}", ex.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Log.Write(string.Format("Patch checking error: {0}", ex.Message));
+                    Log.Write("Error", true, true);
+                    Log.Write(ex.Message);
+                    Log.Write(ex.ToString());
                 }
             }
             if (!newpatchfound && !oldpatchfound)
             {
-                if (File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\Assembly-CSharp.original.dll")))
+                if(File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll")) && File.Exists(Path.Combine(mscPath, @"winhttp.dll")) && File.Exists(Path.Combine(mscPath, @"doorstop_config.ini")))
                 {
-                    statusLabelText.Text = "Not patched, but MSCLoader 0.1 found (probably there was game update)";
-                    Log.Write("Patch not found, but MSCLoader 0.1 files found (probably there was game update)");
+                    proxypatchfound = true;
+                }
+                else if (File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\Assembly-CSharp.original.dll")))
+                {
+                    statusLabelText.Text = "Not installed, but MSCLoader 0.1 found (upgrade required)";
+                    Log.Write("Proxy patch not found, but MSCLoader 0.1 files found (upgrade required)");
                     button1.Text = "Install MSCLoader";
                     button1.Enabled = true;
                     oldFilesFound = true;
                 }
                 else if (File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll")) && File.Exists(Path.Combine(mscPath, @"mysummercar_Data\Managed\Assembly-CSharp.dll.backup")))
                 {
-                    statusLabelText.Text = "Not patched, but MSCLoader found (probably there was game update)";
-                    Log.Write("Patch not found, but MSCLoader files found (looks like there was game update)");
+                    statusLabelText.Text = "Not installed, but MSCLoader files found (upgrade required)";
+                    Log.Write("Proxy patch not found, but MSCLoader files found (upgrade required)");
                     button1.Text = "Install MSCLoader";
                     button1.Enabled = true;
                     isgameUpdated = true;
@@ -504,7 +595,7 @@ namespace MSCPatcher
                 else
                 {
                     statusLabelText.Text = "Not installed";
-                    Log.Write("Patch not found, ready to install patch");
+                    Log.Write("Proxy patch not found, ready to install MSCLoader");
                     button1.Text = "Install MSCLoader";
                     button1.Enabled = true;
                 }
@@ -512,10 +603,28 @@ namespace MSCPatcher
             }
             else if (newpatchfound)
             {
+                statusLabelText.Text = "Patch upgrade available!";
+                Log.Write("Old patch found, ready to upgrade");
+                button1.Text = "Upgrade MSCLoader";
+                button1.Enabled = true;
+                statusLabelText.ForeColor = Color.Orange;
+                newPatchFound = true;
+            }
+            else if (oldpatchfound)
+            {
+                statusLabelText.Text = "0.1 patch found, upgrade available";
+                Log.Write("0.1 patch found, ready to upgrade");
+                button1.Text = "Upgrade MSCLoader";
+                button1.Enabled = true;
+                statusLabelText.ForeColor = Color.Orange;
+                oldPatchFound = true;
+            }
+            if (proxypatchfound)
+            {
                 if (MD5HashFile(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll")) == MD5HashFile(Path.GetFullPath(Path.Combine("MSCLoader.dll", ""))))
                 {
                     statusLabelText.Text = "Installed, MSCLoader.dll is up to date.";
-                    Log.Write("Newest patch found, no need to patch again");
+                    Log.Write("MSCLoader is up to date.");
                     button1.Enabled = false;
                     button3.Enabled = true;
                     statusLabelText.ForeColor = Color.Green;
@@ -523,23 +632,14 @@ namespace MSCPatcher
                 }
                 else
                 {
-                    statusLabelText.Text = "Installed, but MSCLoader.dll mismatch, Update?";
-                    Log.Write("Newest patch found, but MSCLoader.dll version mismatch, update MSCLoader?");
+                    statusLabelText.Text = "Installed, but MSCLoader update available, Update?";
+                    Log.Write("MSCLoader.dll version mismatch, update available.");
                     button1.Enabled = true;
                     button1.Text = "Update MSCLoader";
                     button3.Enabled = true;
                     statusLabelText.ForeColor = Color.Blue;
                     mscloaderUpdate = true;
                 }
-            }
-            else if (oldpatchfound)
-            {
-                statusLabelText.Text = "0.1 patch found, upgrade available";
-                Log.Write("Old patch found, ready to upgrade");
-                button1.Text = "Upgrade MSCLoader";
-                button1.Enabled = true;
-                statusLabelText.ForeColor = Color.Orange;
-                oldPatchFound = true;
             }
         }
         public static string MD5HashFile(string fn)
@@ -555,33 +655,24 @@ namespace MSCPatcher
                 {
                     button3.Enabled = false;
                     Log.Write("Removing MSCLoader from game", true, true);
-
-                    if (File.Exists(string.Format("{0}.backup", AssemblyFullPath)))
-                    {
-                        Patcher.DeleteIfExists(AssemblyFullPath);
-                        File.Move(string.Format("{0}.backup", AssemblyFullPath), AssemblyFullPath);
-                        Log.Write("Recovering.....Assembly-CSharp.dll.backup");
-
-                        Patcher.DeleteReferences(mscPath);
-
-                        Log.Write("", false, true);
-                        Log.Write("MSCLoader removed successfully!");
-                        Log.Write("");
-                        MessageBox.Show("MSCLoader removed successfully!", "Success!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        statusBarLabel.Text = "MSCLoader removed successfully!";
-                    }
-                    else
-                    {
-                        Log.Write("Error! Backup file not found");
-                        MessageBox.Show(string.Format("Backup file not found in:{1}{0}{1}Can't continue{1}{1}Please check integrity files in steam, to recover original file.", String.Format("{0}.backup", AssemblyFullPath), Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                    }
+                    Patcher.DeleteIfExists(string.Format("{0}.backup", AssemblyFullPath));
+                    Patcher.DeleteIfExists(Path.Combine(mscPath, "winhttp.dll"));
+                    Patcher.DeleteIfExists(Path.Combine(mscPath, "doorstop_config.ini"));
+                    Patcher.ProcessReferences(mscPath, true);
+                    Log.Write("");
+                    Log.Write("MSCLoader removed successfully!");
+                    Log.Write("");
+                    MessageBox.Show("MSCLoader removed successfully!", "Success!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    statusBarLabel.Text = "MSCLoader removed successfully!";
                     CheckPatchStatus();
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     statusBarLabel.Text = "Error: " + ex.Message;
+                    Log.Write("Error", true, true);
+                    Log.Write(ex.Message);
+                    Log.Write(ex.ToString());
                 }
             }
         }
@@ -596,6 +687,9 @@ namespace MSCPatcher
             catch (Exception ex)
             {
                 MessageBox.Show(string.Format("Failed to run MSC, is steam installed correctly?{1}{1}Error details:{1}{0}", ex.Message, Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Log.Write("Error", true, true);
+                Log.Write(ex.Message);
+                Log.Write(ex.ToString());
             }
         }
         private void button4_Click(object sender, EventArgs e)
@@ -641,6 +735,9 @@ namespace MSCPatcher
             catch (Exception ex)
             {
                 MessageBox.Show(string.Format("Failed to open url!{1}{1}Error details:{1}{0}", ex.Message, Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Log.Write("Error", true, true);
+                Log.Write(ex.Message);
+                Log.Write(ex.ToString());
             }
         }
 
