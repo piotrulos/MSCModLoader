@@ -42,6 +42,12 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Assembly-CSharp.dll</HintPath>
+    </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
       <Private>False</Private>
@@ -102,6 +108,7 @@
     <Compile Include="ModsManifest.cs" />
     <Compile Include="ModUI.cs" />
     <Compile Include="ModUIDrag.cs" />
+    <Compile Include="MSCLoader.cs" />
     <Compile Include="MSCUnloader.cs" />
     <Compile Include="AudioLibrary\NAudio.Vorbis\VorbisWaveReader.cs" />
     <Compile Include="OBJLoader.cs" />
@@ -126,6 +133,7 @@ call "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\debug.bat
 </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>call "$(SolutionDir)wsl.cmd"</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
 </Project>

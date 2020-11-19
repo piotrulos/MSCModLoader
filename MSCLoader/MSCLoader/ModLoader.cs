@@ -96,6 +96,7 @@ namespace MSCLoader
         private static string SettingsFolder = Path.Combine(ConfigFolder, "Mod Settings");
         internal static string ManifestsFolder = Path.Combine(ConfigFolder, "Mod Metadata");
         private static string AssetsFolder = Path.Combine(ModsFolder, "Assets");
+        private static string cfg = "GF";
 
         private GameObject mainMenuInfo;
         private GameObject loading;
@@ -217,7 +218,34 @@ namespace MSCLoader
         }
 
         internal static string GetMetadataFolder(string fn) => Path.Combine(ManifestsFolder, fn);
-
+        
+        /// <summary>
+        /// Main init
+        /// </summary>
+        public static void Init_NP()
+        {
+            using (var sr = new StreamReader("doorstop_config.ini"))
+            {
+                for (int i = 1; i < 6; i++)
+                    sr.ReadLine();
+               cfg =  sr.ReadLine();
+            }
+            switch (cfg)
+            {
+                case "GF":
+                    Init_GF();
+                    break;
+                case "MD":
+                    Init_MD();
+                    break;
+                case "AD":
+                    Init_AD();
+                    break;
+                default:
+                    Init_GF();
+                    break;
+            }
+        }
         /// <summary>
         /// Initialize ModLoader with Mods folder in My Documents (like it was in 0.1)
         /// </summary>

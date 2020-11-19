@@ -35,8 +35,8 @@ namespace MSCPatcher
 
         public static void EnableDebugging(bool is64, string modpath)
         {
-            Patcher.DeleteIfExists(String.Format("{0}.normal", monoPath));
-            File.Move(monoPath, String.Format("{0}.normal", monoPath));
+            Patcher.DeleteIfExists(string.Format("{0}.normal", monoPath));
+            File.Move(monoPath, string.Format("{0}.normal", monoPath));
             if(is64)
                 File.Copy(Path.GetFullPath(Path.Combine(@"Debug\64", "mono.dll")), monoPath, true);
             else
@@ -46,10 +46,20 @@ namespace MSCPatcher
             Log.Write("Copying debug file.....pdb2mdb.exe");
             File.Copy(Path.GetFullPath(Path.Combine("Debug", "debug.bat")), Path.Combine(modpath,"debug.bat"), true);
             Log.Write("Copying debug file.....debug.bat");
-            ProcessStartInfo startInfo = new ProcessStartInfo(Path.Combine("Debug", "en_debugger.bat"));
-            startInfo.Verb = "runas";
-            Process en_debug = Process.Start(startInfo);
-            en_debug.WaitForExit();
+            try
+            {
+                ProcessStartInfo startInfo = new ProcessStartInfo(Path.Combine("Debug", "en_debugger.bat"));
+                startInfo.Verb = "runas";
+                Process en_debug = Process.Start(startInfo);
+                en_debug.WaitForExit();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(string.Format("Error: {0}", ex.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Log.Write("Error", true, true);
+                Log.Write(ex.Message);
+                Log.Write(ex.ToString());
+            }
             if (Environment.GetEnvironmentVariable("DNSPY_UNITY_DBG", EnvironmentVariableTarget.Machine) != null)
                 MessageBox.Show("Debugging Enabled successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             else
@@ -58,7 +68,7 @@ namespace MSCPatcher
         public static void DisableDebugging()
         {
             Patcher.DeleteIfExists(monoPath);
-            File.Move(String.Format("{0}.normal", monoPath), monoPath);
+            File.Move(string.Format("{0}.normal", monoPath), monoPath);
             Log.Write("Recovering backup.....mono.dll");
             MessageBox.Show("Debugging Disabled successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
