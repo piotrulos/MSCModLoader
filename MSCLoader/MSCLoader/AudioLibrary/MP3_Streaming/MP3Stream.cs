@@ -31,7 +31,7 @@ namespace AudioLibrary.MP3_Streaming
         public void Dispose()
         {
             StopPlayback();
-            Debug.Log("Disposed");
+            System.Console.WriteLine("[MP3Stream] Disposed");
         }
         private void StreamMp3(object state)
         {
@@ -53,7 +53,7 @@ namespace AudioLibrary.MP3_Streaming
             {
                 if (e.Status != WebExceptionStatus.RequestCanceled)
                 {
-                    Debug.Log(e.Message);
+                    System.Console.WriteLine(e.Message);
                 }
                 return;
             }
@@ -78,7 +78,7 @@ namespace AudioLibrary.MP3_Streaming
                     {
                         if (IsBufferNearlyFull)
                         {
-                            Debug.Log("Buffer getting full, taking a break");
+                            System.Console.WriteLine("Buffer getting full, taking a break");
                             Thread.Sleep(1000);
                         }
                         else
@@ -126,7 +126,7 @@ namespace AudioLibrary.MP3_Streaming
                         }
 
                     } while (playbackState != StreamingPlaybackState.Stopped);
-                    Debug.Log("Exiting Thread");
+                    System.Console.WriteLine("Exiting Thread");
                     // was doing this in a finally block, but for some reason
                     // we are hanging on response stream .Dispose so never get there
                     decompressor.Dispose();
@@ -145,7 +145,7 @@ namespace AudioLibrary.MP3_Streaming
         private void ReadFullyStream_StreamTitleChanged(object sender, StreamTitleChangedEventArgs e)
         {
             song_info = e.Title;
-            Debug.Log(e.Title);
+            System.Console.WriteLine(e.Title);
         }
 
         public void ReadData(float[] data)
@@ -228,7 +228,7 @@ namespace AudioLibrary.MP3_Streaming
                     }
                     else if (fullyDownloaded && bufferedSeconds < 0.5)
                     {
-                        Debug.Log("Reached end of stream");
+                        System.Console.WriteLine("Reached end of stream");
                         StopPlayback();
                     }
                 }
@@ -250,10 +250,10 @@ namespace AudioLibrary.MP3_Streaming
 
         private void OnPlaybackStopped(object sender, StoppedEventArgs e)
         {
-            Debug.Log("Playback Stopped");
+            System.Console.WriteLine("Playback Stopped");
             if (e.Exception != null)
             {
-                Debug.Log(string.Format("Playback Error {0}", e.Exception.Message));
+                System.Console.WriteLine(string.Format("Playback Error {0}", e.Exception.Message));
             }
         }
     }

@@ -85,7 +85,7 @@ namespace AudioLibrary
                     readerStream = new VorbisWaveReader(stream);
                     break;
                 default:
-                    Debug.LogWarning("Audio format " + format + " is not supported");
+                    System.Console.WriteLine($"Audio format {format} is not supported");
                     break;
             }
         }

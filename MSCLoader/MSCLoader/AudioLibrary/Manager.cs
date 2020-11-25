@@ -62,7 +62,7 @@ namespace AudioLibrary
         {
             if (!IsSupportedFormat(filePath))
             {
-                Debug.LogError("Could not load AudioClip at path '" + filePath + "' it's extensions marks unsupported format, supported formats are: " + string.Join(", ", Enum.GetNames(typeof(AudioFormat))));
+                System.Console.WriteLine($"Could not load AudioClip at path '{ filePath }' it's extensions marks unsupported format, supported formats are: {string.Join(", ", Enum.GetNames(typeof(AudioFormat)))}");
                 return null;
             }
             AudioClip audioClip;
@@ -145,7 +145,7 @@ namespace AudioLibrary
                     " - Failed:",
                     ex.Message
                 }));
-                Debug.LogError(string.Concat(new object[]
+                System.Console.WriteLine(string.Concat(new object[]
                 {
                     "Could not load AudioClip named '",
                     unityAudioClipName,
@@ -205,7 +205,7 @@ namespace AudioLibrary
                 }
                 catch (Exception exception)
                 {
-                    Debug.LogException(exception);
+                    System.Console.WriteLine(exception);
                     object obj3 = deferredSetFail;
                     lock (obj3)
                     {

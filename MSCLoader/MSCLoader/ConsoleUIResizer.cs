@@ -83,7 +83,7 @@ namespace MSCLoader
                 {
                     if (ModLoader.devMode)
                         ModConsole.Error(e.ToString());
-                    Debug.Log(e);
+                    System.Console.WriteLine(e);
                     File.Delete(Path.Combine(path, "console.data"));
                 }
             }

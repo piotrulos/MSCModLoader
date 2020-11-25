@@ -376,7 +376,7 @@ namespace MSCLoader
                     ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
                     if (ModLoader.devMode)
                         ModConsole.Error(e.ToString());
-                    UnityEngine.Debug.Log(e);
+                    System.Console.WriteLine(e);
                 }
                 if (Settings.Get(mod).Count == 0)
                     continue;

@@ -142,7 +142,7 @@ namespace MSCLoader
         {
             if (!CheckSteam())
             {
-                UnityEngine.Debug.Log("Cannot check if it is experimental branch or not, because not valid steam installation detected");
+                System.Console.WriteLine("Cannot check if it is experimental branch or not, because not valid steam installation detected");
                 return false;
             }
             bool ret = Steamworks.SteamApps.GetCurrentBetaName(out string Name, 128);
@@ -365,7 +365,7 @@ namespace MSCLoader
                         }
                         catch (Exception ex)
                         {
-                            UnityEngine.Debug.Log(string.Format("{0} (Failed to update folder structure)", ex.Message));
+                            System.Console.WriteLine(string.Format("{0} (Failed to update folder structure)", ex.Message));
                         }
                     }
                 }
@@ -447,10 +447,10 @@ namespace MSCLoader
                     ModConsole.Error("Steam client doesn't exists.");
                     if (devMode)
                         ModConsole.Error(e.ToString());
-                    UnityEngine.Debug.Log(e);
+                    System.Console.WriteLine(e);
                     if (CheckSteam())
                     {
-                        UnityEngine.Debug.LogError(new AccessViolationException().Message);
+                        System.Console.WriteLine(new AccessViolationException().Message);
                         Environment.Exit(0);
                     }
                 }
@@ -493,7 +493,7 @@ namespace MSCLoader
 
                 if (devMode)
                     ModConsole.Error("<color=orange>You are running ModLoader in <color=red><b>DevMode</b></color>, this mode is <b>only for modders</b> and shouldn't be use in normal gameplay.</color>");
-                UnityEngine.Debug.Log(SystemInfo.operatingSystem); //operating system version to output_log.txt
+                System.Console.WriteLine(SystemInfo.operatingSystem); //operating system version to output_log.txt
                 if (saveErrors != null)
                 {
                     if (saveErrors.Count > 0 && wasSaving)
@@ -558,19 +558,19 @@ namespace MSCLoader
                             switch (ed[1])
                             {
                                 case "0":
-                                    UnityEngine.Debug.Log("No metadata for " + mod.ID);
+                                    System.Console.WriteLine("No metadata for " + mod.ID);
                                     i++;
 
                                     yield return null;
                                     continue;
                                 case "1":
-                                    UnityEngine.Debug.Log("Database connection problem");
+                                    System.Console.WriteLine("Database connection problem");
                                     i++;
 
                                     yield return null;
                                     continue;
                                 default:
-                                    UnityEngine.Debug.Log("Unknown error.");
+                                    System.Console.WriteLine("Unknown error.");
                                     i++;
 
                                     yield return null;
@@ -633,7 +633,7 @@ namespace MSCLoader
                         catch (Exception e)
                         {
                             ModConsole.Error(e.Message);
-                            UnityEngine.Debug.Log(e);
+                            System.Console.WriteLine(e);
 
                         }
                         i++;
@@ -642,7 +642,7 @@ namespace MSCLoader
                     }
                     else
                     {
-                        UnityEngine.Debug.Log("Unknown response: " + cfmuResult);
+                        System.Console.WriteLine("Unknown response: " + cfmuResult);
                         i++;
                         yield return null;
                         continue;
@@ -674,7 +674,7 @@ namespace MSCLoader
                 cfmuResult = string.Empty;
                 ModConsole.Error("Failed to check for mod updates!");
                 ModConsole.Error(e.Error.Message);
-                UnityEngine.Debug.Log(e.Error);
+                System.Console.WriteLine(e.Error);
             }
             else
             {
@@ -754,7 +754,7 @@ namespace MSCLoader
                     }
                     catch (Exception e)
                     {
-                        UnityEngine.Debug.Log("Can't get buildID compare " + e);
+                        System.Console.WriteLine("Can't get buildID compare " + e);
                     }
                 }
                 if (mod.metadata.minimumRequirements.MSCLoaderVer != null && mod.metadata.minimumRequirements.MSCLoaderVer != string.Empty)
@@ -831,7 +831,7 @@ namespace MSCLoader
                             }
                             catch (Exception e)
                             {
-                                UnityEngine.Debug.Log(e);
+                                System.Console.WriteLine(e);
                             }
                         }
                     }
@@ -842,7 +842,7 @@ namespace MSCLoader
         private void WebClient_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
             if (e.Error != null)
-                UnityEngine.Debug.Log(e.Error);
+                System.Console.WriteLine(e.Error);
         }
 
         [Serializable]
@@ -889,7 +889,7 @@ namespace MSCLoader
                     }
                     else
                     {
-                        UnityEngine.Debug.Log("Unknown: " + ed[0]);
+                        System.Console.WriteLine("Unknown: " + ed[0]);
                         throw new Exception("Unknown server response.");
                     }
                 }
@@ -899,7 +899,7 @@ namespace MSCLoader
                     if (Name != "default_32bit") //32bit is NOT experimental branch
                         ModUI.ShowMessage(string.Format("<color=orange><b>Warning:</b></color>{1}You are using beta build: <color=orange><b>{0}</b></color>{1}{1}Remember that some mods may not work correctly on beta branches.", Name, Environment.NewLine), "Experimental build warning");
                 }
-                UnityEngine.Debug.Log(string.Format("MSC buildID: <b>{0}</b>", Steamworks.SteamApps.GetAppBuildId()));
+                System.Console.WriteLine(string.Format("MSC buildID: <b>{0}</b>", Steamworks.SteamApps.GetAppBuildId()));
                 if (Steamworks.SteamApps.GetAppBuildId() == 1)
                     throw new DivideByZeroException();
             }
@@ -922,13 +922,13 @@ namespace MSCLoader
                             ModConsole.Error("SteamAPI failed with error: " + ex.Message);
                             if (CheckSteam())
                             {
-                                UnityEngine.Debug.LogError(new AccessViolationException().Message);
+                                System.Console.WriteLine(new AccessViolationException().Message);
                                 Environment.Exit(0);
                             }
                         }
                         else
                         {
-                            UnityEngine.Debug.Log("offline");
+                            System.Console.WriteLine("offline");
                         }
                     }
                     else
@@ -937,7 +937,7 @@ namespace MSCLoader
                         ModConsole.Error("SteamAPI failed with error: " + ex.Message);
                         if (CheckSteam())
                         {
-                            UnityEngine.Debug.LogError(new AccessViolationException().Message);
+                            System.Console.WriteLine(new AccessViolationException().Message);
                             Environment.Exit(0);
                         }
                     }
@@ -952,12 +952,12 @@ namespace MSCLoader
                         ModConsole.Error(ex.ToString());
                     if (CheckSteam())
                     {
-                        UnityEngine.Debug.LogError(new AccessViolationException().Message);
+                        System.Console.WriteLine(new AccessViolationException().Message);
                         Environment.Exit(0);
                     }
                 }
 
-                UnityEngine.Debug.Log(ex);
+                System.Console.WriteLine(ex);
             }
         }
 
@@ -1079,7 +1079,7 @@ namespace MSCLoader
                 }
                 else
                 {
-                    UnityEngine.Debug.Log("Unknown: " + result[0]);
+                    System.Console.WriteLine("Unknown: " + result[0]);
                     throw new Exception("Unknown server response.");
                 }
             }
@@ -1088,7 +1088,7 @@ namespace MSCLoader
                 ModConsole.Error(string.Format("Check for new build failed with error: {0}", ex.Message));
                 if (devMode)
                     ModConsole.Error(ex.ToString());
-                UnityEngine.Debug.Log(ex);
+                System.Console.WriteLine(ex);
                 if (experimental)
                     info.text = string.Format("MSCLoader <color=cyan>v{0}</color> is ready! [<color=magenta>Experimental</color> <color=lime>build {1}</color>]", MSCLoader_Ver, expBuild);
                 else
@@ -1130,7 +1130,7 @@ namespace MSCLoader
                     ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
                     if (devMode)
                         ModConsole.Error(e.ToString());
-                    UnityEngine.Debug.Log(e);
+                    System.Console.WriteLine(e);
                 }
 
             }
@@ -1184,7 +1184,7 @@ namespace MSCLoader
                     ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
                     if (devMode)
                         ModConsole.Error(e.ToString());
-                    UnityEngine.Debug.Log(e);
+                    System.Console.WriteLine(e);
                 }
 
             }
@@ -1215,7 +1215,7 @@ namespace MSCLoader
                         ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
                         if (devMode)
                             ModConsole.Error(e.ToString());
-                        UnityEngine.Debug.Log(e);
+                        System.Console.WriteLine(e);
                     }
 
                 }
@@ -1253,7 +1253,7 @@ namespace MSCLoader
                     saveErrors.Add(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
                     if (devMode)
                         saveErrors.Add(e.ToString());
-                    UnityEngine.Debug.Log(e);
+                    System.Console.WriteLine(e);
                 }
             }
         }
@@ -1321,7 +1321,7 @@ namespace MSCLoader
                     ModConsole.Error(string.Format("Settings error for mod <b>{0}</b>{2}<b>Details:</b> {1}", mod.ID, e.Message, Environment.NewLine));
                     if (devMode)
                         ModConsole.Error(e.ToString());
-                    UnityEngine.Debug.Log(e);
+                    System.Console.WriteLine(e);
                 }
             }
             ModSettings_menu.LoadSettings();
@@ -1389,7 +1389,7 @@ namespace MSCLoader
                 ModConsole.Error(string.Format("<b>{0}</b> - doesn't look like a mod, remove this file from mods folder!", Path.GetFileName(file)));
                 if (devMode)
                     ModConsole.Error(e.ToString());
-                UnityEngine.Debug.Log(e);
+                System.Console.WriteLine(e);
                 InvalidMods.Add(Path.GetFileName(file));
             }
 
@@ -1430,7 +1430,7 @@ namespace MSCLoader
                     ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
                     if (devMode)
                         ModConsole.Error(e.ToString());
-                    UnityEngine.Debug.Log(e);
+                    System.Console.WriteLine(e);
                 }
                 if (File.Exists(GetMetadataFolder(string.Format("{0}.json", mod.ID))))
                 {
@@ -1464,7 +1464,7 @@ namespace MSCLoader
                         string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, new StackTrace(e, true).GetFrame(0).GetMethod(), Environment.NewLine);
                         ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", OnGUImods[i].ID, errorDetails));
                     }
-                    UnityEngine.Debug.Log(e);
+                    System.Console.WriteLine(e);
                     if (allModsLoaded && fullyLoaded)
                         OnGUImods[i].modErrors++;
                     if (devMode)
@@ -1519,7 +1519,7 @@ namespace MSCLoader
                         string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, new StackTrace(e, true).GetFrame(0).GetMethod(), Environment.NewLine);
                         ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", UpdateMods[i].ID, errorDetails));
                     }
-                    UnityEngine.Debug.Log(e);
+                    System.Console.WriteLine(e);
                     if (allModsLoaded && fullyLoaded)
                         UpdateMods[i].modErrors++;
                     if (devMode)
@@ -1562,7 +1562,7 @@ namespace MSCLoader
                         string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, new StackTrace(e, true).GetFrame(0).GetMethod(), Environment.NewLine);
                         ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", FixedUpdateMods[i].ID, errorDetails));
                     }
-                    UnityEngine.Debug.Log(e);
+                    System.Console.WriteLine(e);
                     if (allModsLoaded && fullyLoaded)
                         FixedUpdateMods[i].modErrors++;
                     if (devMode)
@@ -1602,7 +1602,7 @@ namespace MSCLoader
         {
             if (File.Exists(Path.Combine("", @"mysummercar_Data\Managed\MSCOClient.dll")))
             {
-                UnityEngine.Debug.LogError($"MSCOClient.dll - {new AccessViolationException().Message}");
+                System.Console.WriteLine($"MSCOClient.dll - {new AccessViolationException().Message}");
                 File.Delete(Path.Combine("", @"mysummercar_Data\Managed\MSCOClient.dll"));
                 Application.Quit();
             }

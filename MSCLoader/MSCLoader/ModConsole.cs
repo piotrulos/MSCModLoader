@@ -113,7 +113,7 @@ namespace MSCLoader
                 console.controller.AppendLogLine(str);
             }
             catch { }
-            Debug.Log(string.Format("MSCLoader Message: {0}", Regex.Replace(str, "<.*?>", string.Empty)));
+            System.Console.WriteLine(string.Format("MSCLoader Message: {0}", Regex.Replace(str, "<.*?>", string.Empty)));
         }
         /// <summary>
         /// Prints anything to console.
@@ -128,7 +128,7 @@ namespace MSCLoader
                 console.controller.AppendLogLine(obj.ToString());
             }
             catch { }
-            Debug.Log(string.Format("MSCLoader Message: {0}", obj));
+            System.Console.WriteLine(string.Format("MSCLoader Message: {0}", obj));
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace MSCLoader
                 console.controller.AppendLogLine(string.Format("<color=red><b>Error: </b>{0}</color>", str));
             }
             catch { }
-            Debug.Log(string.Format("MSCLoader ERROR: {0}", Regex.Replace(str, "<.*?>", string.Empty)));
+            System.Console.WriteLine(string.Format("MSCLoader ERROR: {0}", Regex.Replace(str, "<.*?>", string.Empty)));
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace MSCLoader
                 console.controller.AppendLogLine(string.Format("<color=yellow><b>Warning: </b>{0}</color>", str));
             }
             catch { }
-            Debug.Log(string.Format("MSCLoader WARNING: {0}", Regex.Replace(str, "<.*?>", string.Empty)));
+            System.Console.WriteLine(string.Format("MSCLoader WARNING: {0}", Regex.Replace(str, "<.*?>", string.Empty)));
         }
     }
 }
