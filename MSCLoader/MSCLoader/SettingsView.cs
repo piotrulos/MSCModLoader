@@ -128,7 +128,7 @@ namespace MSCLoader
                         catch (Exception e)
                         {
                             ModConsole.Error(e.Message);
-                            Debug.Log(e);
+                            System.Console.WriteLine(e);
                         }
                     }
                 }
@@ -142,7 +142,7 @@ namespace MSCLoader
                     catch (Exception e)
                     {
                         ModConsole.Error(e.Message);
-                        Debug.Log(e);
+                        System.Console.WriteLine(e);
                     }
                 }
                 else
@@ -157,7 +157,7 @@ namespace MSCLoader
                         catch (Exception e)
                         {
                             ModConsole.Error(e.Message);
-                            Debug.Log(e);
+                            System.Console.WriteLine(e);
                         }
                     }
                 }
@@ -501,15 +501,15 @@ namespace MSCLoader
                 catch (Exception e)
                 {
                     ModConsole.Error(e.Message);
-                    Debug.Log(e);
+                    System.Console.WriteLine(e);
                     Application.OpenURL(url);
-                    Debug.Log(url);
+                    System.Console.WriteLine(url);
                 }
             }
             else
             {
                 Application.OpenURL(url);
-                Debug.Log(url);
+                System.Console.WriteLine(url);
             }
         }
         public void ModKeybindsShow(Mod selected)

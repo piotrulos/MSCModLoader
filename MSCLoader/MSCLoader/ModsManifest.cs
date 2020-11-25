@@ -93,7 +93,7 @@ namespace MSCLoader
                 catch (Exception e)
                 {
                     ModConsole.Error(e.Message);
-                    UnityEngine.Debug.Log(e);
+                    System.Console.WriteLine(e);
                 }
             }
             else
@@ -158,7 +158,7 @@ namespace MSCLoader
                 catch (Exception e)
                 {
                     ModConsole.Error(e.Message);
-                    UnityEngine.Debug.Log(e);
+                    System.Console.WriteLine(e);
 
                 }
             }
