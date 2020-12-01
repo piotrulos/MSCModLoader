@@ -1274,38 +1274,68 @@ namespace MSCLoader
             //cleanup files if not in dev mode
             if (!devMode)
             {
-                foreach (string dir in Directory.GetDirectories(SettingsFolder))
+
+                string cleanupLast = Path.Combine(SettingsFolder, @"MSCLoader_Settings\lastCleanupCheck");
+                if (File.Exists(cleanupLast))
                 {
-                    if (!LoadedMods.Exists(x => x.ID == new DirectoryInfo(dir).Name))
+                    string lastCheckS = File.ReadAllText(cleanupLast);
+                    DateTime.TryParse(lastCheckS, out DateTime lastCheck);
+                    if ((DateTime.Now - lastCheck).TotalDays >= 14 || (DateTime.Now - lastCheck).TotalDays < 0)
                     {
-                        try
+                        bool found = false;
+                        List<string> cleanupList = new List<string>();
+                        foreach (string dir in Directory.GetDirectories(AssetsFolder))
                         {
-                            Directory.Delete(dir, true);
+                            if (!LoadedMods.Exists(x => x.ID == new DirectoryInfo(dir).Name) && new DirectoryInfo(dir).Name != "MSCLoader_Core")
+                            {
+                                found = true;
+                                cleanupList.Add(new DirectoryInfo(dir).Name);
+                            }
                         }
-                        catch (Exception ex)
-                        {
-                            ModConsole.Error(string.Format("{0} (corrupted file?)", ex.Message));
-                        }
+                        if(found)
+                            ModUI.ShowYesNoMessage($"There are unused mod files/assets that can be cleaned up.{Environment.NewLine}{Environment.NewLine}List of unused mod files:{Environment.NewLine}<color=aqua>{string.Join(", ",cleanupList.ToArray())}</color>{Environment.NewLine}Do you want to clean them up?", "Unused files found", CleanupFolders);
+                        File.WriteAllText(cleanupLast, DateTime.Now.ToString());
                     }
                 }
-                foreach (string dir in Directory.GetDirectories(AssetsFolder))
+                else
                 {
-                    if (!LoadedMods.Exists(x => x.ID == new DirectoryInfo(dir).Name) && new DirectoryInfo(dir).Name != "MSCLoader_Core")
-                    {
-                        try
-                        {
-                            Directory.Delete(dir, true);
-                        }
-                        catch (Exception ex)
-                        {
-                            ModConsole.Error(string.Format("{0} (corrupted file?)", ex.Message));
-                        }
-                    }
+                    File.WriteAllText(cleanupLast, DateTime.Now.ToString());
                 }
+
             }
 
         }
-
+        void CleanupFolders()
+        {
+            foreach (string dir in Directory.GetDirectories(SettingsFolder))
+            {
+                if (!LoadedMods.Exists(x => x.ID == new DirectoryInfo(dir).Name))
+                {
+                    try
+                    {
+                        Directory.Delete(dir, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        ModConsole.Error(string.Format("{0} (corrupted file?)", ex.Message));
+                    }
+                }
+            }
+            foreach (string dir in Directory.GetDirectories(AssetsFolder))
+            {
+                if (!LoadedMods.Exists(x => x.ID == new DirectoryInfo(dir).Name) && new DirectoryInfo(dir).Name != "MSCLoader_Core")
+                {
+                    try
+                    {
+                        Directory.Delete(dir, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        ModConsole.Error(string.Format("{0} (corrupted file?)", ex.Message));
+                    }
+                }
+            }
+        }
         private void LoadModsSettings()
         {
             foreach (Mod mod in LoadedMods)

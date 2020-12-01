@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -116,6 +118,16 @@ namespace MSCLoader
                             pos--;
                         }
 
+                    }
+                }
+                if (inputField.text.Length > 0 && Input.GetKey(KeyCode.RightArrow))
+                {
+                    //Autocomplete command name
+                    List<string> found = controller.commands.Keys.Where(w => w.StartsWith(inputField.text)).ToList();
+                    if (found.Count > 0)
+                    {
+                        inputField.text = found[0];
+                        inputField.MoveTextEnd(false);
                     }
                 }
             }

@@ -14,7 +14,7 @@ namespace MSCLoader
         public event LogChangedHandler logChanged;
         
         // Object to hold information about each command
-        class CommandRegistration
+        internal class CommandRegistration
         {
             public string command { get; private set; }
             public CommandHandler handler { get; private set; }
@@ -36,12 +36,13 @@ namespace MSCLoader
 
         Queue<string> scrollback = new Queue<string>(scrollbackSize);
         public List<string> commandHistory = new List<string>();
-        Dictionary<string, CommandRegistration> commands = new Dictionary<string, CommandRegistration>();
+        internal Dictionary<string, CommandRegistration> commands = new Dictionary<string, CommandRegistration>();
 
         public string[] log { get; private set; } //Copy of scrollback as an array for easier use by ConsoleView
 
         public ConsoleController()
         {
+
             RegisterCommand("help", HelpCommand, "This screen", "?");
             RegisterCommand("clear", ClearConsole, "Clears console screen", "cls");
         }
