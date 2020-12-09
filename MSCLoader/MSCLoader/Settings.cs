@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 namespace MSCLoader
 {
@@ -32,6 +33,7 @@ namespace MSCLoader
     /// </summary>
     public class Settings
     {
+        private string settingName = string.Empty;
         /// <summary>
         /// List of settings
         /// </summary>
@@ -50,7 +52,7 @@ namespace MSCLoader
         /// <summary>
         /// Visible name for your setting.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get => settingName; set { settingName = value; UpdateName(); } }
 
         /// <summary>
         /// The Mod this Setting belongs to (This is set when using Add whatever).
@@ -77,6 +79,15 @@ namespace MSCLoader
         /// </summary>
         public object[] Vals { get; set; }
 
+        internal Text NameText;
+
+        void UpdateName()
+        {
+            if (NameText != null)
+            {
+                NameText.text = Name;
+            }
+        }
         /// <summary>
         /// Constructor for Settings
         /// </summary>
@@ -334,11 +345,24 @@ namespace MSCLoader
         /// <param name="minValue">Min value of slider</param>
         /// <example><code source="SettingsExamples.cs" region="AddSlider" lang="C#" 
         /// title="Add Slider" /></example>
-        public static void AddSlider(Mod mod, Settings setting, float minValue, float maxValue)
+        public static void AddSlider(Mod mod, Settings setting, float minValue, float maxValue) => AddSlider(mod, setting, minValue, maxValue, 2);
+
+
+        /// <summary>
+        /// Add Slider, slider can execute action when its value is changed.
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="setting">Your settings variable</param>
+        /// <param name="maxValue">Max value of slider</param>
+        /// <param name="minValue">Min value of slider</param>
+        /// <param name="decimalPoints">Round value to set number of decimal points (default = 2)</param>
+        /// <example><code source="SettingsExamples.cs" region="AddSlider" lang="C#" 
+        /// title="Add Slider" /></example>
+        public static void AddSlider(Mod mod, Settings setting, float minValue, float maxValue, int decimalPoints)
         {
             setting.Mod = mod;
             modSettingsDefault.Add(new Settings(setting.ID, setting.Name, setting.Value) { Mod = mod });
-            setting.Vals = new object[4];
+            setting.Vals = new object[5];
 
             if (setting.Value is float || setting.Value is double)
             {
@@ -347,11 +371,16 @@ namespace MSCLoader
                 setting.Vals[1] = maxValue;
                 setting.Vals[2] = false;
                 setting.Vals[3] = null;
+                setting.Vals[4] = decimalPoints;
                 modSettings.Add(setting);
             }
             else
             {
                 ModConsole.Error($"[<b>{mod.ID}</b>] AddSlider: only float allowed here");
+            }
+            if(decimalPoints < 0)
+            {
+                ModConsole.Error($"[<b>{mod.ID}</b>] AddSlider: decimalPoints cannot be negative.");
             }
         }
 
