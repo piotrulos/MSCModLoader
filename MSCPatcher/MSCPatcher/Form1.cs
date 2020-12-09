@@ -136,10 +136,10 @@ namespace MSCPatcher
                     {
                         try
                         {
-                            if (File.Exists("MSCLoader_Launcher.exe"))
-                                Process.Start("MSCLoader_Launcher.exe");
-                            else
-                                Process.Start("https://github.com/piotrulos/MSCModLoader/releases");
+                           // if (File.Exists("MSCLoader_Launcher.exe"))
+                             //   Process.Start("MSCLoader_Launcher.exe");
+                           // else
+                            Process.Start("https://www.nexusmods.com/mysummercar/mods/147");
                             Environment.Exit(0);
                         }
                         catch (Exception ex)
@@ -377,8 +377,8 @@ namespace MSCPatcher
                     tw.WriteLine(@"[UnityDoorstop]");
                     tw.WriteLine(@"enabled=true");
                     tw.WriteLine(@"targetAssembly=mysummercar_Data\Managed\MSCLoader.dll");
-                    tw.WriteLine(@"redirectOutputLog=false");
-                    tw.WriteLine(@"ignoreDisableSwitch=false");
+                    tw.WriteLine(@"redirectOutputLog=true");
+                    tw.WriteLine(@"ignoreDisableSwitch=true");
                     switch (InitMethod)
                     {
                         case "Init_MD":

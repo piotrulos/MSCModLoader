@@ -198,7 +198,8 @@ namespace MSCLoader
             {
                 case SettingsType.CheckBox:
                     GameObject checkbox = Instantiate(ms.Checkbox);
-                    checkbox.transform.GetChild(1).GetComponent<Text>().text = setting.Name;
+                    setting.NameText = checkbox.transform.GetChild(1).GetComponent<Text>();
+                    setting.NameText.text = setting.Name;
                     checkbox.GetComponent<Toggle>().isOn = (bool)setting.Value;
                     checkbox.GetComponent<Toggle>().onValueChanged.AddListener(delegate
                     {
@@ -220,7 +221,9 @@ namespace MSCLoader
                     else
                         group = modSettingsList.transform.FindChild(setting.Vals[0].ToString()).gameObject;
                     GameObject checkboxG = Instantiate(ms.Checkbox);
-                    checkboxG.transform.GetChild(1).GetComponent<Text>().text = setting.Name;
+                    setting.NameText = checkboxG.transform.GetChild(1).GetComponent<Text>();
+                    setting.NameText.text = setting.Name;
+
                     checkboxG.GetComponent<Toggle>().group = group.GetComponent<ToggleGroup>();
                     checkboxG.GetComponent<Toggle>().isOn = (bool)setting.Value;
                     if((bool)setting.Value)
@@ -235,7 +238,8 @@ namespace MSCLoader
                     break;
                 case SettingsType.Button:
                     GameObject btn = Instantiate(ms.setBtn);
-                    btn.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = setting.Name;
+                    setting.NameText = btn.transform.GetChild(0).GetChild(0).GetComponent<Text>();
+                    setting.NameText.text = setting.Name;
                     btn.transform.GetChild(1).GetComponent<Text>().text = setting.Vals[0].ToString();
                     btn.transform.GetChild(1).GetComponent<Text>().color = (Color)setting.Vals[4];
                     if (setting.Vals[0].ToString() == null || setting.Vals[0].ToString() == string.Empty)
@@ -250,7 +254,8 @@ namespace MSCLoader
                     break;
                 case SettingsType.RButton:
                     GameObject rbtn = Instantiate(ms.setBtn);
-                    rbtn.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = setting.Name;
+                    setting.NameText = rbtn.transform.GetChild(0).GetChild(0).GetComponent<Text>();
+                    setting.NameText.text = setting.Name;
                     rbtn.transform.GetChild(0).GetChild(0).GetComponent<Text>().color = Color.black;
                     rbtn.transform.GetChild(1).gameObject.SetActive(false);
                     rbtn.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(delegate
@@ -268,7 +273,8 @@ namespace MSCLoader
                     break;
                 case SettingsType.Slider:
                     GameObject modViewLabel = Instantiate(ms.ModLabel);
-                    modViewLabel.GetComponent<Text>().text = setting.Name;
+                    setting.NameText = modViewLabel.GetComponent<Text>();
+                    setting.NameText.text = setting.Name;
                     modViewLabel.transform.SetParent(modSettingsList.transform, false);
                     GameObject slidr = Instantiate(ms.slider);
                     slidr.transform.GetChild(1).GetComponent<Text>().text = setting.Value.ToString();
@@ -285,7 +291,7 @@ namespace MSCLoader
                         if ((bool)setting.Vals[2])
                             setting.Value = slidr.transform.GetChild(0).GetComponent<Slider>().value;
                         else
-                            setting.Value = Math.Round(slidr.transform.GetChild(0).GetComponent<Slider>().value, 2);
+                            setting.Value = Math.Round(slidr.transform.GetChild(0).GetComponent<Slider>().value, int.Parse(setting.Vals[4].ToString()));
                         if(setting.Vals[3] == null)
                         slidr.transform.GetChild(1).GetComponent<Text>().text = setting.Value.ToString();
                         else
@@ -299,7 +305,8 @@ namespace MSCLoader
                     break;
                 case SettingsType.TextBox:
                     GameObject modViewLabels = Instantiate(ms.ModLabel);
-                    modViewLabels.GetComponent<Text>().text = setting.Name;
+                    setting.NameText = modViewLabels.GetComponent<Text>();
+                    setting.NameText.text = setting.Name;
                     modViewLabels.GetComponent<Text>().color = (Color)setting.Vals[1];
                     modViewLabels.transform.SetParent(modSettingsList.transform, false);
                     GameObject txt = Instantiate(ms.textBox);
@@ -313,14 +320,16 @@ namespace MSCLoader
                     break;
                 case SettingsType.Header:
                     GameObject hdr = Instantiate(ms.header);
-                    hdr.transform.GetChild(0).GetComponent<Text>().text = setting.Name;
+                    setting.NameText = hdr.transform.GetChild(0).GetComponent<Text>();
+                    setting.NameText.text = setting.Name;
                     hdr.GetComponent<Image>().color = (Color)setting.Vals[1];
                     hdr.transform.GetChild(0).GetComponent<Text>().color = (Color)setting.Vals[2];
                     hdr.transform.SetParent(modSettingsList.transform, false);
                     break;
                 case SettingsType.Text:
                     GameObject tx = Instantiate(ms.ModLabel);
-                    tx.GetComponent<Text>().text = setting.Name;
+                    setting.NameText = tx.GetComponent<Text>();
+                    setting.NameText.text = setting.Name;
                     tx.transform.SetParent(modSettingsList.transform, false);
                     break;
             }
