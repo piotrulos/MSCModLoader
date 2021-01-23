@@ -103,11 +103,14 @@
     <Compile Include="ModAudioStream.cs" />
     <Compile Include="ModConsole.cs" />
     <Compile Include="ModCore.cs" />
+    <Compile Include="ModFixedUpdate.cs" />
     <Compile Include="ModLoader.cs" />
+    <Compile Include="ModOnGUI.cs" />
     <Compile Include="ModSettings.cs" />
     <Compile Include="ModsManifest.cs" />
     <Compile Include="ModUI.cs" />
     <Compile Include="ModUIDrag.cs" />
+    <Compile Include="ModUpdate.cs" />
     <Compile Include="MSCLoader.cs" />
     <Compile Include="MSCUnloader.cs" />
     <Compile Include="AudioLibrary\NAudio.Vorbis\VorbisWaveReader.cs" />
