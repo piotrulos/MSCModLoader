@@ -88,6 +88,7 @@ namespace MSCLoader
         private Mod[] OnGUImods = new Mod[0];
         private Mod[] UpdateMods = new Mod[0];
         private Mod[] FixedUpdateMods = new Mod[0];
+        private Mod[] OnSaveMods = new Mod[0];
 
         private string expBuild = Assembly.GetExecutingAssembly().GetName().Version.Revision.ToString();
         private MSCUnloader mscUnloader;
@@ -99,7 +100,6 @@ namespace MSCLoader
         private static string SettingsFolder = Path.Combine(ConfigFolder, "Mod Settings");
         internal static string ManifestsFolder = Path.Combine(ConfigFolder, "Mod Metadata");
         private static string AssetsFolder = Path.Combine(ModsFolder, "Assets");
-        private static string cfg = "GF";
 
         private GameObject mainMenuInfo;
         private GameObject loading;
@@ -225,14 +225,8 @@ namespace MSCLoader
         /// <summary>
         /// Main init
         /// </summary>
-        public static void Init_NP()
+        public static void Init_NP(string cfg)
         {
-            using (var sr = new StreamReader("doorstop_config.ini"))
-            {
-                for (int i = 1; i < 6; i++)
-                    sr.ReadLine();
-               cfg =  sr.ReadLine();
-            }
             switch (cfg)
             {
                 case "GF":
@@ -330,20 +324,22 @@ namespace MSCLoader
                 if ((bool)ModSettings_menu.forceMenuVsync.GetValue() && !vse)
                     QualitySettings.vSyncCount = 0;
 
-                if (IsDoneLoading)
-                {
-                    menuInfoAnim.SetBool("isHidden", true);
-                    StartLoadingModsAsync();
-                }
+                menuInfoAnim.SetBool("isHidden", true);
+                StartLoadingMods(!(bool)ModSettings_menu.syncLoad.GetValue());
+
             }
         }
 
-        private void StartLoadingModsAsync()
+        private void StartLoadingMods(bool async)
         {
             if (!allModsLoaded && !IsModsLoading)
             {
                 IsModsLoading = true;
-                StartCoroutine(LoadMods());
+                if(async)
+                    StartCoroutine(LoadModsAsync());
+                else
+                    StartCoroutine(LoadMods());
+
             }
         }
 
@@ -500,7 +496,7 @@ namespace MSCLoader
                 }
 
                 if (devMode)
-                    ModConsole.Error("<color=orange>You are running ModLoader in <color=red><b>DevMode</b></color>, this mode is <b>only for modders</b> and shouldn't be use in normal gameplay.</color>");
+                    ModConsole.Warning("You are running ModLoader in <color=red><b>DevMode</b></color>, this mode is <b>only for modders</b> and shouldn't be use in normal gameplay.");
                 System.Console.WriteLine(SystemInfo.operatingSystem); //operating system version to output_log.txt
                 if (saveErrors != null)
                 {
@@ -668,7 +664,7 @@ namespace MSCLoader
                 loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("Done!");
             if (cfmuErrored)
                 loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("<color=red>Connection error!</color>");
-            yield return new WaitForSeconds(4f);
+            yield return new WaitForSeconds(3f);
             loadingMeta.SetActive(false);
 
         }
@@ -1152,6 +1148,68 @@ namespace MSCLoader
 
         IEnumerator LoadMods()
         {
+            Mod[] mods = LoadedMods.Where(x => !x.isDisabled).ToArray();
+            loading.transform.GetChild(2).GetComponent<Text>().text = string.Format("MSCLoader <color=green>v{0}</color>", MSCLoader_Ver);
+            loading.transform.GetChild(0).GetComponent<Text>().text = string.Format("Loading mods. Please wait...");
+            loading.transform.GetChild(1).GetComponent<Text>().text = string.Empty;
+            loading.transform.GetChild(3).gameObject.SetActive(false);
+            while (GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera") == null)
+                yield return null;
+            ModConsole.Print("Loading mods...");
+            ModConsole.Print("<color=#505050ff>");
+            loading.SetActive(true);
+            yield return null;
+            Stopwatch s = new Stopwatch();
+            s.Start();
+            for (int i = 0; i < mods.Length; i++)
+            {
+                try
+                {
+                    mods[i].OnLoad();
+                }
+                catch (Exception e)
+                {
+                    string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, new StackTrace(e, true).GetFrame(0).GetMethod(), Environment.NewLine);
+                    ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mods[i].ID, errorDetails));
+                    if (devMode)
+                        ModConsole.Error(e.ToString());
+                    System.Console.WriteLine(e);
+                }
+            }
+            ModSettings_menu.LoadBinds();
+            if (SecondPassMods.Count() > 0)
+            {
+                ModConsole.Print("Loading mods (second pass)...");
+                for (int j = 0; j < SecondPassMods.Length; j++)
+                {
+                    if (SecondPassMods[j].isDisabled)
+                        continue;
+                    try
+                    {
+                        SecondPassMods[j].SecondPassOnLoad();
+                    }
+                    catch (Exception e)
+                    {
+                        string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, new StackTrace(e, true).GetFrame(0).GetMethod(), Environment.NewLine);
+                        ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", SecondPassMods[j].ID, errorDetails));
+                        if (devMode)
+                            ModConsole.Error(e.ToString());
+                        System.Console.WriteLine(e);
+                    }
+                }
+            }
+            s.Stop();
+            FsmHook.FsmInject(GameObject.Find("ITEMS"), "Save game", SaveMods);         
+            ModConsole.Print("</color>");
+            allModsLoaded = true;
+            loading.SetActive(false);
+            ModConsole.Print(string.Format("Loading mods completed in {0}ms!", s.ElapsedMilliseconds));
+        }
+
+        IEnumerator LoadModsAsync()
+        {
+            Mod[] mods = LoadedMods.Where(x => !x.isDisabled).ToArray();
+            loading.transform.GetChild(3).gameObject.SetActive(true);
             Slider progressBar = loading.transform.GetChild(3).GetComponent<Slider>();
             while (GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera") == null) 
                 yield return null;
@@ -1161,31 +1219,29 @@ namespace MSCLoader
             ModConsole.Print("<color=#505050ff>");
             loading.SetActive(true);
             progressBar.minValue = 1;
-            progressBar.maxValue = LoadedMods.Count - 2;
+            progressBar.maxValue = mods.Length - 2;
             loading.transform.GetChild(3).GetChild(1).GetChild(0).GetComponent<Image>().color = new Color32(0, 113, 0, 255);
             Stopwatch s = new Stopwatch();
             s.Start();
-            for (int i = 0; i < LoadedMods.Count; i++)
+            for (int i = 0; i < mods.Length; i++)
             {
-                if (LoadedMods[i].ID.StartsWith("MSCLoader_"))
+                if (mods[i].ID.StartsWith("MSCLoader_"))
                 {
-                    LoadedMods[i].OnLoad();
+                    mods[i].OnLoad();
                     continue;
                 }
-                if (LoadedMods[i].isDisabled)
-                    continue;
-                loading.transform.GetChild(0).GetComponent<Text>().text = string.Format("Loading mods: <color=orage><b>{0}</b></color> of <color=orage><b>{1}</b></color>. Please wait...", i-1, LoadedMods.Count - 2);
+                loading.transform.GetChild(0).GetComponent<Text>().text = string.Format("Loading mods: <color=orage><b>{0}</b></color> of <color=orage><b>{1}</b></color>. Please wait...", i - 1, mods.Length - 2);
                 progressBar.value = i-1;
-                loading.transform.GetChild(1).GetComponent<Text>().text = LoadedMods[i].Name;
+                loading.transform.GetChild(1).GetComponent<Text>().text = mods[i].Name;
                 try
                 {
-                    LoadedMods[i].OnLoad();                  
+                    mods[i].OnLoad();                  
                 }
                 catch (Exception e)
                 {
 
                     string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, new StackTrace(e, true).GetFrame(0).GetMethod(), Environment.NewLine);
-                    ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", LoadedMods[i].ID, errorDetails));
+                    ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mods[i].ID, errorDetails));
                     if (devMode)
                         ModConsole.Error(e.ToString());
                     System.Console.WriteLine(e);
@@ -1222,12 +1278,10 @@ namespace MSCLoader
 
                 }
             }
-            FsmHook.FsmInject(GameObject.Find("ITEMS"), "Save game", SaveMods);
-            allModsLoaded = true;   
             s.Stop();
+            FsmHook.FsmInject(GameObject.Find("ITEMS"), "Save game", SaveMods);
             ModConsole.Print("</color>");
             allModsLoaded = true;
-      //      IsModsDoneLoading = true;
             loading.SetActive(false);
             ModConsole.Print(string.Format("Loading mods completed in {0}ms!", s.ElapsedMilliseconds));
 
@@ -1238,20 +1292,17 @@ namespace MSCLoader
         {
             saveErrors = new List<string>();
             wasSaving = true;
-            foreach (Mod mod in LoadedMods)
+            for (int i = 0; i < OnSaveMods.Length; i++)
             {
                 try
                 {
-                    if (mod.ID.StartsWith("MSCLoader_"))
-                        continue;
-
-                    if (!mod.isDisabled)
-                        mod.OnSave();
+                    if (!OnSaveMods[i].isDisabled)
+                        OnSaveMods[i].OnSave();
                 }
                 catch (Exception e)
                 {
                     string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, new StackTrace(e, true).GetFrame(0).GetMethod(), Environment.NewLine);
-                    saveErrors.Add(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
+                    saveErrors.Add(string.Format("Mod <b>{0}</b> throw an error!{1}", OnSaveMods[i].ID, errorDetails));
                     if (devMode)
                         saveErrors.Add(e.ToString());
                     System.Console.WriteLine(e);
@@ -1269,11 +1320,13 @@ namespace MSCLoader
                     LoadDLL(file);
                 }
             }
-           
+
             SecondPassMods = LoadedMods.Where(x => x.GetType().GetMethod("SecondPassOnLoad").GetMethodBody().GetILAsByteArray().Length > 2).ToArray();
             OnGUImods = LoadedMods.Where(x => x.GetType().GetMethod("OnGUI").GetMethodBody().GetILAsByteArray().Length > 2).ToArray();
             UpdateMods = LoadedMods.Where(x => x.GetType().GetMethod("Update").GetMethodBody().GetILAsByteArray().Length > 2).ToArray();
             FixedUpdateMods = LoadedMods.Where(x => x.GetType().GetMethod("FixedUpdate").GetMethodBody().GetILAsByteArray().Length > 2).ToArray();
+            OnSaveMods = LoadedMods.Where(x => x.GetType().GetMethod("OnSave").GetMethodBody().GetILAsByteArray().Length > 2).ToArray();
+            
             //cleanup files if not in dev mode
             if (!devMode)
             {
@@ -1295,8 +1348,8 @@ namespace MSCLoader
                                 cleanupList.Add(new DirectoryInfo(dir).Name);
                             }
                         }
-                        if(found)
-                            ModUI.ShowYesNoMessage($"There are unused mod files/assets that can be cleaned up.{Environment.NewLine}{Environment.NewLine}List of unused mod files:{Environment.NewLine}<color=aqua>{string.Join(", ",cleanupList.ToArray())}</color>{Environment.NewLine}Do you want to clean them up?", "Unused files found", CleanupFolders);
+                        if (found)
+                            ModUI.ShowYesNoMessage($"There are unused mod files/assets that can be cleaned up.{Environment.NewLine}{Environment.NewLine}List of unused mod files:{Environment.NewLine}<color=aqua>{string.Join(", ", cleanupList.ToArray())}</color>{Environment.NewLine}Do you want to clean them up?", "Unused files found", CleanupFolders);
                         File.WriteAllText(cleanupLast, DateTime.Now.ToString());
                     }
                 }
@@ -1492,32 +1545,7 @@ namespace MSCLoader
                 }
                 catch (Exception e)
                 {
-                    if (LogAllErrors)
-                    {
-                        string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, new StackTrace(e, true).GetFrame(0).GetMethod(), Environment.NewLine);
-                        ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", OnGUImods[i].ID, errorDetails));
-                    }
-                    System.Console.WriteLine(e);
-                    if (allModsLoaded && fullyLoaded)
-                        OnGUImods[i].modErrors++;
-                    if (devMode)
-                    {
-                        if (OnGUImods[i].modErrors == 30)
-                        {
-                            ModConsole.Error(string.Format("Mod <b>{0}</b> thrown <b>too many errors</b>!", OnGUImods[i].ID));
-                            ModConsole.Error(e.ToString());
-                        }
-
-                    }
-                    else
-                    {
-                        if (OnGUImods[i].modErrors > 30)
-                        {
-                            OnGUImods[i].isDisabled = true;
-                            ModConsole.Error(string.Format("Mod <b>{0}</b> has been <b>disabled!</b> Because it thrown too many errors!{1}Report this problem to mod author.", OnGUImods[i].ID, Environment.NewLine));
-                        }
-                    }
-
+                    ModExceptionHandler(e, OnGUImods[i]);
                 }
             }
         }
@@ -1536,31 +1564,7 @@ namespace MSCLoader
                 }
                 catch (Exception e)
                 {
-                    if (LogAllErrors)
-                    {
-                        string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, new StackTrace(e, true).GetFrame(0).GetMethod(), Environment.NewLine);
-                        ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", UpdateMods[i].ID, errorDetails));
-                    }
-                    System.Console.WriteLine(e);
-                    if (allModsLoaded && fullyLoaded)
-                        UpdateMods[i].modErrors++;
-                    if (devMode)
-                    {
-                        if (UpdateMods[i].modErrors == 30)
-                        {
-                            ModConsole.Error(string.Format("Mod <b>{0}</b> thrown <b>too many errors</b>!", UpdateMods[i].ID));
-                            ModConsole.Error(e.ToString());
-                        }
-
-                    }
-                    else
-                    {
-                        if (UpdateMods[i].modErrors > 30)
-                        {
-                            UpdateMods[i].isDisabled = true;
-                            ModConsole.Error(string.Format("Mod <b>{0}</b> has been <b>disabled!</b> Because it thrown too many errors!{1}Report this problem to mod author.", UpdateMods[i].ID, Environment.NewLine));
-                        }
-                    }
+                    ModExceptionHandler(e, UpdateMods[i]);
                 }
             }
         }
@@ -1578,34 +1582,41 @@ namespace MSCLoader
                 }
                 catch (Exception e)
                 {
-                    if (LogAllErrors)
-                    {
-                        string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, new StackTrace(e, true).GetFrame(0).GetMethod(), Environment.NewLine);
-                        ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", FixedUpdateMods[i].ID, errorDetails));
-                    }
-                    System.Console.WriteLine(e);
-                    if (allModsLoaded && fullyLoaded)
-                        FixedUpdateMods[i].modErrors++;
-                    if (devMode)
-                    {
-                        if (FixedUpdateMods[i].modErrors == 30)
-                        {
-                            ModConsole.Error(string.Format("Mod <b>{0}</b> thrown <b>too many errors</b>!", FixedUpdateMods[i].ID));
-                            ModConsole.Error(e.ToString());
-                        }
-
-                    }
-                    else
-                    {
-                        if (FixedUpdateMods[i].modErrors > 30)
-                        {
-                            FixedUpdateMods[i].isDisabled = true;
-                            ModConsole.Error(string.Format("Mod <b>{0}</b> has been <b>disabled!</b> Because it thrown too many errors!{1}Report this problem to mod author.", FixedUpdateMods[i].ID, Environment.NewLine));
-                        }
-                    }
+                    ModExceptionHandler(e, FixedUpdateMods[i]);
                 }
             }
         }
+
+        void ModExceptionHandler(Exception e, Mod mod)
+        {
+            if (LogAllErrors)
+            {
+                string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, new StackTrace(e, true).GetFrame(0).GetMethod(), Environment.NewLine);
+                ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
+            }
+            System.Console.WriteLine(e);
+            if (allModsLoaded && fullyLoaded)
+                mod.modErrors++;
+            if (devMode)
+            {
+                if (mod.modErrors == 30)
+                {
+                    ModConsole.Error(string.Format("Mod <b>{0}</b> throws <b>too many errors</b>! Last error: ", mod.ID));
+                    ModConsole.Error(e.ToString());
+                    ModConsole.Warning(string.Format("[DevMode] Mod <b>{0}</b> is still running!", mod.ID));
+                }
+
+            }
+            else
+            {
+                if (mod.modErrors >= 30)
+                {
+                    mod.isDisabled = true;
+                    ModConsole.Error(string.Format("Mod <b>{0}</b> has been <b>disabled!</b> Because it thrown too many errors!{1}Report this problem to mod author.", mod.ID, Environment.NewLine));
+                }
+            }
+        }
+
         internal static string MurzynskaMatematyka(string rawData)
         {
             using (System.Security.Cryptography.SHA1 sha256 = System.Security.Cryptography.SHA1.Create())

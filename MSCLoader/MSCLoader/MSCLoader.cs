@@ -73,22 +73,39 @@ namespace MSCLoader
                 InjectModLoader(); //Inject modloader
             }
         }
-
+        public static string cfg;
 
         [HarmonyPatch(typeof(PlayMakerArrayListProxy))]
         [HarmonyPatch("Awake")]
         class InjectMSCLoader
         {
-            static void Prefix()
-            {
-                ModLoader.Init_NP();
-            }
+            static void Prefix() => ModLoader.Init_NP(cfg);
         }
 
+        public static bool introSkip = false;
+        public static bool introSkipped = false;
+        [HarmonyPatch(typeof(PlayMakerFSM))]
+        [HarmonyPatch("Awake")]
+        class InjectIntroSkip
+        {
+            static void Prefix() => SkipIntro(introSkip);
+        }
+
+        public static void SkipIntro(bool skip)
+        {
+            if (!introSkipped && skip)
+            {
+                introSkipped = true;
+                UnityEngine.Application.LoadLevel("MainMenu");
+            }
+        }
         static void InjectModLoader()
         {
             try
             {
+                IniPtr ini = new IniPtr(Path.GetFullPath("doorstop_config.ini"));
+                cfg = ini.ReadValue("MSCLoader", "mods");
+                introSkip = Convert.ToBoolean(ini.ReadValue("MSCLoader", "skipIntro"));
                 HarmonyInstance.Create(nameof(MSCLoader)).PatchAll(Assembly.GetExecutingAssembly());
             }
             catch (Exception ex)
@@ -119,6 +136,32 @@ namespace MSCLoader
                 fs.Close();
             }
             return i;
+        }
+    }
+
+    public class IniPtr
+    {
+        public string Path { get; private set; }
+
+        [System.Runtime.InteropServices.DllImport("kernel32")]
+        private static extern long WritePrivateProfileString(string section, string key, string val, string filePath);
+        [System.Runtime.InteropServices.DllImport("kernel32")]
+        private static extern int GetPrivateProfileString(string section, string key, string def, System.Text.StringBuilder retVal, int size, string filePath);
+
+        public IniPtr(string path)
+        {
+            Path = path;
+        }
+        public void WriteValue(string Section, string Key, string Value)
+        {
+            WritePrivateProfileString(Section, Key, Value, Path);
+        }
+
+        public string ReadValue(string Section, string Key)
+        {
+            System.Text.StringBuilder temp = new System.Text.StringBuilder(255);
+            GetPrivateProfileString(Section, Key, "", temp, 255, Path);
+            return temp.ToString();
         }
     }
 }
