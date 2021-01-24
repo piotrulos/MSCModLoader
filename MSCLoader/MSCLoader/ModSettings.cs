@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,6 +26,8 @@ namespace MSCLoader
         private static Settings modSetButton = new Settings("mscloader_modSetButton", "Show settings button in bottom right corner", true, ModSettingsToggle);
         internal static Settings forceMenuVsync = new Settings("mscloader_forceMenuVsync", "60FPS limit in Main Menu", true, VSyncSwitchCheckbox);
         internal static Settings openLinksOverlay = new Settings("mscloader_openLinksOverlay", "Open URLs in steam overlay", true);
+        internal static Settings skipGameIntro = new Settings("mscloader_skipGameIntro", "Skip game Splash Screen", false, SkipIntroSet);
+        internal static Settings syncLoad = new Settings("mscloader_syncLoad", "Load mods synchronously", false);
 
         private static Settings expUIScaling = new Settings("mscloader_expUIScaling", "Ultra-widescreen UI scaling", false, ExpUIScaling);
         private static Settings tuneScaling = new Settings("mscloader_tuneScale", "Tune scaling:", 1f, ChangeUIScaling);
@@ -57,6 +60,9 @@ namespace MSCLoader
             Settings.AddCheckBox(this, modSetButton);
             Settings.AddCheckBox(this, forceMenuVsync);
             Settings.AddCheckBox(this, openLinksOverlay);
+            Settings.AddCheckBox(this, skipGameIntro);
+            Settings.AddText(this, $"If for whatever reason you want to save half a second of mods loading time, enable below option.{Environment.NewLine}(Loading progress <b>cannot</b> be displayed in synchronous mode)");
+            Settings.AddCheckBox(this, syncLoad);
             Settings.AddHeader(this, "Mod Update Check", new Color32(0, 128, 0, 255));
             Settings.AddText(this, "Check for mod updates:");
             Settings.AddCheckBox(this, checkLaunch, "cfmu_set");
@@ -70,6 +76,8 @@ namespace MSCLoader
         }
         public override void ModSettingsLoaded()
         {
+            IniPtr ini = new IniPtr(Path.GetFullPath("doorstop_config.ini"));
+            skipGameIntro.Value = Convert.ToBoolean(ini.ReadValue("MSCLoader", "skipIntro"));
             ModSettingsToggle();
             ExpUIScaling();
             if ((bool)checkLaunch.GetValue())
@@ -103,6 +111,12 @@ namespace MSCLoader
             {
                 ModUI.GetCanvas().GetComponent<CanvasScaler>().screenMatchMode = CanvasScaler.ScreenMatchMode.Shrink;
             }
+        }
+
+        private static void SkipIntroSet()
+        {
+            IniPtr ini = new IniPtr(Path.GetFullPath("doorstop_config.ini"));
+            ini.WriteValue("MSCLoader", "skipIntro", ((bool)skipGameIntro.GetValue()).ToString().ToLower());
         }
 
         private static void VSyncSwitchCheckbox()
@@ -313,34 +327,33 @@ namespace MSCLoader
         // Load all keybinds.
         public static void LoadBinds()
         {
-            foreach (Mod mod in ModLoader.LoadedMods)
+            Mod[] binds = ModLoader.LoadedMods.Where(mod => Keybind.Get(mod).Count > 0).ToArray();
+            for (int i = 0; i < binds.Length; i++)
             {
                 //delete old xml file (if exists)
-                string path = Path.Combine(ModLoader.GetModSettingsFolder(mod), "keybinds.xml");
+                string path = Path.Combine(ModLoader.GetModSettingsFolder(binds[i]), "keybinds.xml");
                 if (File.Exists(path))
                     File.Delete(path);
 
                 // Check if there is custom keybinds file (if not, create)
-                path = Path.Combine(ModLoader.GetModSettingsFolder(mod), "keybinds.json");
+                path = Path.Combine(ModLoader.GetModSettingsFolder(binds[i]), "keybinds.json");
                 if (!File.Exists(path))
                 {
-                    SaveModBinds(mod);
+                    SaveModBinds(binds[i]);
                     continue;
                 }
 
                 //Load and deserialize 
-                KeybindList keybinds = new KeybindList();
-                string serializedData = File.ReadAllText(path);
-                keybinds = JsonConvert.DeserializeObject<KeybindList>(serializedData);
+                KeybindList keybinds = JsonConvert.DeserializeObject<KeybindList>(File.ReadAllText(path));
                 if (keybinds.keybinds.Count == 0)
                     continue;
-                foreach (var kb in keybinds.keybinds)
+                for (int k = 0; k < keybinds.keybinds.Count; k++)
                 {
-                    Keybind bind = Keybind.Keybinds.Find(x => x.Mod == mod && x.ID == kb.ID);
+                    Keybind bind = Keybind.Keybinds.Find(x => x.Mod == binds[i] && x.ID == keybinds.keybinds[k].ID);
                     if (bind == null)
                         continue;
-                    bind.Key = kb.Key;
-                    bind.Modifier = kb.Modifier;
+                    bind.Key = keybinds.keybinds[k].Key;
+                    bind.Modifier = keybinds.keybinds[k].Modifier;
                 }
             }
         }
@@ -348,47 +361,44 @@ namespace MSCLoader
         // Load all settings.
         public static void LoadSettings()
         {
-            foreach (Mod mod in ModLoader.LoadedMods)
+            for (int i = 0; i < ModLoader.LoadedMods.Count; i++)
             {
                 // Check if there is custom settings file (if not, ignore)
-                string path = Path.Combine(ModLoader.GetModSettingsFolder(mod), "settings.json");
-                if (!File.Exists(path))            
-                    SaveSettings(mod); //create settings file if not exists.
+                string path = Path.Combine(ModLoader.GetModSettingsFolder(ModLoader.LoadedMods[i]), "settings.json");
+                if (!File.Exists(path))
+                    SaveSettings(ModLoader.LoadedMods[i]); //create settings file if not exists.
                 
 
                 //Load and deserialize 
-                SettingsList settings = new SettingsList();
-                string serializedData = File.ReadAllText(path);
-                settings = JsonConvert.DeserializeObject<SettingsList>(serializedData);
-                mod.isDisabled = settings.isDisabled;
+                SettingsList settings = JsonConvert.DeserializeObject<SettingsList>(File.ReadAllText(path));
+                ModLoader.LoadedMods[i].isDisabled = settings.isDisabled;
                 try
                 {
-                    if (mod.LoadInMenu && !mod.isDisabled && mod.fileName != null)
+                    if (ModLoader.LoadedMods[i].LoadInMenu && !ModLoader.LoadedMods[i].isDisabled && ModLoader.LoadedMods[i].fileName != null)
                     {
-                        mod.OnMenuLoad();
+                        ModLoader.LoadedMods[i].OnMenuLoad();
                     }
                 }
                 catch (Exception e)
                 {
-                    StackFrame frame = new StackTrace(e, true).GetFrame(0);
 
-                    string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, frame.GetMethod(), Environment.NewLine);
-                    ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mod.ID, errorDetails));
+                    string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, new StackTrace(e, true).GetFrame(0).GetMethod(), Environment.NewLine);
+                    ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", ModLoader.LoadedMods[i].ID, errorDetails));
                     if (ModLoader.devMode)
                         ModConsole.Error(e.ToString());
                     System.Console.WriteLine(e);
                 }
-                if (Settings.Get(mod).Count == 0)
+                if (Settings.Get(ModLoader.LoadedMods[i]).Count == 0)
                     continue;
 
-                foreach (var kb in settings.settings)
+                foreach (Setting s in settings.settings)
                 {
-                    Settings set = Settings.modSettings.Find(x => x.Mod == mod && x.ID == kb.ID);
+                    Settings set = Settings.modSettings.Find(x => x.Mod == ModLoader.LoadedMods[i] && x.ID == s.ID);
                     if (set == null)
                         continue;
-                    set.Value = kb.Value;
+                    set.Value = s.Value;
                 }
-                mod.ModSettingsLoaded();
+                ModLoader.LoadedMods[i].ModSettingsLoaded();
             }
         }
 
