@@ -56,6 +56,7 @@ namespace MSCLoader
             AssetBundle ab = LoadAssets.LoadBundle(this, "console.unity3d");
             UI = ab.LoadAsset<GameObject>("MSCLoader Console.prefab");
             Texture2D cursor = ab.LoadAsset<Texture2D>("resizeCur.png");
+            Texture2D cursorX = ab.LoadAsset<Texture2D>("resizeCurX.png");
             ab.Unload(false);
             UI = Object.Instantiate(UI);
             UI.name = "MSCLoader Console";
@@ -65,8 +66,16 @@ namespace MSCLoader
             console.viewContainer.transform.GetChild(1).gameObject.GetComponent<Button>().onClick.AddListener(() => console.runCommand());
             console.logTextArea = console.viewContainer.transform.GetChild(2).GetChild(0).gameObject.GetComponent<Text>();
             console.viewContainer.transform.GetChild(4).gameObject.AddComponent<ConsoleUIResizer>().logview = console.viewContainer.transform.GetChild(2).gameObject;
-            console.viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().scrollbar = console.viewContainer.transform.GetChild(3).gameObject;
-            console.viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().cursor = cursor;
+             console.viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().scrollbar = console.viewContainer.transform.GetChild(3).gameObject;
+             console.viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().otherResizer = console.viewContainer.transform.GetChild(5).gameObject;
+             console.viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().cursor = cursor;
+             console.viewContainer.transform.GetChild(5).gameObject.AddComponent<ConsoleUIResizer>().inputField = console.viewContainer.transform.GetChild(0).gameObject;
+             console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().submitBtn = console.viewContainer.transform.GetChild(1).gameObject;
+             console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().logview = console.viewContainer.transform.GetChild(2).gameObject;
+             console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().scrollbar = console.viewContainer.transform.GetChild(3).gameObject;
+             console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().otherResizer = console.viewContainer.transform.GetChild(4).gameObject;
+             console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().cursor = cursorX;
+             console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().Xresizer = true;
             EventTrigger trigger = console.viewContainer.transform.GetChild(4).gameObject.GetComponent<EventTrigger>();
             EventTrigger.Entry entry = new EventTrigger.Entry();
             entry.eventID = EventTriggerType.PointerEnter;
@@ -76,7 +85,15 @@ namespace MSCLoader
             entry.eventID = EventTriggerType.PointerExit;
             entry.callback.AddListener((eventData) => { console.viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().OnMouseExit(); });
             trigger.delegates.Add(entry);
-
+            trigger = console.viewContainer.transform.GetChild(5).gameObject.GetComponent<EventTrigger>();
+            entry = new EventTrigger.Entry();
+            entry.eventID = EventTriggerType.PointerEnter;
+            entry.callback.AddListener((eventData) => { console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().OnMouseEnter(); });
+            trigger.delegates.Add(entry);
+            entry = new EventTrigger.Entry();
+            entry.eventID = EventTriggerType.PointerExit;
+            entry.callback.AddListener((eventData) => { console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().OnMouseExit(); });
+            trigger.delegates.Add(entry);
             UI.transform.SetParent(ModUI.GetCanvas().transform, false);
         }
         
@@ -86,6 +103,10 @@ namespace MSCLoader
             {
                 console.toggleVisibility();
             }
+            if (Input.GetKeyDown(KeyCode.KeypadPlus))
+            {
+                console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().LoadConsoleSize();
+            }
         }
 
         public override void OnMenuLoad()
@@ -94,7 +115,7 @@ namespace MSCLoader
             console.controller = new ConsoleController();
             ConsoleCommand.cc = console.controller;
             console.setVisibility(false);
-            console.viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().LoadConsoleSize();
+            console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().LoadConsoleSize();
             ConsoleCommand.Add(new CommandVersion());
             ConsoleCommand.Add(new CommandLogAll());
             ConsoleCommand.Add(new ManifestCommand());

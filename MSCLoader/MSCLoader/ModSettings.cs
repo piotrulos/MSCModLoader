@@ -21,6 +21,8 @@ namespace MSCLoader
 
         private Keybind menuKey = new Keybind("Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
 
+        internal static Settings dm_disabler = new Settings("mscloader_dm_disabler", "Disable mods throwing errors", false);
+
         internal static Settings expWarning = new Settings("mscloader_expWarning", "Show experimental warning", true);
         internal static Settings modPath = new Settings("mscloader_modPath", "Show mods folder", true, ModLoader.MainMenuPath);
         private static Settings modSetButton = new Settings("mscloader_modSetButton", "Show settings button in bottom right corner", true, ModSettingsToggle);
@@ -52,7 +54,11 @@ namespace MSCLoader
         {
             instance = this;
             Keybind.Add(this, menuKey);
-
+            if(ModLoader.devMode)
+            {
+                Settings.AddHeader(this, "DevMode Settings", new Color32(101, 34, 18, 255), new Color32(254, 254, 0, 255));
+                Settings.AddCheckBox(this, dm_disabler);
+            }
             Settings.AddHeader(this, "Basic Settings", new Color32(0, 128, 0, 255));
             Settings.AddText(this, "All basic settings for MSCLoader");
             Settings.AddCheckBox(this, expWarning);
