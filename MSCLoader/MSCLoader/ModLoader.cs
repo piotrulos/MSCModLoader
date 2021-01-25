@@ -1472,7 +1472,8 @@ namespace MSCLoader
             }
             catch (Exception e)
             {
-                ModConsole.Error(string.Format("<b>{0}</b> - doesn't look like a mod, remove this file from mods folder!", Path.GetFileName(file)));
+                ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - doesn't look like a mod, remove this file from mods folder!{Environment.NewLine}<b>Details:</b> {e.GetFullMessage()}{Environment.NewLine}");
+                
                 if (devMode)
                     ModConsole.Error(e.ToString());
                 System.Console.WriteLine(e);
@@ -1603,7 +1604,15 @@ namespace MSCLoader
                 {
                     ModConsole.Error(string.Format("Mod <b>{0}</b> throws <b>too many errors</b>! Last error: ", mod.ID));
                     ModConsole.Error(e.ToString());
-                    ModConsole.Warning(string.Format("[DevMode] Mod <b>{0}</b> is still running!", mod.ID));
+                    if ((bool)ModSettings_menu.dm_disabler.GetValue())
+                    {
+                        mod.isDisabled = true;
+                        ModConsole.Warning(string.Format("[DevMode] Mod <b>{0}</b> has been disabled!", mod.ID));
+                    }
+                    else
+                    {
+                        ModConsole.Warning(string.Format("[DevMode] Mod <b>{0}</b> is still running!", mod.ID));
+                    }
                 }
 
             }
@@ -1640,4 +1649,24 @@ namespace MSCLoader
             }
         }
     }
+
+    /// <summary>
+    /// Exception extension
+    /// </summary>
+    public static class ExceptionExtensions
+    {
+        /// <summary>
+        /// Get Full Exception messages (including inner exceptions) but without stack trace.
+        /// </summary>
+        /// <param name="ex">Exception</param>
+        /// <returns></returns>
+        public static string GetFullMessage(this Exception ex)
+        {
+            return ex.InnerException == null
+                 ? ex.Message
+                 : ex.Message + " --> " + ex.InnerException.GetFullMessage();
+        }
+    }
+
+
 }

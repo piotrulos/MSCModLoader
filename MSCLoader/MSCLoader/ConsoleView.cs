@@ -33,7 +33,7 @@ namespace MSCLoader
         public void toggleVisibility()
         {
             if (viewContainer.activeSelf)
-                viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().SaveConsoleSize();
+                viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().SaveConsoleSize();
             setVisibility(!viewContainer.activeSelf);
             inputField.text = string.Empty;
             if (viewContainer.activeSelf && (bool)ModConsole.typing.GetValue())
