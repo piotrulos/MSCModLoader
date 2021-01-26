@@ -61,7 +61,7 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string MSCLoader_Ver = "1.1.8";
+        public static readonly string MSCLoader_Ver = "1.1.9";
 
         /// <summary>
         /// Is this version of ModLoader experimental (this is NOT game experimental branch)
@@ -1139,7 +1139,7 @@ namespace MSCLoader
 
             }
             loading.transform.GetChild(0).GetComponent<Text>().text = string.Format("Resetting Done! You can skip intro now!");
-            yield return null;
+            yield return new WaitForSeconds(1f);
             loading.SetActive(false);
             IsModsDoneResetting = true;
             ModConsole.Print("Resetting done!");
@@ -1466,7 +1466,7 @@ namespace MSCLoader
                 }
                 if (!isMod)
                 {
-                    ModConsole.Error(string.Format("<b>{0}</b> - doesn't look like a mod or missing Mod subclass!", Path.GetFileName(file)));
+                    ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - doesn't look like a mod or missing Mod subclass!{Environment.NewLine}<b>Details:</b> File loaded correctly, but failed to find Mod methods.{Environment.NewLine}If this is a reference put this file into \"<b>References</b>\" folder.");
                     InvalidMods.Add(Path.GetFileName(file));
                 }
             }

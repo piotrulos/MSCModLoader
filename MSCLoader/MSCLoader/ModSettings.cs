@@ -22,12 +22,17 @@ namespace MSCLoader
         private Keybind menuKey = new Keybind("Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
 
         internal static Settings dm_disabler = new Settings("mscloader_dm_disabler", "Disable mods throwing errors", false);
+        internal static Settings dm_logST = new Settings("mscloader_dm_logST", "Log-all stack trace (not recommended)", false);
+        internal static Settings dm_operr = new Settings("mscloader_dm_operr", "Log-all open console on error", false);
+        internal static Settings dm_warn = new Settings("mscloader_dm_warn", "Log-all  open console on warning", false);
+        internal static Settings dm_pcon = new Settings("mscloader_dm_pcon", "Persistent console", false);
 
         internal static Settings expWarning = new Settings("mscloader_expWarning", "Show experimental warning", true);
         internal static Settings modPath = new Settings("mscloader_modPath", "Show mods folder", true, ModLoader.MainMenuPath);
         private static Settings modSetButton = new Settings("mscloader_modSetButton", "Show settings button in bottom right corner", true, ModSettingsToggle);
         internal static Settings forceMenuVsync = new Settings("mscloader_forceMenuVsync", "60FPS limit in Main Menu", true, VSyncSwitchCheckbox);
         internal static Settings openLinksOverlay = new Settings("mscloader_openLinksOverlay", "Open URLs in steam overlay", true);
+        internal static Settings showCoreModsDf = new Settings("mscloader_showCoreModsDf", "Show core modules by default", true);
         internal static Settings skipGameIntro = new Settings("mscloader_skipGameIntro", "Skip game Splash Screen", false, SkipIntroSet);
         internal static Settings syncLoad = new Settings("mscloader_syncLoad", "Load mods synchronously", false);
 
@@ -58,6 +63,10 @@ namespace MSCLoader
             {
                 Settings.AddHeader(this, "DevMode Settings", new Color32(101, 34, 18, 255), new Color32(254, 254, 0, 255));
                 Settings.AddCheckBox(this, dm_disabler);
+                Settings.AddCheckBox(this, dm_logST);
+                Settings.AddCheckBox(this, dm_operr);
+                Settings.AddCheckBox(this, dm_warn);
+                Settings.AddCheckBox(this, dm_pcon);
             }
             Settings.AddHeader(this, "Basic Settings", new Color32(0, 128, 0, 255));
             Settings.AddText(this, "All basic settings for MSCLoader");
@@ -66,6 +75,7 @@ namespace MSCLoader
             Settings.AddCheckBox(this, modSetButton);
             Settings.AddCheckBox(this, forceMenuVsync);
             Settings.AddCheckBox(this, openLinksOverlay);
+            Settings.AddCheckBox(this, showCoreModsDf);
             Settings.AddCheckBox(this, skipGameIntro);
             Settings.AddText(this, $"If for whatever reason you want to save half a second of mods loading time, enable below option.{Environment.NewLine}(Loading progress <b>cannot</b> be displayed in synchronous mode)");
             Settings.AddCheckBox(this, syncLoad);

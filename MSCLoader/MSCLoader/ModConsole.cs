@@ -66,16 +66,16 @@ namespace MSCLoader
             console.viewContainer.transform.GetChild(1).gameObject.GetComponent<Button>().onClick.AddListener(() => console.runCommand());
             console.logTextArea = console.viewContainer.transform.GetChild(2).GetChild(0).gameObject.GetComponent<Text>();
             console.viewContainer.transform.GetChild(4).gameObject.AddComponent<ConsoleUIResizer>().logview = console.viewContainer.transform.GetChild(2).gameObject;
-             console.viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().scrollbar = console.viewContainer.transform.GetChild(3).gameObject;
-             console.viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().otherResizer = console.viewContainer.transform.GetChild(5).gameObject;
-             console.viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().cursor = cursor;
-             console.viewContainer.transform.GetChild(5).gameObject.AddComponent<ConsoleUIResizer>().inputField = console.viewContainer.transform.GetChild(0).gameObject;
-             console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().submitBtn = console.viewContainer.transform.GetChild(1).gameObject;
-             console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().logview = console.viewContainer.transform.GetChild(2).gameObject;
-             console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().scrollbar = console.viewContainer.transform.GetChild(3).gameObject;
-             console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().otherResizer = console.viewContainer.transform.GetChild(4).gameObject;
-             console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().cursor = cursorX;
-             console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().Xresizer = true;
+            console.viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().scrollbar = console.viewContainer.transform.GetChild(3).gameObject;
+            console.viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().otherResizer = console.viewContainer.transform.GetChild(5).gameObject;
+            console.viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().cursor = cursor;
+            console.viewContainer.transform.GetChild(5).gameObject.AddComponent<ConsoleUIResizer>().inputField = console.viewContainer.transform.GetChild(0).gameObject;
+            console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().submitBtn = console.viewContainer.transform.GetChild(1).gameObject;
+            console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().logview = console.viewContainer.transform.GetChild(2).gameObject;
+            console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().scrollbar = console.viewContainer.transform.GetChild(3).gameObject;
+            console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().otherResizer = console.viewContainer.transform.GetChild(4).gameObject;
+            console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().cursor = cursorX;
+            console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().Xresizer = true;
             EventTrigger trigger = console.viewContainer.transform.GetChild(4).gameObject.GetComponent<EventTrigger>();
             EventTrigger.Entry entry = new EventTrigger.Entry();
             entry.eventID = EventTriggerType.PointerEnter;
@@ -96,7 +96,7 @@ namespace MSCLoader
             trigger.delegates.Add(entry);
             UI.transform.SetParent(ModUI.GetCanvas().transform, false);
         }
-        
+       
         public override void Update()
         {
             if (consoleKey.GetKeybindDown())

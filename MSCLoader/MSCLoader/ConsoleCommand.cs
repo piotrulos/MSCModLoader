@@ -26,6 +26,11 @@
         public virtual bool ShowInHelp => true;
 
         /// <summary>
+        /// Alternate command name that does the same thing. Cannot contain spaces!
+        /// </summary>
+        public virtual string Alias => null;
+
+        /// <summary>
         /// The function that will get called when the command is ran.
         /// </summary>
         /// <param name="args">The arguments the user passed after the command.</param>
@@ -42,7 +47,11 @@
         /// title="ConsoleCommand Add" /></example>
         public static void Add(ConsoleCommand cmd)
 		{
-            cc.RegisterCommand(cmd.Name.ToLower(), cmd.Run, cmd.Help, cmd.ShowInHelp);
+            if(string.IsNullOrEmpty(cmd.Alias))
+                cc.RegisterCommand(cmd.Name.ToLower(), cmd.Run, cmd.Help, cmd.ShowInHelp);
+            else
+                cc.RegisterCommand(cmd.Name.ToLower(), cmd.Run, cmd.Help, cmd.Alias.ToLower(), cmd.ShowInHelp);
+
         }
-	}
+    }
 }

@@ -37,16 +37,21 @@ namespace MSCPatcher
             form1 = this;
             InitializeComponent();
             Log.logBox = logBox;
-            if (File.Exists("Assembly-CSharp.dll") || File.Exists("UnityEngine.dll") || File.Exists("mysummercar.exe") || File.Exists("mainData") || File.Exists("mono.dll") || File.Exists("CSteamworks.dll")) //check if idiot unpacked this to game folder.
+            if (File.Exists("Assembly-CSharp.dll") || File.Exists("UnityEngine.dll") || File.Exists("mysummercar.exe") || File.Exists("mainData") || File.Exists("mono.dll") || File.Exists("CSteamworks.dll") || Directory.Exists("References")) //check if idiot unpacked this to game folder.
             {
                 if (MessageBox.Show("Did you read the instructions? (Readme.txt)", "Question for you!", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    MessageBox.Show(string.Format("Why are you lying?{0}Or maybe you can't read?{0}If you could read, you would know what you did wrong.", Environment.NewLine), "You are a liar", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(string.Format("Why are you lying?{0}Or maybe you can't read?{0}If you could read, you would know where not to unpack files.", Environment.NewLine), "You are a liar", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 else
                 {
-                    MessageBox.Show(string.Format("Yes I see.{0}Go back to readme and you will know what you did wrong.", Environment.NewLine), "You are a liar", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(string.Format("Yes I see.{0}Go back to readme and you will know you would know where not to unpack files.", Environment.NewLine), "Read manual", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
+                Environment.Exit(0);
+            }
+            if (!File.Exists("MSCLoader.dll"))
+            {
+                MessageBox.Show(string.Format("Don't run this file from zip folder. Unpack all files and start patcher again.", Environment.NewLine), "Read the freaking instructions", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Environment.Exit(0);
             }
             if (File.Exists("MSCFolder.txt"))
@@ -89,6 +94,8 @@ namespace MSCPatcher
                 ADradio.Checked = true;
                 modPath = adPath;
             }
+            Log.Write(string.Format("Current folder: {0}", Path.GetFullPath(".")));
+
             try
             {
                 mscLoaderVersion = FileVersionInfo.GetVersionInfo("MSCLoader.dll");
@@ -238,11 +245,16 @@ namespace MSCPatcher
                     debugStatus.Text = "Unknown files detected!";
                     debugStatus2.ForeColor = Color.Red;
                     debugStatus2.Text = "Cannot enable debugging!";
+                    is64bin = true;
                     break;
             }
         }
         public void PatchStarter()
         {
+            if(modPath == Path.GetFullPath("."))
+            {
+                throw new Exception("Modloader Files unpacked into mod folder. Cannot install.");
+            }
             if (oldFilesFound)
             {
                 Log.Write("Cleaning old files!", true, true);
@@ -322,7 +334,35 @@ namespace MSCPatcher
 
                 Patcher.ProcessReferences(mscPath, false);
                 Patcher.CopyCoreAssets(modPath);
+                Patcher.DeleteIfExists(Path.Combine(mscPath, @"doorstop_config.ini"));
+                Log.Write("Generating config file.....doorstop_config.ini");
+                using (TextWriter tw = File.CreateText(Path.Combine(mscPath, @"doorstop_config.ini")))
+                {
+                    tw.WriteLine(@"[UnityDoorstop]");
+                    tw.WriteLine(@"enabled=true");
+                    tw.WriteLine(@"targetAssembly=mysummercar_Data\Managed\MSCLoader.dll");
+                    tw.WriteLine(@"redirectOutputLog=true");
+                    tw.WriteLine(@"ignoreDisableSwitch=true");
+                    tw.WriteLine(@"[MSCLoader]");
 
+                    switch (InitMethod)
+                    {
+                        case "Init_MD":
+                            tw.WriteLine(@"mods=MD");
+                            break;
+                        case "Init_GF":
+                            tw.WriteLine(@"mods=GF");
+                            break;
+                        case "Init_AD":
+                            tw.WriteLine(@"mods=AD");
+                            break;
+                        default:
+                            tw.WriteLine(@"mods=GF");
+                            break;
+                    }
+                    tw.WriteLine(@"skipIntro=false");
+                    tw.Flush();
+                }
                 Log.Write("MSCLoader update successful!");
                 Log.Write("");
                 MessageBox.Show("Update successfull!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -379,21 +419,23 @@ namespace MSCPatcher
                     tw.WriteLine(@"targetAssembly=mysummercar_Data\Managed\MSCLoader.dll");
                     tw.WriteLine(@"redirectOutputLog=true");
                     tw.WriteLine(@"ignoreDisableSwitch=true");
+                    tw.WriteLine(@"[MSCLoader]");
                     switch (InitMethod)
                     {
                         case "Init_MD":
-                            tw.WriteLine(@"MD");
+                            tw.WriteLine(@"mods=MD");
                             break;
                         case "Init_GF":
-                            tw.WriteLine(@"GF");
+                            tw.WriteLine(@"mods=GF");
                             break;
                         case "Init_AD":
-                            tw.WriteLine(@"AD");
+                            tw.WriteLine(@"mods=AD");
                             break;
                         default:
-                            tw.WriteLine(@"GF");
+                            tw.WriteLine(@"mods=GF");
                             break;
                     }
+                    tw.WriteLine(@"skipIntro=false");
                     tw.Flush();
                 }
 
@@ -432,7 +474,7 @@ namespace MSCPatcher
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(string.Format("Error:{1}{0}{1}{1}Please restart patcher!", ex.Message, Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(string.Format("Error:{1}{0}", ex.Message, Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         Log.Write("Error", true, true);
                         Log.Write(ex.Message);
                         Log.Write(ex.ToString());
@@ -453,7 +495,7 @@ namespace MSCPatcher
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(string.Format("Error:{1}{0}{1}{1}Please restart patcher!", ex.Message, Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(string.Format("Error:{1}{0}", ex.Message, Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         Log.Write("Error", true, true);
                         Log.Write(ex.Message);
                         Log.Write(ex.ToString());
@@ -474,7 +516,7 @@ namespace MSCPatcher
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(string.Format("Error:{1}{0}{1}{1}Please restart patcher!", ex.Message, Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(string.Format("Error:{1}{0}", ex.Message, Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         Log.Write("Error", true, true);
                         Log.Write(ex.Message);
                         Log.Write(ex.ToString());
@@ -509,6 +551,7 @@ namespace MSCPatcher
                     GFradio.Checked = true;
                     modPath = gfPath;
                 }
+                Log.Write(string.Format("Current folder: {0}", Path.GetFullPath(".")));
                 Log.Write(string.Format("Game folder set to: {0}", mscPath));
                 File.WriteAllText("MSCFolder.txt", mscPath);
                 Log.Write(string.Format("Game folder is saved as: {0}{1}", mscPath, Environment.NewLine));
