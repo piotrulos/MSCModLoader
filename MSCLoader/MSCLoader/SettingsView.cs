@@ -189,6 +189,7 @@ namespace MSCLoader
         {
             if(page == 0)
             {
+                scmdf = true;
                 CreateList();
             }
         }
@@ -582,8 +583,11 @@ namespace MSCLoader
             hdr.transform.GetChild(0).GetComponent<Text>().color = text;
             hdr.transform.SetParent(modView.transform, false);
         }
+        bool scmdf = false;
         void CreateList()
         {
+            if ((bool)ModSettings_menu.showCoreModsDf.GetValue() && !scmdf)
+                coreModCheckbox.isOn = true;
             RemoveChildren(modView.transform);
             if(coreModCheckbox.isOn)
             {
@@ -654,6 +658,7 @@ namespace MSCLoader
                 invMod.transform.GetChild(0).GetComponent<Text>().text = s;
                 invMod.transform.SetParent(modView.transform, false);
             }
+            scmdf = false;
         }
         public void toggleVisibility()
         {

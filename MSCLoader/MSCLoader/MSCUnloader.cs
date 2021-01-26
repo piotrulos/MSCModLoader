@@ -10,6 +10,7 @@ namespace MSCLoader
 
     public class MSCUnloader : MonoBehaviour
     {
+        internal static Queue<string> dm_pcon;
         internal bool reset;
         bool doReset = false;
 
@@ -17,6 +18,11 @@ namespace MSCLoader
         {
             if (!reset) //to avoid endless loop
             {
+                if (ModLoader.devMode && (bool)ModSettings_menu.dm_pcon.GetValue())
+                {
+                    dm_pcon = new Queue<string>(ModConsole.console.controller.scrollback);
+                    dm_pcon.Enqueue($"{System.Environment.NewLine}{System.Environment.NewLine}");
+                }
                 reset = true;
                 doReset = true;
             }

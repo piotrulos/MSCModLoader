@@ -32,9 +32,12 @@ namespace MSCLoader
 
         // How many log lines should be retained?
         // Note that strings submitted to appendLogLine with embedded newlines will be counted as a single line.
-        const int scrollbackSize = 150;
-
-        Queue<string> scrollback = new Queue<string>(scrollbackSize);
+#if DevMode
+        const int scrollbackSize = 500;
+#else
+        const int scrollbackSize = 200;
+#endif
+        public Queue<string> scrollback;
         public List<string> commandHistory = new List<string>();
         internal Dictionary<string, CommandRegistration> commands = new Dictionary<string, CommandRegistration>();
 
@@ -42,7 +45,14 @@ namespace MSCLoader
 
         public ConsoleController()
         {
-
+            if (ModLoader.devMode && MSCUnloader.dm_pcon != null)
+            {
+                scrollback = new Queue<string>(MSCUnloader.dm_pcon);
+            }
+            else
+            {
+                scrollback = new Queue<string>(scrollbackSize);
+            }
             RegisterCommand("help", HelpCommand, "This screen", "?");
             RegisterCommand("clear", ClearConsole, "Clears console screen", "cls");
         }
