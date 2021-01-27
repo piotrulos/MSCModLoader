@@ -104,6 +104,10 @@ namespace MSCLoader
         {
             Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
         }
+        public void OnDisable()
+        {
+            OnMouseExit();
+        }
         public void LoadConsoleSize()
         {
             if (!Xresizer) return;

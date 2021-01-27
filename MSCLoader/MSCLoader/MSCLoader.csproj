@@ -115,6 +115,7 @@
     <Compile Include="MSCUnloader.cs" />
     <Compile Include="AudioLibrary\NAudio.Vorbis\VorbisWaveReader.cs" />
     <Compile Include="OBJLoader.cs" />
+    <Compile Include="PlayMakerExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AudioLibrary\AudioFileReader.cs" />
     <Compile Include="AudioLibrary\Manager.cs" />
