@@ -30,7 +30,8 @@ namespace MSCLoader
         /// <example><code lang="C#" title="Fsm Inject" >FsmHook.FsmInject(GameObject.Find("Some game object"), "state name", function);</code></example>
         public static void FsmInject(GameObject gameObject, string stateName, Action hook)
         {
-            FsmState state = GetStateFromGameObject(gameObject, stateName);
+            FsmState state = gameObject.GetPlayMakerState(stateName);
+            
             if (state != null)
             {
                 // inject our hook action to the state machine
@@ -44,20 +45,10 @@ namespace MSCLoader
             }
             else
             {
-                ModConsole.Error(string.Format("Cannot find state <b>{0}</b> in GameObject <b>{1}</b>", stateName, gameObject.name));
+                ModConsole.Error(string.Format("FsmInject: Cannot find state <b>{0}</b> in GameObject <b>{1}</b>", stateName, gameObject.name));
             }
         }
 
-        private static FsmState GetStateFromGameObject(GameObject obj, string stateName)
-        {
-            PlayMakerFSM[] comps = obj.GetComponents<PlayMakerFSM>();
-            foreach (PlayMakerFSM playMakerFsm in comps)
-            {
-                FsmState state = playMakerFsm.FsmStates.FirstOrDefault(x => x.Name == stateName);
-                if (state != null)
-                    return state;
-            }
-            return null;
-        }
+
     }
 }

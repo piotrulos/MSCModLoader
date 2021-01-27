@@ -17,7 +17,9 @@
 
         internal virtual int modErrors { get => errorCount; set => errorCount = value; }
 
-        internal virtual bool isDisabled { get => disabled; set => disabled = value; }
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+        public virtual bool isDisabled { get => disabled; internal set => disabled = value; }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         internal virtual bool hasUpdate { get => update;  set => update = value; }
 

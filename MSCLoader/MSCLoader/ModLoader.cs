@@ -61,7 +61,7 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string MSCLoader_Ver = "1.1.9";
+        public static readonly string MSCLoader_Ver = "1.1.10";
 
         /// <summary>
         /// Is this version of ModLoader experimental (this is NOT game experimental branch)
@@ -1180,6 +1180,8 @@ namespace MSCLoader
             if (SecondPassMods.Count() > 0)
             {
                 ModConsole.Print("Loading mods (second pass)...");
+                loading.transform.GetChild(0).GetComponent<Text>().text = string.Format("Loading mods (second pass). Please wait...");
+                yield return null;
                 for (int j = 0; j < SecondPassMods.Length; j++)
                 {
                     if (SecondPassMods[j].isDisabled)
@@ -1199,7 +1201,7 @@ namespace MSCLoader
                 }
             }
             s.Stop();
-            FsmHook.FsmInject(GameObject.Find("ITEMS"), "Save game", SaveMods);         
+            GameObject.Find("ITEMS").FsmInject("Save game", SaveMods);
             ModConsole.Print("</color>");
             allModsLoaded = true;
             loading.SetActive(false);
@@ -1279,7 +1281,7 @@ namespace MSCLoader
                 }
             }
             s.Stop();
-            FsmHook.FsmInject(GameObject.Find("ITEMS"), "Save game", SaveMods);
+            GameObject.Find("ITEMS").FsmInject("Save game", SaveMods);
             ModConsole.Print("</color>");
             allModsLoaded = true;
             loading.SetActive(false);
