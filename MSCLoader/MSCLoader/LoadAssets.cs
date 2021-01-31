@@ -127,35 +127,38 @@ namespace MSCLoader
 
 
         /// <summary>
-        /// A function for Loading AssetBundles Synchronously (without coroutines)
+        /// Loads assetbundle from Assets folder
         /// </summary>
-        /// <note>
-        /// Not recomended for big files, may increase loading times.
-        /// </note> 
         /// <example> Example based on loading settings assets.
         /// <code source="Examples.cs" region="LoadBundle" lang="C#"/></example>
         /// <param name="mod">Mod instance.</param>
         /// <param name="bundleName">File name to load (for example "something.unity3d")</param>
-        /// <returns>Returns unity AssetBundle</returns>
+        /// <returns>Unity AssetBundle</returns>
         public static AssetBundle LoadBundle(Mod mod, string bundleName)
         {
             string bundle = Path.Combine(ModLoader.GetModAssetsFolder(mod), bundleName);
             if(File.Exists(bundle))
             {
-                try
-                {
-                    ModConsole.Print(string.Format("Loading Asset: {0}...", bundleName));
-                }
-                catch(Exception)
-                {
-                    //nothing can be done if console is not loaded. Skip that error.
-                }
+                ModConsole.Print(string.Format("Loading Asset: {0}...", bundleName));
                 return AssetBundle.CreateFromMemoryImmediate(File.ReadAllBytes(bundle));
             }
             else
             {
                 throw new FileNotFoundException(string.Format("<b>LoadBundle() Error:</b> File not found: <b>{0}</b>{1}", bundleName, Environment.NewLine), bundleName);
             }
+        }
+
+        /// <summary>
+        /// Loads assetbundle from Resources
+        /// </summary>
+        /// <param name="assetBundleFromResources">Resource path</param>
+        /// <returns>Unity AssetBundle</returns>
+        public static AssetBundle LoadBundle(byte[] assetBundleFromResources)
+        {
+            if(assetBundleFromResources != null)
+                return AssetBundle.CreateFromMemoryImmediate(assetBundleFromResources);
+            else
+                throw new Exception(string.Format("<b>LoadBundle() Error:</b> Resource doesn't exists{0}", Environment.NewLine));
         }
 
         // TGALoader by https://gist.github.com/mikezila/10557162

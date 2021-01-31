@@ -11,8 +11,10 @@ namespace MSCLoader
     public class ModUI
     {
 #pragma warning disable CS1591
-        //canvas for UI
-        static GameObject canvasGO;
+        internal static GameObject messageBox;
+        internal static GameObject messageBoxBtn;
+        private static GameObject canvasGO;
+
         public static void CreateCanvas()
         {
             canvasGO = new GameObject();
@@ -43,11 +45,6 @@ namespace MSCLoader
         public static GameObject GetCanvas() => canvasGO;
     
         /// <summary>
-        /// Message box GameObject
-        /// </summary>
-        public static GameObject messageBox;
-
-        /// <summary>
         /// Show Message Box with simple message
         /// </summary>
         /// <param name="message">Message content</param>
@@ -61,10 +58,11 @@ namespace MSCLoader
         public static void ShowMessage(string message, string title)
         {
             GameObject mb = GameObject.Instantiate(messageBox);
-            mb.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = title;
-            mb.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = message;
-            mb.transform.GetChild(1).GetChild(1).gameObject.SetActive(true);
-            mb.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Button>().onClick.AddListener(() => GameObject.Destroy(mb));
+            GameObject.Instantiate(messageBoxBtn).transform.SetParent(mb.transform.GetChild(0).GetChild(2), false);
+            mb.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Text>().text = title.ToUpper();
+            mb.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>().text = message;            
+            mb.transform.GetChild(0).GetChild(2).GetChild(0).GetComponent<Button>().onClick.AddListener(() => GameObject.Destroy(mb));
+            mb.transform.GetChild(0).GetChild(2).GetChild(0).GetChild(0).GetComponent<Text>().text = "OK";
             mb.transform.SetParent(GetCanvas().transform, false);
             mb.SetActive(true);
         }
@@ -74,7 +72,7 @@ namespace MSCLoader
         /// </summary>
         /// <param name="message">Message content</param>
         /// <param name="ifYes">What to do when user click yes</param>
-        public static void ShowYesNoMessage(string message, Action ifYes) => ShowYesNoMessage(message, "Message", ifYes);
+        public static void ShowYesNoMessage(string message, Action ifYes) => ShowYesNoMessage(message, "Question", ifYes);
 
         /// <summary>
         /// Show simple question message, and do something when user click yes.
@@ -84,12 +82,16 @@ namespace MSCLoader
         /// <param name="ifYes">What to do when user click yes</param>
         public static void ShowYesNoMessage(string message, string title, Action ifYes)
         {
-            GameObject mb = GameObject.Instantiate(messageBox); 
-            mb.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = title;
-            mb.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = message;
-            mb.transform.GetChild(1).GetChild(2).gameObject.SetActive(true);
-            mb.transform.GetChild(1).GetChild(2).GetChild(1).GetComponent<Button>().onClick.AddListener(() => { ifYes.Invoke(); GameObject.Destroy(mb); });
-            mb.transform.GetChild(1).GetChild(2).GetChild(0).GetComponent<Button>().onClick.AddListener(() =>  GameObject.Destroy(mb));
+            GameObject mb = GameObject.Instantiate(messageBox);
+            GameObject.Instantiate(messageBoxBtn).transform.SetParent(mb.transform.GetChild(0).GetChild(2), false);
+            GameObject.Instantiate(messageBoxBtn).transform.SetParent(mb.transform.GetChild(0).GetChild(2), false);
+            mb.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Text>().text = title.ToUpper();
+            mb.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>().text = message;
+
+            mb.transform.GetChild(0).GetChild(2).GetChild(0).GetComponent<Button>().onClick.AddListener(() => { ifYes.Invoke(); GameObject.Destroy(mb); });
+            mb.transform.GetChild(0).GetChild(2).GetChild(0).GetChild(0).GetComponent<Text>().text = "YES";
+            mb.transform.GetChild(0).GetChild(2).GetChild(1).GetComponent<Button>().onClick.AddListener(() =>  GameObject.Destroy(mb));
+            mb.transform.GetChild(0).GetChild(2).GetChild(1).GetChild(0).GetComponent<Text>().text = "NO";
             mb.transform.SetParent(GetCanvas().transform, false);
             mb.SetActive(true);
         }
