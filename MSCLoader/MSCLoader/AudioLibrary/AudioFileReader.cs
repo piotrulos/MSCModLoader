@@ -1,6 +1,7 @@
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using NAudio.Vorbis;
+using NAudio.Flac;
 using System.IO;
 using UnityEngine;
 
@@ -14,6 +15,7 @@ namespace AudioLibrary
         mp3,
         aiff,
         ogg,
+        flac,
         unknown = -1
     }
     internal class AudioFileReader : WaveStream, ISampleProvider
@@ -83,6 +85,9 @@ namespace AudioLibrary
                     break;
                 case AudioFormat.ogg:
                     readerStream = new VorbisWaveReader(stream);
+                    break;
+                case AudioFormat.flac:
+                    readerStream = new FlacReader(stream);
                     break;
                 default:
                     System.Console.WriteLine($"Audio format {format} is not supported");
