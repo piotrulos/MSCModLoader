@@ -987,6 +987,7 @@ namespace MSCLoader
             AssetBundle ab = LoadAssets.LoadBundle(new ModCore(), "core.unity3d");
             guiskin = ab.LoadAsset<GUISkin>("MSCLoader.guiskin");
             ModUI.messageBox = ab.LoadAsset<GameObject>("MSCLoader MB.prefab");
+            ModUI.messageBoxBtn = ab.LoadAsset<GameObject>("MB_Button.prefab");
             mainMenuInfo = ab.LoadAsset<GameObject>("MSCLoader Info.prefab");
             loading = ab.LoadAsset<GameObject>("LoadingMods.prefab");
             loadingMeta = ab.LoadAsset<GameObject>("MSCLoader pbar.prefab");
