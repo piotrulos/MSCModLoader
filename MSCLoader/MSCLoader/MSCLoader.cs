@@ -90,6 +90,28 @@ namespace MSCLoader
         {
             static void Prefix() => SkipIntro(introSkip);
         }
+        
+        [HarmonyPatch(typeof(HutongGames.PlayMaker.Actions.MousePickEvent))]
+        [HarmonyPatch("DoMousePickEvent")]
+        class InjectClickthroughFix
+        {
+            static bool Prefix()
+            {
+                if (UnityEngine.GUIUtility.hotControl != 0)
+                {
+                    return false; 
+                }
+                if(UnityEngine.EventSystems.EventSystem.current != null)
+                {
+                    if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+                    {
+                        return false;
+                    }
+                }
+                return true;
+
+            }
+        }
 
         public static void SkipIntro(bool skip)
         {

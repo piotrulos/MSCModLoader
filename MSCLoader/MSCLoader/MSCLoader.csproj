@@ -108,7 +108,6 @@
     <Compile Include="ModAudio.cs" />
     <Compile Include="ModAudioStream.cs" />
     <Compile Include="ModConsole.cs" />
-    <Compile Include="ModCore.cs" />
     <Compile Include="ModFixedUpdate.cs" />
     <Compile Include="ModLoader.cs" />
     <Compile Include="ModOnGUI.cs" />
@@ -129,7 +128,9 @@
     <Compile Include="Settings.cs" />
     <Compile Include="SettingsView.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="CoreAssets\core.unity3d" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if "$(ConfigurationName)" == "Release" (

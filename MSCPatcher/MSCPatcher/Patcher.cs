@@ -82,14 +82,15 @@ namespace MSCPatcher
 
         public static void CopyCoreAssets(string modPath)
         {
-            Log.Write("Copying Core Assets.....MSCLoader_Core");
+            //Log.Write("Copying Core Assets.....MSCLoader_Core");
 
-            if (!Directory.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Core")))
-                Directory.CreateDirectory(Path.Combine(modPath, @"Assets\MSCLoader_Core"));
-            else
+            //if (!Directory.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Core")))
+            //    Directory.CreateDirectory(Path.Combine(modPath, @"Assets\MSCLoader_Core"));
+            //  else
+            if (Directory.Exists(Path.Combine(modPath, @"Assets\MSCLoader_Core")))
                 File.Delete(Path.Combine(modPath, @"Assets\MSCLoader_Core\core.unity3d"));
 
-            File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Core", "core.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Core\core.unity3d"));
+           // File.Copy(Path.GetFullPath(Path.Combine(@"Assets\MSCLoader_Core", "core.unity3d")), Path.Combine(modPath, @"Assets\MSCLoader_Core\core.unity3d"));
 
             Log.Write("Copying Core Assets.....MSCLoader_Settings");
 
