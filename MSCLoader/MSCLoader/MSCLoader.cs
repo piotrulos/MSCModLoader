@@ -103,6 +103,8 @@ namespace MSCLoader
         {
             try
             {
+                if (File.Exists("ModLoaderSettings.json"))
+                    File.Delete("ModLoaderSettings.json");
                 IniPtr ini = new IniPtr(Path.GetFullPath("doorstop_config.ini"));
                 cfg = ini.ReadValue("MSCLoader", "mods");
                 introSkip = Convert.ToBoolean(ini.ReadValue("MSCLoader", "skipIntro"));

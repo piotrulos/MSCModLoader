@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Ionic.Zip;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -100,15 +101,18 @@ namespace MSCLoader
         private static string SettingsFolder = Path.Combine(ConfigFolder, "Mod Settings");
         internal static string ManifestsFolder = Path.Combine(ConfigFolder, "Mod Metadata");
         private static string AssetsFolder = Path.Combine(ModsFolder, "Assets");
-
+        private string[] upd_tmp;
+        private List<string> mod_aulist;
         private GameObject mainMenuInfo;
         private GameObject loading;
         private GameObject loadingMeta;
         private Animator menuInfoAnim;
         private GUISkin guiskin;
 
-        private readonly string serverURL = "http://my-summer-car.ml"; //localhost for testing only
+        private readonly string serverURL = "http://my-summer-car.ml";
         private readonly string metadataURL = "http://my-summer-car.ml:4000";
+        //private readonly string serverURL = "http://localhost/msc2"; //localhost for testing only
+        //private readonly string metadataURL = "http://localhost:4000";
 
         private bool IsDoneLoading = false;
         private bool IsModsLoading = false;
@@ -392,6 +396,9 @@ namespace MSCLoader
                 mscUnloader.reset = false;
                 if (!Directory.Exists(ModsFolder))
                     Directory.CreateDirectory(ModsFolder);
+                if(!Directory.Exists("upd_tmp"))
+                    Directory.CreateDirectory("upd_tmp");
+
                 if (!Directory.Exists(ConfigFolder))
                 {
                     Directory.CreateDirectory(ConfigFolder);
@@ -405,10 +412,8 @@ namespace MSCLoader
                     Directory.CreateDirectory(Path.Combine(ManifestsFolder, "Mod Icons"));
 
                 }
-
                 if (!Directory.Exists(AssetsFolder))
                     Directory.CreateDirectory(AssetsFolder);
-
 
                 LoadMod(new ModConsole(), MSCLoader_Ver);
                 LoadedMods[0].ModSettings();
@@ -421,112 +426,173 @@ namespace MSCLoader
                     ModConsole.Print(string.Format("<color=green>ModLoader <b>v{0}</b> ready</color> [<color=magenta>Experimental</color> <color=lime>build {1}</color>]", MSCLoader_Ver, expBuild));
                 else
                     ModConsole.Print(string.Format("<color=green>ModLoader <b>v{0}</b> ready</color>", MSCLoader_Ver));
-                LoadReferences();
-                PreLoadMods();
-                ModConsole.Print(string.Format("<color=orange>Found <color=green><b>{0}</b></color> mods!</color>", LoadedMods.Count - 2));
-                try
-                {
-                    if (File.Exists(Path.GetFullPath(Path.Combine("LAUNCHER.exe", ""))) || File.Exists(Path.GetFullPath(Path.Combine("SmartSteamEmu64.dll", ""))) || File.Exists(Path.GetFullPath(Path.Combine("SmartSteamEmu.dll", ""))))
-                    {
-                        ModConsole.Print(string.Format("<color=orange>Hello <color=green><b>{0}</b></color>!</color>", "Murzyn!"));
-                        throw new Exception("[EMULATOR] Do What You Want, Cause A Pirate Is Free... You Are A Pirate!");
-                        //exclude emulators
-                    }
-                    Steamworks.SteamAPI.Init();
-                    steamID = Steamworks.SteamUser.GetSteamID().ToString();
-                    ModConsole.Print(string.Format("<color=orange>Hello <color=green><b>{0}</b></color>!</color>", Steamworks.SteamFriends.GetPersonaName()));
-                    WebClient webClient = new WebClient();
-                    webClient.Headers.Add("user-agent", string.Format("MSCLoader/{0} ({1})", MSCLoader_Ver, SystemInfo.operatingSystem));
-                    webClient.DownloadStringCompleted += sAuthCheckCompleted;
-                    webClient.DownloadStringAsync(new Uri(string.Format("{0}/sauth.php?sid={1}", serverURL, steamID)));
-                }
-                catch (Exception e)
-                {
-                    steamID = null;
-                    ModConsole.Error("Steam client doesn't exists.");
-                    if (devMode)
-                        ModConsole.Error(e.ToString());
-                    System.Console.WriteLine(e);
-                    if (CheckSteam())
-                    {
-                        System.Console.WriteLine(new AccessViolationException().Message);
-                        Environment.Exit(0);
-                    }
-                }
                 MainMenuInfo();
-                LoadModsSettings();
-                ModSettings_menu.LoadBinds();
-                if (OnGUImods.Count() > 0) 
-                    gameObject.AddComponent<ModOnGUI>().modLoader = this;
-                if (UpdateMods.Count() > 0)
-                    gameObject.AddComponent<ModUpdate>().modLoader = this;
-                if (FixedUpdateMods.Count() > 0)
-                    gameObject.AddComponent<ModFixedUpdate>().modLoader = this;
-                if (!rtmm)
+                upd_tmp = Directory.GetFiles("upd_tmp", "*.zip");
+                if (upd_tmp.Length == 0)
                 {
-                    if (ModSettings_menu.cfmu_set != 0)
+                    ContinueInit();
+                }
+                else
+                {
+                    StartCoroutine(UnpackUpdates());
+                }
+            }
+        }
+        void ContinueInit()
+        {
+            LoadReferences();
+            PreLoadMods();
+            ModConsole.Print(string.Format("<color=orange>Found <color=green><b>{0}</b></color> mods!</color>", LoadedMods.Count - 2));
+            try
+            {
+                if (File.Exists(Path.GetFullPath(Path.Combine("LAUNCHER.exe", ""))) || File.Exists(Path.GetFullPath(Path.Combine("SmartSteamEmu64.dll", ""))) || File.Exists(Path.GetFullPath(Path.Combine("SmartSteamEmu.dll", ""))))
+                {
+                    ModConsole.Print(string.Format("<color=orange>Hello <color=green><b>{0}</b></color>!</color>", "Murzyn!"));
+                    throw new Exception("[EMULATOR] Do What You Want, Cause A Pirate Is Free... You Are A Pirate!");
+                    //exclude emulators
+                }
+                Steamworks.SteamAPI.Init();
+                steamID = Steamworks.SteamUser.GetSteamID().ToString();
+                ModConsole.Print(string.Format("<color=orange>Hello <color=green><b>{0}</b></color>!</color>", Steamworks.SteamFriends.GetPersonaName()));
+                WebClient webClient = new WebClient();
+                webClient.Headers.Add("user-agent", string.Format("MSCLoader/{0} ({1})", MSCLoader_Ver, SystemInfo.operatingSystem));
+                webClient.DownloadStringCompleted += sAuthCheckCompleted;
+                webClient.DownloadStringAsync(new Uri(string.Format("{0}/sauth.php?sid={1}", serverURL, steamID)));
+            }
+            catch (Exception e)
+            {
+                steamID = null;
+                ModConsole.Error("Steam client doesn't exists.");
+                if (devMode)
+                    ModConsole.Error(e.ToString());
+                System.Console.WriteLine(e);
+                if (CheckSteam())
+                {
+                    System.Console.WriteLine(new AccessViolationException().Message);
+                    Environment.Exit(0);
+                }
+            }
+            LoadModsSettings();
+            ModSettings_menu.LoadBinds();
+            if (OnGUImods.Count() > 0)
+                gameObject.AddComponent<ModOnGUI>().modLoader = this;
+            if (UpdateMods.Count() > 0)
+                gameObject.AddComponent<ModUpdate>().modLoader = this;
+            if (FixedUpdateMods.Count() > 0)
+                gameObject.AddComponent<ModFixedUpdate>().modLoader = this;
+            if (!rtmm)
+            {
+                if (ModSettings_menu.cfmu_set != 0)
+                {
+                    string sp = Path.Combine(SettingsFolder, @"MSCLoader_Settings\lastCheck");
+                    if (File.Exists(sp))
                     {
-                        string sp = Path.Combine(SettingsFolder, @"MSCLoader_Settings\lastCheck");
-                        if (File.Exists(sp))
-                        {
-                            DateTime lastCheck;
-                            string lastCheckS = File.ReadAllText(sp);
-                            DateTime.TryParse(lastCheckS, out lastCheck);
-                            if ((DateTime.Now - lastCheck).TotalDays >= ModSettings_menu.cfmu_set || (DateTime.Now - lastCheck).TotalDays < 0)
-                            {
-                                StartCoroutine(CheckForModsUpdates());
-                                File.WriteAllText(sp, DateTime.Now.ToString());
-                            }
-                            else
-                            {
-                                foreach (Mod mod in LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")))
-                                    ReadMetadata(mod);
-                            }
-                        }
-                        else
+                        DateTime lastCheck;
+                        string lastCheckS = File.ReadAllText(sp);
+                        DateTime.TryParse(lastCheckS, out lastCheck);
+                        if ((DateTime.Now - lastCheck).TotalDays >= ModSettings_menu.cfmu_set || (DateTime.Now - lastCheck).TotalDays < 0)
                         {
                             StartCoroutine(CheckForModsUpdates());
                             File.WriteAllText(sp, DateTime.Now.ToString());
+                        }
+                        else
+                        {
+                            foreach (Mod mod in LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")))
+                                ReadMetadata(mod);
                         }
                     }
                     else
                     {
                         StartCoroutine(CheckForModsUpdates());
+                        File.WriteAllText(sp, DateTime.Now.ToString());
                     }
                 }
-
-                if (devMode)
-                    ModConsole.Warning("You are running ModLoader in <color=red><b>DevMode</b></color>, this mode is <b>only for modders</b> and shouldn't be use in normal gameplay.");
-                System.Console.WriteLine(SystemInfo.operatingSystem); //operating system version to output_log.txt
-                if (saveErrors != null)
+                else
                 {
-                    if (saveErrors.Count > 0 && wasSaving)
-                    {
-                        ModUI.ShowMessage(string.Format("Some mod thrown an error during saving{0}Check console for more information!", Environment.NewLine));
-                        for (int i = 0; i < saveErrors.Count; i++)
-                        {
-                            ModConsole.Error(saveErrors[i]);
-                        }
-                    }
-                    wasSaving = false;
+                    StartCoroutine(CheckForModsUpdates());
                 }
+            }
+
+            if (devMode)
+                ModConsole.Warning("You are running ModLoader in <color=red><b>DevMode</b></color>, this mode is <b>only for modders</b> and shouldn't be use in normal gameplay.");
+            System.Console.WriteLine(SystemInfo.operatingSystem); //operating system version to output_log.txt
+            if (saveErrors != null)
+            {
+                if (saveErrors.Count > 0 && wasSaving)
+                {
+                    ModUI.ShowMessage(string.Format("Some mod thrown an error during saving{0}Check console for more information!", Environment.NewLine));
+                    for (int i = 0; i < saveErrors.Count; i++)
+                    {
+                        ModConsole.Error(saveErrors[i]);
+                    }
+                }
+                wasSaving = false;
             }
         }
 
+        IEnumerator UnpackUpdates()
+        {
+            ModConsole.Print("Unpacking mod updates...");
+            loadingMeta.transform.GetChild(0).GetComponent<Text>().text = string.Format("Unpacking updates");
+            loadingMeta.transform.GetChild(1).GetComponent<Slider>().minValue = 0;
+            loadingMeta.transform.GetChild(1).GetComponent<Slider>().maxValue = upd_tmp.Length;
+            loadingMeta.transform.GetChild(2).GetComponent<Text>().text = string.Format("{0}/{1}", 0, upd_tmp.Length);
+            loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("Unpacking updates");
+            loadingMeta.transform.GetChild(4).GetComponent<Text>().text = "...";
+            loadingMeta.SetActive(true);
+            yield return null;
+            for (int i = 0; i < upd_tmp.Length; i++)
+            {
+                loadingMeta.transform.GetChild(2).GetComponent<Text>().text = string.Format("{0}/{1}", i, upd_tmp.Length);
+                loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format($"{upd_tmp[i]}");
+
+                yield return null;
+                ModConsole.Print($"Unpacking file {upd_tmp[i]}");
+                string zip = upd_tmp[i];
+                try
+                {
+                    if (!ZipFile.IsZipFile(zip))
+                    {
+                        ModConsole.Error($"Failed read zip file {upd_tmp[i]}");
+                    }
+                    else
+                    {
+                        ZipFile zip1 = ZipFile.Read(File.ReadAllBytes(zip));
+                        foreach (ZipEntry zz in zip1)
+                        {
+                            ModConsole.Print($"Copying new file: {zz.FileName}");
+                            zz.Extract(ModsFolder, ExtractExistingFileAction.OverwriteSilently);
+                        }
+                    }
+                    File.Delete(upd_tmp[i]);
+                }
+                catch (Exception e)
+                {
+                    ModConsole.Error(e.Message);
+                    System.Console.WriteLine(e);
+                }
+            }
+            loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("Unpacking updates done!");
+            yield return null;
+            loadingMeta.SetActive(false);
+            ModUI.ShowMessage("Updating mods finished.", "Update mods");
+            ContinueInit();
+        }
+    
         private bool cfmuErrored = false;
         private bool cfmuInProgress = false;
         private string cfmuResult = string.Empty;
         IEnumerator CheckForModsUpdates()
         {
             int modUpdCount = 0;
-
+            loadingMeta.transform.GetChild(0).GetComponent<Text>().text = string.Format("Checking for mod updates...");
             loadingMeta.transform.GetChild(1).GetComponent<Slider>().minValue = 1;
             loadingMeta.transform.GetChild(1).GetComponent<Slider>().maxValue = LoadedMods.Count - 2;
             loadingMeta.transform.GetChild(2).GetComponent<Text>().text = string.Format("{0}/{1}", 0, LoadedMods.Count - 2);
             loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("Connecting...");
             loadingMeta.transform.GetChild(4).GetComponent<Text>().text = "...";
             loadingMeta.SetActive(true);
-
+            mod_aulist = new List<string>();
             int i = 1;
             foreach (Mod mod in LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")))
             {
@@ -619,6 +685,10 @@ namespace MSCLoader
                                             mod.metadata = mod.RemMetadata;
                                         }
                                     }
+                                    if(mod.RemMetadata.type == 4)
+                                    {
+                                        mod_aulist.Add(mod.ID);
+                                    }
                                     break;
                                 case -1:
                                     if (mod.RemMetadata.sid_sign != MurzynskaMatematyka(steamID + mod.ID) && mod.RemMetadata.type == 3)
@@ -659,16 +729,20 @@ namespace MSCLoader
             {
                 modUpdates.text = string.Format("<size=20><color=aqua>New Version available for <color=orange>{0}</color> mods.</color></size>", modUpdCount);
                 loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("Done! <color=lime>{0} updates available</color>", modUpdCount);
+                if(mod_aulist.Count >0)
+                {
+                    ModUI.ShowYesNoMessage($"There are updates to mods that can be updated automatically{Environment.NewLine}Mods: <color=aqua>{string.Join(", ", mod_aulist.ToArray())}</color>{Environment.NewLine}{Environment.NewLine}Do you want to download updates now?", "Mod Updates Available", DownloadUpdates);
+                }
             }
             else
                 loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("Done!");
             if (cfmuErrored)
                 loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("<color=red>Connection error!</color>");
             yield return new WaitForSeconds(3f);
-            loadingMeta.SetActive(false);
+            if(!dnsaf)
+                loadingMeta.SetActive(false);
 
         }
-
         private void cfmuDownloadCompl(object sender, DownloadStringCompletedEventArgs e)
         {
             if (e.Error != null)
@@ -685,6 +759,117 @@ namespace MSCLoader
                 cfmuErrored = false;
                 cfmuResult = e.Result;
                 cfmuInProgress = false;
+            }
+        }
+
+        private bool dnsaf = false;
+        void DownloadUpdates()
+        {
+            if (GetCurrentScene() != CurrentScene.MainMenu)
+            {
+                ModUI.ShowMessage("You can do that only in main menu.", "Mod Updates");
+                return;
+            }
+            else
+            {
+                dnsaf = true;
+                StartCoroutine(DownloadUpdatesC());
+            }
+        }
+        private bool downloadInProgress = false;
+       // private bool downloadErrored = false;
+        IEnumerator DownloadUpdatesC()
+        {
+            loadingMeta.transform.GetChild(0).GetComponent<Text>().text = string.Format("Downloading mod updates...");
+            loadingMeta.transform.GetChild(1).GetComponent<Slider>().minValue = 1;
+            loadingMeta.transform.GetChild(1).GetComponent<Slider>().maxValue = 100;
+            loadingMeta.transform.GetChild(2).GetComponent<Text>().text = string.Format("{0}/{1}", 0, mod_aulist.Count);
+            loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("Connecting...");
+            loadingMeta.transform.GetChild(4).GetComponent<Text>().text = "...";
+            loadingMeta.SetActive(true);
+            yield return null;
+
+            for (int i = 0; i < mod_aulist.Count; i++)
+            {
+                string mod = mod_aulist[i];
+                string dwl;
+                WebClient getdwl = new WebClient();
+                getdwl.Headers.Add("user-agent", string.Format("MSCLoader/{0} ({1})", MSCLoader_Ver, SystemInfo.operatingSystem));
+                // webClient.DownloadStringCompleted += WebClient_DownloadStringCompleted; ;
+                dwl = getdwl.DownloadString(string.Format("{0}/dwl.php?core={1}", serverURL, mod));
+                string[] result = dwl.Split('|');
+                if (result[0] == "error")
+                {
+                    switch (result[1])
+                    {
+                        case "0":
+                            ModConsole.Error($"Failed to download updates: Invalid request");
+                            break;
+                        case "1":
+                            ModConsole.Error($"Failed to download updates: Database connection error");
+                            break;
+                        case "2":
+                            ModConsole.Error($"Failed to download updates: File not found");
+                            break;
+                        default:
+                            ModConsole.Error($"Failed to download updates: Unknown error");
+                            break;
+                    }
+
+                }
+                else if (result[0] == "ok")
+                {
+                    WebClient webClient = new WebClient();
+                    webClient.Headers.Add("user-agent", string.Format("MSCLoader/{0} ({1})", MSCLoader_Ver, SystemInfo.operatingSystem));
+                    webClient.DownloadFileCompleted += DownloadModCompleted;
+                    webClient.DownloadProgressChanged += DownlaodModProgress;
+                    webClient.DownloadFileAsync(new Uri(string.Format("{0}/{1}", serverURL, result[1])),Path.Combine("upd_tmp", $"{mod}.zip"));
+                    ModConsole.Print($"Downloading: <color=aqua>{mod}.zip</color>");
+                    downloadInProgress = true;
+                    while (downloadInProgress)
+                    {
+                        loadingMeta.transform.GetChild(1).GetComponent<Slider>().value = downloadPercentage;
+                        loadingMeta.transform.GetChild(2).GetComponent<Text>().text = string.Format("{0}/{1}", i+1, mod_aulist.Count);
+                        loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format($"Downloading... <color=lime>{mod}.zip</color>");
+                        loadingMeta.transform.GetChild(4).GetComponent<Text>().text = $"{downloadPercentage}%";
+                        yield return null;
+                    }
+                    yield return new WaitForSeconds(1f);
+                }
+                else
+                {
+                    System.Console.WriteLine("Unknown: " + result[0]);
+                    ModConsole.Error($"Failed to download updates: Unknown server response.");
+                }
+
+            }
+            loadingMeta.transform.GetChild(1).GetComponent<Slider>().value = 100;
+            loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format($"<color=lime>Download Complete</color>");
+            loadingMeta.transform.GetChild(4).GetComponent<Text>().text = $"100%";
+            ModUI.ShowMessage("To apply updates, please restart game.", "download completed");
+            yield return new WaitForSeconds(3f); 
+            loadingMeta.SetActive(false);
+        }
+        int downloadPercentage = 0;
+        private void DownlaodModProgress(object sender, DownloadProgressChangedEventArgs e)
+        {
+            downloadInProgress = true;
+            downloadPercentage = e.ProgressPercentage;
+        }
+
+        private void DownloadModCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        {
+            downloadPercentage = 100;
+            downloadInProgress = false;
+            if (e.Error != null)
+            {
+                ModConsole.Error("Failed to download update file!");
+                ModConsole.Error(e.Error.Message);
+                System.Console.WriteLine(e.Error);
+            }
+            else
+            {
+                ModConsole.Print($"Download finished");
             }
         }
 
@@ -724,7 +909,7 @@ namespace MSCLoader
                     return;
                 }
             }
-            if (mod.metadata.type == 1)
+            if (mod.metadata.type == 1 || mod.metadata.type == 4)
             {
                 if (mod.metadata.icon.iconFileName != null && mod.metadata.icon.iconFileName != string.Empty)
                 {
@@ -1090,7 +1275,7 @@ namespace MSCLoader
             }
             catch (Exception ex)
             {
-                ModConsole.Error(string.Format("Check for new build failed with error: {0}", ex.Message));
+                ModConsole.Error(string.Format("Check for new version failed with error: {0}", ex.Message));
                 if (devMode)
                     ModConsole.Error(ex.ToString());
                 System.Console.WriteLine(ex);
@@ -1323,8 +1508,7 @@ namespace MSCLoader
                     LoadDLL(file);
                 }
             }
-
-            SecondPassMods = LoadedMods.Where(x => x.GetType().GetMethod("SecondPassOnLoad").GetMethodBody().GetILAsByteArray().Length > 2).ToArray();
+            SecondPassMods = LoadedMods.Where(x => x.SecondPass).ToArray();
             OnGUImods = LoadedMods.Where(x => x.GetType().GetMethod("OnGUI").GetMethodBody().GetILAsByteArray().Length > 2).ToArray();
             UpdateMods = LoadedMods.Where(x => x.GetType().GetMethod("Update").GetMethodBody().GetILAsByteArray().Length > 2).ToArray();
             FixedUpdateMods = LoadedMods.Where(x => x.GetType().GetMethod("FixedUpdate").GetMethodBody().GetILAsByteArray().Length > 2).ToArray();
