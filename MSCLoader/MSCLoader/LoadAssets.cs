@@ -161,6 +161,30 @@ namespace MSCLoader
                 throw new Exception(string.Format("<b>LoadBundle() Error:</b> Resource doesn't exists{0}", Environment.NewLine));
         }
 
+        /// <summary>
+        /// Loads assetbundle from Embedded Resources
+        /// </summary>
+        /// <param name="assetBundleEmbeddedResources">Resource path namespace.folder.file.extension</param>
+        /// <returns>Unity AssetBundle</returns>
+        public static AssetBundle LoadBundle(string assetBundleEmbeddedResources)
+        {
+            System.Reflection.Assembly a = System.Reflection.Assembly.GetExecutingAssembly();
+            using (Stream resFilestream = a.GetManifestResourceStream(assetBundleEmbeddedResources))
+            {
+                if (resFilestream == null)
+                {
+
+                    throw new Exception(string.Format("<b>LoadBundle() Error:</b> Resource doesn't exists{0}", Environment.NewLine));
+                }
+                else
+                {
+                    byte[] ba = new byte[resFilestream.Length];
+                    resFilestream.Read(ba, 0, ba.Length);
+                    return AssetBundle.CreateFromMemoryImmediate(ba);
+                }
+            }                             
+        }
+
         // TGALoader by https://gist.github.com/mikezila/10557162
         static Texture2D LoadTGA(string fileName)
         {

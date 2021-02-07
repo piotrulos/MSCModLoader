@@ -62,7 +62,7 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string MSCLoader_Ver = "1.1.10";
+        public static readonly string MSCLoader_Ver = "1.1.11";
 
         /// <summary>
         /// Is this version of ModLoader experimental (this is NOT game experimental branch)
@@ -1169,7 +1169,7 @@ namespace MSCLoader
         private void LoadCoreAssets()
         {
             ModConsole.Print("Loading core assets...");
-            AssetBundle ab = LoadAssets.LoadBundle(new ModCore(), "core.unity3d");
+            AssetBundle ab = LoadAssets.LoadBundle("MSCLoader.CoreAssets.core.unity3d");
             guiskin = ab.LoadAsset<GUISkin>("MSCLoader.guiskin");
             ModUI.messageBox = ab.LoadAsset<GameObject>("MSCLoader MB.prefab");
             ModUI.messageBoxBtn = ab.LoadAsset<GameObject>("MB_Button.prefab");
