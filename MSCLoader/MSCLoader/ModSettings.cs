@@ -414,7 +414,19 @@ namespace MSCLoader
                         continue;
                     set.Value = s.Value;
                 }
-                ModLoader.LoadedMods[i].ModSettingsLoaded();
+                try
+                {
+                    ModLoader.LoadedMods[i].ModSettingsLoaded();
+                }
+                catch (Exception e)
+                {
+
+                    string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, new StackTrace(e, true).GetFrame(0).GetMethod(), Environment.NewLine);
+                    ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", ModLoader.LoadedMods[i].ID, errorDetails));
+                    if (ModLoader.devMode)
+                        ModConsole.Error(e.ToString());
+                    System.Console.WriteLine(e);
+                }
             }
         }
 
