@@ -35,76 +35,46 @@ namespace MSCLoader
         int page = 0;
 
         Mod selected_mod;
-        public void modButton(string name, string version, string author, Mod mod)
+        public void ModButton(string name, string version, string author, Mod mod)
         {
-
-            GameObject modButton;
-            if (!mod.LoadInMenu && Application.loadedLevelName == "MainMenu")
+            GameObject modButton = Instantiate(ms.ModButton);
+            if (mod.ID.StartsWith("MSCLoader_"))
             {
-                if (mod.isDisabled)
-                {
-                    modButton = Instantiate(ms.ModButton);
-                    modButton.transform.GetChild(1).GetChild(0).GetComponent<Text>().color = Color.red;
-                    modButton.transform.GetChild(1).GetChild(3).GetComponent<Text>().text = "<color=red>Mod is disabled!</color>";
-                }
-                else
-                {
-                    modButton = Instantiate(ms.ModButton);
-                    modButton.transform.GetChild(1).GetChild(0).GetComponent<Text>().color = Color.yellow;
-                    modButton.transform.GetChild(1).GetChild(3).GetComponent<Text>().text = "<color=yellow>Ready to load</color>";
-                }
+                modButton.transform.GetChild(1).GetChild(0).GetComponent<Text>().color = Color.cyan;
+                modButton.transform.GetChild(1).GetChild(3).GetComponent<Text>().text = "<color=cyan>Core Module!</color>";
+                modButton.transform.GetChild(1).GetChild(4).GetChild(0).GetComponent<Button>().interactable = false;
+            }
+            else if (mod.isDisabled)
+            {
+                modButton.transform.GetChild(1).GetChild(0).GetComponent<Text>().color = Color.red;
+                modButton.transform.GetChild(1).GetChild(3).GetComponent<Text>().text = "<color=red>Mod is disabled!</color>";
+                modButton.transform.GetChild(2).GetChild(1).gameObject.SetActive(true); //Add plugin Disabled icon
+                modButton.transform.GetChild(2).GetChild(1).GetComponent<Image>().color = Color.red;
+            }
+            else if (!mod.LoadInMenu && ModLoader.GetCurrentScene() == CurrentScene.MainMenu)
+            {
+                modButton.transform.GetChild(1).GetChild(0).GetComponent<Text>().color = Color.yellow;
+                modButton.transform.GetChild(1).GetChild(3).GetComponent<Text>().text = "<color=yellow>Ready to load</color>";
             }
             else
             {
-                if (mod.isDisabled)
-                {
-                    modButton = Instantiate(ms.ModButton);
-                    modButton.transform.GetChild(1).GetChild(0).GetComponent<Text>().color = Color.red;
-                    modButton.transform.GetChild(1).GetChild(3).GetComponent<Text>().text = "<color=red>Mod is disabled!</color>";
-                }
-                else
-                {
-                    if (mod.ID.StartsWith("MSCLoader_"))
-                    {
-                        if (coreModCheckbox.isOn)
-                        {
-                            modButton = Instantiate(ms.ModButton);
-                            modButton.transform.GetChild(1).GetChild(0).GetComponent<Text>().color = Color.cyan;
-                            modButton.transform.GetChild(1).GetChild(3).GetComponent<Text>().text = "<color=cyan>Core Module!</color>";
-
-                        }
-                        else return;
-                    }
-                    else
-                    {
-                        modButton = Instantiate(ms.ModButton);
-                        modButton.transform.GetChild(1).GetChild(0).GetComponent<Text>().color = Color.green;
-                    }
-                }
+                modButton.transform.GetChild(1).GetChild(0).GetComponent<Text>().color = Color.green;
             }
-            if (mod.ID.StartsWith("MSCLoader_")) //No details is needed for core modules
-                modButton.transform.GetChild(1).GetChild(4).GetChild(0).GetComponent<Button>().interactable = false;
+          
             modButton.transform.GetChild(1).GetChild(4).GetChild(0).GetComponent<Button>().onClick.AddListener(() => ms.settings.ModDetailsShow(mod));
 
-            foreach (Settings set in Settings.modSettings)
+            if (Settings.Get(mod).Count > 0)
             {
-                if (set.Mod == mod)
-                {
-                    modButton.transform.GetChild(1).GetChild(4).GetChild(1).GetComponent<Button>().interactable = true;
-                    modButton.transform.GetChild(1).GetChild(4).GetChild(1).GetComponent<Button>().onClick.AddListener(() => ms.settings.ModSettingsShow(mod));
-                    break;
-                }
-            }
-            foreach (Keybind key in Keybind.Keybinds)
-            {
-                if (key.Mod == mod)
-                {
-                    modButton.transform.GetChild(1).GetChild(4).GetChild(2).GetComponent<Button>().interactable = true;
-                    modButton.transform.GetChild(1).GetChild(4).GetChild(2).GetComponent<Button>().onClick.AddListener(() => ms.settings.ModKeybindsShow(mod));
-                    break;
-                }
+                modButton.transform.GetChild(1).GetChild(4).GetChild(1).GetComponent<Button>().interactable = true;
+                modButton.transform.GetChild(1).GetChild(4).GetChild(1).GetComponent<Button>().onClick.AddListener(() => ms.settings.ModSettingsShow(mod));
             }
 
+            if (Keybind.Get(mod).Count > 0)
+            {
+                modButton.transform.GetChild(1).GetChild(4).GetChild(2).GetComponent<Button>().interactable = true;
+                modButton.transform.GetChild(1).GetChild(4).GetChild(2).GetComponent<Button>().onClick.AddListener(() => ms.settings.ModKeybindsShow(mod));
+            }
+            
             if (name.Length > 24)
                 modButton.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = string.Format("{0}...", name.Substring(0, 22));
             else
@@ -113,15 +83,16 @@ namespace MSCLoader
             modButton.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = string.Format("by <color=orange>{0}</color>", author);
             modButton.transform.GetChild(1).GetChild(2).GetComponent<Text>().text = version;
             modButton.transform.SetParent(modView.transform, false);
+
             if (mod.metadata != null && mod.metadata.icon.iconFileName != null && mod.metadata.icon.iconFileName != string.Empty)
             {
-                Texture2D t2d = new Texture2D(1, 1);
                 if (mod.metadata.icon.isIconRemote)
                 {
                     if (File.Exists(Path.Combine(ModLoader.ManifestsFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName)))
                     {
                         try
                         {
+                            Texture2D t2d = new Texture2D(1, 1);
                             t2d.LoadImage(File.ReadAllBytes(Path.Combine(ModLoader.ManifestsFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName)));
                             modButton.transform.GetChild(0).GetChild(0).GetComponent<RawImage>().texture = t2d;
                         }
@@ -151,6 +122,7 @@ namespace MSCLoader
                     {
                         try
                         {
+                            Texture2D t2d = new Texture2D(1, 1);
                             t2d.LoadImage(File.ReadAllBytes(Path.Combine(ModLoader.GetModAssetsFolder(mod), mod.metadata.icon.iconFileName)));
                             modButton.transform.GetChild(0).GetChild(0).GetComponent<RawImage>().texture = t2d;
                         }
@@ -170,12 +142,7 @@ namespace MSCLoader
             {
                 modButton.transform.GetChild(2).GetChild(2).gameObject.SetActive(true); //Add assets icon
             }
-            if (mod.isDisabled)
-            {
-                modButton.transform.GetChild(2).GetChild(1).gameObject.SetActive(true); //Add plugin Disabled icon
-                modButton.transform.GetChild(2).GetChild(1).GetComponent<Image>().color = Color.red;
-            }
-            else
+            if (!mod.isDisabled)
             {
                 modButton.transform.GetChild(2).GetChild(1).gameObject.SetActive(true); //Add plugin OK icon
             }
@@ -183,13 +150,11 @@ namespace MSCLoader
             {
                 modButton.transform.GetChild(2).GetChild(0).gameObject.SetActive(true);//Add Menu Icon
             }
-
         }
         public void ToggleCoreCheckbox()
         {
             if(page == 0)
             {
-                scmdf = true;
                 CreateList();
             }
         }
@@ -360,12 +325,15 @@ namespace MSCLoader
         }
         public void RemoveChildren(Transform parent) //clear 
         {
-            foreach (Transform child in parent)
-                Destroy(child.gameObject);
+            if (parent.childCount > 0)
+            {
+                for (int i = 0; i < parent.childCount; i++)
+                    Destroy(parent.GetChild(i).gameObject);
+            }
         }
         public void goBack()
         {
-            Animator anim = settingViewContainer.GetComponent<Animator>();
+            Animation anim = settingViewContainer.GetComponent<Animation>();
             switch (page)
             {
                 case 0:
@@ -375,20 +343,20 @@ namespace MSCLoader
                     page = 0;
                     SetScrollRect();
                     CreateList();
-                    anim.SetBool("goDetails", false);
+                    anim.Play("goBackMod");
                     goBackBtn.SetActive(false);
                     break;
                 case 2:
                     page = 0;
                     SetScrollRect();
-                    anim.SetBool("goKeybind", false);
+                    anim.Play("goBackKeyBinds");
                     goBackBtn.SetActive(false);
                     break;
                 case 3:
                     page = 0;
                     SetScrollRect();
                     ModSettings_menu.SaveSettings(selected_mod);
-                    anim.SetBool("goModSetting", false);
+                    anim.Play("goBackSettings");
                     goBackBtn.SetActive(false);
                     RemoveChildren(modSettingsList.transform);
                     break;
@@ -427,13 +395,13 @@ namespace MSCLoader
         }
         public void goToKeybinds()
         {
-            settingViewContainer.GetComponent<Animator>().SetBool("goKeybind", true);
+            settingViewContainer.GetComponent<Animation>().Play("enterKeyBinds");
             page = 2;
             SetScrollRect();
         }
         public void goToSettings()
         {
-            settingViewContainer.GetComponent<Animator>().SetBool("goModSetting", true);
+            settingViewContainer.GetComponent<Animation>().Play("enterSettings");
             page = 3;
             SetScrollRect();
         }
@@ -494,7 +462,7 @@ namespace MSCLoader
                 }
                 descriptionTxt.text = mod.metadata.description;
             }
-            settingViewContainer.GetComponent<Animator>().SetBool("goDetails", true);
+            settingViewContainer.GetComponent<Animation>().Play("enterMod");
             
             page = 1;
             SetScrollRect();
@@ -527,14 +495,14 @@ namespace MSCLoader
             goBackBtn.SetActive(true);
             selected_mod = selected;
             RemoveChildren(keybindsList.transform);
-            foreach (Keybind key in Keybind.Keybinds)
+            for (int i = 0; i < Keybind.Keybinds.Count; i++)
             {
-                if (key.Mod == selected)
+                if (Keybind.Keybinds[i].Mod == selected)
                 {
-                    if (key.ID == null && key.Vals != null)
-                        KeyBindHeader(key);
+                    if (Keybind.Keybinds[i].ID == null && Keybind.Keybinds[i].Vals != null)
+                        KeyBindHeader(Keybind.Keybinds[i]);
                     else
-                        KeyBindsList(key);
+                        KeyBindsList(Keybind.Keybinds[i]);
                 }
             }
             ModKeyBinds.transform.GetChild(0).GetChild(6).GetComponent<Button>().onClick.RemoveAllListeners();
@@ -550,12 +518,9 @@ namespace MSCLoader
             goBackBtn.SetActive(true);
             selected_mod = selected;
             RemoveChildren(modSettingsList.transform);
-            foreach (Settings set in Settings.modSettings)
+            for (int i = 0; i < Settings.Get(selected).ToArray().Length; i++)
             {
-                if (set.Mod == selected)
-                {
-                    SettingsList(set);
-                }
+                SettingsList(Settings.Get(selected).ToArray()[i]);
             }
             if (Settings.GetDefault(selected).Count == 0 || Settings.GetDefault(selected).Find(x => x.ID == "MSCL_HideResetAllButton") != null)
             {
@@ -570,12 +535,11 @@ namespace MSCLoader
                     ModSettings_menu.ResetSettings(selected);
                     ModSettingsShow(selected);
                     selected.ModSettingsLoaded();
-
                 });
             }
             goToSettings();
         }
-        void ModListHeader(string header,Color background, Color text)
+        void ModListHeader(string header, Color background, Color text)
         {
             GameObject hdr = Instantiate(ms.header);
             hdr.transform.GetChild(0).GetComponent<Text>().text = header;
@@ -583,82 +547,95 @@ namespace MSCLoader
             hdr.transform.GetChild(0).GetComponent<Text>().color = text;
             hdr.transform.SetParent(modView.transform, false);
         }
-        bool scmdf = false;
         void CreateList()
         {
-            if ((bool)ModSettings_menu.showCoreModsDf.GetValue() && !scmdf)
+            if ((bool)ModSettings_menu.showCoreModsDf.GetValue() && !coreModCheckbox.isOn)
+            {
                 coreModCheckbox.isOn = true;
+                return;
+            }
+            Mod[] coreMods = ModLoader.LoadedMods.Where(x => x.ID.StartsWith("MSCLoader_")).ToArray();
+            Mod[] modList = ModLoader.LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")).ToArray();
+            Mod[] updateMods = modList.Where(x => x.hasUpdate).ToArray();
+            Mod[] menuMods = modList.Where(x => x.LoadInMenu).ToArray();
+
             RemoveChildren(modView.transform);
             if(coreModCheckbox.isOn)
             {
                 ModListHeader("Core Mods", new Color32(101, 34, 18, 255), new Color32(254, 254, 0, 255));
-                foreach (Mod mod in ModLoader.LoadedMods.Where(x => x.ID.StartsWith("MSCLoader_")))
+                for (int i = 0; i < coreMods.Length; i++)
                 {
-                    modButton(mod.Name, mod.Version, mod.Author, mod);
+                    ModButton(coreMods[i].Name, coreMods[i].Version, coreMods[i].Author, coreMods[i]);
                 }
             }
-            if (ModLoader.LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")).Count() == 0)
+            if (modList.Length == 0)
             {
                 ModListHeader("No mods installed", Color.blue, Color.white);
                 if (ModLoader.InvalidMods.Count == 0)
                     return;
                 ModListHeader("Invalid/Broken Mods", new Color32(101, 34, 18, 255), new Color32(254, 254, 0, 255));
-                foreach (string s in ModLoader.InvalidMods)
+                for (int i = 0; i < ModLoader.InvalidMods.Count; i++)
                 {
                     GameObject invMod = Instantiate(ms.ModButton_Invalid);
-                    invMod.transform.GetChild(0).GetComponent<Text>().text = s;
+                    invMod.transform.GetChild(0).GetComponent<Text>().text = ModLoader.InvalidMods[i];
                     invMod.transform.SetParent(modView.transform, false);
                 }
                 return;
             }
-            if (ModLoader.LoadedMods.Where(x => x.hasUpdate).Count() > 0)
+            if (updateMods.Length > 0)
+            {
                 ModListHeader("Mods with updates", new Color32(57, 57, 57, 255), new Color32(0, 255, 255, 255));
-            foreach (Mod mod in ModLoader.LoadedMods.Where(x => x.hasUpdate))
-            {
-                modButton(mod.Name, mod.Version, mod.Author, mod);
-            }
-            if (Application.loadedLevelName == "MainMenu")
-            {
-                if (ModLoader.LoadedMods.Where(x => x.LoadInMenu && !x.ID.StartsWith("MSCLoader_")).Count() > 0)
-                    ModListHeader("Loaded Mods", new Color32(57, 57, 57, 255), new Color32(0, 255, 255, 255));
-                foreach (Mod mod in ModLoader.LoadedMods.Where(x => x.LoadInMenu && !x.ID.StartsWith("MSCLoader_")))
+                for (int i = 0; i < updateMods.Length; i++)
                 {
-                    if (mod.LoadInMenu)
-                        modButton(mod.Name, mod.Version, mod.Author, mod);
+                    ModButton(updateMods[i].Name, updateMods[i].Version, updateMods[i].Author, updateMods[i]);
+                }
+            }
+            if (ModLoader.GetCurrentScene() == CurrentScene.MainMenu)
+            {
+                if (menuMods.Length > 0)
+                {
+                    ModListHeader("Loaded Mods", new Color32(57, 57, 57, 255), new Color32(0, 255, 255, 255));
+                    for (int i = 0; i < menuMods.Length; i++)
+                    {
+                        if (!menuMods[i].isDisabled && !menuMods[i].hasUpdate)
+                            ModButton(menuMods[i].Name, menuMods[i].Version, menuMods[i].Author, menuMods[i]);
+                    }
                 }
                 ModListHeader("Ready to load", new Color32(57, 57, 57, 255), new Color32(0, 255, 255, 255));
-                foreach (Mod mod in ModLoader.LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")))
+                for (int i = 0; i < modList.Length; i++)
                 {
-                    if (!mod.LoadInMenu && !mod.isDisabled)
-                        modButton(mod.Name, mod.Version, mod.Author, mod);
+                    if (!modList[i].LoadInMenu && !modList[i].isDisabled && !modList[i].hasUpdate)
+                        ModButton(modList[i].Name, modList[i].Version, modList[i].Author, modList[i]);
                 }
             }
             else
             {
                 ModListHeader("Loaded Mods", new Color32(57, 57, 57, 255), new Color32(0, 255, 255, 255));
-                foreach (Mod mod in ModLoader.LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")))
+                for (int i = 0; i < modList.Length; i++)
                 {
-                    if (!mod.isDisabled)
-                        modButton(mod.Name, mod.Version, mod.Author, mod);
+                    if (!modList[i].isDisabled && !modList[i].hasUpdate)
+                        ModButton(modList[i].Name, modList[i].Version, modList[i].Author, modList[i]);
                 }
             }
-            if (ModLoader.LoadedMods.Where(x => x.isDisabled).Count() > 0)
+            Mod[] disMods = modList.Where(x => x.isDisabled).ToArray();
+            if (disMods.Length > 0)
+            {
                 ModListHeader("Disabled mods", new Color32(101, 34, 18, 255), new Color32(254, 254, 0, 255));
-            foreach (Mod mod in ModLoader.LoadedMods.Where(x => x.isDisabled))
-            {
-                if (mod.isDisabled)
-                    modButton(mod.Name, mod.Version, mod.Author, mod);
+                for (int i = 0; i < disMods.Length; i++)
+                {
+                    ModButton(disMods[i].Name, disMods[i].Version, disMods[i].Author, disMods[i]);
+                }
             }
-            if (ModLoader.InvalidMods.Count == 0)
-                return;
-            ModListHeader("Invalid/Broken Mods", new Color32(101, 34, 18, 255), new Color32(254, 254, 0, 255));
-            foreach (string s in ModLoader.InvalidMods)
+            if (ModLoader.InvalidMods.Count > 0)
             {
-                GameObject invMod = Instantiate(ms.ModButton_Invalid);
-                invMod.transform.GetChild(0).GetComponent<Text>().text = s;
-                invMod.transform.SetParent(modView.transform, false);
+                ModListHeader("Invalid/Broken Mods", new Color32(101, 34, 18, 255), new Color32(254, 254, 0, 255));
+                for (int i = 0; i < ModLoader.InvalidMods.Count; i++)
+                {
+                    GameObject invMod = Instantiate(ms.ModButton_Invalid);
+                    invMod.transform.GetChild(0).GetComponent<Text>().text = ModLoader.InvalidMods[i];
+                    invMod.transform.SetParent(modView.transform, false);
+                }
             }
-            scmdf = false;
         }
         public void toggleVisibility()
         {
@@ -668,7 +645,7 @@ namespace MSCLoader
                 CreateList();
                 page = 0;
                 SetScrollRect();
-                setVisibility(!settingViewContainer.activeSelf);
+                SetVisibility(!settingViewContainer.activeSelf);
                 goBackBtn.SetActive(false);
             }
             else
@@ -678,11 +655,12 @@ namespace MSCLoader
                     ModSettings_menu.SaveSettings(selected_mod);
                     RemoveChildren(modSettingsList.transform);
                 }
-                setVisibility(!settingViewContainer.activeSelf);
+                SetVisibility(!settingViewContainer.activeSelf);
+                goBack();
             }
         }
 
-        public void setVisibility(bool visible)
+        public void SetVisibility(bool visible)
         {
             settingViewContainer.SetActive(visible);
         }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace MSCLoader 
+namespace MSCLoader
 {
 #pragma warning disable CS1591
     public class KeybindList
@@ -31,7 +31,7 @@ namespace MSCLoader
         bool reassignKey = false;
         bool ismodifier = false;
         public Color toggleColor = new Color32(0xFF, 0xFF, 0x00, 0xFF);
-        
+
         Color originalColor = Color.white;
 
         public Mod mod;
@@ -43,7 +43,7 @@ namespace MSCLoader
             buttonImage = keyButton.GetComponent<Image>();
 
             modifierButton.GetComponent<Button>().onClick.AddListener(() => ChangeKeyCode(true, true));
-            keyButton.GetComponent<Button>().onClick.AddListener(() => ChangeKeyCode(true,false));
+            keyButton.GetComponent<Button>().onClick.AddListener(() => ChangeKeyCode(true, false));
 
             modifierDisplay.text = modifierKey.ToString();
             keyDisplay.text = key.ToString();
@@ -56,19 +56,21 @@ namespace MSCLoader
                 //Checks if key is pressed and if button has been pressed indicating wanting to re-assign
                 if (Input.anyKeyDown)
                 {
-                    foreach (KeyCode kcode in Enum.GetValues(typeof(KeyCode)))
+                    KeyCode[] keyCodes = (KeyCode[])Enum.GetValues(typeof(KeyCode));
+                    for (int i = 0; i < keyCodes.Length; i++)
                     {
-                        if (Input.GetKeyDown(kcode))
+                        if (Input.GetKeyDown(keyCodes[i]))
                         {
-                            if (kcode != KeyCode.Mouse0 && kcode != KeyCode.Mouse1) //LMB = cancel
+                            if (keyCodes[i] != KeyCode.Mouse0 && keyCodes[i] != KeyCode.Mouse1) //LMB = cancel
                             {
-                                UpdateKeyCode(kcode, ismodifier);
+                                UpdateKeyCode(keyCodes[i], ismodifier);
                             }
-                            if (kcode == KeyCode.Mouse1) //RMB = sets to none
+                            if (keyCodes[i] == KeyCode.Mouse1) //RMB = sets to none
                             {
                                 UpdateKeyCode(KeyCode.None, ismodifier);
                             }
                             ChangeKeyCode(false, ismodifier);
+                            break;
                         }
                     }
 
@@ -76,7 +78,7 @@ namespace MSCLoader
             }
         }
 
-        public void ChangeKeyCode(bool toggle,bool modifier)
+        public void ChangeKeyCode(bool toggle, bool modifier)
         {
             reassignKey = toggle;
             ismodifier = modifier;
@@ -112,5 +114,5 @@ namespace MSCLoader
         }
 
     }
-    #pragma warning restore CS1591
+#pragma warning restore CS1591
 }
