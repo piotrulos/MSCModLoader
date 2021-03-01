@@ -160,11 +160,11 @@ namespace MSCLoader
         void HelpCommand(string[] args)
         {
             ModConsole.Print("<color=green><b>Available commands:</b></color>");
-            List<CommandRegistration> cmds = commands.Values.GroupBy(x => x.command).Select(g => g.First()).Distinct().ToList();
-            foreach (CommandRegistration reg in cmds)
+            CommandRegistration[] cmds = commands.Values.GroupBy(x => x.command).Select(g => g.First()).Distinct().ToArray();
+            for (int i = 0; i < cmds.Length; i++)
             {
-                if(reg.showInHelp)
-                    AppendLogLine(string.Format("<color=orange><b>{0}</b></color>: {1}", reg.command, reg.help));
+                if (cmds[i].showInHelp)
+                    AppendLogLine(string.Format("<color=orange><b>{0}</b></color>: {1}", cmds[i].command, cmds[i].help));
             }
             if(ModLoader.GetCurrentScene() != CurrentScene.Game)
             {

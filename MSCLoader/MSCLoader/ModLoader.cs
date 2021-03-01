@@ -106,7 +106,7 @@ namespace MSCLoader
         private GameObject mainMenuInfo;
         private GameObject loading;
         private GameObject loadingMeta;
-        private Animator menuInfoAnim;
+        private Animation menuInfoAnim;
         private GUISkin guiskin;
 
         private readonly string serverURL = "http://my-summer-car.ml";
@@ -328,7 +328,7 @@ namespace MSCLoader
                 if ((bool)ModSettings_menu.forceMenuVsync.GetValue() && !vse)
                     QualitySettings.vSyncCount = 0;
 
-                menuInfoAnim.SetBool("isHidden", true);
+                menuInfoAnim.Play("fade_out");
                 StartLoadingMods(!(bool)ModSettings_menu.syncLoad.GetValue());
 
             }
@@ -434,7 +434,7 @@ namespace MSCLoader
                 }
                 else
                 {
-                    StartCoroutine(UnpackUpdates());
+                    UnpackUpdates();
                 }
             }
         }
@@ -530,23 +530,11 @@ namespace MSCLoader
             }
         }
 
-        IEnumerator UnpackUpdates()
+        void UnpackUpdates()
         {
             ModConsole.Print("Unpacking mod updates...");
-            loadingMeta.transform.GetChild(0).GetComponent<Text>().text = string.Format("Unpacking updates");
-            loadingMeta.transform.GetChild(1).GetComponent<Slider>().minValue = 0;
-            loadingMeta.transform.GetChild(1).GetComponent<Slider>().maxValue = upd_tmp.Length;
-            loadingMeta.transform.GetChild(2).GetComponent<Text>().text = string.Format("{0}/{1}", 0, upd_tmp.Length);
-            loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("Unpacking updates");
-            loadingMeta.transform.GetChild(4).GetComponent<Text>().text = "...";
-            loadingMeta.SetActive(true);
-            yield return null;
             for (int i = 0; i < upd_tmp.Length; i++)
             {
-                loadingMeta.transform.GetChild(2).GetComponent<Text>().text = string.Format("{0}/{1}", i, upd_tmp.Length);
-                loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format($"{upd_tmp[i]}");
-
-                yield return null;
                 ModConsole.Print($"Unpacking file {upd_tmp[i]}");
                 string zip = upd_tmp[i];
                 try
@@ -572,9 +560,6 @@ namespace MSCLoader
                     System.Console.WriteLine(e);
                 }
             }
-            loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("Unpacking updates done!");
-            yield return null;
-            loadingMeta.SetActive(false);
             ModUI.ShowMessage("Updating mods finished.", "Update mods");
             ContinueInit();
         }
@@ -593,29 +578,30 @@ namespace MSCLoader
             loadingMeta.transform.GetChild(4).GetComponent<Text>().text = "...";
             loadingMeta.SetActive(true);
             mod_aulist = new List<string>();
-            int i = 1;
-            foreach (Mod mod in LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")))
+
+            Mod[] mod = LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")).ToArray();
+            for (int i = 0; i < mod.Length; i++)
             {
                 if (cfmuErrored)
                 {
-                    ReadMetadata(mod);
+                    ReadMetadata(mod[i]);
                     continue;
                 }
-                loadingMeta.transform.GetChild(2).GetComponent<Text>().text = string.Format("{0}/{1}", i, LoadedMods.Count - 2);
-                loadingMeta.transform.GetChild(1).GetComponent<Slider>().value = i;
-                loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("Mod: <color=orange>{0}</color>", mod.Name);
+                loadingMeta.transform.GetChild(2).GetComponent<Text>().text = string.Format("{0}/{1}", i+1, LoadedMods.Count - 2);
+                loadingMeta.transform.GetChild(1).GetComponent<Slider>().value = i+1;
+                loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("Mod: <color=orange>{0}</color>", mod[i].Name);
 
                 WebClient webClient = new WebClient();
                 webClient.Headers.Add("user-agent", string.Format("MSCLoader/{0} ({1})", MSCLoader_Ver, SystemInfo.operatingSystem));
                 webClient.DownloadStringCompleted += cfmuDownloadCompl;
-                webClient.DownloadStringAsync(new Uri(string.Format("{0}/man/{1}", metadataURL, mod.ID)));
+                webClient.DownloadStringAsync(new Uri(string.Format("{0}/man/{1}", metadataURL, mod[i].ID)));
 
                 cfmuInProgress = true;
                 while (cfmuInProgress)
                     yield return null;
                 if (cfmuErrored)
                 {
-                    ReadMetadata(mod);
+                    ReadMetadata(mod[i]);
                     continue;
                 }
                 if (!string.IsNullOrEmpty(cfmuResult))
@@ -628,21 +614,15 @@ namespace MSCLoader
                             switch (ed[1])
                             {
                                 case "0":
-                                    System.Console.WriteLine("No metadata for " + mod.ID);
-                                    i++;
-
+                                    System.Console.WriteLine("No metadata for " + mod[i].ID);
                                     yield return null;
                                     continue;
                                 case "1":
                                     System.Console.WriteLine("Database connection problem");
-                                    i++;
-
                                     yield return null;
                                     continue;
                                 default:
                                     System.Console.WriteLine("Unknown error.");
-                                    i++;
-
                                     yield return null;
                                     continue;
                             }
@@ -652,57 +632,57 @@ namespace MSCLoader
                     {
                         try
                         {
-                            mod.RemMetadata = JsonConvert.DeserializeObject<ModsManifest>(cfmuResult);
-                            Version v1 = new Version(mod.RemMetadata.version);
-                            Version v2 = new Version(mod.Version);
+                            mod[i].RemMetadata = JsonConvert.DeserializeObject<ModsManifest>(cfmuResult);
+                            Version v1 = new Version(mod[i].RemMetadata.version);
+                            Version v2 = new Version(mod[i].Version);
                             switch (v1.CompareTo(v2))
                             {
                                 case 0:
-                                    if (File.Exists(GetMetadataFolder(string.Format("{0}.json", mod.ID))) && !cfmuResult.Equals(File.ReadAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)))))
+                                    if (File.Exists(GetMetadataFolder(string.Format("{0}.json", mod[i].ID))) && !cfmuResult.Equals(File.ReadAllText(GetMetadataFolder(string.Format("{0}.json", mod[i].ID)))))
                                     {
-                                        File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)), cfmuResult);
-                                        mod.metadata = mod.RemMetadata;
+                                        File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod[i].ID)), cfmuResult);
+                                        mod[i].metadata = mod[i].RemMetadata;
                                     }
                                     else
                                     {
-                                        File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)), cfmuResult);
-                                        mod.metadata = mod.RemMetadata;
+                                        File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod[i].ID)), cfmuResult);
+                                        mod[i].metadata = mod[i].RemMetadata;
                                     }
                                     break;
                                 case 1:
-                                    mod.hasUpdate = true;
+                                    mod[i].hasUpdate = true;
                                     modUpdCount++;
-                                    if (mod.RemMetadata.type != 3)
+                                    if (mod[i].RemMetadata.type != 3)
                                     {
-                                        if (File.Exists(GetMetadataFolder(string.Format("{0}.json", mod.ID))) && !cfmuResult.Equals(File.ReadAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)))))
+                                        if (File.Exists(GetMetadataFolder(string.Format("{0}.json", mod[i].ID))) && !cfmuResult.Equals(File.ReadAllText(GetMetadataFolder(string.Format("{0}.json", mod[i].ID)))))
                                         {
-                                            File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)), cfmuResult);
-                                            mod.metadata = mod.RemMetadata;
+                                            File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod[i].ID)), cfmuResult);
+                                            mod[i].metadata = mod[i].RemMetadata;
                                         }
                                         else
                                         {
-                                            File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)), cfmuResult);
-                                            mod.metadata = mod.RemMetadata;
+                                            File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod[i].ID)), cfmuResult);
+                                            mod[i].metadata = mod[i].RemMetadata;
                                         }
                                     }
-                                    if(mod.RemMetadata.type == 4)
+                                    if(mod[i].RemMetadata.type == 4)
                                     {
-                                        mod_aulist.Add(mod.ID);
+                                        mod_aulist.Add(mod[i].ID);
                                     }
                                     break;
                                 case -1:
-                                    if (mod.RemMetadata.sid_sign != MurzynskaMatematyka(steamID + mod.ID) && mod.RemMetadata.type == 3)
-                                        File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)), cfmuResult);
-                                    if (File.Exists(GetMetadataFolder(string.Format("{0}.json", mod.ID))) && !cfmuResult.Equals(File.ReadAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)))))
+                                    if (mod[i].RemMetadata.sid_sign != MurzynskaMatematyka(steamID + mod[i].ID) && mod[i].RemMetadata.type == 3)
+                                        File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod[i].ID)), cfmuResult);
+                                    if (File.Exists(GetMetadataFolder(string.Format("{0}.json", mod[i].ID))) && !cfmuResult.Equals(File.ReadAllText(GetMetadataFolder(string.Format("{0}.json", mod[i].ID)))))
                                     {
-                                        mod.hasUpdate = true;
+                                        mod[i].hasUpdate = true;
                                         modUpdCount++;
                                     }
-                                    if(!File.Exists(GetMetadataFolder(string.Format("{0}.json", mod.ID))))
-                                        File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)), cfmuResult);
+                                    if(!File.Exists(GetMetadataFolder(string.Format("{0}.json", mod[i].ID))))
+                                        File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod[i].ID)), cfmuResult);
                                     break;
                             }
-                            ReadMetadata(mod);
+                            ReadMetadata(mod[i]);
                         }
                         catch (Exception e)
                         {
@@ -710,14 +690,12 @@ namespace MSCLoader
                             System.Console.WriteLine(e);
 
                         }
-                        i++;
                         yield return null;
                         continue;
                     }
                     else
                     {
                         System.Console.WriteLine("Unknown response: " + cfmuResult);
-                        i++;
                         yield return null;
                         continue;
                     }
@@ -966,24 +944,24 @@ namespace MSCLoader
                 if (mod.metadata.modConflicts.modIDs != null && mod.metadata.modConflicts.modIDs != string.Empty)
                 {
                     string[] modIDs = mod.metadata.modConflicts.modIDs.Trim().Split(',');
-                    foreach (string m in modIDs)
+                    for (int i = 0; i < modIDs.Length; i++)
                     {
-                        if (LoadedMods.Select(s => s.ID).Where(x => x.Equals(m)).Count() != 0)
+                        if (LoadedMods.Select(s => s.ID).Where(x => x.Equals(modIDs[i])).Count() != 0)
                         {
                             if (mod.metadata.modConflicts.disableIfConflict)
                             {
                                 mod.isDisabled = true;
                                 if (mod.metadata.modConflicts.customMessage != null && mod.metadata.modConflicts.customMessage != string.Empty)
-                                    ModConsole.Error(string.Format("Mod <color=orange><b>{0}</b></color> is marked as conflict with installed mod <color=orange><b>{1}</b></color>. Author's message: {2}", mod.ID, m, mod.metadata.modConflicts.customMessage));
+                                    ModConsole.Error(string.Format("Mod <color=orange><b>{0}</b></color> is marked as conflict with installed mod <color=orange><b>{1}</b></color>. Author's message: {2}", mod.ID, modIDs[i], mod.metadata.modConflicts.customMessage));
                                 else
-                                    ModConsole.Error(string.Format("Mod <color=orange><b>{0}</b></color> is marked as conflict with installed mod <color=orange><b>{1}</b></color>.", mod.ID, m));
+                                    ModConsole.Error(string.Format("Mod <color=orange><b>{0}</b></color> is marked as conflict with installed mod <color=orange><b>{1}</b></color>.", mod.ID, modIDs[i]));
                             }
                             else
                             {
                                 if (mod.metadata.modConflicts.customMessage != null && mod.metadata.modConflicts.customMessage != string.Empty)
-                                    ModConsole.Warning(string.Format("Mod <color=red><b>{0}</b></color> is marked as conflict with installed mod <color=red><b>{1}</b></color>. Author's message: {2}", mod.ID, m, mod.metadata.modConflicts.customMessage));
+                                    ModConsole.Warning(string.Format("Mod <color=red><b>{0}</b></color> is marked as conflict with installed mod <color=red><b>{1}</b></color>. Author's message: {2}", mod.ID, modIDs[i], mod.metadata.modConflicts.customMessage));
                                 else
-                                    ModConsole.Warning(string.Format("Mod <color=red><b>{0}</b></color> is marked as conflict with installed mod <color=red><b>{1}</b></color>.", mod.ID, m));
+                                    ModConsole.Warning(string.Format("Mod <color=red><b>{0}</b></color> is marked as conflict with installed mod <color=red><b>{1}</b></color>.", mod.ID, modIDs[i]));
                             }
                         }
                     }
@@ -1155,9 +1133,9 @@ namespace MSCLoader
             if (Directory.Exists(Path.Combine(ModsFolder, "References")))
             {
                 string[] files = Directory.GetFiles(Path.Combine(ModsFolder, "References"), "*.dll");
-                foreach (string file in files)
+                for (int i = 0; i < files.Length; i++)
                 {
-                    Assembly.LoadFrom(file);
+                    Assembly.LoadFrom(files[i]);
                 }
             }
             else
@@ -1201,8 +1179,8 @@ namespace MSCLoader
             Text info, mf;
             mainMenuInfo = Instantiate(mainMenuInfo);
             mainMenuInfo.name = "MSCLoader Info";
-            menuInfoAnim = mainMenuInfo.GetComponent<Animator>();
-            menuInfoAnim.SetBool("isHidden", false);
+            menuInfoAnim = mainMenuInfo.GetComponent<Animation>();
+            menuInfoAnim.Play("fade_in");
             info = mainMenuInfo.transform.GetChild(0).gameObject.GetComponent<Text>();
             mf = mainMenuInfo.transform.GetChild(1).gameObject.GetComponent<Text>();
             modUpdates = mainMenuInfo.transform.GetChild(2).gameObject.GetComponent<Text>();
@@ -1501,11 +1479,12 @@ namespace MSCLoader
         private void PreLoadMods()
         {
             // Load .dll files
-            foreach (string file in Directory.GetFiles(ModsFolder))
+            string[] files = Directory.GetFiles(ModsFolder);
+            for (int i = 0; i < files.Length; i++)
             {
-                if (file.EndsWith(".dll"))
+                if (files[i].EndsWith(".dll"))
                 {
-                    LoadDLL(file);
+                    LoadDLL(files[i]);
                 }
             }
             SecondPassMods = LoadedMods.Where(x => x.SecondPass).ToArray();
@@ -1529,7 +1508,7 @@ namespace MSCLoader
                         List<string> cleanupList = new List<string>();
                         foreach (string dir in Directory.GetDirectories(AssetsFolder))
                         {
-                            if (!LoadedMods.Exists(x => x.ID == new DirectoryInfo(dir).Name) && new DirectoryInfo(dir).Name != "MSCLoader_Core")
+                            if (!LoadedMods.Exists(x => x.ID == new DirectoryInfo(dir).Name))
                             {
                                 found = true;
                                 cleanupList.Add(new DirectoryInfo(dir).Name);
@@ -1566,7 +1545,7 @@ namespace MSCLoader
             }
             foreach (string dir in Directory.GetDirectories(AssetsFolder))
             {
-                if (!LoadedMods.Exists(x => x.ID == new DirectoryInfo(dir).Name) && new DirectoryInfo(dir).Name != "MSCLoader_Core")
+                if (!LoadedMods.Exists(x => x.ID == new DirectoryInfo(dir).Name))
                 {
                     try
                     {
@@ -1581,17 +1560,17 @@ namespace MSCLoader
         }
         private void LoadModsSettings()
         {
-            foreach (Mod mod in LoadedMods)
+            for (int i = 0; i < LoadedMods.Count; i++)
             {
-                if (mod.ID.StartsWith("MSCLoader_"))
+                if (LoadedMods[i].ID.StartsWith("MSCLoader_"))
                     continue;
                 try
                 {
-                    mod.ModSettings();
+                    LoadedMods[i].ModSettings();
                 }
                 catch (Exception e)
                 {
-                    ModConsole.Error(string.Format("Settings error for mod <b>{0}</b>{2}<b>Details:</b> {1}", mod.ID, e.Message, Environment.NewLine));
+                    ModConsole.Error(string.Format("Settings error for mod <b>{0}</b>{2}<b>Details:</b> {1}", LoadedMods[i].ID, e.Message, Environment.NewLine));
                     if (devMode)
                         ModConsole.Error(e.ToString());
                     System.Console.WriteLine(e);

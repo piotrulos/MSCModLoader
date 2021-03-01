@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -203,7 +204,7 @@ namespace MSCLoader
             settings.ghLink = ModSettingsView.transform.GetChild(6).GetComponent<Button>();
 
             UI.transform.SetParent(ModUI.GetCanvas().transform, false);
-            settings.setVisibility(false);
+            settings.SetVisibility(false);
             Button_ms = GameObject.Instantiate(Button_ms);
             Button_ms.name = "MSCLoader Settings button";
             Button_ms.transform.SetParent(ModUI.GetCanvas().transform, false);
@@ -220,14 +221,15 @@ namespace MSCLoader
             if (mod != null)
             {
                 // Revert binds
-                foreach (Keybind bind in Keybind.Get(mod))
+                Keybind[] bind = Keybind.Get(mod).ToArray();
+                for (int i = 0; i < bind.Length; i++)
                 {
-                    Keybind original = Keybind.GetDefault(mod).Find(x => x.ID == bind.ID);
+                    Keybind original = Keybind.GetDefault(mod).Find(x => x.ID == bind[i].ID);
 
                     if (original != null)
                     {
-                        bind.Key = original.Key;
-                        bind.Modifier = original.Modifier;
+                        bind[i].Key = original.Key;
+                        bind[i].Modifier = original.Modifier;
                     }
                 }
 
@@ -254,15 +256,16 @@ namespace MSCLoader
             KeybindList list = new KeybindList();
             string path = Path.Combine(ModLoader.GetModSettingsFolder(mod), "keybinds.json");
 
-            foreach (Keybind bind in Keybind.Get(mod))
+            Keybind[] binds = Keybind.Get(mod).ToArray();
+            for (int i = 0; i < binds.Length; i++)
             {
-                if (bind.ID == null || bind.Vals != null)
+                if (binds[i].ID == null || binds[i].Vals != null)
                     continue;
                 Keybinds keybinds = new Keybinds
                 {
-                    ID = bind.ID,
-                    Key = bind.Key,
-                    Modifier = bind.Modifier
+                    ID = binds[i].ID,
+                    Key = binds[i].Key,
+                    Modifier = binds[i].Modifier
                 };
 
                 list.keybinds.Add(keybinds);
@@ -279,14 +282,14 @@ namespace MSCLoader
             if (mod != null)
             {
                 // Revert settings
-                foreach (Settings set in Settings.Get(mod))
+                Settings[] set = Settings.Get(mod).ToArray();
+                for (int i = 0; i < set.Length; i++)
                 {
-                    Settings original = Settings.GetDefault(mod).Find(x => x.ID == set.ID);
+                    Settings original = Settings.GetDefault(mod).Find(x => x.ID == set[i].ID);
 
                     if (original != null)
                     {
-                       // ModConsole.Print(set.Value + " replaced " + original.Value);
-                        set.Value = original.Value;
+                        set[i].Value = original.Value;
                     }
                 }
 
@@ -299,14 +302,13 @@ namespace MSCLoader
             if (mod != null)
             {
                 // Revert settings
-                foreach (Settings set in sets)
+                for (int i = 0; i < sets.Length; i++)
                 {
-                    Settings original = Settings.GetDefault(mod).Find(x => x.ID == set.ID);
+                    Settings original = Settings.GetDefault(mod).Find(x => x.ID == sets[i].ID);
 
                     if (original != null)
                     {
-                        ModConsole.Print(set.Value + " replaced " + original.Value);
-                        set.Value = original.Value;
+                        sets[i].Value = original.Value;
                     }
                 }
 
@@ -321,15 +323,16 @@ namespace MSCLoader
             list.isDisabled = mod.isDisabled;
             string path = Path.Combine(ModLoader.GetModSettingsFolder(mod), "settings.json");
 
-            foreach (Settings set in Settings.Get(mod))
+            Settings[] set = Settings.Get(mod).ToArray();
+            for (int i = 0; i < set.Length; i++)
             {
-                if (set.type == SettingsType.Button || set.type == SettingsType.RButton || set.type == SettingsType.Header || set.type == SettingsType.Text)
+                if (set[i].type == SettingsType.Button || set[i].type == SettingsType.RButton || set[i].type == SettingsType.Header || set[i].type == SettingsType.Text)
                     continue;
 
                 Setting sets = new Setting
                 {
-                    ID = set.ID,
-                    Value = set.Value
+                    ID = set[i].ID,
+                    Value = set[i].Value
                 };
 
                 list.settings.Add(sets);
@@ -407,12 +410,12 @@ namespace MSCLoader
                 if (Settings.Get(ModLoader.LoadedMods[i]).Count == 0)
                     continue;
 
-                foreach (Setting s in settings.settings)
+                for (int j = 0; j < settings.settings.Count; j++)
                 {
-                    Settings set = Settings.modSettings.Find(x => x.Mod == ModLoader.LoadedMods[i] && x.ID == s.ID);
+                    Settings set = Settings.modSettings.Find(x => x.Mod == ModLoader.LoadedMods[i] && x.ID == settings.settings[j].ID);
                     if (set == null)
                         continue;
-                    set.Value = s.Value;
+                    set.Value = settings.settings[j].Value;
                 }
                 try
                 {
@@ -456,8 +459,15 @@ namespace MSCLoader
             {
                 if ((bool)modSetButton.GetValue())
                     modSettingButton.SetActive(true);
-            }
 
+                StartCoroutine(CursorPM());
+            }
+            IEnumerator CursorPM()
+            {
+                yield return null;
+                //Fix that shitty custom playmaker cursor to regular system one.
+                Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+            }
             void OnDisable()
             {
                 modSettingButton.SetActive(false);
