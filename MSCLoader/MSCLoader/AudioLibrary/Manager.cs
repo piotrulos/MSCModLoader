@@ -306,8 +306,9 @@ namespace AudioLibrary
             {
                 result = (AudioFormat)Enum.Parse(typeof(AudioFormat), GetExtension(filePath), true);
             }
-            catch
+            catch(Exception e)
             {
+                Console.WriteLine(e);
             }
             return result;
         }
