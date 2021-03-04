@@ -1,5 +1,6 @@
 ﻿using AudioLibrary;
 using System;
+using System.Collections;
 using System.IO;
 using UnityEngine;
 
@@ -15,8 +16,6 @@ namespace MSCLoader
         /// </summary>
         public AudioSource audioSource;
 
-        bool timeshit = false;
-
         /// <summary>
         /// Load audio from file
         /// </summary>
@@ -25,12 +24,14 @@ namespace MSCLoader
         /// <param name="background">Load file in background</param>
         public void LoadAudioFromFile(string path, bool doStream, bool background)
         {
-            byte[] bytes = File.ReadAllBytes(path);
-            Stream stream = new MemoryStream(bytes);
+            Stream stream = new MemoryStream(File.ReadAllBytes(path));
             AudioFormat format = Manager.GetAudioFormat(path);
             string filename = Path.GetFileName(path);
 
-            if (format == AudioFormat.unknown) format = AudioFormat.mp3;
+            if (format == AudioFormat.unknown)
+            {
+                ModConsole.Error($"Unknown audio format of file {filename}");
+            }
 
             try
             {
@@ -53,7 +54,7 @@ namespace MSCLoader
         }
 
         /// <summary>
-        /// Get time position of audio file
+        /// Get current time position of audio file
         /// </summary>
         /// <returns>Time in TimeSpan format</returns>
         public TimeSpan Time()
@@ -65,16 +66,28 @@ namespace MSCLoader
         }
 
         /// <summary>
+        /// Get total time of audio file
+        /// </summary>
+        /// <returns>Time in TimeSpan format</returns>
+        public TimeSpan TotalTime()
+        {
+            if (audioSource.clip != null)
+                return TimeSpan.FromSeconds(audioSource.clip.length);
+            else
+                return TimeSpan.FromSeconds(0);
+        }
+
+        /// <summary>
         /// Play loaded audio file from specifed time.
         /// </summary>
         /// <param name="time">time to start</param>
         /// <param name="delay">optional delay</param>
-        public void Play(float time, float delay=1f)
+        public void Play(float time, float delay = 1f)
         {
             audioSource.mute = true;
             audioSource.PlayDelayed(delay);
             audioSource.time = time;
-            timeshit = true;
+            StartCoroutine(TimeDelay());
         }
 
         /// <summary>
@@ -94,15 +107,12 @@ namespace MSCLoader
             audioSource.Stop();
         }
 
-        void Update()
+        IEnumerator TimeDelay()
         {
-            if(timeshit)
+            yield return new WaitForSeconds(1f);
+            if (audioSource.isPlaying)
             {
-                if(audioSource.isPlaying)
-                {
-                    Invoke("Play",1f);
-                    timeshit = false;
-                }
+                Play();
             }
         }
     }

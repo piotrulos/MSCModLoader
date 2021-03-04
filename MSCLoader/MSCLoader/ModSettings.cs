@@ -60,7 +60,7 @@ namespace MSCLoader
         {
             instance = this;
             Keybind.Add(this, menuKey);
-            if(ModLoader.devMode)
+            if (ModLoader.devMode)
             {
                 Settings.AddHeader(this, "DevMode Settings", new Color32(101, 34, 18, 255), new Color32(254, 254, 0, 255));
                 Settings.AddCheckBox(this, dm_disabler);
@@ -94,7 +94,17 @@ namespace MSCLoader
         public override void ModSettingsLoaded()
         {
             IniPtr ini = new IniPtr(Path.GetFullPath("doorstop_config.ini"));
-            skipGameIntro.Value = Convert.ToBoolean(ini.ReadValue("MSCLoader", "skipIntro"));
+            string skipIntro = ini.ReadValue("MSCLoader", "skipIntro");
+            bool introSkip;
+            if (!bool.TryParse(skipIntro, out introSkip))
+            {
+                skipGameIntro.Value = false;
+                ModConsole.Error(string.Format("Excepted boolean, received '{0}'.", skipIntro ?? "<null>"));
+            }
+            else
+            {
+                skipGameIntro.Value = introSkip;
+            }
             ModSettingsToggle();
             ExpUIScaling();
             if ((bool)checkLaunch.GetValue())
@@ -386,7 +396,7 @@ namespace MSCLoader
                 string path = Path.Combine(ModLoader.GetModSettingsFolder(ModLoader.LoadedMods[i]), "settings.json");
                 if (!File.Exists(path))
                     SaveSettings(ModLoader.LoadedMods[i]); //create settings file if not exists.
-                
+
 
                 //Load and deserialize 
                 SettingsList settings = JsonConvert.DeserializeObject<SettingsList>(File.ReadAllText(path));
@@ -443,7 +453,7 @@ namespace MSCLoader
                 settings.toggleVisibility();
             }
         }
-        
+
         // SETUP LOGIC FOR THE MOD SETTINGS BUTTON (FREDTWEAK)
         public override void OnLoad()
         {
@@ -470,7 +480,8 @@ namespace MSCLoader
             }
             void OnDisable()
             {
-                modSettingButton.SetActive(false);
+                if (modSettingButton != null)
+                    modSettingButton.SetActive(false);
             }
         }
     }

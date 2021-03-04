@@ -129,7 +129,12 @@ namespace MSCLoader
                     File.Delete("ModLoaderSettings.json");
                 IniPtr ini = new IniPtr(Path.GetFullPath("doorstop_config.ini"));
                 cfg = ini.ReadValue("MSCLoader", "mods");
-                introSkip = Convert.ToBoolean(ini.ReadValue("MSCLoader", "skipIntro"));
+                string skipIntro = ini.ReadValue("MSCLoader", "skipIntro");
+                if (!bool.TryParse(skipIntro, out introSkip))
+                {
+                    introSkip = false;
+                    Console.WriteLine($"[FAIL] Parse failed, readed value: {skipIntro}");
+                }
                 HarmonyInstance.Create(nameof(MSCLoader)).PatchAll(Assembly.GetExecutingAssembly());
             }
             catch (Exception ex)
