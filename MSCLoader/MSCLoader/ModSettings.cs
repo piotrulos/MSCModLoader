@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using IniParser;
+using IniParser.Model;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Diagnostics;
@@ -93,8 +95,9 @@ namespace MSCLoader
         }
         public override void ModSettingsLoaded()
         {
-            IniPtr ini = new IniPtr(Path.GetFullPath("doorstop_config.ini"));
-            string skipIntro = ini.ReadValue("MSCLoader", "skipIntro");
+            IniData ini = new FileIniDataParser().ReadFile("doorstop_config.ini");
+            ini.Configuration.AssigmentSpacer = "";
+            string skipIntro = ini["MSCLoader"]["skipIntro"];
             bool introSkip;
             if (!bool.TryParse(skipIntro, out introSkip))
             {
@@ -142,8 +145,11 @@ namespace MSCLoader
 
         private static void SkipIntroSet()
         {
-            IniPtr ini = new IniPtr(Path.GetFullPath("doorstop_config.ini"));
-            ini.WriteValue("MSCLoader", "skipIntro", ((bool)skipGameIntro.GetValue()).ToString().ToLower());
+            FileIniDataParser parser = new FileIniDataParser();
+            IniData ini = parser.ReadFile("doorstop_config.ini");
+            ini.Configuration.AssigmentSpacer = "";
+            ini["MSCLoader"]["skipIntro"] = ((bool)skipGameIntro.GetValue()).ToString().ToLower();
+            parser.WriteFile("doorstop_config.ini", ini, System.Text.Encoding.ASCII);           
         }
 
         private static void VSyncSwitchCheckbox()
