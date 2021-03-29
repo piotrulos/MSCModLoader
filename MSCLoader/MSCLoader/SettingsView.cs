@@ -277,6 +277,7 @@ namespace MSCLoader
                     modViewLabels.transform.SetParent(modSettingsList.transform, false);
                     GameObject txt = Instantiate(ms.textBox);
                     txt.transform.GetChild(0).GetComponent<Text>().text = setting.Vals[0].ToString();
+                    txt.GetComponent<InputField>().contentType = (InputField.ContentType)setting.Vals[2];
                     txt.GetComponent<InputField>().text = setting.Value.ToString();
                     txt.GetComponent<InputField>().onValueChange.AddListener(delegate
                     {
