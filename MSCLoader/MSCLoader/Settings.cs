@@ -399,18 +399,28 @@ namespace MSCLoader
         /// <param name="setting">Your settings variable</param>
         /// <param name="placeholderText">Placeholder text (like "Enter text...")</param>
         /// <param name="titleTextColor">Text color of title</param>
-        public static void AddTextBox(Mod mod, Settings setting, string placeholderText, UnityEngine.Color titleTextColor)
+        public static void AddTextBox(Mod mod, Settings setting, string placeholderText, UnityEngine.Color titleTextColor) => AddTextBox(mod, setting, placeholderText, titleTextColor, InputField.ContentType.Standard);
+
+        /// <summary>
+        /// Add TextBox where user can type any text
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="setting">Your settings variable</param>
+        /// <param name="placeholderText">Placeholder text (like "Enter text...")</param>
+        /// <param name="titleTextColor">Text color of title</param>
+        /// <param name="contentType">InputField content type</param>
+        public static void AddTextBox(Mod mod, Settings setting, string placeholderText, UnityEngine.Color titleTextColor, InputField.ContentType contentType)
         {
             setting.Mod = mod;
             modSettingsDefault.Add(new Settings(setting.ID, setting.Name, setting.Value) { Mod = mod });
-
-            setting.Vals = new object[2];
+            
+            setting.Vals = new object[3];
             setting.type = SettingsType.TextBox;
             setting.Vals[0] = placeholderText;
             setting.Vals[1] = titleTextColor;
+            setting.Vals[2] = contentType;
             modSettings.Add(setting);
         }
-
         /// <summary>
         /// Add Header, blue title bar that can be used to separate settings.
         /// </summary>
