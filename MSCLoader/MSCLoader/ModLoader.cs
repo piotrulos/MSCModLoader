@@ -62,7 +62,7 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string MSCLoader_Ver = "1.1.12";
+        public static readonly string MSCLoader_Ver = "1.1.13";
 
         /// <summary>
         /// Is this version of ModLoader experimental (this is NOT game experimental branch)
@@ -1317,6 +1317,8 @@ namespace MSCLoader
             loading.transform.GetChild(0).GetComponent<Text>().text = string.Format("Loading mods. Please wait...");
             loading.transform.GetChild(1).GetComponent<Text>().text = string.Empty;
             loading.transform.GetChild(3).gameObject.SetActive(false);
+            loading.transform.SetAsLastSibling(); //Always on top
+
             while (GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera") == null)
                 yield return null;
             ModConsole.Print("Loading mods...");
@@ -1375,7 +1377,9 @@ namespace MSCLoader
         IEnumerator LoadModsAsync()
         {
             Mod[] mods = LoadedMods.Where(x => !x.isDisabled).ToArray();
+
             loading.transform.GetChild(3).gameObject.SetActive(true);
+            loading.transform.SetAsLastSibling(); //Always on top
             Slider progressBar = loading.transform.GetChild(3).GetComponent<Slider>();
             while (GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera") == null) 
                 yield return null;

@@ -106,6 +106,16 @@
         public virtual void SecondPassOnLoad() { }
 
         /// <summary>
+        /// Called once when user enable this mod in settings.
+        /// </summary>
+        public virtual void OnModEnabled() { }
+
+        /// <summary>
+        /// Called once when user disable this mod in settings.
+        /// </summary>
+        public virtual void OnModDisabled() { }
+
+        /// <summary>
         /// Called once, when save and quit.
         /// </summary>
         public virtual void OnSave() { }
