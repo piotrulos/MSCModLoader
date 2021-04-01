@@ -412,9 +412,15 @@ namespace MSCLoader
             {
                 selected_mod.isDisabled = ischecked;
                 if (ischecked)
+                {
+                    selected_mod.OnModDisabled();
                     ModConsole.Print(string.Format("Mod <b><color=orange>{0}</color></b> is <color=red><b>Disabled</b></color>", selected_mod.Name));
+                }
                 else
+                {
+                    selected_mod.OnModEnabled();
                     ModConsole.Print(string.Format("Mod <b><color=orange>{0}</color></b> is <color=green><b>Enabled</b></color>", selected_mod.Name));
+                }
                 ModSettings_menu.SaveSettings(selected_mod);
             }
         }
