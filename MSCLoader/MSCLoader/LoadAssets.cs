@@ -144,7 +144,7 @@ namespace MSCLoader
             }
             else
             {
-                throw new FileNotFoundException(string.Format("<b>LoadBundle() Error:</b> File not found: <b>{0}</b>{1}", bundleName, Environment.NewLine), bundleName);
+                throw new FileNotFoundException(string.Format("<b>LoadBundle() Error:</b> File not found: <b>{0}</b>{1}", bundle, Environment.NewLine), bundleName);
             }
         }
 

@@ -415,12 +415,12 @@ namespace MSCLoader
                 if (!Directory.Exists(AssetsFolder))
                     Directory.CreateDirectory(AssetsFolder);
 
+                LoadCoreAssets();
                 LoadMod(new ModConsole(), MSCLoader_Ver);
                 LoadedMods[0].ModSettings();
                 LoadMod(new ModSettings_menu(), MSCLoader_Ver);
                 LoadedMods[1].ModSettings();
-                ModSettings_menu.LoadSettings();
-                LoadCoreAssets();
+                ModSettings_menu.LoadSettings();                
                 IsDoneLoading = true;
                 if (experimental)
                     ModConsole.Print(string.Format("<color=green>ModLoader <b>v{0}</b> ready</color> [<color=magenta>Experimental</color> <color=lime>build {1}</color>]", MSCLoader_Ver, expBuild));

@@ -111,7 +111,14 @@ namespace MSCLoader
 
         public override void OnMenuLoad()
         {
-            CreateConsoleUI();
+            try
+            {
+                CreateConsoleUI();
+            }
+            catch(System.Exception e)
+            {
+                ModUI.ShowMessage($"Fatal error:{System.Environment.NewLine}<color=orange>{e.Message}</color>{System.Environment.NewLine}Please install modloader correctly.", "Fatal Error");
+            }
             console.controller = new ConsoleController();
             ConsoleCommand.cc = console.controller;
             console.setVisibility(false);
