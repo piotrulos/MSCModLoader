@@ -462,23 +462,31 @@ namespace MSCPatcher
                 if (MDradio.Checked)
                 {
                     InitMethod = "Init_MD";
-                    try
+                    bool isCloudIgnore = true;
+                    if (Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)).ToString() == "OneDrive")
+                        if (MessageBox.Show($"You are about to set your mods folder to a directory that is part of OneDrive cloud.{Environment.NewLine}This is not supported due to On-Demand files that may cause issues.{Environment.NewLine}{Environment.NewLine}Do you want to continue?", "Cloud folder warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                            isCloudIgnore = false;
+                    if (isCloudIgnore)
                     {
-                        modPath = mdPath;
-                        PatchStarter();
-                        if (!Directory.Exists(mdPath))
+                        try
                         {
-                            //if mods folder not exists, create it.
-                            Directory.CreateDirectory(mdPath);
+                            modPath = mdPath;
+                            PatchStarter();
+                            if (!Directory.Exists(mdPath))
+                            {
+                                //if mods folder not exists, create it.
+                                Directory.CreateDirectory(mdPath);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(string.Format("Error:{1}{0}", ex.Message, Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            Log.Write("Error", true, true);
+                            Log.Write(ex.Message);
+                            Log.Write(ex.ToString());
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(string.Format("Error:{1}{0}", ex.Message, Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        Log.Write("Error", true, true);
-                        Log.Write(ex.Message);
-                        Log.Write(ex.ToString());
-                    }
+
                 }
                 else if (GFradio.Checked)
                 {
@@ -553,7 +561,14 @@ namespace MSCPatcher
                 }
                 Log.Write(string.Format("Current folder: {0}", Path.GetFullPath(".")));
                 Log.Write(string.Format("Game folder set to: {0}", mscPath));
-                File.WriteAllText("MSCFolder.txt", mscPath);
+                try
+                {
+                    File.WriteAllText("MSCFolder.txt", mscPath);
+                }
+                catch
+                {
+                    //cannot create MSCFolder file for unknown reasons.
+                }
                 Log.Write(string.Format("Game folder is saved as: {0}{1}", mscPath, Environment.NewLine));
                 MainData.LoadMainData(OutputlogLabel, resDialogLabel, resDialogCheck);
                 CheckPatchStatus();

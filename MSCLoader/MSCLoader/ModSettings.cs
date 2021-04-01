@@ -164,7 +164,14 @@ namespace MSCLoader
         }
         public override void OnMenuLoad()
         {
-            CreateSettingsUI();
+            try
+            {
+                CreateSettingsUI();
+            }
+            catch(Exception e)
+            {
+                ModUI.ShowMessage($"Fatal error:{Environment.NewLine}<color=orange>{e.Message}</color>{Environment.NewLine}Please install modloader correctly.", "Fatal Error");
+            }
         }
 
         public void CreateSettingsUI()

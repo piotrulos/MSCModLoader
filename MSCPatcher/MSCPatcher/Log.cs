@@ -18,8 +18,14 @@ namespace MSCPatcher
                 logBox.AppendText(string.Format("{0}{1}================={1}", log, Environment.NewLine));
             else
                 logBox.AppendText(string.Format("{0}{1}", log, Environment.NewLine));
-
-            File.WriteAllText(Path.Combine("Log.txt", ""), logBox.Text);
+            try
+            {
+                File.WriteAllText("Log.txt", logBox.Text);
+            }
+            catch
+            {
+                //cannot create Log file for unknown reasons.
+            }
         }
     }
 }
