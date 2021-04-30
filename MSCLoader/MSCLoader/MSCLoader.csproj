@@ -103,7 +103,10 @@
     <Compile Include="ConsoleController.cs" />
     <Compile Include="ConsoleUIResizer.cs" />
     <Compile Include="ConsoleView.cs" />
+    <Compile Include="DummyCompLayer\ModSettings.cs" />
+    <Compile Include="DummyCompLayer\ModSettingTypes.cs" />
     <Compile Include="FsmHook.cs" />
+    <Compile Include="DummyCompLayer\ModHelper.cs" />
     <Compile Include="Keybind.cs" />
     <Compile Include="KeyBinding.cs" />
     <Compile Include="LoadAssets.cs" />

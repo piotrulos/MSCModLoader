@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace MSCLoader
@@ -70,6 +71,10 @@ namespace MSCLoader
         public Action DoAction { get; set; }
 
         /// <summary>
+        /// Action to execute for specifed setting.
+        /// </summary>
+        public UnityAction DoUnityAction { get; set; }
+        /// <summary>
         /// Type of setting.
         /// </summary>
         public SettingsType type { get; set; }
@@ -119,7 +124,21 @@ namespace MSCLoader
             Value = "DoAction";
             DoAction = doAction;
         }
-
+        /// <summary>
+        /// Constructor for Settings
+        /// </summary>
+        /// <param name="id">Unique settings ID for your mod</param>
+        /// <param name="name">Name of the setting</param>
+        /// <param name="doUnityAction">UnityAction to execute for this setting</param>
+        /// <example><code source="SettingsExamples.cs" region="Constructor21" lang="C#" 
+        /// title="Settings constructor" /></example>
+        public Settings(string id, string name, UnityAction doUnityAction)
+        {
+            ID = id;
+            Name = name;
+            Value = "DoUnityAction";
+            DoUnityAction = doUnityAction;
+        }
         /// <summary>
         /// Constructor for Settings
         /// </summary>
@@ -140,7 +159,7 @@ namespace MSCLoader
         /// <summary>
         /// Hides "reset all settings to default" button.
         /// </summary>
-        public static void HideResetAllButton(Mod mod) => modSettingsDefault.Add(new Settings("MSCL_HideResetAllButton", null, null) { Mod = mod });
+        public static void HideResetAllButton(Mod mod) => modSettingsDefault.Add(new Settings("MSCL_HideResetAllButton", null, (Action)null) { Mod = mod });
         /// <summary>
         /// Return all settings for mod.
         /// </summary>
@@ -214,7 +233,7 @@ namespace MSCLoader
         {
             if (sets != null)
             {
-                Settings setting = new Settings("MSCL_ResetSpecificMod", name, null);
+                Settings setting = new Settings("MSCL_ResetSpecificMod", name, (Action)null);
                 setting.Mod = mod;
                 setting.Vals = new object[5];
                 setting.type = SettingsType.RButton;
@@ -266,7 +285,7 @@ namespace MSCLoader
             if (description == null)
                 description = string.Empty;
 
-            if (setting.DoAction != null)
+            if (setting.DoAction != null || setting.DoUnityAction != null)
             {
                 setting.type = SettingsType.Button;
                 setting.Vals[0] = description;
@@ -426,7 +445,7 @@ namespace MSCLoader
         /// </summary>
         /// <param name="mod">Your mod instance</param>
         /// <param name="HeaderTitle">Title of your header</param>
-        public static void AddHeader(Mod mod, string HeaderTitle) => AddHeader(mod, HeaderTitle, UnityEngine.Color.blue, UnityEngine.Color.white);
+        public static void AddHeader(Mod mod, string HeaderTitle) => AddHeader(mod, HeaderTitle, UnityEngine.Color.green, UnityEngine.Color.white);
 
         /// <summary>
         /// Add Header, blue title bar that can be used to separate settings.
@@ -445,7 +464,7 @@ namespace MSCLoader
         /// <param name="textColor">Text Color of header</param>
         public static void AddHeader(Mod mod, string HeaderTitle, UnityEngine.Color backgroundColor, UnityEngine.Color textColor)
         {
-            Settings setting = new Settings(null, HeaderTitle, null);
+            Settings setting = new Settings(null, HeaderTitle, (Action)null);
             setting.Mod = mod;
             setting.Vals = new object[3];
             setting.type = SettingsType.Header;
@@ -461,7 +480,7 @@ namespace MSCLoader
         /// <param name="text">Just a text (supports unity rich text)</param>
         public static void AddText(Mod mod, string text)
         {
-            Settings setting = new Settings(null, text, null);
+            Settings setting = new Settings(null, text, (Action)null);
             setting.Mod = mod;
             setting.type = SettingsType.Text;
             modSettings.Add(setting);
