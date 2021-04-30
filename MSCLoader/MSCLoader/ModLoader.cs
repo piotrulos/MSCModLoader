@@ -62,7 +62,7 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string MSCLoader_Ver = "1.1.13";
+        public static readonly string MSCLoader_Ver = "1.1.14";
 
         /// <summary>
         /// Is this version of ModLoader experimental (this is NOT game experimental branch)
@@ -171,27 +171,41 @@ namespace MSCLoader
         }
 
         /// <summary>
+        /// Get Mod class of modID
+        /// </summary>
+        /// <param name="modID">Mod ID of other mod to check (Case sensitive)</param>
+        /// <param name="ignoreEnabled">Include disabled mods</param>
+        /// <returns>Mod class</returns>
+        public static Mod GetMod(string modID, bool ignoreEnabled = false)
+        {
+            if (IsModPresent(modID))
+            {
+                return LoadedMods.Where(x => x.ID.Equals(modID) && !x.isDisabled).FirstOrDefault();
+            }
+            else if (ignoreEnabled)
+            {
+                return LoadedMods.Where(x => x.ID.Equals(modID)).FirstOrDefault();
+            }
+            return null;
+        }
+        /// <summary>
         /// Check if other ModID is present and enabled
         /// </summary>
         /// <param name="ModID">Mod ID of other mod to check (Case sensitive)</param>
         /// <returns>true if mod ID is present</returns>
         public static bool IsModPresent(string ModID)
         {
-            Mod m = LoadedMods.Where(x => x.ID.Equals(ModID)).FirstOrDefault();
-            if(m != null)
-            {
-                if (m.isDisabled)
-                    return false;
-                else
-                    return true;
-            }
+            Mod m = LoadedMods.Where(x => x.ID.Equals(ModID) && !x.isDisabled).FirstOrDefault();
+            if (m != null)
+                return true;
             return false;
         }
+        /// <summary>
+        /// Same thing as GetModConfigFolder()
+        /// </summary>
+        public static string GetModSettingsFolder(Mod mod, bool create = true) => GetModSettingsFolder(mod);
+        internal static string GetModSettingsFolder(Mod mod) => GetModConfigFolder(mod);
 
-        internal static string GetModSettingsFolder(Mod mod)
-        {
-            return Path.Combine(SettingsFolder, mod.ID);
-        }
         /// <summary>
         /// Mod config folder, use this if you want save something. 
         /// </summary>
@@ -1479,7 +1493,12 @@ namespace MSCLoader
                 }
             }
         }
-
+        static bool CheckEmptyMethod(Mod mod, string methodName)
+        {
+            // Check if a method with the specified name is overridden in the Mod sub-class then check if it's not empty.
+            MethodInfo method = mod.GetType().GetMethod(methodName);
+            return (method.IsVirtual && method.DeclaringType == mod.GetType() && method.GetMethodBody().GetILAsByteArray().Length > 2);
+        }
         private void PreLoadMods()
         {
             // Load .dll files
@@ -1491,11 +1510,11 @@ namespace MSCLoader
                     LoadDLL(files[i]);
                 }
             }
-            SecondPassMods = LoadedMods.Where(x => x.SecondPass).ToArray();
-            OnGUImods = LoadedMods.Where(x => x.GetType().GetMethod("OnGUI").GetMethodBody().GetILAsByteArray().Length > 2).ToArray();
-            UpdateMods = LoadedMods.Where(x => x.GetType().GetMethod("Update").GetMethodBody().GetILAsByteArray().Length > 2).ToArray();
-            FixedUpdateMods = LoadedMods.Where(x => x.GetType().GetMethod("FixedUpdate").GetMethodBody().GetILAsByteArray().Length > 2).ToArray();
-            OnSaveMods = LoadedMods.Where(x => x.GetType().GetMethod("OnSave").GetMethodBody().GetILAsByteArray().Length > 2).ToArray();
+            SecondPassMods = LoadedMods.Where(x => x.SecondPass || CheckEmptyMethod(x, "PostLoad")).ToArray();
+            OnGUImods = LoadedMods.Where(x => CheckEmptyMethod(x, "OnGUI") || CheckEmptyMethod(x, "MenuOnGUI")).ToArray();
+            UpdateMods = LoadedMods.Where(x => CheckEmptyMethod(x, "Update") || CheckEmptyMethod(x, "MenuUpdate")).ToArray();
+            FixedUpdateMods = LoadedMods.Where(x => CheckEmptyMethod(x, "FixedUpdate") || CheckEmptyMethod(x, "MenuFixedUpdate")).ToArray();
+            OnSaveMods = LoadedMods.Where(x => CheckEmptyMethod(x, "OnSave")).ToArray();
             
             //cleanup files if not in dev mode
             if (!devMode)
@@ -1677,6 +1696,10 @@ namespace MSCLoader
                     if (mod.LoadInMenu && mod.fileName == null)
                     {
                         mod.OnMenuLoad();
+                    }
+                    if (CheckEmptyMethod(mod, "MenuOnLoad"))
+                    {
+                        mod.MenuOnLoad();
                     }
                 }
                 catch (Exception e)

@@ -3,6 +3,7 @@ using MSCLoader.Commands;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Text.RegularExpressions;
+using System.Collections;
 
 namespace MSCLoader
 {
@@ -141,7 +142,7 @@ namespace MSCLoader
                 console.controller.AppendLogLine(str);
             }
             catch { }
-            System.Console.WriteLine(string.Format("MSCLoader Message: {0}", Regex.Replace(str, "<.*?>", string.Empty)));
+            System.Console.WriteLine($"MSCLoader Message: {Regex.Replace(str, "<.*?>", string.Empty)}");
         }
         /// <summary>
         /// Prints anything to console.
@@ -156,7 +157,7 @@ namespace MSCLoader
                 console.controller.AppendLogLine(obj.ToString());
             }
             catch { }
-            System.Console.WriteLine(string.Format("MSCLoader Message: {0}", obj));
+            System.Console.WriteLine($"MSCLoader Message: {obj}");
         }
 
         /// <summary>
@@ -170,10 +171,10 @@ namespace MSCLoader
             try
             {
                 console.setVisibility(true);
-                console.controller.AppendLogLine(string.Format("<color=red><b>Error: </b>{0}</color>", str));
+                console.controller.AppendLogLine($"<color=red><b>Error: </b>{str}</color>");
             }
             catch { }
-            System.Console.WriteLine(string.Format("MSCLoader ERROR: {0}", Regex.Replace(str, "<.*?>", string.Empty)));
+            System.Console.WriteLine($"MSCLoader ERROR: {Regex.Replace(str, "<.*?>", string.Empty)}");
         }
 
         /// <summary>
@@ -187,10 +188,52 @@ namespace MSCLoader
             try
             {
                 console.setVisibility(true);
-                console.controller.AppendLogLine(string.Format("<color=yellow><b>Warning: </b>{0}</color>", str));
+                console.controller.AppendLogLine($"<color=yellow><b>Warning: </b>{str}</color>");
             }
             catch { }
-            System.Console.WriteLine(string.Format("MSCLoader WARNING: {0}", Regex.Replace(str, "<.*?>", string.Empty)));
+            System.Console.WriteLine($"MSCLoader WARNING: {Regex.Replace(str, "<.*?>", string.Empty)}");
+        }
+
+        //compatibility layer with pro
+
+        /// <summary>
+        /// Same as ModConsole.Print(string);
+        /// </summary>
+        /// <param name="text">Text to print to console.</param>
+        public static void Log(string text) => Print(text);
+
+        /// <summary>
+        /// Same as ModConsole.Print(obj);
+        /// </summary>
+        /// <param name="obj">object to print to console.</param>
+        public static void Log(object obj) => Print(obj);
+
+        /// <summary>
+        /// Same as ModConsole.Error(string);
+        /// </summary>
+        /// <param name="text">Error to print to console.</param>
+        public static void LogError(string text) => Error(text);
+
+        /// <summary>
+        /// Same as ModConsole.Warning(string);
+        /// </summary>
+        /// <param name="text">Warning to print to console.</param>
+        public static void LogWarning(string text) => Warning(text);
+
+        /// <summary>
+        /// Logs a list (and optionally its elements) to the ModConsole and output_log.txt
+        /// </summary>
+        /// <param name="list">List to print.</param>
+        /// <param name="printAllElements">(Optional) Should it log all elements of the list/array or should it only log the list/array itself. (default: true)</param>
+        public static void Log(IList list, bool printAllElements = true)
+        {
+            // Check if it should print the elements or the list itself.
+            if (printAllElements)
+            {
+                Log(list.ToString());
+                for (int i = 0; i < list.Count; i++) Log(list[i]);
+            }
+            else Log(list.ToString());
         }
     }
 }

@@ -6,7 +6,7 @@
     /// <example><code source="Examples.cs" region="Mod" lang="C#" 
     /// title="Example Mod Class" /></example>
     public abstract class Mod
-	{
+    {
         bool disabled = false;
         bool update = false;
         string compiledVer = null;
@@ -21,11 +21,11 @@
         public virtual bool isDisabled { get => disabled; internal set => disabled = value; }
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
-        internal virtual bool hasUpdate { get => update;  set => update = value; }
+        internal virtual bool hasUpdate { get => update; set => update = value; }
 
-        internal virtual string compiledVersion { get => compiledVer;  set => compiledVer = value; }
+        internal virtual string compiledVersion { get => compiledVer; set => compiledVer = value; }
 
-        internal virtual string fileName { get => filePath;  set => filePath = value; }
+        internal virtual string fileName { get => filePath; set => filePath = value; }
 
         internal virtual ModsManifest metadata { get => modMetadata; set => modMetadata = value; }
         internal virtual ModsManifest RemMetadata { get => rmodMetadata; set => rmodMetadata = value; }
@@ -63,7 +63,7 @@
         /// (prefered standard version format: 2, 3 or 4 digits)
         /// </summary>
         public abstract string Version { get; }
-   
+
         /// <summary>
         /// Author of the mod
         /// (Enter your nickname in this variable)
@@ -89,9 +89,11 @@
         /// <summary>
         /// Called once in main menu (only when LoadInMenu is true).
         /// </summary>
-        public virtual void OnMenuLoad() {
+        public virtual void OnMenuLoad()
+        {
             if (LoadInMenu)
-                ModConsole.Error(string.Format("<b>LoadInMenu</b> is set to <b>true</b> for mod: <b>{0}</b> but <b>OnMenuLoad()</b> is empty.",ID));
+                ModConsole.Error(string.Format("<b>LoadInMenu</b> is set to <b>true</b> for mod: <b>{0}</b> but <b>OnMenuLoad()</b> is empty.", ID));
+         //   MenuOnLoad();
         }
 
         /// <summary>
@@ -103,7 +105,7 @@
         /// Called once, after ALL mods has finished OnLoad() and when SecondPass is set to true
         /// (Executed still before first pass of Update(), but NOT exectued if OnLoad() failed with error)
         /// </summary>
-        public virtual void SecondPassOnLoad() { }
+        public virtual void SecondPassOnLoad() { PostLoad(); }
 
         /// <summary>
         /// Called once when user enable this mod in settings.
@@ -116,6 +118,16 @@
         public virtual void OnModDisabled() { }
 
         /// <summary>
+        /// Method called whenever mod settings are open.
+        /// </summary>
+        public virtual void ModSettingsOpen() { }
+
+        /// <summary>
+        /// Method called whenever mod settings are closed.
+        /// </summary>
+        public virtual void ModSettingsClose() { }
+
+        /// <summary>
         /// Called once, when save and quit.
         /// </summary>
         public virtual void OnSave() { }
@@ -125,18 +137,86 @@
         /// </summary>
         /// <example>See: https://docs.unity3d.com/500/Documentation/Manual/GUIScriptingGuide.html
         /// </example>
-        public virtual void OnGUI() { }
+        public virtual void OnGUI() { MenuOnGUI(); }
 
-		/// <summary>
-		/// Called once every frame
+        /// <summary>
+        /// Called once every frame
         /// (standard unity Update()).
-		/// </summary>
-		public virtual void Update() { }
+        /// </summary>
+        public virtual void Update() { MenuUpdate(); }
 
         /// <summary>
         /// Called once every fixed frame 
         /// (standard unity FixedUpdate()).
         /// </summary>
-        public virtual void FixedUpdate() { }
+        public virtual void FixedUpdate() { MenuFixedUpdate(); }
+
+        #region ProRedirectsAndDummys
+        /// <summary>
+        /// CompLayer DON'T USE
+        /// </summary>
+        /// 
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public ModSettings modSettings;
+        /// <summary>
+        /// Constructor DON'T USE
+        /// </summary>
+        public Mod()
+        {
+            modSettings = new ModSettings(this);
+        }
+        /// <summary>
+        /// Compatibility only: does nothing
+        /// </summary>
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public virtual string Description { get; set; } = "";
+
+        /// <summary>
+        /// Compatibility only: does nothing
+        /// </summary>
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public virtual byte[] Icon { get; set; } = null;
+        /// <summary>
+        /// Compatibility only: does nothing
+        /// </summary>
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public virtual string UpdateLink { get; } = "";
+
+        /// <summary>
+        /// Compatibility only: same as OnMenuLoad()
+        /// </summary>
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public virtual void MenuOnLoad() { }
+
+        /// <summary>
+        /// Compatibility only: same as OnGUI()
+        /// </summary>
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public virtual void MenuOnGUI() { }
+
+        /// <summary>
+        /// Compatibility only: same as Update()
+        /// </summary>
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public virtual void MenuUpdate() { }
+
+        /// <summary>
+        /// Compatibility only: same as FixedUpdate()
+        /// </summary>
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public virtual void MenuFixedUpdate() { }
+
+        /// <summary>
+        /// Compatibility only: nothing yet;
+        /// </summary>
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public virtual void PreLoad() { }
+
+        /// <summary>
+        /// Compatibility only: same as SecondPassOnLoad()
+        /// </summary>
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public virtual void PostLoad() { }
+#endregion
     }
 }

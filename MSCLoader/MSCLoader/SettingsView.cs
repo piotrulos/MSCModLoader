@@ -210,7 +210,10 @@ namespace MSCLoader
                     btn.transform.GetChild(1).GetComponent<Text>().color = (Color)setting.Vals[4];
                     if (setting.Vals[0].ToString() == null || setting.Vals[0].ToString() == string.Empty)
                         btn.transform.GetChild(1).gameObject.SetActive(false);
-                    btn.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(setting.DoAction.Invoke);
+                    if(setting.Value.ToString() == "DoUnityAction")
+                        btn.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(setting.DoUnityAction);
+                    else
+                        btn.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(setting.DoAction.Invoke);
                     ColorBlock cb = btn.transform.GetChild(0).GetComponent<Button>().colors;
                     cb.normalColor = (Color)setting.Vals[1];
                     cb.highlightedColor = (Color)setting.Vals[2];
@@ -246,7 +249,7 @@ namespace MSCLoader
                     slidr.transform.GetChild(1).GetComponent<Text>().text = setting.Value.ToString();
                     slidr.transform.GetChild(0).GetComponent<Slider>().minValue = float.Parse(setting.Vals[0].ToString());
                     slidr.transform.GetChild(0).GetComponent<Slider>().maxValue = float.Parse(setting.Vals[1].ToString());
-                    slidr.transform.GetChild(0).GetComponent<Slider>().value = float.Parse(setting.Value.ToString());
+                    try { slidr.transform.GetChild(0).GetComponent<Slider>().value = float.Parse(setting.Value.ToString()); }catch(Exception e) { ModConsole.Error($"Settings error excepted float received {setting.Value}"); System.Console.WriteLine(e); setting.Value = 0; }
                     slidr.transform.GetChild(0).GetComponent<Slider>().wholeNumbers = (bool)setting.Vals[2];
                     if (setting.Vals[3] != null)
                     {
@@ -360,6 +363,7 @@ namespace MSCLoader
                     anim.Play("goBackSettings");
                     goBackBtn.SetActive(false);
                     RemoveChildren(modSettingsList.transform);
+                    selected_mod.ModSettingsClose();
                     break;
             }
 
@@ -545,6 +549,8 @@ namespace MSCLoader
                 });
             }
             goToSettings();
+            selected_mod.ModSettingsOpen();
+
         }
         void ModListHeader(string header, Color background, Color text)
         {
@@ -661,6 +667,7 @@ namespace MSCLoader
                 {
                     ModSettings_menu.SaveSettings(selected_mod);
                     RemoveChildren(modSettingsList.transform);
+                    selected_mod.ModSettingsClose();
                 }
                 SetVisibility(!settingViewContainer.activeSelf);
                 goBack();

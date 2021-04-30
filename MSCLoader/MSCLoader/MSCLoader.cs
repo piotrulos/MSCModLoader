@@ -127,8 +127,8 @@ namespace MSCLoader
         {
             try
             {
-                if (File.Exists("ModLoaderSettings.json"))
-                    File.Delete("ModLoaderSettings.json");
+                if (File.Exists("ModLoaderSettings.ini"))
+                    File.Delete("ModLoaderSettings.ini");
                 IniData ini = new FileIniDataParser().ReadFile("doorstop_config.ini");
                 ini.Configuration.AssigmentSpacer = "";
                 cfg = ini["MSCLoader"]["mods"];
