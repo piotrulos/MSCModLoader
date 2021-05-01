@@ -1,4 +1,6 @@
-﻿using Mono.Cecil;
+﻿using IniParser;
+using IniParser.Model;
+using Mono.Cecil;
 using Mono.Cecil.Cil;
 using System;
 using System.Diagnostics;
@@ -334,34 +336,55 @@ namespace MSCPatcher
 
                 Patcher.ProcessReferences(mscPath, false);
                 Patcher.CopyCoreAssets(modPath);
-                Patcher.DeleteIfExists(Path.Combine(mscPath, @"doorstop_config.ini"));
-                Log.Write("Generating config file.....doorstop_config.ini");
-                using (TextWriter tw = File.CreateText(Path.Combine(mscPath, @"doorstop_config.ini")))
+                Patcher.DeleteIfExists(Path.Combine(mscPath, @"ModLoaderSettings.ini"));
+                bool resetConfig = false;
+                if (File.Exists(Path.Combine(mscPath, @"doorstop_config.ini")))
                 {
-                    tw.WriteLine(@"[UnityDoorstop]");
-                    tw.WriteLine(@"enabled=true");
-                    tw.WriteLine(@"targetAssembly=mysummercar_Data\Managed\MSCLoader.dll");
-                    tw.WriteLine(@"redirectOutputLog=true");
-                    tw.WriteLine(@"ignoreDisableSwitch=true");
-                    tw.WriteLine(@"[MSCLoader]");
-
-                    switch (InitMethod)
+                    IniData ini = new FileIniDataParser().ReadFile(Path.Combine(mscPath, @"doorstop_config.ini"));
+                    ini.Configuration.AssigmentSpacer = "";
+                    string cfg = ini["MSCLoader"]["mods"];
+                    string skipIntro = ini["MSCLoader"]["skipIntro"];
+                    if (cfg != null && skipIntro != null)
                     {
-                        case "Init_MD":
-                            tw.WriteLine(@"mods=MD");
-                            break;
-                        case "Init_GF":
-                            tw.WriteLine(@"mods=GF");
-                            break;
-                        case "Init_AD":
-                            tw.WriteLine(@"mods=AD");
-                            break;
-                        default:
-                            tw.WriteLine(@"mods=GF");
-                            break;
+                        resetConfig = false;
+                        Log.Write("Skipping....doorstop_config.ini");
                     }
-                    tw.WriteLine(@"skipIntro=false");
-                    tw.Flush();
+                    else
+                    {
+                        resetConfig = true;
+                    }
+                }
+                if (resetConfig)
+                {
+                    Patcher.DeleteIfExists(Path.Combine(mscPath, @"doorstop_config.ini"));
+                    Log.Write("Generating config file.....doorstop_config.ini");
+                    using (TextWriter tw = File.CreateText(Path.Combine(mscPath, @"doorstop_config.ini")))
+                    {
+                        tw.WriteLine(@"[UnityDoorstop]");
+                        tw.WriteLine(@"enabled=true");
+                        tw.WriteLine(@"targetAssembly=mysummercar_Data\Managed\MSCLoader.dll");
+                        tw.WriteLine(@"redirectOutputLog=true");
+                        tw.WriteLine(@"ignoreDisableSwitch=true");
+                        tw.WriteLine(@"[MSCLoader]");
+
+                        switch (InitMethod)
+                        {
+                            case "Init_MD":
+                                tw.WriteLine(@"mods=MD");
+                                break;
+                            case "Init_GF":
+                                tw.WriteLine(@"mods=GF");
+                                break;
+                            case "Init_AD":
+                                tw.WriteLine(@"mods=AD");
+                                break;
+                            default:
+                                tw.WriteLine(@"mods=GF");
+                                break;
+                        }
+                        tw.WriteLine(@"skipIntro=false");
+                        tw.Flush();
+                    }
                 }
                 Log.Write("MSCLoader update successful!");
                 Log.Write("");
@@ -716,6 +739,7 @@ namespace MSCPatcher
                     Patcher.DeleteIfExists(string.Format("{0}.backup", AssemblyFullPath));
                     Patcher.DeleteIfExists(Path.Combine(mscPath, "winhttp.dll"));
                     Patcher.DeleteIfExists(Path.Combine(mscPath, "doorstop_config.ini"));
+                    Patcher.DeleteIfExists(Path.Combine(mscPath, "ModLoaderSettings.ini"));
                     Patcher.ProcessReferences(mscPath, true);
                     Log.Write("");
                     Log.Write("MSCLoader removed successfully!");

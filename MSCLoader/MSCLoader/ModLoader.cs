@@ -1643,6 +1643,7 @@ namespace MSCLoader
                                         msVer = string.Format("{0}.{1}.{2}", verparse[0], verparse[1], verparse[2]);
                                 }
                             }
+
                         }
                         isMod = true;
                         LoadMod((Mod)Activator.CreateInstance(type), msVer, file);
@@ -1691,6 +1692,7 @@ namespace MSCLoader
                 mod.compiledVersion = msver;
                 mod.fileName = fname;
                 LoadedMods.Add(mod);
+                Console.WriteLine($"Detected As: {mod.Name} (ID: {mod.ID}) v{mod.Version}");
                 try
                 {
                     if (mod.LoadInMenu && mod.fileName == null)

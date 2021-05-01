@@ -50,6 +50,9 @@
   </PropertyGroup>
   <PropertyGroup />
   <ItemGroup>
+    <Reference Include="INIFileParser">
+      <HintPath>..\..\..\MSCLoader Release\MSCLoader\INIFileParser.dll</HintPath>
+    </Reference>
     <Reference Include="Ionic.Zip">
       <HintPath>..\..\..\MSCLoader Release\Ionic.Zip.dll</HintPath>
     </Reference>
