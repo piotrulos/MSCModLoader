@@ -763,7 +763,7 @@ namespace MSCPatcher
             try
             {
                 Log.Write("Starting game on steam", true, false);
-                Process.Start("steam://rungameid/516750");
+                Process.Start(mscPath + "mysummercar.exe");
                 Environment.Exit(0);
             }
             catch (Exception ex)
