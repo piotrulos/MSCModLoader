@@ -168,7 +168,7 @@ namespace MSCLoader
         /// <returns>Unity AssetBundle</returns>
         public static AssetBundle LoadBundle(string assetBundleEmbeddedResources)
         {
-            System.Reflection.Assembly a = System.Reflection.Assembly.GetExecutingAssembly();
+            System.Reflection.Assembly a = System.Reflection.Assembly.GetCallingAssembly();
             using (Stream resFilestream = a.GetManifestResourceStream(assetBundleEmbeddedResources))
             {
                 if (resFilestream == null)
