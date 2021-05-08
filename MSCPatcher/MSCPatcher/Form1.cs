@@ -354,6 +354,10 @@ namespace MSCPatcher
                         resetConfig = true;
                     }
                 }
+                else
+                {
+                    resetConfig = true;
+                }
                 if (resetConfig)
                 {
                     Patcher.DeleteIfExists(Path.Combine(mscPath, @"doorstop_config.ini"));
