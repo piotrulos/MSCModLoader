@@ -120,7 +120,7 @@ namespace MSCLoader
         private bool allModsLoaded = false;
         private bool IsModsResetting = false;
         private bool IsModsDoneResetting = false;
-        private static CurrentScene CurrentGameScene;
+        public static CurrentScene CurrentScene;
 
         void Awake()
         {
@@ -167,7 +167,7 @@ namespace MSCLoader
         /// <returns>CurrentScene enum</returns>
         public static CurrentScene GetCurrentScene()
         {
-            return CurrentGameScene;
+            return CurrentScene;
         }
 
         /// <summary>
@@ -307,7 +307,7 @@ namespace MSCLoader
         {
             if (Application.loadedLevelName == "MainMenu")
             {
-                CurrentGameScene = CurrentScene.MainMenu;
+                CurrentScene = CurrentScene.MainMenu;
                 if (GameObject.Find("Music"))
                     GameObject.Find("Music").GetComponent<AudioSource>().Play();
                 if (QualitySettings.vSyncCount != 0)
@@ -328,7 +328,7 @@ namespace MSCLoader
             }
             else if (Application.loadedLevelName == "Intro")
             {
-                CurrentGameScene = CurrentScene.NewGameIntro;
+                CurrentScene = CurrentScene.NewGameIntro;
 
                 if (!IsModsDoneResetting && !IsModsResetting)
                 {
@@ -338,7 +338,7 @@ namespace MSCLoader
             }
             else if (Application.loadedLevelName == "GAME")
             {
-                CurrentGameScene = CurrentScene.Game;
+                CurrentScene = CurrentScene.Game;
                 if ((bool)ModSettings_menu.forceMenuVsync.GetValue() && !vse)
                     QualitySettings.vSyncCount = 0;
 
@@ -1593,10 +1593,14 @@ namespace MSCLoader
                 }
                 catch (Exception e)
                 {
-                    ModConsole.Error(string.Format("Settings error for mod <b>{0}</b>{2}<b>Details:</b> {1}", LoadedMods[i].ID, e.Message, Environment.NewLine));
-                    if (devMode)
-                        ModConsole.Error(e.ToString());
-                    System.Console.WriteLine(e);
+                    if (LoadedMods[i].proSettings) System.Console.WriteLine(e);
+                    else
+                    {
+                        ModConsole.Error(string.Format("Settings error for mod <b>{0}</b>{2}<b>Details:</b> {1}", LoadedMods[i].ID, e.Message, Environment.NewLine));
+                        if (devMode)
+                            ModConsole.Error(e.ToString());
+                        System.Console.WriteLine(e);
+                    }
                 }
             }
             ModSettings_menu.LoadSettings();

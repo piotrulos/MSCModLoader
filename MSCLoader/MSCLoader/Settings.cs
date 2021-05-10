@@ -132,7 +132,7 @@ namespace MSCLoader
         /// <param name="doUnityAction">UnityAction to execute for this setting</param>
         /// <example><code source="SettingsExamples.cs" region="Constructor21" lang="C#" 
         /// title="Settings constructor" /></example>
-        public Settings(string id, string name, UnityAction doUnityAction)
+        public Settings(string id, string name, UnityAction doUnityAction, bool blockSuspension)
         {
             ID = id;
             Name = name;
@@ -155,7 +155,22 @@ namespace MSCLoader
             Value = value;
             DoAction = doAction;
         }
-
+        /// <summary>
+        /// Constructor for Settings
+        /// </summary>
+        /// <param name="id">Unique settings ID for your mod</param>
+        /// <param name="name">Name of the setting</param>
+        /// <param name="value">Default Value for this setting</param>
+        /// <param name="doAction">Function to execute for this setting</param>
+        /// <example><code source="SettingsExamples.cs" region="Constructor3" lang="C#" 
+        /// title="Settings constructor" /></example>
+        public Settings(string id, string name, object value, UnityAction doAction, bool blockSuspension)
+        {
+            ID = id;
+            Name = name;
+            Value = value;
+            DoUnityAction = doAction;
+        }
         /// <summary>
         /// Hides "reset all settings to default" button.
         /// </summary>
@@ -211,9 +226,9 @@ namespace MSCLoader
             setting.Mod = mod;
             modSettingsDefault.Add(new Settings(setting.ID, setting.Name, setting.Value) { Mod = mod });
             setting.Vals = new object[1];
-            
-            if (setting.Value is bool)            {
-                
+
+            if (setting.Value is bool)
+            {
                 setting.type = SettingsType.CheckBoxGroup;
                 setting.Vals[0] = group;
                 modSettings.Add(setting);
@@ -282,7 +297,7 @@ namespace MSCLoader
         {
             setting.Mod = mod;
             setting.Vals = new object[5];
-            if (description == null)
+            if (string.IsNullOrEmpty(description))
                 description = string.Empty;
 
             if (setting.DoAction != null || setting.DoUnityAction != null)
@@ -445,7 +460,7 @@ namespace MSCLoader
         /// </summary>
         /// <param name="mod">Your mod instance</param>
         /// <param name="HeaderTitle">Title of your header</param>
-        public static void AddHeader(Mod mod, string HeaderTitle) => AddHeader(mod, HeaderTitle, UnityEngine.Color.green, UnityEngine.Color.white);
+        public static void AddHeader(Mod mod, string HeaderTitle) => AddHeader(mod, HeaderTitle, new UnityEngine.Color32(0, 128, 0, 255), UnityEngine.Color.white);
 
         /// <summary>
         /// Add Header, blue title bar that can be used to separate settings.
@@ -462,9 +477,16 @@ namespace MSCLoader
         /// <param name="HeaderTitle">Title of your header</param>
         /// <param name="backgroundColor">Background color of header</param>
         /// <param name="textColor">Text Color of header</param>
-        public static void AddHeader(Mod mod, string HeaderTitle, UnityEngine.Color backgroundColor, UnityEngine.Color textColor)
+        public static void AddHeader(Mod mod, string HeaderTitle, UnityEngine.Color backgroundColor, UnityEngine.Color textColor) => AddHeader(mod, HeaderTitle, backgroundColor, textColor, new Settings(null, HeaderTitle, null));
+
+        /// <summary>
+        /// DO NOT USE!!!
+        /// </summary>
+        /// 
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public static void AddHeader(Mod mod, string HeaderTitle, UnityEngine.Color backgroundColor, UnityEngine.Color textColor, Settings set)
         {
-            Settings setting = new Settings(null, HeaderTitle, (Action)null);
+            Settings setting = set;
             setting.Mod = mod;
             setting.Vals = new object[3];
             setting.type = SettingsType.Header;
@@ -480,7 +502,7 @@ namespace MSCLoader
         /// <param name="text">Just a text (supports unity rich text)</param>
         public static void AddText(Mod mod, string text)
         {
-            Settings setting = new Settings(null, text, (Action)null);
+            Settings setting = new Settings(null, text, null);
             setting.Mod = mod;
             setting.type = SettingsType.Text;
             modSettings.Add(setting);

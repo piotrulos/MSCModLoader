@@ -211,7 +211,7 @@ namespace MSCLoader
                     if (setting.Vals[0].ToString() == null || setting.Vals[0].ToString() == string.Empty)
                         btn.transform.GetChild(1).gameObject.SetActive(false);
                     if(setting.Value.ToString() == "DoUnityAction")
-                        btn.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(setting.DoUnityAction);
+                        btn.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(setting.DoUnityAction.Invoke);
                     else
                         btn.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(setting.DoAction.Invoke);
                     ColorBlock cb = btn.transform.GetChild(0).GetComponent<Button>().colors;

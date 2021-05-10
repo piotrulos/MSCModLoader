@@ -58,6 +58,12 @@
     <Reference Include="Ionic.Zip">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Ionic.Zip.dll</HintPath>
     </Reference>
+    <Reference Include="MSCLoader.Features">
+      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\Mods\References\MSCLoader.Features.dll</HintPath>
+    </Reference>
+    <Reference Include="MSCLoader.Helpers">
+      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\Mods\References\MSCLoader.Helpers.dll</HintPath>
+    </Reference>
     <Reference Include="NAudio">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\NAudio.dll</HintPath>
     </Reference>
@@ -103,10 +109,12 @@
     <Compile Include="ConsoleController.cs" />
     <Compile Include="ConsoleUIResizer.cs" />
     <Compile Include="ConsoleView.cs" />
+    <Compile Include="DummyCompLayer\ModAssets.cs" />
+    <Compile Include="DummyCompLayer\ModHelper.cs" />
+    <Compile Include="DummyCompLayer\ModPrompt.cs" />
     <Compile Include="DummyCompLayer\ModSettings.cs" />
     <Compile Include="DummyCompLayer\ModSettingTypes.cs" />
     <Compile Include="FsmHook.cs" />
-    <Compile Include="DummyCompLayer\ModHelper.cs" />
     <Compile Include="Keybind.cs" />
     <Compile Include="KeyBinding.cs" />
     <Compile Include="LoadAssets.cs" />
