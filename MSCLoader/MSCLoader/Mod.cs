@@ -161,6 +161,12 @@
         /// <summary>
         /// Constructor DON'T USE
         /// </summary>
+        /// 
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public bool proSettings;
+        /// <summary>
+        /// Constructor DON'T USE
+        /// </summary>      
         public Mod()
         {
             modSettings = new ModSettings(this);
@@ -172,9 +178,8 @@
         public virtual string Description { get; set; } = "";
 
         /// <summary>
-        /// Compatibility only: does nothing
+        /// resources Icon.
         /// </summary>
-        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public virtual byte[] Icon { get; set; } = null;
         /// <summary>
         /// Compatibility only: does nothing
