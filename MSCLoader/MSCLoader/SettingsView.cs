@@ -118,20 +118,30 @@ namespace MSCLoader
                 }
                 else
                 {
-                    if (File.Exists(Path.Combine(ModLoader.GetModAssetsFolder(mod), mod.metadata.icon.iconFileName)))
+                    try
                     {
-                        try
+                        if (mod.Icon != null)
                         {
                             Texture2D t2d = new Texture2D(1, 1);
-                            t2d.LoadImage(File.ReadAllBytes(Path.Combine(ModLoader.GetModAssetsFolder(mod), mod.metadata.icon.iconFileName)));
+                            t2d.LoadImage(mod.Icon);
                             modButton.transform.GetChild(0).GetChild(0).GetComponent<RawImage>().texture = t2d;
                         }
-                        catch (Exception e)
-                        {
-                            ModConsole.Error(e.Message);
-                            System.Console.WriteLine(e);
-                        }
                     }
+                    catch (Exception e)
+                    {
+                        ModConsole.Error(e.Message);
+                        System.Console.WriteLine(e);
+                    }
+
+                }
+            }
+            else
+            {
+                if (mod.Icon != null)
+                {
+                    Texture2D t2d = new Texture2D(1, 1);
+                    t2d.LoadImage(mod.Icon);
+                    modButton.transform.GetChild(0).GetChild(0).GetComponent<RawImage>().texture = t2d;
                 }
             }
             if (mod.hasUpdate)
