@@ -62,7 +62,7 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string MSCLoader_Ver = "1.1.14";
+        public static readonly string MSCLoader_Ver = "1.1.15";
 
         /// <summary>
         /// Is this version of ModLoader experimental (this is NOT game experimental branch)
@@ -120,7 +120,10 @@ namespace MSCLoader
         private bool allModsLoaded = false;
         private bool IsModsResetting = false;
         private bool IsModsDoneResetting = false;
-        public static CurrentScene CurrentScene;
+        /// <summary>
+        /// Current scene
+        /// </summary>
+        public static CurrentScene CurrentScene { get; internal set; }
 
         void Awake()
         {
@@ -233,7 +236,7 @@ namespace MSCLoader
         /// </example> 
         public static string GetModAssetsFolder(Mod mod)
         {
-            if (!mod.UseAssetsFolder)
+            if (!mod.UseAssetsFolder &&!mod.proSettings)
                 ModConsole.Error(string.Format("<b>{0}:</b> Please set variable <b>UseAssetsFolder</b> to <b>true</b>", mod.ID));
             return Path.Combine(AssetsFolder, mod.ID);
         }
@@ -864,7 +867,16 @@ namespace MSCLoader
                 ModConsole.Print($"Download finished");
             }
         }
-
+        bool showedMissingModMessage = false;
+        void OpenRequiredDownloadPage(string m)
+        {
+            if (showedMissingModMessage) return;
+            showedMissingModMessage = true;
+            ModUI.ShowYesNoMessage($"Some of the mods requires mod <color=aqua>{m}</color> to be installed.{Environment.NewLine}{Environment.NewLine}Do you want to open download page for this mod?", "Missing mods", delegate {
+                
+                Application.OpenURL($"http://my-summer-car.ml/redir.php?mod={m}");
+            });
+        }
         private void ReadMetadata(Mod mod)
         {
             if (mod.metadata == null && mod.RemMetadata != null)
@@ -992,9 +1004,10 @@ namespace MSCLoader
                         {
                             mod.isDisabled = true;
                             if (mod.metadata.requiredMods.customMessage != null && mod.metadata.requiredMods.customMessage != string.Empty)
-                                ModConsole.Error(string.Format("Mod <b>{0}</b> is missing required mod <b>{1}</b>. Author's message: {2}", mod.ID, m, mod.metadata.requiredMods.customMessage));
+                                ModConsole.Error($"Mod <b>{mod.ID}</b> is missing required mod <b>{m}</b>. Author's message: {mod.metadata.requiredMods.customMessage}");
                             else
-                                ModConsole.Error(string.Format("Mod <b>{0}</b> is missing required mod <b>{1}</b>.", mod.ID, m));
+                                ModConsole.Error($"Mod <b>{mod.ID}</b> is missing required mod <b>{m}</b>.");
+                            OpenRequiredDownloadPage(m);
                         }
                         else
                         {
