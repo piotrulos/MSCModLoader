@@ -484,7 +484,10 @@ namespace MSCLoader
                 descriptionTxt.text = mod.metadata.description;
             }
             settingViewContainer.GetComponent<Animation>().Play("enterMod");
-            
+            if(descriptionTxt.text == "<i>No description provided...</i>" && !string.IsNullOrEmpty(mod.Description))
+            {
+                descriptionTxt.text = mod.Description;
+            }
             page = 1;
             SetScrollRect();
         }

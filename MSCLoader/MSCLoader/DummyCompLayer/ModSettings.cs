@@ -61,24 +61,28 @@ namespace MSCLoader
         public SettingSlider AddSlider(string id, string name, float value, float minValue, float maxValue, int roundDigits = 2, UnityAction action = null)
         {
             mod.proSettings = true;
-            Settings.AddSlider(mod, new Settings(id, name, value), minValue, maxValue, roundDigits);
-            return null;
+            Settings set = new Settings(id, name, value);
+            Settings.AddSlider(mod, set, minValue, maxValue, roundDigits);
+            return new SettingSlider(set);
         }
 
         public SettingSlider AddSlider(string id, string name, float value, float minValue, float maxValue, UnityAction<float> action = null) => null;
         public SettingSlider AddSlider(string id, string name, float value, float minValue, float maxValue, UnityAction action = null)
         {
             mod.proSettings = true;
-            Settings.AddSlider(mod, new Settings(id, name, value), minValue, maxValue);
-            return null;
+            Settings set = new Settings(id, name, value);
+            Settings.AddSlider(mod, set, minValue, maxValue);
+            return new SettingSlider(set);
         }
         public SettingSlider AddSlider(string id, string name, int value, int minValue, int maxValue) => AddSlider(id, name, value, minValue, maxValue, (UnityAction)null);
         public SettingSlider AddSlider(string id, string name, int value, int minValue, int maxValue, UnityAction<float> action) => null;
         public SettingSlider AddSlider(string id, string name, int value, int minValue, int maxValue, UnityAction action)
         {
             mod.proSettings = true;
-            Settings.AddSlider(mod, new Settings(id, name, value), minValue, maxValue);
-            return null;
+            Settings set = new Settings(id, name, value);
+
+            Settings.AddSlider(mod, set, minValue, maxValue);
+            return new SettingSlider(set);
         }
       
         public SettingSpacer AddSpacer(float height) => null;

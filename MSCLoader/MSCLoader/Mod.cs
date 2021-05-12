@@ -40,7 +40,7 @@
         /// Set this to true if you want load custom files from Assets folder
         /// (This will create a subfolder for your mod)
         /// </summary>
-        public virtual bool UseAssetsFolder => false;
+        public virtual bool UseAssetsFolder { get; set; } = false;
 
         /// <summary>
         /// Enable SecondPassOnLoad() that will execute after all mods have been loaded.
@@ -212,7 +212,7 @@
         public virtual void MenuFixedUpdate() { }
 
         /// <summary>
-        /// Compatibility only: nothing yet;
+        /// Compatibility with pro
         /// </summary>
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public virtual void PreLoad() { }

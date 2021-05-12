@@ -265,9 +265,9 @@ namespace MSCLoader
         // Save all keybinds to config files.
         public static void SaveAllBinds()
         {
-            foreach (Mod mod in ModLoader.LoadedMods)
+            for (int i = 0; i < ModLoader.LoadedMods.Count; i++)
             {
-                SaveModBinds(mod);
+                SaveModBinds(ModLoader.LoadedMods[i]);
             }
         }
 
