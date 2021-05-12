@@ -62,7 +62,7 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string MSCLoader_Ver = "1.1.15";
+        public static readonly string MSCLoader_Ver = "1.1.16";
 
         /// <summary>
         /// Is this version of ModLoader experimental (this is NOT game experimental branch)
@@ -236,8 +236,7 @@ namespace MSCLoader
         /// </example> 
         public static string GetModAssetsFolder(Mod mod)
         {
-            if (!mod.UseAssetsFolder &&!mod.proSettings)
-                ModConsole.Error(string.Format("<b>{0}:</b> Please set variable <b>UseAssetsFolder</b> to <b>true</b>", mod.ID));
+            if (!mod.UseAssetsFolder) mod.UseAssetsFolder = true;
             return Path.Combine(AssetsFolder, mod.ID);
         }
 
@@ -356,7 +355,7 @@ namespace MSCLoader
             if (!allModsLoaded && !IsModsLoading)
             {
                 IsModsLoading = true;
-                if(async)
+                if (async)
                     StartCoroutine(LoadModsAsync());
                 else
                     StartCoroutine(LoadMods());
@@ -1345,7 +1344,21 @@ namespace MSCLoader
             loading.transform.GetChild(1).GetComponent<Text>().text = string.Empty;
             loading.transform.GetChild(3).gameObject.SetActive(false);
             loading.transform.SetAsLastSibling(); //Always on top
-
+            for (int i = 0; i < mods.Length; i++)
+            {
+                try
+                {
+                    mods[i].PreLoad();
+                }
+                catch (Exception e)
+                {
+                    string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, new StackTrace(e, true).GetFrame(0).GetMethod(), Environment.NewLine);
+                    ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mods[i].ID, errorDetails));
+                    if (devMode)
+                        ModConsole.Error(e.ToString());
+                    System.Console.WriteLine(e);
+                }
+            }
             while (GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera") == null)
                 yield return null;
             ModConsole.Print("Loading mods...");
@@ -1408,6 +1421,21 @@ namespace MSCLoader
             loading.transform.GetChild(3).gameObject.SetActive(true);
             loading.transform.SetAsLastSibling(); //Always on top
             Slider progressBar = loading.transform.GetChild(3).GetComponent<Slider>();
+            for (int i = 0; i < mods.Length; i++)
+            {
+                try
+                {
+                    mods[i].PreLoad();
+                }
+                catch (Exception e)
+                {
+                    string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, new StackTrace(e, true).GetFrame(0).GetMethod(), Environment.NewLine);
+                    ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", mods[i].ID, errorDetails));
+                    if (devMode)
+                        ModConsole.Error(e.ToString());
+                    System.Console.WriteLine(e);
+                }
+            }
             while (GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera") == null) 
                 yield return null;
             loading.transform.GetChild(2).GetComponent<Text>().text = string.Format("MSCLoader <color=green>v{0}</color>", MSCLoader_Ver);

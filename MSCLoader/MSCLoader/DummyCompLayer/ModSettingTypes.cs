@@ -106,7 +106,17 @@ namespace MSCLoader
 
     public class SettingSlider 
     {
+        Settings setting;
+        public bool Enabled;
+        public string ID { get => setting.ID; set => setting.ID = value; }
+        public string Name { get => setting.Name; set => setting.Name = value; }
+        public float Value { get => float.Parse(setting.Value.ToString()); set => setting.Value = value; }
+        public int ValueInt { get => int.Parse(setting.Value.ToString()); set => setting.Value = value; }
 
+        public SettingSlider(Settings set)
+        {
+            setting = set;
+        }
     }
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 
