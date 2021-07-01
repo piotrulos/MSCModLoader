@@ -8,7 +8,7 @@ using IniParser;
 namespace MSCLoader
 {
 #pragma warning disable CS1591
-    public static class MSCLoader
+    public static class MainEntry
     {
         static byte[] data = { 0x41, 0x6d, 0x69, 0x73, 0x74, 0x65, 0x63, 0x68, 0x0d, 0x00, 0x00, 0x00, 0x4d, 0x79, 0x20, 0x53, 0x75, 0x6d, 0x6d, 0x65, 0x72, 0x20, 0x43, 0x61, 0x72 };
         static long offset = 0;
@@ -138,7 +138,7 @@ namespace MSCLoader
                     introSkip = false;
                     Console.WriteLine($"[FAIL] Parse failed, readed value: {skipIntro}");
                 }
-                HarmonyInstance.Create(nameof(MSCLoader)).PatchAll(Assembly.GetExecutingAssembly());
+                HarmonyInstance.Create(nameof(MainEntry)).PatchAll(Assembly.GetExecutingAssembly());
             }
             catch (Exception ex)
             {

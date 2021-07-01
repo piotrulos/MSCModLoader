@@ -130,7 +130,7 @@
     <Compile Include="ModUI.cs" />
     <Compile Include="ModUIDrag.cs" />
     <Compile Include="ModUpdate.cs" />
-    <Compile Include="MSCLoader.cs" />
+    <Compile Include="MainEntry.cs" />
     <Compile Include="MSCUnloader.cs" />
     <Compile Include="AudioLibrary\NAudio.Vorbis\VorbisWaveReader.cs" />
     <Compile Include="OBJLoader.cs" />
