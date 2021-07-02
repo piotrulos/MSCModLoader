@@ -97,6 +97,11 @@
         }
 
         /// <summary>
+        /// Called once as soon as GAME scene is loaded.
+        /// </summary>
+        public virtual void PreLoad() { }
+
+        /// <summary>
         /// Called once, after GAME scene is fully loaded.
         /// </summary>
         public virtual void OnLoad() { }
@@ -210,12 +215,6 @@
         /// </summary>
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public virtual void MenuFixedUpdate() { }
-
-        /// <summary>
-        /// Compatibility with pro
-        /// </summary>
-        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public virtual void PreLoad() { }
 
         /// <summary>
         /// Compatibility only: same as SecondPassOnLoad()
