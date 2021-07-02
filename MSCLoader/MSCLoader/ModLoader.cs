@@ -586,12 +586,13 @@ namespace MSCLoader
         IEnumerator CheckForModsUpdates()
         {
             int modUpdCount = 0;
-            loadingMeta.transform.GetChild(0).GetComponent<Text>().text = string.Format("Checking for mod updates...");
-            loadingMeta.transform.GetChild(1).GetComponent<Slider>().minValue = 1;
+            loadingMeta.transform.GetChild(0).GetComponent<Text>().text = ("Checking for mod updates...").ToUpper(); 
+            loadingMeta.transform.GetChild(1).GetComponent<Slider>().minValue = 0;
             loadingMeta.transform.GetChild(1).GetComponent<Slider>().maxValue = LoadedMods.Count - 2;
-            loadingMeta.transform.GetChild(2).GetComponent<Text>().text = string.Format("{0}/{1}", 0, LoadedMods.Count - 2);
-            loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("Connecting...");
-            loadingMeta.transform.GetChild(4).GetComponent<Text>().text = "...";
+          //  loadingMeta.transform.GetChild(2).GetComponent<Text>().text = string.Format("{0}/{1}", 0, LoadedMods.Count - 2);
+            loadingMeta.transform.GetChild(3).GetComponent<Text>().text = "Connecting...";
+           // loadingMeta.transform.GetChild(4).GetComponent<Text>().text = "...";
+           
             loadingMeta.SetActive(true);
             mod_aulist = new List<string>();
 
@@ -603,14 +604,14 @@ namespace MSCLoader
                     ReadMetadata(mod[i]);
                     continue;
                 }
-                loadingMeta.transform.GetChild(2).GetComponent<Text>().text = string.Format("{0}/{1}", i+1, LoadedMods.Count - 2);
+           //     loadingMeta.transform.GetChild(2).GetComponent<Text>().text = string.Format("{0}/{1}", i+1, LoadedMods.Count - 2);
                 loadingMeta.transform.GetChild(1).GetComponent<Slider>().value = i+1;
-                loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("Mod: <color=orange>{0}</color>", mod[i].Name);
+                loadingMeta.transform.GetChild(3).GetComponent<Text>().text = $"({i + 1}/{mod.Count()}) - <color=aqua>{mod[i].Name}</color>";
 
                 WebClient webClient = new WebClient();
-                webClient.Headers.Add("user-agent", string.Format("MSCLoader/{0} ({1})", MSCLoader_Ver, SystemInfo.operatingSystem));
+                webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfo.operatingSystem})");
                 webClient.DownloadStringCompleted += cfmuDownloadCompl;
-                webClient.DownloadStringAsync(new Uri(string.Format("{0}/man/{1}", metadataURL, mod[i].ID)));
+                webClient.DownloadStringAsync(new Uri($"{metadataURL}/man/{mod[i].ID}"));
 
                 cfmuInProgress = true;
                 while (cfmuInProgress)
@@ -716,8 +717,8 @@ namespace MSCLoader
                         continue;
                     }
                 }
-                if (modUpdCount > 0)
-                    loadingMeta.transform.GetChild(4).GetComponent<Text>().text = string.Format("<color=green>{0}</color>", modUpdCount);
+               /* if (modUpdCount > 0)
+                    loadingMeta.transform.GetChild(4).GetComponent<Text>().text = string.Format("<color=green>{0}</color>", modUpdCount);*/
             }
             if (modUpdCount > 0)
             {
@@ -774,12 +775,12 @@ namespace MSCLoader
        // private bool downloadErrored = false;
         IEnumerator DownloadUpdatesC()
         {
-            loadingMeta.transform.GetChild(0).GetComponent<Text>().text = string.Format("Downloading mod updates...");
-            loadingMeta.transform.GetChild(1).GetComponent<Slider>().minValue = 1;
+            loadingMeta.transform.GetChild(0).GetComponent<Text>().text = string.Format("Downloading mod updates...").ToUpper();
+            loadingMeta.transform.GetChild(1).GetComponent<Slider>().minValue = 0;
             loadingMeta.transform.GetChild(1).GetComponent<Slider>().maxValue = 100;
-            loadingMeta.transform.GetChild(2).GetComponent<Text>().text = string.Format("{0}/{1}", 0, mod_aulist.Count);
+          //  loadingMeta.transform.GetChild(2).GetComponent<Text>().text = string.Format("{0}/{1}", 0, mod_aulist.Count);
             loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("Connecting...");
-            loadingMeta.transform.GetChild(4).GetComponent<Text>().text = "...";
+         //   loadingMeta.transform.GetChild(4).GetComponent<Text>().text = "...";
             loadingMeta.SetActive(true);
             yield return null;
 
@@ -823,9 +824,9 @@ namespace MSCLoader
                     while (downloadInProgress)
                     {
                         loadingMeta.transform.GetChild(1).GetComponent<Slider>().value = downloadPercentage;
-                        loadingMeta.transform.GetChild(2).GetComponent<Text>().text = string.Format("{0}/{1}", i+1, mod_aulist.Count);
-                        loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format($"Downloading... <color=lime>{mod}.zip</color>");
-                        loadingMeta.transform.GetChild(4).GetComponent<Text>().text = $"{downloadPercentage}%";
+                    //    loadingMeta.transform.GetChild(2).GetComponent<Text>().text = $"{i + 1}/{mod_aulist.Count}";
+                        loadingMeta.transform.GetChild(3).GetComponent<Text>().text = $"({i + 1}/{mod_aulist.Count}) <color=lime>{mod}.zip</color> [<color=lime>{downloadPercentage}%</color>]";
+                     //   loadingMeta.transform.GetChild(4).GetComponent<Text>().text = $"{downloadPercentage}%";
                         yield return null;
                     }
                     yield return new WaitForSeconds(1f);
@@ -839,7 +840,7 @@ namespace MSCLoader
             }
             loadingMeta.transform.GetChild(1).GetComponent<Slider>().value = 100;
             loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format($"<color=lime>Download Complete</color>");
-            loadingMeta.transform.GetChild(4).GetComponent<Text>().text = $"100%";
+           // loadingMeta.transform.GetChild(4).GetComponent<Text>().text = $"100%";
             ModUI.ShowMessage("To apply updates, please restart game.", "download completed");
             yield return new WaitForSeconds(3f); 
             loadingMeta.SetActive(false);
@@ -1759,15 +1760,15 @@ namespace MSCLoader
                         ModConsole.Error(e.ToString());
                     System.Console.WriteLine(e);
                 }
-                if (File.Exists(GetMetadataFolder(string.Format("{0}.json", mod.ID))))
+                if (File.Exists(GetMetadataFolder($"{mod.ID}.json")))
                 {
-                    string serializedData = File.ReadAllText(GetMetadataFolder(string.Format("{0}.json", mod.ID)));
+                    string serializedData = File.ReadAllText(GetMetadataFolder($"{mod.ID}.json"));
                     mod.metadata = JsonConvert.DeserializeObject<ModsManifest>(serializedData);
                 }
             }
             else
             {
-                ModConsole.Error(string.Format("<color=orange><b>Mod already loaded (or duplicated ID):</b></color><color=red><b>{0}</b></color>", mod.ID));
+                ModConsole.Error($"<color=orange><b>Mod already loaded (or duplicated ID):</b></color><color=red><b>{mod.ID}</b></color>");
             }
         }
 
@@ -1842,16 +1843,16 @@ namespace MSCLoader
             {
                 if (mod.modErrors == 30)
                 {
-                    ModConsole.Error(string.Format("Mod <b>{0}</b> throws <b>too many errors</b>! Last error: ", mod.ID));
+                    ModConsole.Error($"Mod <b>{mod.ID}</b> spams <b>too many errors each frame</b>! Last error: ");
                     ModConsole.Error(e.ToString());
                     if ((bool)ModSettings_menu.dm_disabler.GetValue())
                     {
                         mod.isDisabled = true;
-                        ModConsole.Warning(string.Format("[DevMode] Mod <b>{0}</b> has been disabled!", mod.ID));
+                        ModConsole.Warning($"[DevMode] Mod <b>{mod.ID}</b> has been disabled!");
                     }
                     else
                     {
-                        ModConsole.Warning(string.Format("[DevMode] Mod <b>{0}</b> is still running!", mod.ID));
+                        ModConsole.Warning($"[DevMode] Mod <b>{mod.ID}</b> is still running!");
                     }
                 }
 
@@ -1861,7 +1862,8 @@ namespace MSCLoader
                 if (mod.modErrors >= 30)
                 {
                     mod.isDisabled = true;
-                    ModConsole.Error(string.Format("Mod <b>{0}</b> has been <b>disabled!</b> Because it thrown too many errors!{1}Report this problem to mod author.", mod.ID, Environment.NewLine));
+                    ModConsole.Error($"Mod <b>{mod.ID}</b> has been <b>disabled!</b> Because it spams too many errors each frame!{Environment.NewLine}Report this problem to mod author.{Environment.NewLine}Last error message:");
+                    ModConsole.Error(e.GetFullMessage());
                 }
             }
         }
