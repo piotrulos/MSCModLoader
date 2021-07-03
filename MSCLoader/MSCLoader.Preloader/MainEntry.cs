@@ -5,7 +5,7 @@ using Harmony;
 using IniParser.Model;
 using IniParser;
 
-namespace MSCLoader
+namespace MSCLoader.Preloader
 {
 #pragma warning disable CS1591
     public static class MainEntry
@@ -138,7 +138,9 @@ namespace MSCLoader
                     introSkip = false;
                     Console.WriteLine($"[FAIL] Parse failed, readed value: {skipIntro}");
                 }
-                HarmonyInstance.Create(nameof(MainEntry)).PatchAll(Assembly.GetExecutingAssembly());
+                HarmonyInstance.Create("MSCLoader.Main").PatchAll(Assembly.GetExecutingAssembly());
+                /*HarmonyInstance s = HarmonyInstance.Create("MSCLoader.Main");
+                s.PatchAll(Assembly.GetExecutingAssembly());*/
             }
             catch (Exception ex)
             {
