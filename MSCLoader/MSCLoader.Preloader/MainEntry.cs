@@ -4,10 +4,11 @@ using System.Reflection;
 using Harmony;
 using IniParser.Model;
 using IniParser;
+using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace MSCLoader.Preloader
 {
-#pragma warning disable CS1591
     public static class MainEntry
     {
         static byte[] data = { 0x41, 0x6d, 0x69, 0x73, 0x74, 0x65, 0x63, 0x68, 0x0d, 0x00, 0x00, 0x00, 0x4d, 0x79, 0x20, 0x53, 0x75, 0x6d, 0x6d, 0x65, 0x72, 0x20, 0x43, 0x61, 0x72 };
@@ -16,7 +17,10 @@ namespace MSCLoader.Preloader
         //Entry point for doorstop
         public static void Main(string[] args)
         {
-            OutputLogChecker(); //Enable output_log after possible game update
+            if (File.Exists("MSCLoader_Preloader.txt")) File.Delete("MSCLoader_Preloader.txt");
+            MDebug.Init();
+            OutputLogChecker(); //Enable output_log after possible game update  
+            MDebug.Log("Waiting for engine...");
             AppDomain.CurrentDomain.AssemblyLoad += AssemblyWatcher;
         }
 
@@ -29,6 +33,7 @@ namespace MSCLoader.Preloader
 
                 using (FileStream stream = File.OpenRead(Path.Combine("", @"mysummercar_Data\mainData")))
                 {
+                    MDebug.Log("Checking output_log status...");
                     stream.Position = offset + 115;
                     if (stream.ReadByte() == 1)
                     {
@@ -44,9 +49,10 @@ namespace MSCLoader.Preloader
 
                 if (enLog)
                 {
-                    using (var stream = new FileStream(Path.Combine("", @"mysummercar_Data\mainData"), FileMode.Open, FileAccess.ReadWrite))
+                    using (FileStream stream = new FileStream(Path.Combine("", @"mysummercar_Data\mainData"), FileMode.Open, FileAccess.ReadWrite))
                     {
                         //output_log.txt
+                        MDebug.Log("Enabling output_log...");
                         stream.Position = offset + 115;
                         stream.WriteByte(0x01);
                         stream.Close();
@@ -55,14 +61,8 @@ namespace MSCLoader.Preloader
             }
             catch (Exception e)
             {
-                //Generate early crash file (before output_log can happen)
-                using (TextWriter tw = File.CreateText("MSCLOADER_CRASH.txt"))
-                {
-
-                    tw.WriteLine(e.ToString());
-                    tw.WriteLine(e.Message);
-                    tw.Flush();
-                }
+                MDebug.Log("[PRELOADER CRASH]");
+                MDebug.Log(e.ToString(), true);
             }
         }
 
@@ -127,6 +127,7 @@ namespace MSCLoader.Preloader
         {
             try
             {
+                MDebug.Log("Reading settings...");
                 if (File.Exists("ModLoaderSettings.ini"))
                     File.Delete("ModLoaderSettings.ini");
                 IniData ini = new FileIniDataParser().ReadFile("doorstop_config.ini");
@@ -136,22 +137,17 @@ namespace MSCLoader.Preloader
                 if (!bool.TryParse(skipIntro, out introSkip))
                 {
                     introSkip = false;
-                    Console.WriteLine($"[FAIL] Parse failed, readed value: {skipIntro}");
+                    MDebug.Log($"[FAIL] Parse failed, readed value: {skipIntro}");
                 }
+                MDebug.Log("Injecting Main MSCLoader patches...");
                 HarmonyInstance.Create("MSCLoader.Main").PatchAll(Assembly.GetExecutingAssembly());
-                /*HarmonyInstance s = HarmonyInstance.Create("MSCLoader.Main");
-                s.PatchAll(Assembly.GetExecutingAssembly());*/
-            }
-            catch (Exception ex)
-            {
-                //Generate early crash file (before output_log can happen)
-                using (TextWriter tw = File.CreateText("MSCLOADER_CRASH.txt"))
-                {
+                MDebug.Log("Done.");
 
-                    tw.WriteLine(ex.ToString());
-                    tw.WriteLine(ex.Message);
-                    tw.Flush();
-                }
+            }
+            catch (Exception e)
+            {
+                MDebug.Log("[PRELOADER CRASH]");
+                MDebug.Log(e.ToString(), true);
             }
         }
 
@@ -174,4 +170,3 @@ namespace MSCLoader.Preloader
     }
 
 }
-#pragma warning restore CS1591 
