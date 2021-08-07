@@ -5,31 +5,8 @@
     /// </summary>
     /// <example><code source="Examples.cs" region="Mod" lang="C#" 
     /// title="Example Mod Class" /></example>
-    public abstract class Mod
+    public abstract partial class Mod
     {
-        bool disabled = false;
-        bool update = false;
-        string compiledVer = null;
-        string filePath = null;
-        int errorCount = 0;
-        ModsManifest modMetadata = null;
-        ModsManifest rmodMetadata = null;
-
-        internal virtual int modErrors { get => errorCount; set => errorCount = value; }
-
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-        public virtual bool isDisabled { get => disabled; internal set => disabled = value; }
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-
-        internal virtual bool hasUpdate { get => update; set => update = value; }
-
-        internal virtual string compiledVersion { get => compiledVer; set => compiledVer = value; }
-
-        internal virtual string fileName { get => filePath; set => filePath = value; }
-
-        internal virtual ModsManifest metadata { get => modMetadata; set => modMetadata = value; }
-        internal virtual ModsManifest RemMetadata { get => rmodMetadata; set => rmodMetadata = value; }
-
         /// <summary>
         /// Load this mod in Main Menu.
         /// (in most cases should be false, use only if you need this).
@@ -93,7 +70,6 @@
         {
             if (LoadInMenu)
                 ModConsole.Error(string.Format("<b>LoadInMenu</b> is set to <b>true</b> for mod: <b>{0}</b> but <b>OnMenuLoad()</b> is empty.", ID));
-         //   MenuOnLoad();
         }
 
         /// <summary>

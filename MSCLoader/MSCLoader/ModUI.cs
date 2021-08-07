@@ -11,12 +11,11 @@ namespace MSCLoader
     /// </summary>
     public class ModUI
     {
-#pragma warning disable CS1591
         internal static GameObject messageBox;
         internal static GameObject messageBoxBtn;
         private static GameObject canvasGO;
 
-        public static void CreateCanvas()
+        internal static void CreateCanvas()
         {
             canvasGO = new GameObject();
             canvasGO.name = "MSCLoader Canvas";
@@ -37,7 +36,6 @@ namespace MSCLoader
             evSys.AddComponent<StandaloneInputModule>();
             GameObject.DontDestroyOnLoad(evSys);
         }
-#pragma warning restore CS1591
 
         /// <summary>
         /// Get UI canvas

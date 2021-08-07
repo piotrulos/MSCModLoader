@@ -124,15 +124,8 @@ namespace MSCLoader
             Value = "DoAction";
             DoAction = doAction;
         }
-        /// <summary>
-        /// Constructor for Settings
-        /// </summary>
-        /// <param name="id">Unique settings ID for your mod</param>
-        /// <param name="name">Name of the setting</param>
-        /// <param name="doUnityAction">UnityAction to execute for this setting</param>
-        /// <example><code source="SettingsExamples.cs" region="Constructor21" lang="C#" 
-        /// title="Settings constructor" /></example>
-        public Settings(string id, string name, UnityAction doUnityAction, bool blockSuspension)
+
+        internal Settings(string id, string name, UnityAction doUnityAction, bool blockSuspension)
         {
             ID = id;
             Name = name;
@@ -155,16 +148,8 @@ namespace MSCLoader
             Value = value;
             DoAction = doAction;
         }
-        /// <summary>
-        /// Constructor for Settings
-        /// </summary>
-        /// <param name="id">Unique settings ID for your mod</param>
-        /// <param name="name">Name of the setting</param>
-        /// <param name="value">Default Value for this setting</param>
-        /// <param name="doAction">Function to execute for this setting</param>
-        /// <example><code source="SettingsExamples.cs" region="Constructor3" lang="C#" 
-        /// title="Settings constructor" /></example>
-        public Settings(string id, string name, object value, UnityAction doAction, bool blockSuspension)
+
+        internal Settings(string id, string name, object value, UnityAction doAction, bool blockSuspension)
         {
             ID = id;
             Name = name;
@@ -174,7 +159,7 @@ namespace MSCLoader
         /// <summary>
         /// Hides "reset all settings to default" button.
         /// </summary>
-        public static void HideResetAllButton(Mod mod) => modSettingsDefault.Add(new Settings("MSCL_HideResetAllButton", null, (Action)null) { Mod = mod });
+        public static void HideResetAllButton(Mod mod) => modSettingsDefault.Add(new Settings("MSCL_HideResetAllButton", null, null) { Mod = mod });
         /// <summary>
         /// Return all settings for mod.
         /// </summary>
@@ -248,7 +233,7 @@ namespace MSCLoader
         {
             if (sets != null)
             {
-                Settings setting = new Settings("MSCL_ResetSpecificMod", name, (Action)null);
+                Settings setting = new Settings("MSCL_ResetSpecificMod", name, null);
                 setting.Mod = mod;
                 setting.Vals = new object[5];
                 setting.type = SettingsType.RButton;

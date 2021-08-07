@@ -42,9 +42,6 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\0Harmony.dll</HintPath>
-    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
@@ -119,17 +116,19 @@
     <Compile Include="KeyBinding.cs" />
     <Compile Include="LoadAssets.cs" />
     <Compile Include="Mod.cs" />
+    <Compile Include="Mod.Internal.cs" />
     <Compile Include="ModAudio.cs" />
     <Compile Include="ModAudioStream.cs" />
     <Compile Include="ModConsole.cs" />
-    <Compile Include="ModFixedUpdate.cs" />
+    <Compile Include="ModCallbacks\ModFixedUpdate.cs" />
     <Compile Include="ModLoader.cs" />
-    <Compile Include="ModOnGUI.cs" />
+    <Compile Include="ModCallbacks\ModOnGUI.cs" />
+    <Compile Include="ModSave.cs" />
     <Compile Include="ModSettings.cs" />
     <Compile Include="ModsManifest.cs" />
     <Compile Include="ModUI.cs" />
     <Compile Include="ModUIDrag.cs" />
-    <Compile Include="ModUpdate.cs" />
+    <Compile Include="ModCallbacks\ModUpdate.cs" />
     <Compile Include="MSCUnloader.cs" />
     <Compile Include="AudioLibrary\NAudio.Vorbis\VorbisWaveReader.cs" />
     <Compile Include="OBJLoader.cs" />
