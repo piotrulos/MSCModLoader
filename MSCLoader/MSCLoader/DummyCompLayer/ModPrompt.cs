@@ -13,6 +13,9 @@ namespace MSCLoader
     /// <summary>
     /// ModPrompt redirects.
     /// </summary>
+    
+    
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public class ModPrompt
     {
         public ModPromptButton AddButton(string buttonText, UnityAction action)

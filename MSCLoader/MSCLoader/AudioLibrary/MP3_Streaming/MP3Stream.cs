@@ -119,7 +119,7 @@ namespace AudioLibrary.MP3_Streaming
                                 };
                                 //this.bufferedWaveProvider.BufferedDuration = 250;
 
-                                decomp = true; //hack to tell main Unity Thread to create AudioClip
+                                decomp = true; //tell main Unity Thread to create AudioClip
                             }
                             int decompressed = decompressor.DecompressFrame(frame, buffer, 0);
                             bufferedWaveProvider.AddSamples(buffer, 0, decompressed);

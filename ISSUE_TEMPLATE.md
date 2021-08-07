@@ -10,5 +10,5 @@ Describe your problem here with reproduce steps
 Useless reports without any details will be closed without replying.
 
 #### Attachments
-Please attach **output_log.txt** from `mysummercar_Data` folder  
+Please attach **output_log.txt**, **MSCLoader_Preloader.txt** from game folder  
 Screenshoots related to your issue.
