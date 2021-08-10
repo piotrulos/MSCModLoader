@@ -117,6 +117,7 @@
     <Compile Include="LoadAssets.cs" />
     <Compile Include="Mod.cs" />
     <Compile Include="Mod.Internal.cs" />
+    <Compile Include="Mod.OldGarbage.cs" />
     <Compile Include="ModAudio.cs" />
     <Compile Include="ModAudioStream.cs" />
     <Compile Include="ModConsole.cs" />
