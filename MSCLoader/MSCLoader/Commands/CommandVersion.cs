@@ -3,9 +3,7 @@ using UnityEngine;
 
 namespace MSCLoader.Commands
 {
-#pragma warning disable CS1591
-
-    public class CommandVersion : ConsoleCommand
+    internal class CommandVersion : ConsoleCommand
     {
         public override string Name => "ver";
         public override string Alias => "version";
@@ -27,6 +25,4 @@ namespace MSCLoader.Commands
             ModConsole.Print(string.Format("Runtime: <b>{0}</b>", System.Reflection.Assembly.GetExecutingAssembly().ImageRuntimeVersion));
         }
     }
-#pragma warning restore CS1591
-
 }

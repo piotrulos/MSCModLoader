@@ -3,9 +3,7 @@ using System.Linq;
 
 namespace MSCLoader.Commands
 {
-#pragma warning disable CS1591
-
-    public class ManifestCommand : ConsoleCommand
+    internal class MetadataCommand : ConsoleCommand
     {
         // What the player has to type into the console to execute your commnad
         public override string Name => "Metadata";
@@ -24,7 +22,7 @@ namespace MSCLoader.Commands
                     Mod mod = ModLoader.LoadedMods.Where(w => w.ID == args[1]).FirstOrDefault();
                     if (mod != null)
                     {
-                        ManifestStuff.CreateManifest(mod);
+                        ModMetadata.CreateMetadata(mod);
                     }
                     else
                     {
@@ -36,7 +34,7 @@ namespace MSCLoader.Commands
                     Mod mod = ModLoader.LoadedMods.Where(w => w.ID == args[1]).FirstOrDefault();
                     if (mod != null)
                     {
-                        ManifestStuff.UpdateManifest(mod);
+                        ModMetadata.UpdateMetadata(mod);
                     }
                     else
                     {
@@ -51,6 +49,4 @@ namespace MSCLoader.Commands
         }
 
     }
-#pragma warning restore CS1591
-
 }

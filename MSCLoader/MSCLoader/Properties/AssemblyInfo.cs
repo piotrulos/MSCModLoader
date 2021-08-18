@@ -10,9 +10,10 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Kosmo Software")]
 [assembly: AssemblyProduct("MSCLoader")]
-[assembly: AssemblyCopyright("GPL 3.0")]
+[assembly: AssemblyCopyright("GNU General Public License v3.0")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+[assembly: InternalsVisibleTo("MSCLoader.Preloader")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
 // to COM components.  If you need to access a type in this assembly from
@@ -32,5 +33,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.1.16.225")]
-[assembly: AssemblyFileVersion("1.1.16.225")]
+[assembly: AssemblyVersion("1.1.16.226")]
+[assembly: AssemblyFileVersion("1.1.16.226")]

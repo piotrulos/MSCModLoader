@@ -55,9 +55,6 @@
     <Reference Include="Ionic.Zip">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Ionic.Zip.dll</HintPath>
     </Reference>
-    <Reference Include="MSCLoader.Features">
-      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\Mods\References\MSCLoader.Features.dll</HintPath>
-    </Reference>
     <Reference Include="MSCLoader.Helpers">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\Mods\References\MSCLoader.Helpers.dll</HintPath>
     </Reference>
@@ -101,7 +98,7 @@
     <Compile Include="AudioLibrary\Playlists.cs" />
     <Compile Include="Commands\CommandVersion.cs" />
     <Compile Include="Commands\CommandLogAll.cs" />
-    <Compile Include="Commands\ManifestCommand.cs" />
+    <Compile Include="Commands\MetadataCommand.cs" />
     <Compile Include="ConsoleCommand.cs" />
     <Compile Include="ConsoleController.cs" />
     <Compile Include="ConsoleUIResizer.cs" />
@@ -124,9 +121,12 @@
     <Compile Include="ModCallbacks\ModFixedUpdate.cs" />
     <Compile Include="ModLoader.cs" />
     <Compile Include="ModCallbacks\ModOnGUI.cs" />
+    <Compile Include="ModLoader.Internal.cs" />
+    <Compile Include="ModLoader.Public.cs" />
+    <Compile Include="ModLoader.Updates.cs" />
     <Compile Include="ModSave.cs" />
     <Compile Include="ModSettings.cs" />
-    <Compile Include="ModsManifest.cs" />
+    <Compile Include="ModMetadata.cs" />
     <Compile Include="ModUI.cs" />
     <Compile Include="ModUIDrag.cs" />
     <Compile Include="ModCallbacks\ModUpdate.cs" />

@@ -1,36 +1,41 @@
-﻿namespace MSCLoader
+﻿using System;
+
+namespace MSCLoader
 {
     public partial class Mod
     {
         //Here is old pre 1.2 functions used here only for backwards compatibility
 
         /// <summary>
-        /// Load this mod in Main Menu.
-        /// (in most cases should be false, use only if you need this).
+        /// [OBSOLETE] This is no longer in use, you can safely remove that line.
         /// </summary>
-        public virtual bool LoadInMenu => false;
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        internal virtual bool LoadInMenu => false;
 
         /// <summary>
-        /// Set this to true if you want load custom files from Assets folder
-        /// (This will create a subfolder for your mod)
-        /// </summary>
-        public virtual bool UseAssetsFolder { get; set; } = false;
+        /// [OBSOLETE] This is no longer in use, you can safely remove that line.
+        /// </summary>        
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        internal virtual bool UseAssetsFolder { get; set; } = false;
 
         /// <summary>
-        /// Enable SecondPassOnLoad() that will execute after all mods have been loaded.
-        /// </summary>
-        public virtual bool SecondPass => false;
+        /// [OBSOLETE] This is no longer in use, you can safely remove that line.
+        /// </summary>     
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        internal virtual bool SecondPass => false;
 
         /// <summary>
         /// Called once after starting "New Game"
         /// You can reset/delete your saves here
         /// </summary>
         public virtual void OnNewGame() { }
+      
         /// <summary>
-        /// CompLayer DON'T USE
+        /// [DON'T USE] It's useless
         /// </summary>
         /// 
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [Obsolete("This doesn't do anything")]
         public ModSettings modSettings;
         /// <summary>
         /// Constructor DON'T USE
@@ -116,7 +121,7 @@
         /// <summary>
         /// Called once, after GAME scene is fully loaded.
         /// </summary>
-        public virtual void OnLoad() { }
+        internal virtual void OnLoad() { }
 
         /// <summary>
         /// Called once, after ALL mods has finished OnLoad() and when SecondPass is set to true

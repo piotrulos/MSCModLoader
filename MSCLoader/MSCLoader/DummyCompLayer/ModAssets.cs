@@ -8,6 +8,7 @@ namespace MSCLoader
     /// <summary>
     /// Compatibility layer only
     /// </summary>
+    [System.Obsolete("Same exact shit as LoadAssets")]
     public static class ModAssets
     {
         public static AssetBundle LoadBundle(byte[] bundleBytes) =>  AssetBundle.CreateFromMemoryImmediate(bundleBytes);

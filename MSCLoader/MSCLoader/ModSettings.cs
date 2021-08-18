@@ -15,8 +15,8 @@ namespace MSCLoader
     public class ModSettings_menu : Mod
     {
 
-        public override bool LoadInMenu => true;
-        public override bool UseAssetsFolder => true;
+        internal override bool LoadInMenu => true;
+        internal override bool UseAssetsFolder => true;
         public override string ID => "MSCLoader_Settings";
         public override string Name => "Settings (Main)";
         public override string Version => ModLoader.MSCLoader_Ver;
@@ -57,6 +57,11 @@ namespace MSCLoader
         internal static byte cfmu_set = 0;
 
         static ModSettings_menu instance;
+
+        public override void ModSetup()
+        {
+         //   SetupFunction(Setup.OnMenuLoad, OnMenuLoad);
+        }
 
         public override void ModSettings()
         {
@@ -162,6 +167,7 @@ namespace MSCLoader
                     QualitySettings.vSyncCount = 0;
             }
         }
+
         public override void OnMenuLoad()
         {
             try
@@ -468,7 +474,7 @@ namespace MSCLoader
         }
 
         // SETUP LOGIC FOR THE MOD SETTINGS BUTTON (FREDTWEAK)
-        public override void OnLoad()
+        internal override void OnLoad()
         {
             GameObject.Find("Systems").transform.Find("OptionsMenu").gameObject.AddComponent<ModSettingButtonHandler>().modSettingButton = Button_ms;
             Button_ms.SetActive(false);

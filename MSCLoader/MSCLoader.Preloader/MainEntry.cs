@@ -19,6 +19,7 @@ namespace MSCLoader.Preloader
         {
             if (File.Exists("MSCLoader_Preloader.txt")) File.Delete("MSCLoader_Preloader.txt");
             MDebug.Init();
+            //TODO: Add Self-Update extract here
             OutputLogChecker(); //Enable output_log after possible game update  
             MDebug.Log("Waiting for engine...");
             AppDomain.CurrentDomain.AssemblyLoad += AssemblyWatcher;

@@ -31,9 +31,14 @@
         public abstract string Author { get; }
 
         /// <summary>
-        /// resources Icon.
+        /// Mod Icon from Resources or Embedded Resources.
         /// </summary>
         public virtual byte[] Icon { get; set; } = null;
+
+        /// <summary>
+        /// Short Description of your mod
+        /// </summary>
+        public virtual string Description { get; set; } = "<i>No short description...</i>";
 
         /// <summary>
         /// Setup your mod.
@@ -81,12 +86,6 @@
         {
             modSettings = new ModSettings(this);
         }
-        /// <summary>
-        /// Compatibility only: does nothing
-        /// </summary>
-        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public virtual string Description { get; set; } = "";
-
 #endregion
     }
 }
