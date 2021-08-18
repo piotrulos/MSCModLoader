@@ -63,8 +63,8 @@ namespace MSCLoader
         internal ModsManifest RemMetadata; //Remote metadata
 
         //Action list
-        internal Action A_OnNewGame;   //When New Game is started
         internal Action A_OnMenuLoad;  //Load in main menu
+        internal Action A_OnNewGame;   //When New Game is started
         internal Action A_PreLoad;     //Phase 1 (mod loading)
         internal Action A_OnLoad;      //Phase 2 (mod loading)  
         internal Action A_PostLoad;    //Phase 3 (mod loading)

@@ -3,8 +3,7 @@ using System;
 
 namespace MSCLoader.Commands
 {
-#pragma warning disable CS1591
-    public class CommandLogAll : ConsoleCommand
+    internal class CommandLogAll : ConsoleCommand
     {
         // What the player has to type into the console to execute your commnad
         public override string Name => "log-all";
@@ -19,7 +18,7 @@ namespace MSCLoader.Commands
         private bool setup = false;
         public override void Run(string[] args)
         {
-            if (args.Length >0)
+            if (args.Length > 0)
             {
                 if (!setup)
                 {
@@ -144,7 +143,7 @@ namespace MSCLoader.Commands
             {
                 ModConsole.Warning("<b>Usage:</b> log-all <mods|errors|warnings|messages|everything> [true|false]");
                 ModConsole.Print("Use <color=orange><b>log-all help</b></color> for more info");
-            } 
+            }
         }
         void HandleLog(string logString, string stackTrace, UnityEngine.LogType type)
         {
@@ -153,7 +152,7 @@ namespace MSCLoader.Commands
                 case UnityEngine.LogType.Error:
                     if (errors)
                         ModConsole.console.controller.AppendLogLine($"<color=red><b>Error: </b>{logString}</color>");
-                    if((bool)ModSettings_menu.dm_logST.GetValue())
+                    if ((bool)ModSettings_menu.dm_logST.GetValue())
                         ModConsole.console.controller.AppendLogLine($"<color=red>{stackTrace}</color>");
                     if ((bool)ModSettings_menu.dm_operr.GetValue())
                         ModConsole.console.setVisibility(true);
@@ -184,6 +183,5 @@ namespace MSCLoader.Commands
                     break;
             }
         }
-#pragma warning restore CS1591
     }
 }

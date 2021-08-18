@@ -15,11 +15,9 @@ namespace MSCLoader
         {
             m_transform = GetComponent<RectTransform>();
         }
-#pragma warning disable CS1591
-        public void OnDrag(PointerEventData eventData)
+        void IDragHandler.OnDrag(PointerEventData eventData)
         {
             m_transform.position += new Vector3(eventData.delta.x, eventData.delta.y);
         }
-#pragma warning restore CS1591
     }
 }

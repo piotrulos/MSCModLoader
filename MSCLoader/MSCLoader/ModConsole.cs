@@ -4,7 +4,6 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Text.RegularExpressions;
 using System.Collections;
-
 namespace MSCLoader
 {
     /// <summary>
@@ -19,11 +18,10 @@ namespace MSCLoader
         public override string Version => ModLoader.MSCLoader_Ver;
         public override string Author => "piotrulos";
 
-        public override bool UseAssetsFolder => true;
-        public override bool LoadInMenu => true;
-
+        internal override bool UseAssetsFolder => true;
+        internal override bool LoadInMenu => true;
         public static bool IsOpen { get; private set; }
-
+        
         public static ConsoleView console;
         private GameObject UI;
 
@@ -126,7 +124,7 @@ namespace MSCLoader
             console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().LoadConsoleSize();
             ConsoleCommand.Add(new CommandVersion());
             ConsoleCommand.Add(new CommandLogAll());
-            ConsoleCommand.Add(new ManifestCommand());
+            ConsoleCommand.Add(new MetadataCommand());
         }
 #pragma warning restore CS1591
         /// <summary>

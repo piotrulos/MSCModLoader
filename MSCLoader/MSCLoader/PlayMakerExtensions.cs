@@ -5,6 +5,26 @@ using UnityEngine;
 
 namespace MSCLoader
 {
+
+    /// <summary>
+    /// Exception extensions
+    /// </summary>
+    public static class ExceptionExtensions
+    {
+        /// <summary>
+        /// Get Full Exception messages (including inner exceptions) without stack trace.
+        /// </summary>
+        /// <param name="ex">Exception</param>
+        /// <returns></returns>
+        public static string GetFullMessage(this Exception ex)
+        {
+            return ex.InnerException == null
+                 ? ex.Message
+                 : ex.Message + " --> " + ex.InnerException.GetFullMessage();
+        }
+    }
+
+    //TODO: Expand
     /// <summary>
     /// PlayMaker extensions for Unity API
     /// </summary>
