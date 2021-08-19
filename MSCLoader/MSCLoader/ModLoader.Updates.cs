@@ -50,30 +50,24 @@ namespace MSCLoader
         private bool cfmuErrored = false;
         private bool cfmuInProgress = false;
         private string cfmuResult = string.Empty;
+        internal Slider updateProgress;
+        internal Text updateTitle;
+        internal Text updateStatus;
         IEnumerator CheckForModsUpdates()
         {
             int modUpdCount = 0;
-            loadingMeta.transform.GetChild(0).GetComponent<Text>().text = ("Checking for mod updates...").ToUpper();
-            loadingMeta.transform.GetChild(1).GetComponent<Slider>().minValue = 0;
-            loadingMeta.transform.GetChild(1).GetComponent<Slider>().maxValue = LoadedMods.Count - 2;
-            //  loadingMeta.transform.GetChild(2).GetComponent<Text>().text = string.Format("{0}/{1}", 0, LoadedMods.Count - 2);
-            loadingMeta.transform.GetChild(3).GetComponent<Text>().text = "Connecting...";
-            // loadingMeta.transform.GetChild(4).GetComponent<Text>().text = "...";
+            Mod[] mod = LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")).ToArray();
 
+            updateTitle.text = ("Checking for mod updates...").ToUpper();
+            updateProgress.maxValue = mod.Length;
+            updateStatus.text = "Connecting...";
+            loadingMeta.transform.SetAsLastSibling();
             loadingMeta.SetActive(true);
             mod_aulist = new List<string>();
-
-            Mod[] mod = LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")).ToArray();
             for (int i = 0; i < mod.Length; i++)
             {
-                if (cfmuErrored)
-                {
-                    ModMetadata.ReadMetadata(mod[i]);
-                    continue;
-                }
-                //     loadingMeta.transform.GetChild(2).GetComponent<Text>().text = string.Format("{0}/{1}", i+1, LoadedMods.Count - 2);
-                loadingMeta.transform.GetChild(1).GetComponent<Slider>().value = i + 1;
-                loadingMeta.transform.GetChild(3).GetComponent<Text>().text = $"({i + 1}/{mod.Count()}) - <color=aqua>{mod[i].Name}</color>";
+                updateProgress.value = i + 1;
+                updateStatus.text = $"({i + 1}/{mod.Length}) - <color=aqua>{mod[i].Name}</color>";
 
                 WebClient webClient = new WebClient();
                 webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfo.operatingSystem})");
@@ -86,7 +80,7 @@ namespace MSCLoader
                 if (cfmuErrored)
                 {
                     ModMetadata.ReadMetadata(mod[i]);
-                    continue;
+                    break;
                 }
                 if (!string.IsNullOrEmpty(cfmuResult))
                 {
@@ -184,22 +178,20 @@ namespace MSCLoader
                         continue;
                     }
                 }
-                /* if (modUpdCount > 0)
-                     loadingMeta.transform.GetChild(4).GetComponent<Text>().text = string.Format("<color=green>{0}</color>", modUpdCount);*/
             }
             if (modUpdCount > 0)
             {
                 modUpdates.text = string.Format("<size=20><color=aqua>New Version available for <color=orange>{0}</color> mods.</color></size>", modUpdCount);
-                loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("Done! <color=lime>{0} updates available</color>", modUpdCount);
+                updateStatus.text = string.Format("Done! <color=lime>{0} updates available</color>", modUpdCount);
                 if (mod_aulist.Count > 0)
                 {
                     ModUI.ShowYesNoMessage($"There are updates to mods that can be updated automatically{Environment.NewLine}Mods: <color=aqua>{string.Join(", ", mod_aulist.ToArray())}</color>{Environment.NewLine}{Environment.NewLine}Do you want to download updates now?", "Mod Updates Available", DownloadUpdates);
                 }
             }
             else
-                loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("Done!");
+                updateStatus.text = string.Format("Done!");
             if (cfmuErrored)
-                loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("<color=red>Connection error!</color>");
+                updateStatus.text = string.Format("<color=red>Connection error!</color>");
             yield return new WaitForSeconds(3f);
             if (!dnsaf)
                 loadingMeta.SetActive(false);
@@ -243,12 +235,9 @@ namespace MSCLoader
         // private bool downloadErrored = false;
         IEnumerator DownloadUpdatesC()
         {
-            loadingMeta.transform.GetChild(0).GetComponent<Text>().text = string.Format("Downloading mod updates...").ToUpper();
-            loadingMeta.transform.GetChild(1).GetComponent<Slider>().minValue = 0;
-            loadingMeta.transform.GetChild(1).GetComponent<Slider>().maxValue = 100;
-            //  loadingMeta.transform.GetChild(2).GetComponent<Text>().text = string.Format("{0}/{1}", 0, mod_aulist.Count);
-            loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format("Connecting...");
-            //   loadingMeta.transform.GetChild(4).GetComponent<Text>().text = "...";
+            updateTitle.text = string.Format("Downloading mod updates...").ToUpper();
+            updateProgress.maxValue = 100;
+            updateStatus.text = string.Format("Connecting...");
             loadingMeta.SetActive(true);
             yield return null;
 
@@ -291,10 +280,8 @@ namespace MSCLoader
                     downloadInProgress = true;
                     while (downloadInProgress)
                     {
-                        loadingMeta.transform.GetChild(1).GetComponent<Slider>().value = downloadPercentage;
-                        //    loadingMeta.transform.GetChild(2).GetComponent<Text>().text = $"{i + 1}/{mod_aulist.Count}";
-                        loadingMeta.transform.GetChild(3).GetComponent<Text>().text = $"({i + 1}/{mod_aulist.Count}) <color=lime>{mod}.zip</color> [<color=lime>{downloadPercentage}%</color>]";
-                        //   loadingMeta.transform.GetChild(4).GetComponent<Text>().text = $"{downloadPercentage}%";
+                        updateProgress.value = downloadPercentage;
+                        updateStatus.text = $"({i + 1}/{mod_aulist.Count}) <color=lime>{mod}.zip</color> [<color=lime>{downloadPercentage}%</color>]";
                         yield return null;
                     }
                     yield return new WaitForSeconds(1f);
@@ -306,9 +293,8 @@ namespace MSCLoader
                 }
 
             }
-            loadingMeta.transform.GetChild(1).GetComponent<Slider>().value = 100;
-            loadingMeta.transform.GetChild(3).GetComponent<Text>().text = string.Format($"<color=lime>Download Complete</color>");
-            // loadingMeta.transform.GetChild(4).GetComponent<Text>().text = $"100%";
+            updateProgress.value = 100;
+            updateStatus.text = string.Format($"<color=lime>Download Complete</color>");
             ModUI.ShowMessage("To apply updates, please restart game.", "download completed");
             yield return new WaitForSeconds(3f);
             loadingMeta.SetActive(false);
