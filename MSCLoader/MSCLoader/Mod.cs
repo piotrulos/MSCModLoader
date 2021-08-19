@@ -66,12 +66,12 @@
         public virtual void OnModDisabled() { }
 
         /// <summary>
-        /// Method called whenever mod settings are open.
+        /// [Useless] Method called whenever mod settings are open.
         /// </summary>
         public virtual void ModSettingsOpen() { }
 
         /// <summary>
-        /// Method called whenever mod settings are closed.
+        /// [Useless] Method called whenever mod settings are closed.
         /// </summary>
         public virtual void ModSettingsClose() { }
 

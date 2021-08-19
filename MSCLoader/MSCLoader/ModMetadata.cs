@@ -172,12 +172,12 @@ namespace MSCLoader
 
         internal static void ReadMetadata(Mod mod)
         {
+            if (mod.metadata == null && mod.RemMetadata == null)
+                return;
             if (mod.metadata == null && mod.RemMetadata != null)
                 mod.metadata = mod.RemMetadata;
             else if (mod.metadata != null && mod.RemMetadata == null)
                 mod.RemMetadata = mod.metadata;
-            else if (mod.metadata == null && mod.RemMetadata == null)
-                return;
             if (mod.metadata.type == 9)
             {
                 //Disabled by reason

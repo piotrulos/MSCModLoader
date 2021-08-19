@@ -265,9 +265,8 @@ namespace MSCLoader
             {
                 if (File.Exists(Path.GetFullPath(Path.Combine("LAUNCHER.exe", ""))) || File.Exists(Path.GetFullPath(Path.Combine("SmartSteamEmu64.dll", ""))) || File.Exists(Path.GetFullPath(Path.Combine("SmartSteamEmu.dll", ""))))
                 {
-                    ModConsole.Print(string.Format("<color=orange>Hello <color=green><b>{0}</b></color>!</color>", "Murzyn!"));
+                    ModConsole.Print(string.Format("<color=orange>Hello <color=green><b>{0}</b></color>!</color>", "SmartSteamEmu!"));
                     throw new Exception("[EMULATOR] Do What You Want, Cause A Pirate Is Free... You Are A Pirate!");
-                    //exclude emulators
                 }
                 Steamworks.SteamAPI.Init();
                 steamID = Steamworks.SteamUser.GetSteamID().ToString();
@@ -276,6 +275,13 @@ namespace MSCLoader
                 webClient.Headers.Add("user-agent", string.Format("MSCLoader/{0} ({1})", MSCLoader_Ver, SystemInfo.operatingSystem));
                 webClient.DownloadStringCompleted += sAuthCheckCompleted;
                 webClient.DownloadStringAsync(new Uri(string.Format("{0}/sauth.php?sid={1}", serverURL, steamID)));
+                if (LoadedMods.Count >= 100)
+                    Steamworks.SteamFriends.SetRichPresence("status", $"This madman is playing with {LoadedMods.Count} mods.");
+                else if (LoadedMods.Count >= 50)
+                    Steamworks.SteamFriends.SetRichPresence("status", $"Playing with {LoadedMods.Count} mods. Crazy!");
+                else
+                    Steamworks.SteamFriends.SetRichPresence("status", $"Playing with {LoadedMods.Count} mods.");
+
             }
             catch (Exception e)
             {
@@ -315,8 +321,11 @@ namespace MSCLoader
                         }
                         else
                         {
-                            foreach (Mod mod in LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")))
-                                ModMetadata.ReadMetadata(mod);
+                            Mod[] mod = LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")).ToArray();
+                            for (int i = 0; i < mod.Length; i++)
+                            {
+                                ModMetadata.ReadMetadata(mod[i]);
+                            }
                         }
                     }
                     else
@@ -479,7 +488,7 @@ namespace MSCLoader
                 Directory.CreateDirectory(Path.Combine(ModsFolder, "References"));
             }
         }
-
+        GameObject loading2;
         private void LoadCoreAssets()
         {
             ModConsole.Print("Loading core assets...");
@@ -488,18 +497,36 @@ namespace MSCLoader
             ModUI.messageBox = ab.LoadAsset<GameObject>("MSCLoader MB.prefab");
             ModUI.messageBoxBtn = ab.LoadAsset<GameObject>("MB_Button.prefab");
             mainMenuInfo = ab.LoadAsset<GameObject>("MSCLoader Info.prefab");
-            loading = ab.LoadAsset<GameObject>("LoadingMods.prefab");
-            loadingMeta = ab.LoadAsset<GameObject>("MSCLoader pbar.prefab");
-            loading = GameObject.Instantiate(loading);
+            GameObject loadingP = ab.LoadAsset<GameObject>("LoadingMods.prefab");
+            GameObject loadingMetaP = ab.LoadAsset<GameObject>("MSCLoader pbar.prefab");
+            #region Loading BC
+            GameObject loadingP_old = ab.LoadAsset<GameObject>("LoadingMods_old.prefab"); //BC for MOP
+            loading2 = GameObject.Instantiate(loadingP_old);
+            loading2.SetActive(false);
+            loading2.name = "MSCLoader loading screen";
+            loading2.transform.SetParent(ModUI.GetCanvas().transform, false);
+            loading2.transform.GetChild(2).GetComponent<Text>().text = $"MSCLOADER <color=green>{MSCLoader_Ver}</color> (BC Mode)";
+            #endregion
+            loading = GameObject.Instantiate(loadingP);
             loading.SetActive(false);
-            loading.name = "MSCLoader loading screen";
+            loading.name = "MSCLoader loading dialog";
             loading.transform.SetParent(ModUI.GetCanvas().transform, false);
-            loadingMeta = GameObject.Instantiate(loadingMeta);
+            loading.transform.GetChild(0).GetComponent<Text>().text = $"MSCLoader <color=green>{MSCLoader_Ver}</color>";
+            loadingTitle = loading.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(0).GetComponent<Text>();
+            loadingMod = loading.transform.GetChild(1).GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>();
+            loadingProgress = loading.transform.GetChild(1).GetChild(0).GetChild(2).GetComponent<Slider>();
+            loadingMeta = GameObject.Instantiate(loadingMetaP);
             loadingMeta.SetActive(false);
-            loadingMeta.name = "MSCLoader pbar";
+            loadingMeta.name = "MSCLoader update dialog";
             loadingMeta.transform.SetParent(ModUI.GetCanvas().transform, false);
+            updateTitle = loadingMeta.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Text>();
+            updateStatus = loadingMeta.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>();
+            updateProgress = loadingMeta.transform.GetChild(0).GetChild(2).GetComponent<Slider>();
+            GameObject.Destroy(loadingP);
+            GameObject.Destroy(loadingMetaP);
+         //   GameObject.Destroy(loadingP_old);
             ModConsole.Print("Loading core assets completed!");
-            ab.Unload(false); //freeup memory
+            ab.Unload(false);
         }
 
         /// <summary>
@@ -602,25 +629,23 @@ namespace MSCLoader
             if (devMode)
                 info.text += " [<color=red><b>Dev Mode!</b></color>]";
         }
-
+        Text loadingTitle;
+        Text loadingMod;
+        Slider loadingProgress;
         IEnumerator NewGameMods()
         {
-            loading.transform.GetChild(2).GetComponent<Text>().text = string.Format("MSCLoader <color=green>v{0}</color>", MSCLoader_Ver);
-            ModConsole.Print("Resetting mods...");
+            ModConsole.Print("<color=aqua>==== Resetting mods ====</color>");
+            loading.transform.SetAsLastSibling(); //Always on top
             loading.SetActive(true);
-            loading.transform.GetChild(3).GetComponent<Slider>().minValue = 1;
-            loading.transform.GetChild(3).GetComponent<Slider>().maxValue = LoadedMods.Count - 2;
-
-            int i = 1;
-            foreach (Mod mod in LoadedMods)
+            loadingTitle.text = "Resetting mods".ToUpper();
+            loadingProgress.maxValue = LoadedMods.Count - 2;
+            for (int i = 0; i < LoadedMods.Count; i++)
             {
-                loading.transform.GetChild(0).GetComponent<Text>().text = string.Format("<color=red>Resetting mods: <color=orange><b>{0}</b></color> of <color=orange><b>{1}</b></color>. <b>Do not skip intro yet!...</b></color>", i, LoadedMods.Count - 2);
-                loading.transform.GetChild(3).GetComponent<Slider>().value = i;
-                loading.transform.GetChild(3).GetChild(1).GetChild(0).GetComponent<Image>().color = Color.red;
+                Mod mod = LoadedMods[i];
+                loadingProgress.value = i;
                 if (mod.ID.StartsWith("MSCLoader_"))
                     continue;
-                i++;
-                loading.transform.GetChild(1).GetComponent<Text>().text = mod.Name;
+                loadingMod.text = mod.Name;
                 yield return null;
                 try
                 {
@@ -638,22 +663,24 @@ namespace MSCLoader
                 }
 
             }
-            loading.transform.GetChild(0).GetComponent<Text>().text = string.Format("Resetting Done! You can skip intro now!");
+            loadingMod.text = "Resetting Done! You can skip intro now!";
             yield return new WaitForSeconds(1f);
             loading.SetActive(false);
             IsModsDoneResetting = true;
-            ModConsole.Print("Resetting done!");
+            ModConsole.Print("<color=aqua>==== Resetting mods finished ====</color>");
             IsModsResetting = false;
         }
 
         IEnumerator LoadMods()
         {
             Mod[] mods = LoadedMods.Where(x => !x.isDisabled).ToArray();
-            loading.transform.GetChild(2).GetComponent<Text>().text = string.Format("MSCLoader <color=green>v{0}</color>", MSCLoader_Ver);
-            loading.transform.GetChild(0).GetComponent<Text>().text = string.Format("Loading mods. Please wait...");
-            loading.transform.GetChild(1).GetComponent<Text>().text = string.Empty;
-            loading.transform.GetChild(3).gameObject.SetActive(false);
+            ModConsole.Print("<color=aqua>==== Loading mods (Phase 1) ====</color><color=#505050ff>");
+            loadingTitle.text = "Loading mods - Phase 1".ToUpper();
+            loadingMod.text = "Loading mods. Please wait...";
+            loadingProgress.maxValue = 100;
             loading.transform.SetAsLastSibling(); //Always on top
+            loading.SetActive(true);
+            yield return null;
             for (int i = 0; i < mods.Length; i++)
             {
                 try
@@ -669,14 +696,16 @@ namespace MSCLoader
                     System.Console.WriteLine(e);
                 }
             }
+            loadingProgress.value = 33;
+            loadingTitle.text = "Waiting...".ToUpper();
+            loadingMod.text = "Waiting for game to finish load...";
             while (GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera") == null)
                 yield return null;
-            ModConsole.Print("Loading mods...");
-            ModConsole.Print("<color=#505050ff>");
-            loading.SetActive(true);
+            loading2.SetActive(true);
+            loadingTitle.text = "Loading mods - Phase 2".ToUpper();
+            loadingMod.text = "Loading mods. Please wait...";
+            ModConsole.Print("</color><color=aqua>==== Loading mods (Phase 2) ====</color><color=#505050ff>");
             yield return null;
-            Stopwatch s = new Stopwatch();
-            s.Start();
             for (int i = 0; i < mods.Length; i++)
             {
                 try
@@ -692,12 +721,14 @@ namespace MSCLoader
                     System.Console.WriteLine(e);
                 }
             }
+            loadingProgress.value = 66;
             ModSettings_menu.LoadBinds();
-            if (SecondPassMods.Count() > 0)
+            loadingTitle.text = "Loading mods - Phase 3".ToUpper();
+            loadingMod.text = "Loading mods. Please wait...";
+            ModConsole.Print("</color><color=aqua>==== Loading mods (Phase 3) ====</color><color=#505050ff>");
+            yield return null;
+            if (SecondPassMods.Length > 0)
             {
-                ModConsole.Print("Loading mods (second pass)...");
-                loading.transform.GetChild(0).GetComponent<Text>().text = string.Format("Loading mods (second pass). Please wait...");
-                yield return null;
                 for (int j = 0; j < SecondPassMods.Length; j++)
                 {
                     if (SecondPassMods[j].isDisabled)
@@ -716,23 +747,32 @@ namespace MSCLoader
                     }
                 }
             }
-            s.Stop();
+            loadingProgress.value = 100;
+            loadingMod.text = "Finishing touches...";
+            yield return null;
             GameObject.Find("ITEMS").FsmInject("Save game", SaveMods);
             ModConsole.Print("</color>");
             allModsLoaded = true;
             loading.SetActive(false);
-            ModConsole.Print(string.Format("Loading mods completed in {0}ms!", s.ElapsedMilliseconds));
+            loading2.SetActive(false);
         }
 
         IEnumerator LoadModsAsync()
         {
             Mod[] mods = LoadedMods.Where(x => !x.isDisabled).ToArray();
+            ModConsole.Print("<color=aqua>==== Loading mods (Phase 1) ====</color><color=#505050ff>");
+            loadingTitle.text = "Loading mods - Phase 1".ToUpper();
+            loadingMod.text = "Loading mods. Please wait...";
+            loadingProgress.maxValue = (mods.Length * 2) + SecondPassMods.Where(x => !x.isDisabled).ToArray().Length;
 
-            loading.transform.GetChild(3).gameObject.SetActive(true);
             loading.transform.SetAsLastSibling(); //Always on top
-            Slider progressBar = loading.transform.GetChild(3).GetComponent<Slider>();
+            loading.SetActive(true);
+            yield return null;
+
             for (int i = 0; i < mods.Length; i++)
             {
+                loadingProgress.value++;
+                loadingMod.text = mods[i].ID;
                 try
                 {
                     mods[i].PreLoad();
@@ -745,29 +785,23 @@ namespace MSCLoader
                         ModConsole.Error(e.ToString());
                     System.Console.WriteLine(e);
                 }
+                yield return null;
+
             }
+            loadingTitle.text = "Waiting...".ToUpper();
+            loadingMod.text = "Waiting for game to finish load...";
             while (GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera") == null) 
                 yield return null;
-            loading.transform.GetChild(2).GetComponent<Text>().text = string.Format("MSCLoader <color=green>v{0}</color>", MSCLoader_Ver);
-            ModConsole.Print("Loading mods...");
 
-            ModConsole.Print("<color=#505050ff>");
-            loading.SetActive(true);
-            progressBar.minValue = 1;
-            progressBar.maxValue = mods.Length - 2;
-            loading.transform.GetChild(3).GetChild(1).GetChild(0).GetComponent<Image>().color = new Color32(0, 113, 0, 255);
-            Stopwatch s = new Stopwatch();
-            s.Start();
+            loading2.SetActive(true);
+            loadingTitle.text = "Loading mods - Phase 2".ToUpper();
+            loadingMod.text = "Loading mods. Please wait...";
+            ModConsole.Print("</color><color=aqua>==== Loading mods (Phase 2) ====</color><color=#505050ff>");
+            yield return null;
             for (int i = 0; i < mods.Length; i++)
             {
-                if (mods[i].ID.StartsWith("MSCLoader_"))
-                {
-                    mods[i].OnLoad();
-                    continue;
-                }
-                loading.transform.GetChild(0).GetComponent<Text>().text = string.Format("Loading mods: <color=orage><b>{0}</b></color> of <color=orage><b>{1}</b></color>. Please wait...", i - 1, mods.Length - 2);
-                progressBar.value = i-1;
-                loading.transform.GetChild(1).GetComponent<Text>().text = mods[i].Name;
+                loadingProgress.value++;
+                loadingMod.text = mods[i].ID;
                 try
                 {
                     mods[i].OnLoad();                  
@@ -785,26 +819,26 @@ namespace MSCLoader
 
             }
             ModSettings_menu.LoadBinds();
-            if (SecondPassMods.Count() > 0)
-            {
-                progressBar.value = 1;
-                ModConsole.Print("Loading mods (second pass)...");
-                progressBar.maxValue = SecondPassMods.Count();                
-                for (int j = 0; j < SecondPassMods.Length; j++)
+            loadingTitle.text = "Loading mods - Phase 3".ToUpper();
+            loadingMod.text = "Loading mods. Please wait...";
+            ModConsole.Print("</color><color=aqua>==== Loading mods (Phase 3) ====</color><color=#505050ff>");
+            yield return null;
+            if (SecondPassMods.Length > 0)
+            {           
+                for (int i = 0; i < SecondPassMods.Length; i++)
                 {
-                    if (SecondPassMods[j].isDisabled)
+                    if (SecondPassMods[i].isDisabled)
                         continue;
-                    loading.transform.GetChild(0).GetComponent<Text>().text = string.Format("Loading mods (second pass): <color=orage><b>{0}</b></color> of <color=orage><b>{1}</b></color>. Please wait...", j+1, SecondPassMods.Count());
-                    progressBar.value = j+1;
-                    loading.transform.GetChild(1).GetComponent<Text>().text = SecondPassMods[j].Name;
+                    loadingProgress.value++;
+                    loadingMod.text = mods[i].ID;
                     try
                     {
-                        SecondPassMods[j].SecondPassOnLoad();
+                        SecondPassMods[i].SecondPassOnLoad();
                     }
                     catch (Exception e)
                     {
                         string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, new StackTrace(e, true).GetFrame(0).GetMethod(), Environment.NewLine);
-                        ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", SecondPassMods[j].ID, errorDetails));
+                        ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", SecondPassMods[i].ID, errorDetails));
                         if (devMode)
                             ModConsole.Error(e.ToString());
                         System.Console.WriteLine(e);
@@ -813,13 +847,14 @@ namespace MSCLoader
 
                 }
             }
-            s.Stop();
+            loadingProgress.value = loadingProgress.maxValue;
+            loadingMod.text = "Finishing touches...";
+            yield return null;
             GameObject.Find("ITEMS").FsmInject("Save game", SaveMods);
             ModConsole.Print("</color>");
             allModsLoaded = true;
             loading.SetActive(false);
-            ModConsole.Print(string.Format("Loading mods completed in {0}ms!", s.ElapsedMilliseconds));
-
+            loading2.SetActive(false);
         }
 
         private static bool wasSaving = false;
