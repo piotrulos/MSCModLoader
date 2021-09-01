@@ -18,7 +18,7 @@ namespace MSCLoader
         {
             if (!reset) //to avoid endless loop
             {
-                if (ModLoader.devMode && (bool)ModSettings_menu.dm_pcon.GetValue())
+                if (ModLoader.devMode && (bool)ModMenu.dm_pcon.GetValue())
                 {
                     dm_pcon = new Queue<string>(ModConsole.console.controller.scrollback);
                     dm_pcon.Enqueue($"{System.Environment.NewLine}{System.Environment.NewLine}");

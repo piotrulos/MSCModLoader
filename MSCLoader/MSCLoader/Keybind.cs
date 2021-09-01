@@ -56,11 +56,41 @@ namespace MSCLoader
         /// <example><code source="Examples.cs" region="KeyBindAdd" lang="C#" 
         /// title="Keybind Add" /></example>
         public static void Add(Mod mod, Keybind key)
+        {
+            key.Mod = mod;
+            Keybinds.Add(key);
+            DefaultKeybinds.Add(new Keybind(key.ID, key.Name, key.Key, key.Modifier) { Mod = mod });
+        }
+        /// <summary>
+        /// Add a keybind.
+        /// </summary>
+        /// <param name="mod">The instance of your mod.</param>
+        /// <param name="id">The ID of the Keybind (Used only once in your mod).</param>
+        /// <param name="name">The name of the Keybind that will be displayed.</param>
+        /// <param name="key">The KeyCode the user will press.</param>
+        /// <returns>Keybind</returns>
+        public static Keybind Add(Mod mod, string id, string name, KeyCode key)
+        {
+            return Add(mod, id, name, key, KeyCode.None);
+
+        }
+        /// <summary>
+        /// Add a keybind.
+        /// </summary>
+        /// <param name="mod">The instance of your mod.</param>
+        /// <param name="id">The ID of the Keybind (Used only once in your mod).</param>
+        /// <param name="name">The name of the Keybind that will be displayed.</param>
+        /// <param name="key">The KeyCode the user will press.</param>
+        /// <param name="modifier">The modifier KeyCode the user will have to press.</param>
+        /// <returns>Keybind</returns>
+        public static Keybind Add(Mod mod, string id, string name, KeyCode key, KeyCode modifier)
 		{
-			key.Mod = mod;
-			Keybinds.Add(key);
-			DefaultKeybinds.Add(new Keybind(key.ID, key.Name, key.Key, key.Modifier) { Mod = mod });
-		}
+            Keybind keyb = new Keybind(id, name, key, modifier) { Mod = mod };
+            Keybinds.Add(keyb);
+			DefaultKeybinds.Add(new Keybind(id, name, key, modifier) { Mod = mod });
+            return keyb;
+
+        }
         /// <summary>
         /// Add Header, blue title bar that can be used to separate settings.
         /// </summary>

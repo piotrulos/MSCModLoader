@@ -56,6 +56,7 @@ namespace MSCLoader
         public bool isDisabled { get; internal set; }
         internal bool hasUpdate = false;
         internal bool newFormat = false;
+        internal bool menuCallbacks = false;
         internal int modErrors = 0;
         internal string compiledVersion;
         internal string fileName;
@@ -90,6 +91,7 @@ namespace MSCLoader
                         ModConsole.Error($"SetupMod() error for <b>{ID}</b>. You already created <b>OnNewGame</b> function type.");
                     break;
                 case Setup.OnMenuLoad:
+                    menuCallbacks = true;
                     if (A_OnMenuLoad == null)
                         A_OnMenuLoad = function;
                     else

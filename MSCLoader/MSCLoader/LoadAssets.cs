@@ -36,7 +36,7 @@ namespace MSCLoader
 
             if (!File.Exists(fn))
             {
-                throw new FileNotFoundException(string.Format("<b>LoadTexture() Error:</b> File not found: {0}{1}", fn, Environment.NewLine), fn);
+                throw new FileNotFoundException($"<b>LoadTexture() Error:</b> File not found: {fn}{Environment.NewLine}", fn);
             }
             string ext = Path.GetExtension(fn).ToLower();
             if (ext == ".png" || ext == ".jpg")
@@ -57,7 +57,7 @@ namespace MSCLoader
             }
             else
             {
-                throw new NotSupportedException(string.Format("<b>LoadTexture() Error:</b> Texture not supported: {0}{1}", fileName, Environment.NewLine));
+                throw new NotSupportedException($"<b>LoadTexture() Error:</b> Texture not supported: {fileName}{Environment.NewLine}");
             }
         }
 
@@ -111,7 +111,7 @@ namespace MSCLoader
             string fn = Path.Combine(ModLoader.GetModAssetsFolder(mod), fileName);
             if (!File.Exists(fn))
             {
-                throw new FileNotFoundException(string.Format("<b>LoadOBJ() Error:</b> File not found: {0}{1}", fn, Environment.NewLine), fn);
+                throw new FileNotFoundException($"<b>LoadOBJ() Error:</b> File not found: {fn}{Environment.NewLine}", fn);
             }
             string ext = Path.GetExtension(fn).ToLower();
             if (ext == ".obj")
@@ -122,7 +122,7 @@ namespace MSCLoader
                 return mesh;
             }
             else
-                throw new NotSupportedException(string.Format("<b>LoadOBJ() Error:</b> Only (*.obj) files are supported{0}", Environment.NewLine));
+                throw new NotSupportedException($"<b>LoadOBJ() Error:</b> Only (*.obj) files are supported{Environment.NewLine}");
         }
 
 
@@ -139,12 +139,12 @@ namespace MSCLoader
             string bundle = Path.Combine(ModLoader.GetModAssetsFolder(mod), bundleName);
             if(File.Exists(bundle))
             {
-                ModConsole.Print(string.Format("Loading Asset: {0}...", bundleName));
+                ModConsole.Print($"Loading Asset: {bundleName}...");
                 return AssetBundle.CreateFromMemoryImmediate(File.ReadAllBytes(bundle));
             }
             else
             {
-                throw new FileNotFoundException(string.Format("<b>LoadBundle() Error:</b> File not found: <b>{0}</b>{1}", bundle, Environment.NewLine), bundleName);
+                throw new FileNotFoundException($"<b>LoadBundle() Error:</b> File not found: <b>{bundle}</b>{Environment.NewLine}", bundleName);
             }
         }
 
@@ -158,7 +158,7 @@ namespace MSCLoader
             if(assetBundleFromResources != null)
                 return AssetBundle.CreateFromMemoryImmediate(assetBundleFromResources);
             else
-                throw new Exception(string.Format("<b>LoadBundle() Error:</b> Resource doesn't exists{0}", Environment.NewLine));
+                throw new Exception($"<b>LoadBundle() Error:</b> Resource doesn't exists{Environment.NewLine}");
         }
 
         /// <summary>
@@ -174,7 +174,7 @@ namespace MSCLoader
                 if (resFilestream == null)
                 {
 
-                    throw new Exception(string.Format("<b>LoadBundle() Error:</b> Resource doesn't exists{0}", Environment.NewLine));
+                    throw new Exception($"<b>LoadBundle() Error:</b> Resource doesn't exists{Environment.NewLine}");
                 }
                 else
                 {
@@ -229,7 +229,7 @@ namespace MSCLoader
             }
             catch (Exception ex)
             {
-                ModConsole.Error(string.Format("<b>LoadTexture() Error:</b>{0}Error: Could not load DDS texture", Environment.NewLine,ex.Message));
+                ModConsole.Error($"<b>LoadTexture() Error:</b>{Environment.NewLine}Error: Could not load DDS texture");
                 if (ModLoader.devMode)
                     ModConsole.Error(ex.ToString());
                 System.Console.WriteLine(ex);
@@ -278,7 +278,7 @@ namespace MSCLoader
                 }
                 else
                 {
-                    throw new Exception(string.Format("<b>LoadTexture() Error:</b> TGA texture is not 32 or 24 bit depth.{0}", Environment.NewLine));
+                    throw new Exception($"<b>LoadTexture() Error:</b> TGA texture is not 32 or 24 bit depth.{Environment.NewLine}");
                 }
 
                 tex.SetPixels32(pulledColors);

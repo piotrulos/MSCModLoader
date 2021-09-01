@@ -43,12 +43,12 @@ namespace MSCLoader.Commands
                             ModLoader.LogAllErrors = true;
                         else
                             ModLoader.LogAllErrors = false;
-                        ModConsole.Print(string.Format("<color=orange>Log All errors for mods set to <b>{0}</b></color>", ModLoader.LogAllErrors));
+                        ModConsole.Print($"<color=orange>Log All errors for mods set to <b>{ModLoader.LogAllErrors}</b></color>");
                     }
                     else
                     {
                         ModLoader.LogAllErrors = !ModLoader.LogAllErrors;
-                        ModConsole.Print(string.Format("<color=orange>Log All errors for mods set to <b>{0}</b></color>", ModLoader.LogAllErrors));
+                        ModConsole.Print($"<color=orange>Log All errors for mods set to <b>{ModLoader.LogAllErrors}</b></color>");
                     }
                     return;
                 }
@@ -60,12 +60,12 @@ namespace MSCLoader.Commands
                             errors = true;
                         else
                             errors = false;
-                        ModConsole.Print(string.Format("<color=orange>Log All errors set to <b>{0}</b></color>", errors));
+                        ModConsole.Print($"<color=orange>Log All errors set to <b>{errors}</b></color>");
                     }
                     else
                     {
                         errors = !errors;
-                        ModConsole.Print(string.Format("<color=orange>Log All errors set to <b>{0}</b></color>", errors));
+                        ModConsole.Print($"<color=orange>Log All errors set to <b>{errors}</b></color>");
                     }
                     return;
                 }
@@ -77,12 +77,12 @@ namespace MSCLoader.Commands
                             warnings = true;
                         else
                             warnings = false;
-                        ModConsole.Print(string.Format("<color=orange>Log All warnings set to <b>{0}</b></color>", warnings));
+                        ModConsole.Print($"<color=orange>Log All warnings set to <b>{warnings}</b></color>");
                     }
                     else
                     {
                         warnings = !warnings;
-                        ModConsole.Print(string.Format("<color=orange>Log All warnings set to <b>{0}</b></color>", warnings));
+                        ModConsole.Print($"<color=orange>Log All warnings set to <b>{warnings}</b></color>");
                     }
                     return;
                 }
@@ -94,12 +94,12 @@ namespace MSCLoader.Commands
                             messages = true;
                         else
                             messages = false;
-                        ModConsole.Print(string.Format("<color=orange>Log All messages set to <b>{0}</b></color>", messages));
+                        ModConsole.Print($"<color=orange>Log All messages set to <b>{messages}</b></color>");
                     }
                     else
                     {
                         messages = !messages;
-                        ModConsole.Print(string.Format("<color=orange>Log All messages set to <b>{0}</b></color>", messages));
+                        ModConsole.Print($"<color=orange>Log All messages set to <b>{messages}</b></color>");
                     }
                     return;
                 }
@@ -113,7 +113,7 @@ namespace MSCLoader.Commands
                             warnings = true;
                             errors = true;
                             ModLoader.LogAllErrors = true;
-                            ModConsole.Print(string.Format("<color=orange>Log everything set to <b>true</b></color>"));
+                            ModConsole.Print("<color=orange>Log everything set to <b>true</b></color>");
 
                         }
                         else
@@ -122,7 +122,7 @@ namespace MSCLoader.Commands
                             warnings = false;
                             errors = false;
                             ModLoader.LogAllErrors = false;
-                            ModConsole.Print(string.Format("<color=orange>Log everything set to <b>false</b></color>"));
+                            ModConsole.Print("<color=orange>Log everything set to <b>false</b></color>");
 
                         }
                     }
@@ -152,9 +152,9 @@ namespace MSCLoader.Commands
                 case UnityEngine.LogType.Error:
                     if (errors)
                         ModConsole.console.controller.AppendLogLine($"<color=red><b>Error: </b>{logString}</color>");
-                    if ((bool)ModSettings_menu.dm_logST.GetValue())
+                    if ((bool)ModMenu.dm_logST.GetValue())
                         ModConsole.console.controller.AppendLogLine($"<color=red>{stackTrace}</color>");
-                    if ((bool)ModSettings_menu.dm_operr.GetValue())
+                    if ((bool)ModMenu.dm_operr.GetValue())
                         ModConsole.console.setVisibility(true);
                     break;
                 case UnityEngine.LogType.Assert:
@@ -164,7 +164,7 @@ namespace MSCLoader.Commands
                 case UnityEngine.LogType.Warning:
                     if (warnings)
                         ModConsole.console.controller.AppendLogLine($"<color=yellow><b>Warning: </b>{logString}</color>");
-                    if ((bool)ModSettings_menu.dm_warn.GetValue())
+                    if ((bool)ModMenu.dm_warn.GetValue())
                         ModConsole.console.setVisibility(true);
                     break;
                 case UnityEngine.LogType.Log:
@@ -174,9 +174,9 @@ namespace MSCLoader.Commands
                 case UnityEngine.LogType.Exception:
                     if (errors)
                         ModConsole.console.controller.AppendLogLine($"<color=red><b>Exception: </b>{logString}</color>");
-                    if ((bool)ModSettings_menu.dm_logST.GetValue())
+                    if ((bool)ModMenu.dm_logST.GetValue())
                         ModConsole.console.controller.AppendLogLine($"<color=red>{stackTrace}</color>");
-                    if ((bool)ModSettings_menu.dm_operr.GetValue())
+                    if ((bool)ModMenu.dm_operr.GetValue())
                         ModConsole.console.setVisibility(true);
                     break;
                 default:

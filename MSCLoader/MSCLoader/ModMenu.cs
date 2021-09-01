@@ -12,17 +12,14 @@ using UnityEngine.UI;
 namespace MSCLoader
 {
 #pragma warning disable CS1591
-    public class ModSettings_menu : Mod
+    public class ModMenu : Mod
     {
-
-        internal override bool LoadInMenu => true;
-        internal override bool UseAssetsFolder => true;
         public override string ID => "MSCLoader_Settings";
         public override string Name => "Settings (Main)";
         public override string Version => ModLoader.MSCLoader_Ver;
         public override string Author => "piotrulos";
 
-        private Keybind menuKey = new Keybind("Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
+        private Keybind menuKey;
 
         internal static Settings dm_disabler = new Settings("mscloader_dm_disabler", "Disable mods throwing errors", false);
         internal static Settings dm_logST = new Settings("mscloader_dm_logST", "Log-all stack trace (not recommended)", false);
@@ -56,17 +53,18 @@ namespace MSCLoader
         public GameObject Button_ms;
         internal static byte cfmu_set = 0;
 
-        static ModSettings_menu instance;
+        static ModMenu instance;
 
         public override void ModSetup()
         {
-         //   SetupFunction(Setup.OnMenuLoad, OnMenuLoad);
+            SetupFunction(Setup.OnMenuLoad, Mod_OnMenuLoad);
+            SetupFunction(Setup.Update, Mod_Update);
         }
 
         public override void ModSettings()
         {
             instance = this;
-            Keybind.Add(this, menuKey);
+            menuKey = Keybind.Add(this, "Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
             if (ModLoader.devMode)
             {
                 Settings.AddHeader(this, "DevMode Settings", new Color32(101, 34, 18, 255), new Color32(254, 254, 0, 255));
@@ -107,7 +105,7 @@ namespace MSCLoader
             if (!bool.TryParse(skipIntro, out introSkip))
             {
                 skipGameIntro.Value = false;
-                ModConsole.Error(string.Format("Excepted boolean, received '{0}'.", skipIntro ?? "<null>"));
+                ModConsole.Error($"Excepted boolean, received '{skipIntro ?? "<null>"}'.");
             }
             else
             {
@@ -168,7 +166,7 @@ namespace MSCLoader
             }
         }
 
-        public override void OnMenuLoad()
+        void Mod_OnMenuLoad()
         {
             try
             {
@@ -416,25 +414,30 @@ namespace MSCLoader
                 if (!File.Exists(path))
                     SaveSettings(ModLoader.LoadedMods[i]); //create settings file if not exists.
 
-
                 //Load and deserialize 
                 SettingsList settings = JsonConvert.DeserializeObject<SettingsList>(File.ReadAllText(path));
                 ModLoader.LoadedMods[i].isDisabled = settings.isDisabled;
                 try
                 {
-                    if (ModLoader.LoadedMods[i].LoadInMenu && !ModLoader.LoadedMods[i].isDisabled && ModLoader.LoadedMods[i].fileName != null)
+                    if (ModLoader.LoadedMods[i].newFormat && ModLoader.LoadedMods[i].fileName != null)
                     {
-                        ModLoader.LoadedMods[i].OnMenuLoad();
+                        ModLoader.LoadedMods[i].A_OnMenuLoad?.Invoke();
+                    }
+                    else
+                    {
+                        if (ModLoader.LoadedMods[i].LoadInMenu && !ModLoader.LoadedMods[i].isDisabled && ModLoader.LoadedMods[i].fileName != null)
+                        {
+                            ModLoader.LoadedMods[i].OnMenuLoad();
+                        }
+                        if (ModLoader.CheckEmptyMethod(ModLoader.LoadedMods[i], "MenuOnLoad"))
+                        {
+                            ModLoader.LoadedMods[i].MenuOnLoad();
+                        }
                     }
                 }
                 catch (Exception e)
                 {
-
-                    string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, new StackTrace(e, true).GetFrame(0).GetMethod(), Environment.NewLine);
-                    ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", ModLoader.LoadedMods[i].ID, errorDetails));
-                    if (ModLoader.devMode)
-                        ModConsole.Error(e.ToString());
-                    System.Console.WriteLine(e);
+                    ModLoader.ModException(e, ModLoader.LoadedMods[i]);
                 }
                 if (Settings.Get(ModLoader.LoadedMods[i]).Count == 0)
                     continue;
@@ -452,19 +455,13 @@ namespace MSCLoader
                 }
                 catch (Exception e)
                 {
-
-                    string errorDetails = string.Format("{2}<b>Details: </b>{0} in <b>{1}</b>", e.Message, new StackTrace(e, true).GetFrame(0).GetMethod(), Environment.NewLine);
-                    ModConsole.Error(string.Format("Mod <b>{0}</b> throw an error!{1}", ModLoader.LoadedMods[i].ID, errorDetails));
-                    if (ModLoader.devMode)
-                        ModConsole.Error(e.ToString());
-                    System.Console.WriteLine(e);
+                    ModLoader.ModException(e, ModLoader.LoadedMods[i]);
                 }
             }
         }
 
-
         // Open menu if the key is pressed.
-        public override void Update()
+        void Mod_Update()
         {
             // Open menu
             if (menuKey.GetKeybindDown())
@@ -473,11 +470,10 @@ namespace MSCLoader
             }
         }
 
-        // SETUP LOGIC FOR THE MOD SETTINGS BUTTON (FREDTWEAK)
-        internal override void OnLoad()
+        internal static void ModButton_temp()
         {
-            GameObject.Find("Systems").transform.Find("OptionsMenu").gameObject.AddComponent<ModSettingButtonHandler>().modSettingButton = Button_ms;
-            Button_ms.SetActive(false);
+            GameObject.Find("Systems").transform.Find("OptionsMenu").gameObject.AddComponent<ModSettingButtonHandler>().modSettingButton = instance.Button_ms;
+            instance.Button_ms.SetActive(false);
         }
 
         public class ModSettingButtonHandler : MonoBehaviour
@@ -493,7 +489,7 @@ namespace MSCLoader
             }
             IEnumerator CursorPM()
             {
-                yield return null;
+                yield return new WaitForSeconds(1f);
                 //Fix that shitty custom playmaker cursor to regular system one.
                 Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
             }
