@@ -11,16 +11,30 @@ namespace MSCLoader
         internal static bool LogAllErrors = false;
         internal static List<string> InvalidMods;
         internal static ModLoader Instance;
-
         internal static bool unloader = false;
         internal static bool rtmm = false;
         internal static List<string> saveErrors;
 
+        internal Mod[] actualModList = new Mod[0];
+        internal Mod[] BC_ModList = new Mod[0];
+
+        //Old stuff
+        internal Mod[] PLoadMods = new Mod[0];
         internal Mod[] SecondPassMods = new Mod[0];
         internal Mod[] OnGUImods = new Mod[0];
         internal Mod[] UpdateMods = new Mod[0];
         internal Mod[] FixedUpdateMods = new Mod[0];
         internal Mod[] OnSaveMods = new Mod[0];
+
+        //New Stuff
+        internal Mod[] Mod_OnNewGame = new Mod[0];   //When New Game is started
+        internal Mod[] Mod_PreLoad = new Mod[0];     //Phase 1 (mod loading)
+        internal Mod[] Mod_OnLoad = new Mod[0];      //Phase 2 (mod loading)  
+        internal Mod[] Mod_PostLoad = new Mod[0];    //Phase 3 (mod loading)
+        internal Mod[] Mod_OnSave = new Mod[0];      //When game saves
+        internal Mod[] Mod_OnGUI = new Mod[0];       //Calls unity OnGUI
+        internal Mod[] Mod_Update = new Mod[0];      //Calls unity Update
+        internal Mod[] Mod_FixedUpdate = new Mod[0]; //Calls unity FixedUpdate
 
         internal string expBuild = Assembly.GetExecutingAssembly().GetName().Version.Revision.ToString();
         internal MSCUnloader mscUnloader;

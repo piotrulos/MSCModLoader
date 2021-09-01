@@ -17,22 +17,25 @@ namespace MSCLoader
         public override string Name => "Console";
         public override string Version => ModLoader.MSCLoader_Ver;
         public override string Author => "piotrulos";
-
-        internal override bool UseAssetsFolder => true;
-        internal override bool LoadInMenu => true;
         public static bool IsOpen { get; private set; }
         
         public static ConsoleView console;
         private GameObject UI;
 
-        private Keybind consoleKey = new Keybind("Open", "Open console", KeyCode.BackQuote);
+        private Keybind consoleKey;
 
         public static Settings typing = new Settings("typeConsole", "Start typing when you open console", false);
         static Settings ConsoleFontSize = new Settings("consoleFont", "Change console font size:", 12, ChangeFontSize);
 
+        public override void ModSetup()
+        {
+            SetupFunction(Setup.OnMenuLoad, Mod_OnMenuLoad);
+            SetupFunction(Setup.Update, Mod_Update);
+        }
+
         public override void ModSettings()
         {
-            Keybind.Add(this, consoleKey);
+            consoleKey = Keybind.Add(this, "Open", "Open console", KeyCode.BackQuote);
 
             Settings.AddHeader(this, "Console Settings", new Color32(0, 128, 0, 255));
             Settings.AddText(this, "Basic settings for console");
@@ -96,7 +99,7 @@ namespace MSCLoader
             UI.transform.SetParent(ModUI.GetCanvas().transform, false);
         }
        
-        public override void Update()
+        void Mod_Update()
         {
             if (consoleKey.GetKeybindDown())
             {
@@ -108,7 +111,7 @@ namespace MSCLoader
             }
         }
 
-        public override void OnMenuLoad()
+        void Mod_OnMenuLoad()
         {
             try
             {

@@ -110,7 +110,7 @@ namespace MSCLoader
                 bind.Key = kcode;
                 keyDisplay.text = kcode.ToString();
             }
-            ModSettings_menu.SaveModBinds(mod);
+            ModMenu.SaveModBinds(mod);
         }
 
     }

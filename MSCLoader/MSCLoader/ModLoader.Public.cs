@@ -150,6 +150,7 @@ namespace MSCLoader
         /// </example> 
         public static string GetModAssetsFolder(Mod mod)
         {
+            if (!Directory.Exists(Path.Combine(AssetsFolder, mod.ID))) Directory.CreateDirectory(Path.Combine(AssetsFolder, mod.ID));          
             return Path.Combine(AssetsFolder, mod.ID);
         }
     }

@@ -9,7 +9,7 @@ namespace MSCLoader
 #pragma warning disable CS1591
     public class SettingsView : MonoBehaviour
     {
-        public ModSettings_menu ms;
+        public ModMenu ms;
 
         public GameObject settingViewContainer;
         public GameObject modList;
@@ -239,7 +239,7 @@ namespace MSCLoader
                     rbtn.transform.GetChild(1).gameObject.SetActive(false);
                     rbtn.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(delegate
                     {
-                        ModSettings_menu.ResetSpecificSettings(setting.Mod, (Settings[])setting.Vals[0]);
+                        ModMenu.ResetSpecificSettings(setting.Mod, (Settings[])setting.Vals[0]);
                         ModSettingsShow(setting.Mod);
                         setting.Mod.ModSettingsLoaded();
                     });
@@ -369,7 +369,7 @@ namespace MSCLoader
                 case 3:
                     page = 0;
                     SetScrollRect();
-                    ModSettings_menu.SaveSettings(selected_mod);
+                    ModMenu.SaveSettings(selected_mod);
                     anim.Play("goBackSettings");
                     goBackBtn.SetActive(false);
                     RemoveChildren(modSettingsList.transform);
@@ -428,14 +428,14 @@ namespace MSCLoader
                 if (ischecked)
                 {
                     selected_mod.OnModDisabled();
-                    ModConsole.Print(string.Format("Mod <b><color=orange>{0}</color></b> is <color=red><b>Disabled</b></color>", selected_mod.Name));
+                    ModConsole.Print($"Mod <b><color=orange>{selected_mod.Name}</color></b> is <color=red><b>Disabled</b></color>");
                 }
                 else
                 {
                     selected_mod.OnModEnabled();
-                    ModConsole.Print(string.Format("Mod <b><color=orange>{0}</color></b> is <color=green><b>Enabled</b></color>", selected_mod.Name));
+                    ModConsole.Print($"Mod <b><color=orange>{selected_mod.Name}</color></b> is <color=green><b>Enabled</b></color>");
                 }
-                ModSettings_menu.SaveSettings(selected_mod);
+                ModMenu.SaveSettings(selected_mod);
             }
         }
 
@@ -493,7 +493,7 @@ namespace MSCLoader
         }
         private void OpenModLink(string url)
         {
-            if ((bool)ModSettings_menu.openLinksOverlay.GetValue())
+            if ((bool)ModMenu.openLinksOverlay.GetValue())
             {
                 //try opening in steam overlay
                 try
@@ -532,7 +532,7 @@ namespace MSCLoader
             ModKeyBinds.transform.GetChild(0).GetChild(6).GetComponent<Button>().onClick.RemoveAllListeners();
             ModKeyBinds.transform.GetChild(0).GetChild(6).GetComponent<Button>().onClick.AddListener(delegate 
             {
-                ModSettings_menu.ResetBinds(selected);
+                ModMenu.ResetBinds(selected);
                 ModKeybindsShow(selected);
                 });
             goToKeybinds();
@@ -556,7 +556,7 @@ namespace MSCLoader
                 modSettings.transform.GetChild(0).GetChild(6).GetComponent<Button>().onClick.RemoveAllListeners();
                 modSettings.transform.GetChild(0).GetChild(6).GetComponent<Button>().onClick.AddListener(delegate
                 {
-                    ModSettings_menu.ResetSettings(selected);
+                    ModMenu.ResetSettings(selected);
                     ModSettingsShow(selected);
                     selected.ModSettingsLoaded();
                 });
@@ -575,7 +575,7 @@ namespace MSCLoader
         }
         void CreateList()
         {
-            if ((bool)ModSettings_menu.showCoreModsDf.GetValue() && !coreModCheckbox.isOn)
+            if ((bool)ModMenu.showCoreModsDf.GetValue() && !coreModCheckbox.isOn)
             {
                 coreModCheckbox.isOn = true;
                 return;
@@ -678,7 +678,7 @@ namespace MSCLoader
             {
                 if (page == 3)
                 {
-                    ModSettings_menu.SaveSettings(selected_mod);
+                    ModMenu.SaveSettings(selected_mod);
                     RemoveChildren(modSettingsList.transform);
                     selected_mod.ModSettingsClose();
                 }

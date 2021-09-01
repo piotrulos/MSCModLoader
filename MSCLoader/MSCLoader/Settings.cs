@@ -70,10 +70,7 @@ namespace MSCLoader
         /// </summary>
         public Action DoAction { get; set; }
 
-        /// <summary>
-        /// Action to execute for specifed setting.
-        /// </summary>
-        public UnityAction DoUnityAction { get; set; }
+        internal UnityAction DoUnityAction { get; set; }
         /// <summary>
         /// Type of setting.
         /// </summary>

@@ -10,19 +10,19 @@ namespace MSCLoader
         /// [OBSOLETE] This is no longer in use, you can safely remove that line.
         /// </summary>
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        internal virtual bool LoadInMenu => false;
+        public virtual bool LoadInMenu => false;
 
         /// <summary>
         /// [OBSOLETE] This is no longer in use, you can safely remove that line.
         /// </summary>        
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        internal virtual bool UseAssetsFolder { get; set; } = false;
+        public virtual bool UseAssetsFolder { get; set; } = false;
 
         /// <summary>
         /// [OBSOLETE] This is no longer in use, you can safely remove that line.
         /// </summary>     
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        internal virtual bool SecondPass => false;
+        public virtual bool SecondPass => false;
 
         /// <summary>
         /// Called once after starting "New Game"
@@ -110,7 +110,7 @@ namespace MSCLoader
         public virtual void OnMenuLoad()
         {
             if (LoadInMenu)
-                ModConsole.Error(string.Format("<b>LoadInMenu</b> is set to <b>true</b> for mod: <b>{0}</b> but <b>OnMenuLoad()</b> is empty.", ID));
+                ModConsole.Error($"<b>LoadInMenu</b> is set to <b>true</b> for mod: <b>{ID}</b> but <b>OnMenuLoad()</b> is empty.");
         }
 
         /// <summary>
