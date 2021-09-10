@@ -24,7 +24,7 @@ namespace MSCLoader
             canvasGO.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
             canvasGO.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             canvasGO.GetComponent<CanvasScaler>().referenceResolution = new Vector2(1280f, 720f);
-            canvasGO.GetComponent<CanvasScaler>().screenMatchMode = CanvasScaler.ScreenMatchMode.Shrink;
+            canvasGO.GetComponent<CanvasScaler>().screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
             canvasGO.GetComponent<CanvasScaler>().referencePixelsPerUnit = 100;
             canvasGO.AddComponent<GraphicRaycaster>();
             GameObject.DontDestroyOnLoad(canvasGO);

@@ -130,6 +130,7 @@ namespace MSCLoader
                                 case 1:
                                     mod[i].hasUpdate = true;
                                     modUpdCount++;
+                                    HasUpdateModList.Add(mod[i]);
                                     if (mod[i].RemMetadata.type != 3)
                                     {
                                         if (File.Exists(GetMetadataFolder(string.Format("{0}.json", mod[i].ID))) && !cfmuResult.Equals(File.ReadAllText(GetMetadataFolder(string.Format("{0}.json", mod[i].ID)))))
@@ -151,7 +152,7 @@ namespace MSCLoader
                                 case -1:
                                     if (mod[i].RemMetadata.sid_sign != SidChecksumCalculator(steamID + mod[i].ID) && mod[i].RemMetadata.type == 3)
                                         File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod[i].ID)), cfmuResult);
-                                    if (File.Exists(GetMetadataFolder(string.Format("{0}.json", mod[i].ID))) && !cfmuResult.Equals(File.ReadAllText(GetMetadataFolder(string.Format("{0}.json", mod[i].ID)))))
+                                    if (File.Exists(GetMetadataFolder($"{mod[i].ID}.json")) && !cfmuResult.Equals(File.ReadAllText(GetMetadataFolder(string.Format("{0}.json", mod[i].ID)))))
                                     {
                                         mod[i].hasUpdate = true;
                                         modUpdCount++;

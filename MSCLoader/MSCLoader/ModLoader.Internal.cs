@@ -17,6 +17,7 @@ namespace MSCLoader
 
         internal Mod[] actualModList = new Mod[0];
         internal Mod[] BC_ModList = new Mod[0];
+        internal List<Mod> HasUpdateModList = new List<Mod>();
 
         //Old stuff
         internal Mod[] PLoadMods = new Mod[0];

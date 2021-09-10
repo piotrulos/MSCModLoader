@@ -1,0 +1,45 @@
+﻿using UnityEngine;
+using System.Collections;
+using UnityEngine.UI;
+
+namespace MSCLoader
+{
+    internal class ModMenuButton : MonoBehaviour
+    {
+        public Texture2D arrowLeft, arrowRight;
+        public RawImage image;
+        public Animation btnAnim;
+        Animation anim;
+        bool opened = false;
+
+        void Start()
+        {
+            anim = gameObject.GetComponent<Animation>();
+        }
+
+        public void PlanAnimationClip(string clip)
+        {
+            if (opened) return;
+            //	anim.Stop();
+            btnAnim.Play(clip);
+        }
+        public void ButtonClicked()
+        {
+            if (!opened)
+            {
+                gameObject.GetComponent<ModMenuView>().ModMenuOpened();
+                opened = true;
+                btnAnim.Play("hover_over_end");
+                anim.Play("menu_open");
+                image.texture = arrowRight;
+            }
+            else
+            {
+                anim.Play("menu_close");
+                image.texture = arrowLeft;
+                opened = false;
+            }
+
+        }
+    }
+}

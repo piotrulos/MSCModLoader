@@ -123,7 +123,7 @@ namespace MSCLoader
         }
         private static void ModSettingsToggle()
         {
-            instance.Button_ms.SetActive((bool)modSetButton.GetValue());
+           // instance.Button_ms.SetActive((bool)modSetButton.GetValue());
         }
 
         private static void ChangeUIScaling()
@@ -182,9 +182,11 @@ namespace MSCLoader
         {
             AssetBundle ab = LoadAssets.LoadBundle(this, "settingsui.unity3d");
 
-            UI = ab.LoadAsset<GameObject>("MSCLoader Settings.prefab");
+            UI = GameObject.Instantiate(ab.LoadAsset<GameObject>("Mod Menu.prefab"));
+            UI.transform.SetParent(ModUI.GetCanvas().transform, false);
 
-            ModButton = ab.LoadAsset<GameObject>("ModButton.prefab");
+
+/*            ModButton = ab.LoadAsset<GameObject>("ModButton.prefab");
             ModButton_Invalid = ab.LoadAsset<GameObject>("ModButton_Invalid.prefab");
 
             ModLabel = ab.LoadAsset<GameObject>("ModViewLabel.prefab");
@@ -238,7 +240,7 @@ namespace MSCLoader
             Button_ms.GetComponent<Button>().onClick.AddListener(() => settings.toggleVisibility());
             Button_ms.SetActive(true);
             if (!(bool)modSetButton.GetValue())
-                Button_ms.SetActive(false);
+                Button_ms.SetActive(false);*/
             ab.Unload(false);
         }
 
