@@ -127,6 +127,12 @@
     <Compile Include="ModLoader.Internal.cs" />
     <Compile Include="ModLoader.Public.cs" />
     <Compile Include="ModLoader.Updates.cs" />
+    <Compile Include="ModMenu\ListStuff.cs" />
+    <Compile Include="ModMenu\MenuElementList.cs" />
+    <Compile Include="ModMenu\ModMenuButton.cs" />
+    <Compile Include="ModMenu\ModMenuView.cs" />
+    <Compile Include="ModMenu\SettingsGroup.cs" />
+    <Compile Include="ModMenu\UniversalView.cs" />
     <Compile Include="ModSave.cs" />
     <Compile Include="ModMenu.cs" />
     <Compile Include="ModMetadata.cs" />

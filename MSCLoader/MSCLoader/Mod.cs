@@ -38,7 +38,7 @@
         /// <summary>
         /// Short Description of your mod
         /// </summary>
-        public virtual string Description { get; set; } = "<i>No short description...</i>";
+        public virtual string Description { get; set; } = null;
 
         /// <summary>
         /// Setup your mod.
