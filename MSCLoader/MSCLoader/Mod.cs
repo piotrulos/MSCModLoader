@@ -56,36 +56,21 @@
         public virtual void ModSettingsLoaded() { }
 
         /// <summary>
-        /// Called once when user enable this mod in settings.
+        /// Called once when mod has been enabled
         /// </summary>
         public virtual void OnModEnabled() { }
 
         /// <summary>
-        /// Called once when user disable this mod in settings.
+        /// Called once when mod has been disabled
         /// </summary>
         public virtual void OnModDisabled() { }
-
+  
         /// <summary>
-        /// [Useless] Method called whenever mod settings are open.
+        /// 
         /// </summary>
-        public virtual void ModSettingsOpen() { }
-
-        /// <summary>
-        /// [Useless] Method called whenever mod settings are closed.
-        /// </summary>
-        public virtual void ModSettingsClose() { }
-
-
-
-        #region ProRedirectsAndDummys
- 
-        /// <summary>
-        /// Constructor DON'T USE
-        /// </summary>      
         public Mod()
         {
             modSettings = new ModSettings(this);
         }
-#endregion
     }
 }

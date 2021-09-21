@@ -20,40 +20,40 @@ namespace MSCLoader
         {
             if (controller != null)
             {
-                controller.logChanged += onLogChanged;
+                controller.logChanged += OnLogChanged;
             }
-            updateLogStr(controller.log);
+            UpdateLogStr(controller.log);
         }
 
         ~ConsoleView()
         {
-            controller.logChanged -= onLogChanged;
+            controller.logChanged -= OnLogChanged;
         }
 
-        public void toggleVisibility()
+        public void ToggleVisibility()
         {
             if (viewContainer.activeSelf)
                 viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().SaveConsoleSize();
-            setVisibility(!viewContainer.activeSelf);
+            SetVisibility(!viewContainer.activeSelf);
             inputField.text = string.Empty;
-            if (viewContainer.activeSelf && (bool)ModConsole.typing.GetValue())
+            if (viewContainer.activeSelf && ModConsole.typing.GetValue())
             {
                 inputField.ActivateInputField();
                 inputField.Select();
             }
         }
 
-        public void setVisibility(bool visible)
+        public void SetVisibility(bool visible)
         {
             viewContainer.SetActive(visible);
         }
 
-        void onLogChanged(string[] newLog)
+        void OnLogChanged(string[] newLog)
         {
-            updateLogStr(newLog);
+            UpdateLogStr(newLog);
         }
 
-        void updateLogStr(string[] newLog)
+        void UpdateLogStr(string[] newLog)
         {
             if (newLog == null)
             {
@@ -66,7 +66,7 @@ namespace MSCLoader
         }
 
         // Event that should be called by anything wanting to submit the current input to the console.
-        public void runCommand()
+        public void RunCommand()
         {
             controller.RunCommandString(inputField.text);
             inputField.text = string.Empty;
@@ -78,7 +78,7 @@ namespace MSCLoader
         {
             if (inputField.text.Length > 0 && Input.GetKey(KeyCode.Return))
             {
-                runCommand();
+                RunCommand();
             }
         }
         private void Update()

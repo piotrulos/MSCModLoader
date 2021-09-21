@@ -18,6 +18,8 @@ namespace MSCLoader
         public ListType type;
         public GameObject listView;
 
+        public static bool settingsOpened = false;
+
         void OnEnable()
         {
             switch (type)
@@ -36,8 +38,27 @@ namespace MSCLoader
                     break;
                 case ListType.MainSettings:
                     mmv.modList = false;
+                    settingsOpened = true;
+                    mmv.MainSettingsList(listView);
                     break;
             }
         }
+        void OnDisable()
+        {
+            switch (type)
+            {
+                case ListType.Mods:
+                    break;
+                case ListType.References:
+                    break;
+                case ListType.Updates:
+                    break;
+                case ListType.MainSettings:
+                    ModMenu.SaveSettings(ModLoader.LoadedMods[0]);
+                    ModMenu.SaveSettings(ModLoader.LoadedMods[1]);
+                    break;
+            }
+        }
+
     }
 }

@@ -74,6 +74,10 @@ namespace MSCLoader
         internal Action A_Update;      //Calls unity Update
         internal Action A_FixedUpdate; //Calls unity FixedUpdate
 
+        internal List<Settings> modSettingsList = new List<Settings>();
+        internal List<Settings> modSettingsDefault = new List<Settings>();
+        internal List<Keybind> Keybinds = new List<Keybind>();
+        internal List<Keybind> DefaultKeybinds = new List<Keybind>();
         /// <summary>
         /// Setup selected function for your mod
         /// </summary>

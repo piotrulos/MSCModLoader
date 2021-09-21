@@ -38,6 +38,11 @@ namespace MSCLoader
                 anim.Play("menu_close");
                 image.texture = arrowLeft;
                 opened = false;
+                if (ListStuff.settingsOpened)
+                {
+                    ModMenu.SaveSettings(ModLoader.LoadedMods[0]);
+                    ModMenu.SaveSettings(ModLoader.LoadedMods[1]);
+                }
             }
 
         }

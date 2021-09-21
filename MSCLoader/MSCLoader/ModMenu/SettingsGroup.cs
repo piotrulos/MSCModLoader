@@ -13,6 +13,10 @@ namespace MSCLoader
         public Texture2D upArrow, downArrow;
         private bool collapsed;
         private bool anim;
+
+        public Text HeaderTitle;
+        public Image HeaderBackground;
+        public GameObject HeaderListView;
         public void Toggle()
         {
             if (anim) return;

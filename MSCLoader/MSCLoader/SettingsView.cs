@@ -170,7 +170,7 @@ namespace MSCLoader
         }
         public void SettingsList(Settings setting)
         {
-            switch (setting.type)
+            switch (setting.SettingType)
             {
                 case SettingsType.CheckBox:
                     GameObject checkbox = Instantiate(ms.Checkbox);
@@ -373,7 +373,7 @@ namespace MSCLoader
                     anim.Play("goBackSettings");
                     goBackBtn.SetActive(false);
                     RemoveChildren(modSettingsList.transform);
-                    selected_mod.ModSettingsClose();
+                   // selected_mod.ModSettingsClose();
                     break;
             }
 
@@ -493,7 +493,7 @@ namespace MSCLoader
         }
         private void OpenModLink(string url)
         {
-            if ((bool)ModMenu.openLinksOverlay.GetValue())
+            if (ModMenu.openLinksOverlay.GetValue())
             {
                 //try opening in steam overlay
                 try
@@ -562,7 +562,7 @@ namespace MSCLoader
                 });
             }
             goToSettings();
-            selected_mod.ModSettingsOpen();
+       //     selected_mod.ModSettingsOpen();
 
         }
         void ModListHeader(string header, Color background, Color text)
@@ -575,11 +575,11 @@ namespace MSCLoader
         }
         void CreateList()
         {
-            if ((bool)ModMenu.showCoreModsDf.GetValue() && !coreModCheckbox.isOn)
+           /* if ((bool)ModMenu.showCoreModsDf.GetValue() && !coreModCheckbox.isOn)
             {
                 coreModCheckbox.isOn = true;
                 return;
-            }
+            }*/
             Mod[] coreMods = ModLoader.LoadedMods.Where(x => x.ID.StartsWith("MSCLoader_")).ToArray();
             Mod[] modList = ModLoader.LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")).ToArray();
             Mod[] updateMods = modList.Where(x => x.hasUpdate).ToArray();
@@ -680,7 +680,7 @@ namespace MSCLoader
                 {
                     ModMenu.SaveSettings(selected_mod);
                     RemoveChildren(modSettingsList.transform);
-                    selected_mod.ModSettingsClose();
+                 //   selected_mod.ModSettingsClose();
                 }
                 SetVisibility(!settingViewContainer.activeSelf);
                 goBack();

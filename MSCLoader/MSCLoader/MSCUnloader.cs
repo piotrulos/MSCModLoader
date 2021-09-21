@@ -18,7 +18,7 @@ namespace MSCLoader
         {
             if (!reset) //to avoid endless loop
             {
-                if (ModLoader.devMode && (bool)ModMenu.dm_pcon.GetValue())
+                if (ModLoader.devMode && ModMenu.dm_pcon.GetValue())
                 {
                     dm_pcon = new Queue<string>(ModConsole.console.controller.scrollback);
                     dm_pcon.Enqueue($"{System.Environment.NewLine}{System.Environment.NewLine}");
@@ -37,10 +37,6 @@ namespace MSCLoader
                         continue;
                     Destroy(o);                    
                 }
-                Keybind.Keybinds = new List<Keybind>();
-                Keybind.DefaultKeybinds = new List<Keybind>();
-                Settings.modSettings = new List<Settings>();
-                Settings.modSettingsDefault = new List<Settings>();
                 PlayMakerGlobals.Instance.Variables.FindFsmBool("SongImported").Value = false; //stupid variable name.
                 ModLoader.unloader = false;
                 ModLoader.rtmm = true;

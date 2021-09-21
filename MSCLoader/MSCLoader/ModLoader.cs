@@ -121,7 +121,7 @@ namespace MSCLoader
                         GameObject.Find("Music").GetComponent<AudioSource>().Play();
                     if (QualitySettings.vSyncCount != 0)
                         vse = true;
-                    if ((bool)ModMenu.forceMenuVsync.GetValue() && !vse)
+                    if (ModMenu.forceMenuVsync.GetValue() && !vse)
                         QualitySettings.vSyncCount = 1; //vsync in menu
                     if (GameObject.Find("MSCLoader Info") == null)
                     {
@@ -146,11 +146,11 @@ namespace MSCLoader
                     break;
                 case "GAME":
                     CurrentScene = CurrentScene.Game;
-                    if ((bool)ModMenu.forceMenuVsync.GetValue() && !vse)
+                    if (ModMenu.forceMenuVsync.GetValue() && !vse)
                         QualitySettings.vSyncCount = 0;
 
                     menuInfoAnim.Play("fade_out");
-                    StartLoadingMods(!(bool)ModMenu.syncLoad.GetValue());
+                    StartLoadingMods(!ModMenu.syncLoad.GetValue());
                     ModMenu.ModButton_temp();
                     break;
                 case "Ending":
@@ -413,7 +413,7 @@ namespace MSCLoader
                     }
                 }
                 bool ret = Steamworks.SteamApps.GetCurrentBetaName(out string Name, 128);
-                if (ret && (bool)ModMenu.expWarning.GetValue())
+                if (ret && ModMenu.expWarning.GetValue())
                 {
                     if (Name != "default_32bit") //32bit is NOT experimental branch
                         ModUI.ShowMessage($"<color=orange><b>Warning:</b></color>{Environment.NewLine}You are using beta build: <color=orange><b>{Name}</b></color>{Environment.NewLine}{Environment.NewLine}Remember that some mods may not work correctly on beta branches.", "Experimental build warning");
@@ -531,7 +531,6 @@ namespace MSCLoader
             updateProgress = loadingMeta.transform.GetChild(0).GetChild(2).GetComponent<Slider>();
             GameObject.Destroy(loadingP);
             GameObject.Destroy(loadingMetaP);
-         //   GameObject.Destroy(loadingP_old);
             ModConsole.Print("Loading core assets completed!");
             ab.Unload(false);
         }
@@ -541,7 +540,7 @@ namespace MSCLoader
         /// </summary>
         internal static void MainMenuPath()
         {
-            Instance.mainMenuInfo.transform.GetChild(1).gameObject.SetActive((bool)ModMenu.modPath.GetValue());
+            Instance.mainMenuInfo.transform.GetChild(1).gameObject.SetActive(ModMenu.modPath.GetValue());
         }
         Text modUpdates;
         private void MainMenuInfo()
@@ -1311,7 +1310,7 @@ namespace MSCLoader
                 {
                     ModConsole.Error($"Mod <b>{mod.ID}</b> spams <b>too many errors each frame</b>! Last error: ");
                     ModConsole.Error(e.ToString());
-                    if ((bool)ModMenu.dm_disabler.GetValue())
+                    if (ModMenu.dm_disabler.GetValue())
                     {
                         mod.isDisabled = true;
                         ModConsole.Warning($"[DevMode] Mod <b>{mod.ID}</b> has been disabled!");

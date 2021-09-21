@@ -9,15 +9,6 @@ namespace MSCLoader
 	/// </summary>
 	public class Keybind
 	{
-        /// <summary>
-        /// List of Keybinds
-        /// </summary>
-        public static List<Keybind> Keybinds = new List<Keybind>();
-        /// <summary>
-        /// List of Default Keybinds
-        /// </summary>
-        public static List<Keybind> DefaultKeybinds = new List<Keybind>();
-
 		/// <summary>
 		/// The ID of the keybind (Should only be used once in your mod).
 		/// </summary>
@@ -58,8 +49,8 @@ namespace MSCLoader
         public static void Add(Mod mod, Keybind key)
         {
             key.Mod = mod;
-            Keybinds.Add(key);
-            DefaultKeybinds.Add(new Keybind(key.ID, key.Name, key.Key, key.Modifier) { Mod = mod });
+            mod.Keybinds.Add(key);
+            mod.DefaultKeybinds.Add(new Keybind(key.ID, key.Name, key.Key, key.Modifier) { Mod = mod });
         }
         /// <summary>
         /// Add a keybind.
@@ -86,8 +77,8 @@ namespace MSCLoader
         public static Keybind Add(Mod mod, string id, string name, KeyCode key, KeyCode modifier)
 		{
             Keybind keyb = new Keybind(id, name, key, modifier) { Mod = mod };
-            Keybinds.Add(keyb);
-			DefaultKeybinds.Add(new Keybind(id, name, key, modifier) { Mod = mod });
+            mod.Keybinds.Add(keyb);
+            mod.DefaultKeybinds.Add(new Keybind(id, name, key, modifier) { Mod = mod });
             return keyb;
 
         }
@@ -115,27 +106,26 @@ namespace MSCLoader
         /// <param name="textColor">Text Color of header</param>
         public static void AddHeader(Mod mod, string HeaderTitle, Color backgroundColor, Color textColor)
         {
-            Keybind kb = new Keybind(null, HeaderTitle, KeyCode.None, KeyCode.None);
-            kb.Mod = mod;
-            kb.Vals = new object[3];
-            kb.Vals[0] = HeaderTitle;
-            kb.Vals[1] = backgroundColor;
-            kb.Vals[2] = textColor;
-            Keybinds.Add(kb);
+            Keybind kb = new Keybind(null, HeaderTitle, KeyCode.None, KeyCode.None)
+            {
+                Mod = mod,
+                Vals = new object[2] { backgroundColor, textColor }
+            };
+            mod.Keybinds.Add(kb);
         }
         /// <summary>
         /// Return all keybinds for mod.
         /// </summary>
         /// <param name="mod">The mod to get the Keybinds for.</param>
         /// <returns>List of Keybinds for the mod.</returns>
-        public static List<Keybind> Get(Mod mod) => Keybinds.FindAll(x => x.Mod == mod);
+        public static List<Keybind> Get(Mod mod) => mod.Keybinds;
 
         /// <summary>
         /// Return all default keybinds for mod.
         /// </summary>
         /// <param name="mod">The mod to get the keybinds for.</param>
         /// <returns>List of default Keybinds for the mod.</returns>
-        public static List<Keybind> GetDefault(Mod mod) => DefaultKeybinds.FindAll(x => x.Mod == mod);
+        public static List<Keybind> GetDefault(Mod mod) => mod.DefaultKeybinds;
 
         /// <summary>
         /// Constructor for Keybind without modifier

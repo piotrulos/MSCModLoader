@@ -131,6 +131,7 @@
     <Compile Include="ModMenu\MenuElementList.cs" />
     <Compile Include="ModMenu\ModMenuButton.cs" />
     <Compile Include="ModMenu\ModMenuView.cs" />
+    <Compile Include="ModMenu\SettingsElement.cs" />
     <Compile Include="ModMenu\SettingsGroup.cs" />
     <Compile Include="ModMenu\UniversalView.cs" />
     <Compile Include="ModSave.cs" />
@@ -148,7 +149,6 @@
     <Compile Include="AudioLibrary\Manager.cs" />
     <Compile Include="SaveLoad.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="SettingsView.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CoreAssets\core.unity3d" />
