@@ -19,7 +19,7 @@ namespace MSCLoader
         public void ModMenuOpened()
         {
             ModTab.text = $"Mods ({ModLoader.Instance.actualModList.Length})";
-            ReferenceTab.text = $"References (0)";
+            ReferenceTab.text = $"References ({ModLoader.Instance.ReferencesList.Count})";
             UpdateTab.text = $"Updates ({ModLoader.Instance.HasUpdateModList.Count})";
             if (modList) ModList(modListView);
         }
@@ -51,6 +51,16 @@ namespace MSCLoader
                 GameObject mod = GameObject.Instantiate(UpdateElementPrefab);
                 mod.GetComponent<MenuElementList>().mod = ModLoader.Instance.HasUpdateModList[i];
                 mod.GetComponent<MenuElementList>().UpdateInfoFill();
+                mod.transform.SetParent(listView.transform, false);
+            }
+        }  
+        public void ReferencesList(GameObject listView)
+        {
+            RemoveChildren(listView.transform);
+            for (int i = 0; i < ModLoader.Instance.ReferencesList.Count; i++)
+            {
+                GameObject mod = GameObject.Instantiate(ReferenceElementPrefab);
+                mod.GetComponent<MenuElementList>().ReferenceInfoFill(ModLoader.Instance.ReferencesList[i]);
                 mod.transform.SetParent(listView.transform, false);
             }
         }

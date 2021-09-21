@@ -350,8 +350,6 @@ namespace MSCLoader
                 ModConsole.Error($"[<b>{mod.ID}</b>] AddButton: Action cannot be null.");
             }
         }
-        //TODO: do this
-       // public static void AddButton(Mod mod, )
 
         /// <summary>
         /// Add Slider, slider can execute action when its value is changed.
