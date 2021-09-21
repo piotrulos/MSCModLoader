@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using System;
 using System.IO;
+using System.Linq;
 
 namespace MSCLoader
 {
@@ -12,7 +13,7 @@ namespace MSCLoader
         [Header("Values")]
         public RawImage icon;
         public Text Title, Author, Description, QuickInfo, WarningInfo, WarningText;
-        public Button SettingsBtn, KeybindsBtn, MoreInfoBtn;
+        public Button SettingsBtn, KeybindsBtn, MoreInfoBtn, WarningBtn;
         public Toggle DisableMod;
         public Texture2D invalidIcon;
         [Header("Additional Values")]
@@ -143,10 +144,57 @@ namespace MSCLoader
             WarningText.gameObject.SetActive(true);
             WarningText.text = "Failed to load";
             Author.text = string.Empty;
-            Description.text = "Failed to load this file";
+            Description.text = "Failed to load this mod";
             icon.texture = invalidIcon;
         }
+        public void ReferenceInfoFill(References rf)
+        {
+            if (rf.Invalid)
+            {
+                Title.text = $"<color=red>{rf.FileName}</color>";
+                Author.text = string.Empty;
+                WarningText.text = "Failed to load";
+                Description.text = "<color=yellow>Failed to load this reference</color>";
 
+                WarningText.gameObject.SetActive(true);
+                WarningBtn.gameObject.SetActive(true);
+                icon.texture = invalidIcon;
+                WarningInfo.text = $"<color=orange>This Reference failed to load.</color>{Environment.NewLine}";
+                WarningInfo.text += $"If this is native (c++) library, put in near .exe file{Environment.NewLine}";
+                WarningInfo.text += $"Exception: <color=yellow>{rf.ExMessage}</color>";
+                QuickInfo.text = $"<color=orange>This Reference failed to load.</color>{Environment.NewLine}";
+
+                return;
+            }
+            Title.text = rf.AssemblyTitle;
+            if (ModLoader.Instance.ReferencesList.Where(x => x.Guid == rf.Guid).ToArray().Length > 1)
+            {
+                WarningText.text = "Loaded more than once";
+                WarningText.gameObject.SetActive(true);
+                WarningBtn.gameObject.SetActive(true);
+                WarningInfo.text = $"<color=yellow>This Reference has been detected to be loaded more than once.</color>{Environment.NewLine}";
+                WarningInfo.text += $"This can cause namespace conflict issues.{Environment.NewLine}";
+                WarningInfo.text += $"<color=yellow>If you created this, make sure to keep same file name when releasing new version of reference.</color>{Environment.NewLine}";
+            }
+            if (string.IsNullOrEmpty(rf.AssemblyAuthor))
+                Author.text = $"by <color=orange>Unknown</color> (<color=aqua>{rf.AssemblyFileVersion}</color>)";
+            else
+                Author.text = $"by <color=orange>{rf.AssemblyAuthor}</color> (<color=aqua>{rf.AssemblyFileVersion}</color>)";
+            if (string.IsNullOrEmpty(rf.AssemblyDescription))
+                Description.text = "No description provided...";
+            else
+                Description.text = rf.AssemblyDescription;
+            QuickInfo.text = $"<color=orange>{rf.FileName}</color>{Environment.NewLine}";
+            QuickInfo.text += $"<color=yellow>ID:</color> <color=aqua>{rf.AssemblyID}</color>{Environment.NewLine}";
+            QuickInfo.text += $"<color=yellow>Title:</color> <color=aqua>{rf.AssemblyTitle}</color>{Environment.NewLine}";
+            if (string.IsNullOrEmpty(rf.AssemblyAuthor))
+                QuickInfo.text += $"<color=yellow>Author:</color> <color=red>Unknown</color>{Environment.NewLine}";
+            else
+                QuickInfo.text += $"<color=yellow>Author:</color> <color=aqua>{rf.AssemblyAuthor}</color>{Environment.NewLine}";
+            QuickInfo.text += $"<color=yellow>Version:</color> <color=aqua>{rf.AssemblyFileVersion}</color>{Environment.NewLine}";
+          //  QuickInfo.text += $"<color=yellow>Guid test:</color> <color=aqua>{rf.Guid}</color>{Environment.NewLine}";
+
+        }
         public void UpdateInfoFill()
         {
             if (mod != null)

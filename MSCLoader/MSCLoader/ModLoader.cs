@@ -481,13 +481,28 @@ namespace MSCLoader
 
         private void LoadReferences()
         {
-            //TODO: Read references metadata and add to list
             if (Directory.Exists(Path.Combine(ModsFolder, "References")))
             {
                 string[] files = Directory.GetFiles(Path.Combine(ModsFolder, "References"), "*.dll");
                 for (int i = 0; i < files.Length; i++)
                 {
-                    Assembly.LoadFrom(files[i]);
+                    try
+                    {
+                        Assembly ass = Assembly.LoadFrom(files[i]);
+                        LoadReferencesMeta(ass, Path.GetFileName(files[i]));
+                    }
+                    catch(Exception e)
+                    {
+                        ModConsole.Error($"<b>References/{Path.GetFileName(files[i])}</b> - Failed to load.");
+                        References reference = new References()
+                        {
+                            FileName = Path.GetFileName(files[i]),
+                            Invalid = true,
+                            ExMessage = e.GetFullMessage()
+                        };
+                        ReferencesList.Add(reference);
+
+                    }
                 }
             }
             else
@@ -495,7 +510,28 @@ namespace MSCLoader
                 Directory.CreateDirectory(Path.Combine(ModsFolder, "References"));
             }
         }
-        GameObject loading2;
+        private void LoadReferencesMeta(Assembly ass, string fn)
+        {
+            References reference = new References()
+            {
+                AssemblyID = ass.GetName().Name,
+                FileName = fn
+            };
+            if(Attribute.IsDefined(ass, typeof(AssemblyTitleAttribute)))
+                reference.AssemblyTitle = ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(ass, typeof(AssemblyTitleAttribute))).Title;
+            if (Attribute.IsDefined(ass, typeof(AssemblyCompanyAttribute)))
+                reference.AssemblyAuthor = ((AssemblyCompanyAttribute)Attribute.GetCustomAttribute(ass, typeof(AssemblyCompanyAttribute))).Company;
+            if (Attribute.IsDefined(ass, typeof(AssemblyDescriptionAttribute)))
+                reference.AssemblyDescription = ((AssemblyDescriptionAttribute)Attribute.GetCustomAttribute(ass, typeof(AssemblyDescriptionAttribute))).Description;
+            if (Attribute.IsDefined(ass, typeof(AssemblyFileVersionAttribute)))
+                reference.AssemblyFileVersion = ((AssemblyFileVersionAttribute)Attribute.GetCustomAttribute(ass, typeof(AssemblyFileVersionAttribute))).Version;
+             if (Attribute.IsDefined(ass, typeof(System.Runtime.InteropServices.GuidAttribute)))
+                reference.Guid = ((System.Runtime.InteropServices.GuidAttribute)Attribute.GetCustomAttribute(ass, typeof(System.Runtime.InteropServices.GuidAttribute))).Value;
+            //TODO: Reference version check
+            ReferencesList.Add(reference);
+
+        }
+        GameObject loading_bc;
         private void LoadCoreAssets()
         {
             ModConsole.Print("Loading core assets...");
@@ -508,11 +544,11 @@ namespace MSCLoader
             GameObject loadingMetaP = ab.LoadAsset<GameObject>("MSCLoader pbar.prefab");
             #region Loading BC
             GameObject loadingP_old = ab.LoadAsset<GameObject>("LoadingMods_old.prefab"); //BC for MOP
-            loading2 = GameObject.Instantiate(loadingP_old);
-            loading2.SetActive(false);
-            loading2.name = "MSCLoader loading screen";
-            loading2.transform.SetParent(ModUI.GetCanvas().transform, false);
-            loading2.transform.GetChild(2).GetComponent<Text>().text = $"MSCLOADER <color=green>{MSCLoader_Ver}</color> (BC Mode)";
+            loading_bc = GameObject.Instantiate(loadingP_old);
+            loading_bc.SetActive(false);
+            loading_bc.name = "MSCLoader loading screen";
+            loading_bc.transform.SetParent(ModUI.GetCanvas().transform, false);
+            loading_bc.transform.GetChild(2).GetComponent<Text>().text = $"MSCLOADER <color=green>{MSCLoader_Ver}</color> (BC Mode)";
             #endregion
             loading = GameObject.Instantiate(loadingP);
             loading.SetActive(false);
@@ -730,7 +766,7 @@ namespace MSCLoader
             loadingMod.text = "Waiting for game to finish load...";
             while (GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera") == null)
                 yield return null;
-            loading2.SetActive(true);
+            loading_bc.SetActive(true);
             loadingTitle.text = "Loading mods - Phase 2".ToUpper();
             loadingMod.text = "Loading mods. Please wait...";
             ModConsole.Print("</color><color=aqua>==== Loading mods (Phase 2) ====</color><color=#505050ff>");
@@ -797,7 +833,7 @@ namespace MSCLoader
             ModConsole.Print("</color>");
             allModsLoaded = true;
             loading.SetActive(false);
-            loading2.SetActive(false);
+            loading_bc.SetActive(false);
         }
 
         IEnumerator LoadModsAsync()
@@ -846,7 +882,7 @@ namespace MSCLoader
             while (GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera") == null) 
                 yield return null;
 
-            loading2.SetActive(true);
+            loading_bc.SetActive(true);
             loadingTitle.text = "Loading mods - Phase 2".ToUpper();
             loadingMod.text = "Loading mods. Please wait...";
             ModConsole.Print("</color><color=aqua>==== Loading mods (Phase 2) ====</color><color=#505050ff>");
@@ -923,7 +959,7 @@ namespace MSCLoader
             ModConsole.Print("</color>");
             allModsLoaded = true;
             loading.SetActive(false);
-            loading2.SetActive(false);
+            loading_bc.SetActive(false);
         }
 
         private static bool wasSaving = false;
