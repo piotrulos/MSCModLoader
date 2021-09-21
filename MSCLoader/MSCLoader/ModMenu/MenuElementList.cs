@@ -117,6 +117,26 @@ namespace MSCLoader
                 }
             }
         }
+
+        public void ModButtonsPrep(UniversalView uv)
+        {
+            if (Settings.Get(mod).Count > 0)
+            {
+                SettingsBtn.gameObject.SetActive(true);
+                SettingsBtn.onClick.AddListener(delegate
+                {
+                    uv.FillSettings(mod);
+                });
+            }
+            if(Keybind.Get(mod).Count > 0)
+            {
+                KeybindsBtn.gameObject.SetActive(true);
+                KeybindsBtn.onClick.AddListener(delegate
+                {
+                    uv.FillKeybinds(mod);
+                });
+            }
+        }
         public void InvalidMod(string name)
         {
             Title.text = $"<color=red>{name}</color>";

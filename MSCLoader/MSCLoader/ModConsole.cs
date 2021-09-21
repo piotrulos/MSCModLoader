@@ -9,7 +9,7 @@ namespace MSCLoader
     /// <summary>
     /// The console for MSCLoader.
     /// </summary>
-    public class ModConsole : Mod
+    internal class ModConsole : Mod
     {
 #pragma warning disable CS1591
 
@@ -23,9 +23,8 @@ namespace MSCLoader
         private GameObject UI;
 
         private Keybind consoleKey;
-
-        public static Settings typing = new Settings("typeConsole", "Start typing when you open console", false);
-        static Settings ConsoleFontSize = new Settings("consoleFont", "Change console font size:", 12, ChangeFontSize);
+        public static SettingsCheckBox typing;
+        static SettingsSliderInt ConsoleFontSize;
 
         public override void ModSetup()
         {
@@ -36,24 +35,25 @@ namespace MSCLoader
         public override void ModSettings()
         {
             consoleKey = Keybind.Add(this, "Open", "Open console", KeyCode.BackQuote);
-
-            Settings.AddHeader(this, "Console Settings", new Color32(0, 128, 0, 255));
+            Settings.AddHeader(this, "Console Settings");
             Settings.AddText(this, "Basic settings for console");
-            Settings.AddCheckBox(this, typing);
-            Settings.AddSlider(this, ConsoleFontSize, 10, 20);
+            typing = Settings.AddCheckBox(this, "MSCLoader_ConsoleTyping", "Start typing when you open console", false);
+            ConsoleFontSize = Settings.AddSlider(this, "MSCLoader_ConsoleFontSize", "Change console font size", 10, 20, 12, ChangeFontSize);
+            Settings.AddResetButton(this, "Reset console settings", new Settings[] { typing.Instance, ConsoleFontSize.Instance });
         }
 
         public override void ModSettingsLoaded()
         {
             ChangeFontSize();
         }
+#pragma warning restore CS1591
 
-        public static void ChangeFontSize()
+        internal static void ChangeFontSize()
         {
-            console.logTextArea.fontSize = int.Parse(ConsoleFontSize.GetValue().ToString());
+            console.logTextArea.fontSize = ConsoleFontSize.GetValue();
         }
 
-        public void CreateConsoleUI()
+        void CreateConsoleUI()
         {
             AssetBundle ab = LoadAssets.LoadBundle(this, "console.unity3d");
             UI = ab.LoadAsset<GameObject>("MSCLoader Console.prefab");
@@ -65,7 +65,7 @@ namespace MSCLoader
             console = UI.AddComponent<ConsoleView>();
             console.viewContainer = UI.transform.GetChild(0).gameObject;
             console.inputField = console.viewContainer.transform.GetChild(0).gameObject.GetComponent<InputField>();
-            console.viewContainer.transform.GetChild(1).gameObject.GetComponent<Button>().onClick.AddListener(() => console.runCommand());
+            console.viewContainer.transform.GetChild(1).gameObject.GetComponent<Button>().onClick.AddListener(() => console.RunCommand());
             console.logTextArea = console.viewContainer.transform.GetChild(2).GetChild(0).gameObject.GetComponent<Text>();
             console.viewContainer.transform.GetChild(4).gameObject.AddComponent<ConsoleUIResizer>().logview = console.viewContainer.transform.GetChild(2).gameObject;
             console.viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().scrollbar = console.viewContainer.transform.GetChild(3).gameObject;
@@ -98,12 +98,12 @@ namespace MSCLoader
             trigger.delegates.Add(entry);
             UI.transform.SetParent(ModUI.GetCanvas().transform, false);
         }
-       
+
         void Mod_Update()
         {
             if (consoleKey.GetKeybindDown())
             {
-                console.toggleVisibility();
+                console.ToggleVisibility();
             }
             if (Input.GetKeyDown(KeyCode.KeypadPlus))
             {
@@ -123,13 +123,12 @@ namespace MSCLoader
             }
             console.controller = new ConsoleController();
             ConsoleCommand.cc = console.controller;
-            console.setVisibility(false);
+            console.SetVisibility(false);
             console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().LoadConsoleSize();
             ConsoleCommand.Add(new CommandVersion());
             ConsoleCommand.Add(new CommandLogAll());
             ConsoleCommand.Add(new MetadataCommand());
         }
-#pragma warning restore CS1591
         /// <summary>
         /// Print a message to console.
         /// </summary>
@@ -171,7 +170,7 @@ namespace MSCLoader
         {
             try
             {
-                console.setVisibility(true);
+                console.SetVisibility(true);
                 console.controller.AppendLogLine($"<color=red><b>Error: </b>{str}</color>");
             }
             catch { }
@@ -188,7 +187,7 @@ namespace MSCLoader
         {
             try
             {
-                console.setVisibility(true);
+                console.SetVisibility(true);
                 console.controller.AppendLogLine($"<color=yellow><b>Warning: </b>{str}</color>");
             }
             catch { }

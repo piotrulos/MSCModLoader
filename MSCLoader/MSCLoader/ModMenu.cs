@@ -3,16 +3,13 @@ using IniParser.Model;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace MSCLoader
 {
-#pragma warning disable CS1591
-    public class ModMenu : Mod
+    internal class ModMenu : Mod
     {
         public override string ID => "MSCLoader_Settings";
         public override string Name => "Settings (Main)";
@@ -21,36 +18,13 @@ namespace MSCLoader
 
         private Keybind menuKey;
 
-        internal static Settings dm_disabler = new Settings("mscloader_dm_disabler", "Disable mods throwing errors", false);
-        internal static Settings dm_logST = new Settings("mscloader_dm_logST", "Log-all stack trace (not recommended)", false);
-        internal static Settings dm_operr = new Settings("mscloader_dm_operr", "Log-all open console on error", false);
-        internal static Settings dm_warn = new Settings("mscloader_dm_warn", "Log-all  open console on warning", false);
-        internal static Settings dm_pcon = new Settings("mscloader_dm_pcon", "Persistent console", false);
+        internal static SettingsCheckBox dm_disabler, dm_logST, dm_operr, dm_warn, dm_pcon;
+        internal static SettingsCheckBox expWarning, modPath, forceMenuVsync, openLinksOverlay, skipGameIntro, syncLoad;
 
-        internal static Settings expWarning = new Settings("mscloader_expWarning", "Show experimental warning", true);
-        internal static Settings modPath = new Settings("mscloader_modPath", "Show mods folder", true, ModLoader.MainMenuPath);
-        private static Settings modSetButton = new Settings("mscloader_modSetButton", "Show settings button in bottom right corner", true, ModSettingsToggle);
-        internal static Settings forceMenuVsync = new Settings("mscloader_forceMenuVsync", "60FPS limit in Main Menu", true, VSyncSwitchCheckbox);
-        internal static Settings openLinksOverlay = new Settings("mscloader_openLinksOverlay", "Open URLs in steam overlay", true);
-        internal static Settings showCoreModsDf = new Settings("mscloader_showCoreModsDf", "Show core modules by default", true);
-        internal static Settings skipGameIntro = new Settings("mscloader_skipGameIntro", "Skip game Splash Screen", false, SkipIntroSet);
-        internal static Settings syncLoad = new Settings("mscloader_syncLoad", "Load mods synchronously", false);
+        private static SettingsCheckBoxGroup checkLaunch, checkDaily, checkWeekly;
 
-        private static Settings expUIScaling = new Settings("mscloader_expUIScaling", "Ultra-widescreen UI scaling", false, ExpUIScaling);
-        private static Settings tuneScaling = new Settings("mscloader_tuneScale", "Tune scaling:", 1f, ChangeUIScaling);
 
-        private static Settings checkLaunch = new Settings("mscloader_checkLaunch", "Every launch", true);
-        private static Settings checkDaily = new Settings("mscloader_checkDaily", "Daily", false);
-        private static Settings checkWeekly = new Settings("mscloader_checkWeekly", "Weekly", false);
-
-        public SettingsView settings;
         public GameObject UI;
-        public GameObject ModButton;
-        public GameObject ModButton_Invalid;
-        public GameObject ModLabel;
-        public GameObject KeyBind;
-        public GameObject Checkbox, setBtn, slider, textBox, header;
-        public GameObject Button_ms;
         internal static byte cfmu_set = 0;
 
         static ModMenu instance;
@@ -58,7 +32,6 @@ namespace MSCLoader
         public override void ModSetup()
         {
             SetupFunction(Setup.OnMenuLoad, Mod_OnMenuLoad);
-            SetupFunction(Setup.Update, Mod_Update);
         }
 
         public override void ModSettings()
@@ -67,34 +40,26 @@ namespace MSCLoader
             menuKey = Keybind.Add(this, "Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
             if (ModLoader.devMode)
             {
-                Settings.AddHeader(this, "DevMode Settings", new Color32(101, 34, 18, 255), new Color32(254, 254, 0, 255));
-                Settings.AddCheckBox(this, dm_disabler);
-                Settings.AddCheckBox(this, dm_logST);
-                Settings.AddCheckBox(this, dm_operr);
-                Settings.AddCheckBox(this, dm_warn);
-                Settings.AddCheckBox(this, dm_pcon);
+                Settings.AddHeader(this, "DevMode Settings", new Color32(101, 34, 18, 255), new Color32(0, 255, 255, 255));
+                dm_disabler = Settings.AddCheckBox(this, "MSCLoader_dm_disabler", "Disable mods throwing errors", false);
+                dm_logST = Settings.AddCheckBox(this, "MSCLoader_dm_logST", "Log-all stack trace (not recommended)", false);
+                dm_operr = Settings.AddCheckBox(this, "MSCLoader_dm_operr", "Log-all open console on error", false);
+                dm_warn = Settings.AddCheckBox(this, "MSCLoader_dm_warn", "Log-all open console on warning", false);
+                dm_pcon = Settings.AddCheckBox(this, "MSCLoader_dm_pcon", "Persistent console (sometimes may break font)", false);
             }
-            Settings.AddHeader(this, "Basic Settings", new Color32(0, 128, 0, 255));
-            Settings.AddText(this, "All basic settings for MSCLoader");
-            Settings.AddCheckBox(this, expWarning);
-            Settings.AddCheckBox(this, modPath);
-            Settings.AddCheckBox(this, modSetButton);
-            Settings.AddCheckBox(this, forceMenuVsync);
-            Settings.AddCheckBox(this, openLinksOverlay);
-            Settings.AddCheckBox(this, showCoreModsDf);
-            Settings.AddCheckBox(this, skipGameIntro);
-            Settings.AddText(this, $"If for whatever reason you want to save half a second of mods loading time, enable below option.{Environment.NewLine}(Loading progress <b>cannot</b> be displayed in synchronous mode)");
-            Settings.AddCheckBox(this, syncLoad);
-            Settings.AddHeader(this, "Mod Update Check", new Color32(0, 128, 0, 255));
-            Settings.AddText(this, "Check for mod updates:");
-            Settings.AddCheckBox(this, checkLaunch, "cfmu_set");
-            Settings.AddCheckBox(this, checkDaily, "cfmu_set");
-            Settings.AddCheckBox(this, checkWeekly, "cfmu_set");
-            Settings.AddHeader(this, "Experimental Scaling", new Color32(101, 34, 18, 255), new Color32(254, 254, 0, 255));
-            Settings.AddText(this, "This option enables <color=orange>experimental UI scaling</color> for <color=orange>ultra-widescreen monitor setup</color>. Turn on this checkbox first, then run game in ultra-widescreen resolution. You can then tune scaling using slider below, but default value (1) should be ok.");
-            Settings.AddCheckBox(this, expUIScaling);
-            Settings.AddSlider(this, tuneScaling, 0f, 1f);
-
+            Settings.AddHeader(this, "Basic Settings");
+            expWarning = Settings.AddCheckBox(this, "MSCLoader_expWarning", "Show experimental warning", true);
+            modPath = Settings.AddCheckBox(this, "MSCLoader_modPath", "Show mods folder", true, ModLoader.MainMenuPath);
+            forceMenuVsync = Settings.AddCheckBox(this, "MSCLoader_forceMenuVsync", "60FPS limit in Main Menu", true, VSyncSwitchCheckbox);
+            openLinksOverlay = Settings.AddCheckBox(this, "MSCLoader_openLinksOverlay", "Open URLs in steam overlay", true);
+            skipGameIntro = Settings.AddCheckBox(this, "MSCLoader_skipGameIntro", "Skip game Splash Screen", false, SkipIntroSet);
+            Settings.AddText(this, $"If for whatever reason you want to save half a second of mods loading time, enable below option.{Environment.NewLine}(Loading progress <color=yellow>cannot</color> be displayed in synchronous mode, and game may look frozen during loading)");
+            syncLoad = Settings.AddCheckBox(this, "MSCLoader_syncLoad", "Load mods synchronously", false);
+            Settings.AddHeader(this, "Auto-update Settings");
+            Settings.AddText(this, "How often MSCLoader should check for updates.");
+            checkLaunch = Settings.AddCheckBoxGroup(this, "MSCLoader_checkLaunch", "Every launch", true, "cfmu_set");
+            checkDaily = Settings.AddCheckBoxGroup(this, "MSCLoader_checkDaily", "Daily", false, "cfmu_set");
+            checkWeekly = Settings.AddCheckBoxGroup(this, "MSCLoader_checkWeekly", "Weekly", false, "cfmu_set");
         }
         public override void ModSettingsLoaded()
         {
@@ -104,46 +69,20 @@ namespace MSCLoader
             bool introSkip;
             if (!bool.TryParse(skipIntro, out introSkip))
             {
-                skipGameIntro.Value = false;
+                skipGameIntro.SetValue(false);
                 ModConsole.Error($"Excepted boolean, received '{skipIntro ?? "<null>"}'.");
             }
             else
             {
-                skipGameIntro.Value = introSkip;
+                skipGameIntro.SetValue(introSkip);
             }
-            ModSettingsToggle();
-            ExpUIScaling();
-            if ((bool)checkLaunch.GetValue())
+            if (checkLaunch.GetValue())
                 cfmu_set = 0;
-            if ((bool)checkDaily.GetValue())
+            else if (checkDaily.GetValue())
                 cfmu_set = 1;
-            if ((bool)checkWeekly.GetValue())
+            else if (checkWeekly.GetValue())
                 cfmu_set = 7;
 
-        }
-        private static void ModSettingsToggle()
-        {
-           // instance.Button_ms.SetActive((bool)modSetButton.GetValue());
-        }
-
-        private static void ChangeUIScaling()
-        {
-            if ((bool)expUIScaling.GetValue())
-            {
-                ModUI.GetCanvas().GetComponent<CanvasScaler>().matchWidthOrHeight = float.Parse(tuneScaling.GetValue().ToString());
-            }
-        }
-        private static void ExpUIScaling()
-        {
-            if ((bool)expUIScaling.GetValue())
-            {
-                ModUI.GetCanvas().GetComponent<CanvasScaler>().screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
-                ChangeUIScaling();
-            }
-            else
-            {
-                ModUI.GetCanvas().GetComponent<CanvasScaler>().screenMatchMode = CanvasScaler.ScreenMatchMode.Shrink;
-            }
         }
 
         private static void SkipIntroSet()
@@ -151,7 +90,7 @@ namespace MSCLoader
             FileIniDataParser parser = new FileIniDataParser();
             IniData ini = parser.ReadFile("doorstop_config.ini");
             ini.Configuration.AssigmentSpacer = "";
-            ini["MSCLoader"]["skipIntro"] = ((bool)skipGameIntro.GetValue()).ToString().ToLower();
+            ini["MSCLoader"]["skipIntro"] = skipGameIntro.GetValue().ToString().ToLower();
             parser.WriteFile("doorstop_config.ini", ini, System.Text.Encoding.ASCII);           
         }
 
@@ -159,7 +98,7 @@ namespace MSCLoader
         {
             if (ModLoader.GetCurrentScene() == CurrentScene.MainMenu)
             {
-                if ((bool)forceMenuVsync.GetValue())
+                if (forceMenuVsync.GetValue())
                     QualitySettings.vSyncCount = 1;
                 else
                     QualitySettings.vSyncCount = 0;
@@ -181,66 +120,8 @@ namespace MSCLoader
         public void CreateSettingsUI()
         {
             AssetBundle ab = LoadAssets.LoadBundle(this, "settingsui.unity3d");
-
             UI = GameObject.Instantiate(ab.LoadAsset<GameObject>("Mod Menu.prefab"));
             UI.transform.SetParent(ModUI.GetCanvas().transform, false);
-
-
-/*            ModButton = ab.LoadAsset<GameObject>("ModButton.prefab");
-            ModButton_Invalid = ab.LoadAsset<GameObject>("ModButton_Invalid.prefab");
-
-            ModLabel = ab.LoadAsset<GameObject>("ModViewLabel.prefab");
-
-            KeyBind = ab.LoadAsset<GameObject>("KeyBind.prefab");
-
-            Button_ms = ab.LoadAsset<GameObject>("Button_ms.prefab");
-            //For mod settings
-            Checkbox = ab.LoadAsset<GameObject>("Checkbox.prefab");
-            setBtn = ab.LoadAsset<GameObject>("Button.prefab");
-            slider = ab.LoadAsset<GameObject>("Slider.prefab");
-            textBox = ab.LoadAsset<GameObject>("TextBox.prefab");
-            header = ab.LoadAsset<GameObject>("Header.prefab");
-
-            UI = GameObject.Instantiate(UI);
-            UI.AddComponent<ModUIDrag>();
-            UI.name = "MSCLoader Settings";
-
-            settings = UI.AddComponent<SettingsView>();
-            settings.ms = this;
-            settings.settingViewContainer = UI.transform.GetChild(0).gameObject;
-            settings.modList = settings.settingViewContainer.transform.GetChild(3).gameObject;
-            settings.modView = settings.modList.transform.GetChild(0).gameObject;
-            settings.modInfo = settings.settingViewContainer.transform.GetChild(2).gameObject;
-            GameObject ModSettingsView = settings.modInfo.transform.GetChild(0).gameObject;
-            settings.ModKeyBinds = settings.settingViewContainer.transform.GetChild(1).gameObject;
-            settings.keybindsList = settings.ModKeyBinds.transform.GetChild(0).GetChild(4).gameObject;
-            settings.modSettings = settings.settingViewContainer.transform.GetChild(4).gameObject;
-            settings.modSettingsList = settings.modSettings.transform.GetChild(0).GetChild(4).gameObject;
-            settings.coreModCheckbox = settings.settingViewContainer.transform.GetChild(6).GetChild(0).GetComponent<Toggle>();
-            settings.coreModCheckbox.onValueChanged.AddListener(delegate { settings.ToggleCoreCheckbox(); });
-            settings.noOfMods = settings.settingViewContainer.transform.GetChild(6).GetChild(1).GetComponent<Text>();
-            settings.goBackBtn = settings.settingViewContainer.transform.GetChild(0).GetChild(1).gameObject;
-            settings.goBackBtn.GetComponent<Button>().onClick.AddListener(() => settings.goBack());
-            settings.settingViewContainer.transform.GetChild(0).GetChild(2).GetComponent<Button>().onClick.AddListener(() => settings.toggleVisibility());
-            settings.DisableMod = ModSettingsView.transform.GetChild(2).GetComponent<Toggle>();
-            settings.DisableMod.onValueChanged.AddListener(settings.disableMod);
-
-            settings.InfoTxt = ModSettingsView.transform.GetChild(0).GetComponent<Text>();
-            settings.descriptionTxt = ModSettingsView.transform.GetChild(8).GetComponent<Text>();
-
-            settings.nexusLink = ModSettingsView.transform.GetChild(4).GetComponent<Button>();
-            settings.rdLink = ModSettingsView.transform.GetChild(5).GetComponent<Button>();
-            settings.ghLink = ModSettingsView.transform.GetChild(6).GetComponent<Button>();
-
-            UI.transform.SetParent(ModUI.GetCanvas().transform, false);
-            settings.SetVisibility(false);
-            Button_ms = GameObject.Instantiate(Button_ms);
-            Button_ms.name = "MSCLoader Settings button";
-            Button_ms.transform.SetParent(ModUI.GetCanvas().transform, false);
-            Button_ms.GetComponent<Button>().onClick.AddListener(() => settings.toggleVisibility());
-            Button_ms.SetActive(true);
-            if (!(bool)modSetButton.GetValue())
-                Button_ms.SetActive(false);*/
             ab.Unload(false);
         }
 
@@ -345,6 +226,7 @@ namespace MSCLoader
                 SaveSettings(mod);
             }
         }
+
         // Save settings for a single mod to config file.
         public static void SaveSettings(Mod mod)
         {
@@ -355,7 +237,7 @@ namespace MSCLoader
             Settings[] set = Settings.Get(mod).ToArray();
             for (int i = 0; i < set.Length; i++)
             {
-                if (set[i].type == SettingsType.Button || set[i].type == SettingsType.RButton || set[i].type == SettingsType.Header || set[i].type == SettingsType.Text)
+                if (set[i].SettingType == SettingsType.Button || set[i].SettingType == SettingsType.RButton || set[i].SettingType == SettingsType.Header || set[i].SettingType == SettingsType.Text)
                     continue;
 
                 Setting sets = new Setting
@@ -378,13 +260,8 @@ namespace MSCLoader
             Mod[] binds = ModLoader.LoadedMods.Where(mod => Keybind.Get(mod).Count > 0).ToArray();
             for (int i = 0; i < binds.Length; i++)
             {
-                //delete old xml file (if exists)
-                string path = Path.Combine(ModLoader.GetModSettingsFolder(binds[i]), "keybinds.xml");
-                if (File.Exists(path))
-                    File.Delete(path);
-
                 // Check if there is custom keybinds file (if not, create)
-                path = Path.Combine(ModLoader.GetModSettingsFolder(binds[i]), "keybinds.json");
+                string path = Path.Combine(ModLoader.GetModSettingsFolder(binds[i]), "keybinds.json");
                 if (!File.Exists(path))
                 {
                     SaveModBinds(binds[i]);
@@ -397,7 +274,7 @@ namespace MSCLoader
                     continue;
                 for (int k = 0; k < keybinds.keybinds.Count; k++)
                 {
-                    Keybind bind = Keybind.Keybinds.Find(x => x.Mod == binds[i] && x.ID == keybinds.keybinds[k].ID);
+                    Keybind bind = binds[i].Keybinds.Find(x => x.ID == keybinds.keybinds[k].ID);
                     if (bind == null)
                         continue;
                     bind.Key = keybinds.keybinds[k].Key;
@@ -441,12 +318,13 @@ namespace MSCLoader
                 {
                     ModLoader.ModException(e, ModLoader.LoadedMods[i]);
                 }
+
                 if (Settings.Get(ModLoader.LoadedMods[i]).Count == 0)
                     continue;
 
                 for (int j = 0; j < settings.settings.Count; j++)
                 {
-                    Settings set = Settings.modSettings.Find(x => x.Mod == ModLoader.LoadedMods[i] && x.ID == settings.settings[j].ID);
+                    Settings set = Settings.Get(ModLoader.LoadedMods[i]).Find(x => x.ID == settings.settings[j].ID);
                     if (set == null)
                         continue;
                     set.Value = settings.settings[j].Value;
@@ -462,45 +340,36 @@ namespace MSCLoader
             }
         }
 
-        // Open menu if the key is pressed.
-        void Mod_Update()
-        {
-            // Open menu
-            if (menuKey.GetKeybindDown())
-            {
-                settings.toggleVisibility();
-            }
-        }
-
         internal static void ModButton_temp()
         {
-            GameObject.Find("Systems").transform.Find("OptionsMenu").gameObject.AddComponent<ModSettingButtonHandler>().modSettingButton = instance.Button_ms;
-            instance.Button_ms.SetActive(false);
+            GameObject.Find("Systems").transform.Find("OptionsMenu").gameObject.AddComponent<ModMenuHandler>().modMenuUI = instance.UI;
+            instance.UI.SetActive(false);
         }
 
-        public class ModSettingButtonHandler : MonoBehaviour
+        public class ModMenuHandler : MonoBehaviour
         {
-            public GameObject modSettingButton;
+            public GameObject modMenuUI;
 
             void OnEnable()
             {
-                if ((bool)modSetButton.GetValue())
-                    modSettingButton.SetActive(true);
-
+                modMenuUI.SetActive(true);
                 StartCoroutine(CursorPM());
             }
             IEnumerator CursorPM()
             {
-                yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(0.5f);
                 //Fix that shitty custom playmaker cursor to regular system one.
                 Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
             }
             void OnDisable()
             {
-                if (modSettingButton != null)
-                    modSettingButton.SetActive(false);
+                modMenuUI.SetActive(false);
+                if (ListStuff.settingsOpened)
+                {
+                    SaveSettings(ModLoader.LoadedMods[0]);
+                    SaveSettings(ModLoader.LoadedMods[1]);
+                }
             }
         }
     }
-#pragma warning restore CS1591
 }

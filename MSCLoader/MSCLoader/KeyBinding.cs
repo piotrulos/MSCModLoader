@@ -5,48 +5,51 @@ using UnityEngine.UI;
 
 namespace MSCLoader
 {
-#pragma warning disable CS1591
-    public class KeybindList
+    internal class KeybindList
     {
         public List<Keybinds> keybinds = new List<Keybinds>();
     }
-    public class Keybinds
+    internal class Keybinds
     {
         public string ID { get; set; }
         public KeyCode Key { get; set; }
         public KeyCode Modifier { get; set; }
     }
-    public class KeyBinding : MonoBehaviour
+    internal class KeyBinding : MonoBehaviour
     {
+        public Text KeybindName;
+
         public KeyCode modifierKey;
         public Text modifierDisplay;
-        public GameObject modifierButton;
-        Image buttonModImage;
+        public Button modifierButton;
+        public Image buttonModImage;
 
         public KeyCode key;
         public Text keyDisplay;
-        public GameObject keyButton;
-        Image buttonImage;
+        public Button keyButton;
+        public Image buttonImage;
 
         bool reassignKey = false;
         bool ismodifier = false;
-        public Color toggleColor = new Color32(0xFF, 0xFF, 0x00, 0xFF);
-
-        Color originalColor = Color.white;
+        
+        Color toggleColor = new Color32(101, 130, 18, 255);
+        Color originalColor = new Color32(101, 34, 18, 255);
 
         public Mod mod;
         public string id;
 
-        public void LoadBind()
+        public void LoadBind(Keybind kb, Mod m)
         {
-            buttonModImage = modifierButton.GetComponent<Image>();
-            buttonImage = keyButton.GetComponent<Image>();
+            mod = m;
+            KeybindName.text = kb.Name;
+            id = kb.ID;
+            modifierKey = kb.Modifier;
+            key = kb.Key;
+            modifierButton.onClick.AddListener(() => ChangeKeyCode(true, true));
+            keyButton.onClick.AddListener(() => ChangeKeyCode(true, false));
 
-            modifierButton.GetComponent<Button>().onClick.AddListener(() => ChangeKeyCode(true, true));
-            keyButton.GetComponent<Button>().onClick.AddListener(() => ChangeKeyCode(true, false));
-
-            modifierDisplay.text = modifierKey.ToString();
-            keyDisplay.text = key.ToString();
+            modifierDisplay.text = modifierKey.ToString().ToUpper();
+            keyDisplay.text = key.ToString().ToUpper();
         }
 
         void Update()
@@ -99,20 +102,19 @@ namespace MSCLoader
         }
         void UpdateKeyCode(KeyCode kcode, bool modifier)
         {
-            Keybind bind = Keybind.Keybinds.Find(x => x.Mod == mod && x.ID == id);
+            Keybind bind = mod.Keybinds.Find(x => x.ID == id);
             if (modifier)
             {
                 bind.Modifier = kcode;
-                modifierDisplay.text = kcode.ToString();
+                modifierDisplay.text = kcode.ToString().ToUpper();
             }
             else
             {
                 bind.Key = kcode;
-                keyDisplay.text = kcode.ToString();
+                keyDisplay.text = kcode.ToString().ToUpper();
             }
             ModMenu.SaveModBinds(mod);
         }
 
     }
-#pragma warning restore CS1591
 }

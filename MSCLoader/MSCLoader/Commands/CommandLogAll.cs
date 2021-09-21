@@ -152,10 +152,10 @@ namespace MSCLoader.Commands
                 case UnityEngine.LogType.Error:
                     if (errors)
                         ModConsole.console.controller.AppendLogLine($"<color=red><b>Error: </b>{logString}</color>");
-                    if ((bool)ModMenu.dm_logST.GetValue())
+                    if (ModMenu.dm_logST.GetValue())
                         ModConsole.console.controller.AppendLogLine($"<color=red>{stackTrace}</color>");
-                    if ((bool)ModMenu.dm_operr.GetValue())
-                        ModConsole.console.setVisibility(true);
+                    if (ModMenu.dm_operr.GetValue())
+                        ModConsole.console.SetVisibility(true);
                     break;
                 case UnityEngine.LogType.Assert:
                     if (messages)
@@ -164,8 +164,8 @@ namespace MSCLoader.Commands
                 case UnityEngine.LogType.Warning:
                     if (warnings)
                         ModConsole.console.controller.AppendLogLine($"<color=yellow><b>Warning: </b>{logString}</color>");
-                    if ((bool)ModMenu.dm_warn.GetValue())
-                        ModConsole.console.setVisibility(true);
+                    if (ModMenu.dm_warn.GetValue())
+                        ModConsole.console.SetVisibility(true);
                     break;
                 case UnityEngine.LogType.Log:
                     if (messages)
@@ -174,10 +174,10 @@ namespace MSCLoader.Commands
                 case UnityEngine.LogType.Exception:
                     if (errors)
                         ModConsole.console.controller.AppendLogLine($"<color=red><b>Exception: </b>{logString}</color>");
-                    if ((bool)ModMenu.dm_logST.GetValue())
+                    if (ModMenu.dm_logST.GetValue())
                         ModConsole.console.controller.AppendLogLine($"<color=red>{stackTrace}</color>");
-                    if ((bool)ModMenu.dm_operr.GetValue())
-                        ModConsole.console.setVisibility(true);
+                    if (ModMenu.dm_operr.GetValue())
+                        ModConsole.console.SetVisibility(true);
                     break;
                 default:
                     break;

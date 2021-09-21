@@ -7,21 +7,19 @@ namespace MSCLoader
         //Here is old pre 1.2 functions used here only for backwards compatibility
 
         /// <summary>
-        /// [OBSOLETE] This is no longer in use, you can safely remove that line.
+        /// Load this mod in Main Menu.
         /// </summary>
-        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public virtual bool LoadInMenu => false;
 
         /// <summary>
-        /// [OBSOLETE] This is no longer in use, you can safely remove that line.
+        /// Set this to true if you want load custom files from Assets folder
+        /// (This will create a subfolder for your mod)
         /// </summary>        
-        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public virtual bool UseAssetsFolder { get; set; } = false;
 
         /// <summary>
-        /// [OBSOLETE] This is no longer in use, you can safely remove that line.
+        /// Enable SecondPassOnLoad() that will execute after all mods have been loaded.
         /// </summary>     
-        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public virtual bool SecondPass => false;
 
         /// <summary>
@@ -121,7 +119,7 @@ namespace MSCLoader
         /// <summary>
         /// Called once, after GAME scene is fully loaded.
         /// </summary>
-        internal virtual void OnLoad() { }
+        public virtual void OnLoad() { }
 
         /// <summary>
         /// Called once, after ALL mods has finished OnLoad() and when SecondPass is set to true
