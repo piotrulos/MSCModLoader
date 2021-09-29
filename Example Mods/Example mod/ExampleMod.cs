@@ -18,28 +18,34 @@ namespace ExampleMod
 		public override string Version => "1.0";
 
 		// Keybinds
-		private Keybind testKey = new Keybind("KeyID", "Key name", KeyCode.L, KeyCode.LeftControl);
+		private Keybind testKey;
+
+		public override void ModSetup()
+		{
+			SetupFunction(Setup.OnLoad, Mod_OnLoad);
+			SetupFunction(Setup.Update, Mod_Update);
+		}
 
 		// Called when the mod is loaded
-		public override void OnLoad()
+		void Mod_OnLoad()
 		{
-			Keybind.Add(this, testKey); //register keybind for this class
+			testKey = Keybind.Add(this, "KeyID", "Key name", KeyCode.L, KeyCode.LeftControl); //register keybind for this class
 			ConsoleCommand.Add(new ExampleCommand()); //Add command console from ExampleCommand class
 
 			ModConsole.Print("ExampleMod has been loaded!"); //print debug information
 		}
 
 		// Called once every frame
-		public override void Update()
+		void Mod_Update()
 		{
-			if (testKey.IsDown())
+			if (testKey.GetKeybindDown())
 			{
 				ModConsole.Print("Key is pressed!");
 			}
 
-			if (testKey.IsPressed())
+			if (testKey.GetKeybindUp())
 			{
-				ModConsole.Print("Key is held!");
+				ModConsole.Print("Key is released!");
 			}
 		}
 	}
