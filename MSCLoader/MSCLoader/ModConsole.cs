@@ -105,10 +105,6 @@ namespace MSCLoader
             {
                 console.ToggleVisibility();
             }
-            if (Input.GetKeyDown(KeyCode.KeypadPlus))
-            {
-                console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().LoadConsoleSize();
-            }
         }
 
         void Mod_OnMenuLoad()

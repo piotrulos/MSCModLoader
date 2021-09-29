@@ -55,8 +55,8 @@ namespace MSCLoader
             skipGameIntro = Settings.AddCheckBox(this, "MSCLoader_skipGameIntro", "Skip game Splash Screen", false, SkipIntroSet);
             Settings.AddText(this, $"If for whatever reason you want to save half a second of mods loading time, enable below option.{Environment.NewLine}(Loading progress <color=yellow>cannot</color> be displayed in synchronous mode, and game may look frozen during loading)");
             syncLoad = Settings.AddCheckBox(this, "MSCLoader_syncLoad", "Load mods synchronously", false);
-            Settings.AddHeader(this, "Auto-update Settings");
-            Settings.AddText(this, "How often MSCLoader should check for updates.");
+            Settings.AddHeader(this, "Update Settings");
+            Settings.AddText(this, "How often MSCLoader should check for Mod/References updates.");
             checkLaunch = Settings.AddCheckBoxGroup(this, "MSCLoader_checkLaunch", "Every launch", true, "cfmu_set");
             checkDaily = Settings.AddCheckBoxGroup(this, "MSCLoader_checkDaily", "Daily", false, "cfmu_set");
             checkWeekly = Settings.AddCheckBoxGroup(this, "MSCLoader_checkWeekly", "Weekly", false, "cfmu_set");

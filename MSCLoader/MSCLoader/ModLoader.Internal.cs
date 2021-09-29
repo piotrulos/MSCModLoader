@@ -38,7 +38,8 @@ namespace MSCLoader
         internal Mod[] Mod_Update = new Mod[0];      //Calls unity Update
         internal Mod[] Mod_FixedUpdate = new Mod[0]; //Calls unity FixedUpdate
 
-        internal string expBuild = Assembly.GetExecutingAssembly().GetName().Version.Revision.ToString();
+        internal int currentBuild = Assembly.GetExecutingAssembly().GetName().Version.Revision;
+        internal int newBuild = 0;
         internal MSCUnloader mscUnloader;
 
         internal static string steamID;
@@ -48,7 +49,7 @@ namespace MSCLoader
         internal static string SettingsFolder = Path.Combine(ConfigFolder, "Mod Settings");
         internal static string MetadataFolder = Path.Combine(ConfigFolder, "Mod Metadata");
         internal static string AssetsFolder = Path.Combine(ModsFolder, "Assets");
-        internal string[] upd_tmp;
+        internal string[] ModsUpdateDir;
         internal List<string> mod_aulist;
         internal GameObject mainMenuInfo;
         internal GameObject loading;
@@ -58,13 +59,15 @@ namespace MSCLoader
 
         internal static readonly string serverURL = "http://my-summer-car.ml";
         internal static readonly string metadataURL = "http://my-summer-car.ml:4000";
-        //private readonly string serverURL = "http://localhost/msc2"; //localhost for testing only
-        //private readonly string metadataURL = "http://localhost:4000";
+        internal static readonly string earlyAccessURL = "None yet";
+        //internal static readonly string serverURL = "http://localhost/msc2"; //localhost for testing only
+        //internal static readonly string metadataURL = "http://localhost:4000";
 
         internal bool IsModsLoading = false;
         internal bool fullyLoaded = false;
         internal bool allModsLoaded = false;
         internal bool IsModsResetting = false;
         internal bool IsModsDoneResetting = false;
+        internal bool ModloaderUpdateMessage = false;
     }
 }

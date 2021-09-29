@@ -6,6 +6,7 @@ using IniParser.Model;
 using IniParser;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
+using Ionic.Zip;
 
 namespace MSCLoader.Preloader
 {
@@ -19,12 +20,89 @@ namespace MSCLoader.Preloader
         {
             if (File.Exists("MSCLoader_Preloader.txt")) File.Delete("MSCLoader_Preloader.txt");
             MDebug.Init();
-            //TODO: Add Self-Update extract here
+            ReadSettings();
+            UnpackUpdate();
             OutputLogChecker(); //Enable output_log after possible game update  
             MDebug.Log("Waiting for engine...");
             AppDomain.CurrentDomain.AssemblyLoad += AssemblyWatcher;
         }
-
+        private static void UnpackUpdate()
+        {
+            if (File.Exists(Path.Combine("Updates", @"Core\update.zip")))
+            {
+                string modPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"MySummerCar\Mods");
+                string managedPath = Path.Combine("mysummercar_Data", @"Managed");
+                switch (cfg)
+                {
+                    case "GF":
+                        modPath = Path.GetFullPath(Path.Combine("Mods", "")); 
+                        break;
+                    case "MD":
+                        modPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"MySummerCar\Mods");
+                        break;
+                    case "AD":
+                        modPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"..\LocalLow\Amistech\My Summer Car\Mods"));
+                        break;
+                    default:
+                        modPath = Path.GetFullPath(Path.Combine("Mods", ""));
+                        break;
+                }
+                MDebug.Log("Installing modloader update...");
+                UnpackZip(Path.Combine("Updates", @"Core\update.zip"), Path.Combine("Updates", "Core"));
+                UnpackZip(Path.Combine("Updates", @"Core\Managed.zip"), managedPath);
+                UnpackZip(Path.Combine("Updates", @"Core\Mods.zip"), modPath);
+                MDebug.Log("Installing modloader update done!");
+            }
+        }
+        private static void UnpackZip(string fn, string target)
+        {
+            try
+            {
+                if (!ZipFile.IsZipFile(fn))
+                {
+                    MDebug.Log("[MODLOADER UPDATE FAILED]");
+                    MDebug.Log($"Failed read zip file {fn}", true);
+                }
+                else
+                {
+                    ZipFile zip1 = ZipFile.Read(File.ReadAllBytes(fn));
+                    foreach (ZipEntry zz in zip1)
+                    {
+                        MDebug.Log($"Unpacking: {zz.FileName}");
+                        zz.Extract(target, ExtractExistingFileAction.OverwriteSilently);
+                    }
+                }
+                File.Delete(fn);
+            }
+            catch (Exception e)
+            {
+                MDebug.Log("[MODLOADER UPDATE FAILED]");
+                MDebug.Log(e.ToString(), true);
+            }
+        }
+        private static void ReadSettings()
+        {
+            try
+            {
+                MDebug.Log("Reading settings...");
+                if (File.Exists("ModLoaderSettings.ini"))
+                    File.Delete("ModLoaderSettings.ini");
+                IniData ini = new FileIniDataParser().ReadFile("doorstop_config.ini");
+                ini.Configuration.AssigmentSpacer = "";
+                cfg = ini["MSCLoader"]["mods"];
+                string skipIntro = ini["MSCLoader"]["skipIntro"];
+                if (!bool.TryParse(skipIntro, out introSkip))
+                {
+                    introSkip = false;
+                    MDebug.Log($"[FAIL] Parse failed, readed value: {skipIntro}");
+                }
+            }
+            catch (Exception e)
+            {
+                MDebug.Log("[PRELOADER CRASH]");
+                MDebug.Log(e.ToString(), true);
+            }
+        }
         private static void OutputLogChecker()
         {
             try
@@ -128,22 +206,9 @@ namespace MSCLoader.Preloader
         {
             try
             {
-                MDebug.Log("Reading settings...");
-                if (File.Exists("ModLoaderSettings.ini"))
-                    File.Delete("ModLoaderSettings.ini");
-                IniData ini = new FileIniDataParser().ReadFile("doorstop_config.ini");
-                ini.Configuration.AssigmentSpacer = "";
-                cfg = ini["MSCLoader"]["mods"];
-                string skipIntro = ini["MSCLoader"]["skipIntro"];
-                if (!bool.TryParse(skipIntro, out introSkip))
-                {
-                    introSkip = false;
-                    MDebug.Log($"[FAIL] Parse failed, readed value: {skipIntro}");
-                }
                 MDebug.Log("Injecting Main MSCLoader patches...");
                 HarmonyInstance.Create("MSCLoader.Main").PatchAll(Assembly.GetExecutingAssembly());
                 MDebug.Log("Done.");
-
             }
             catch (Exception e)
             {

@@ -86,6 +86,7 @@ namespace MSCLoader
         public void ModSettingsList(GameObject listView, Mod mod)
         {
             RemoveChildren(listView.transform);
+            listView.GetComponentInParent<ScrollRect>().verticalNormalizedPosition = 0;
             Transform currentTransform = null;
             //If first settings element is not header, create one.
             if(Settings.Get(mod)[0].SettingType != SettingsType.Header)
@@ -108,6 +109,7 @@ namespace MSCLoader
         public void KeyBindsList(GameObject listView, Mod mod)
         {
             RemoveChildren(listView.transform);
+            listView.GetComponentInParent<ScrollRect>().verticalNormalizedPosition = 0;
             Transform currentTransform = null;
             //If first settings element is not header, create one.
             if (mod.Keybinds[0].ID != null && mod.Keybinds[0].Vals == null)

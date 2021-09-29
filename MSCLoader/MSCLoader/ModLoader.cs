@@ -26,7 +26,7 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string MSCLoader_Ver = "1.1.16"; //TODO: replace with assembly version
+        public static readonly string MSCLoader_Ver = $"{Assembly.GetExecutingAssembly().GetName().Version.Major}.{Assembly.GetExecutingAssembly().GetName().Version.Minor}.{Assembly.GetExecutingAssembly().GetName().Version.Build}";
 
         /// <summary>
         /// Is this version of ModLoader experimental (this is NOT game experimental branch)
@@ -217,8 +217,14 @@ namespace MSCLoader
             mscUnloader.reset = false;
             if (!Directory.Exists(ModsFolder))
                 Directory.CreateDirectory(ModsFolder);
-            if (!Directory.Exists("upd_tmp"))
-                Directory.CreateDirectory("upd_tmp");
+            if (!Directory.Exists("Updates"))
+                Directory.CreateDirectory("Updates");    
+            if (!Directory.Exists(Path.Combine("Updates","Mods")))
+                Directory.CreateDirectory(Path.Combine("Updates", "Mods"));    
+            if (!Directory.Exists(Path.Combine("Updates","References")))
+                Directory.CreateDirectory(Path.Combine("Updates", "References"));        
+            if (!Directory.Exists(Path.Combine("Updates","Core")))
+                Directory.CreateDirectory(Path.Combine("Updates", "References"));
 
             if (!Directory.Exists(ConfigFolder))
             {
@@ -243,12 +249,12 @@ namespace MSCLoader
             LoadedMods[1].ModSettings();
             ModMenu.LoadSettings();
             if (experimental)
-                ModConsole.Print($"<color=green>ModLoader <b>v{MSCLoader_Ver}</b> ready</color> [<color=magenta>Experimental</color> <color=lime>build {expBuild}</color>]");
+                ModConsole.Print($"<color=green>ModLoader <b>v{MSCLoader_Ver}</b> ready</color> [<color=magenta>Experimental</color> <color=lime>build {currentBuild}</color>]");
             else
                 ModConsole.Print($"<color=green>ModLoader <b>v{MSCLoader_Ver}</b> ready</color>");
             MainMenuInfo();
-            upd_tmp = Directory.GetFiles("upd_tmp", "*.zip");
-            if (upd_tmp.Length == 0)
+            ModsUpdateDir = Directory.GetFiles(Path.Combine("Updates","Mods"), "*.zip");
+            if (ModsUpdateDir.Length == 0)
             {
                 ContinueInit();
             }
@@ -542,14 +548,14 @@ namespace MSCLoader
             mainMenuInfo = ab.LoadAsset<GameObject>("MSCLoader Info.prefab");
             GameObject loadingP = ab.LoadAsset<GameObject>("LoadingMods.prefab");
             GameObject loadingMetaP = ab.LoadAsset<GameObject>("MSCLoader pbar.prefab");
-            #region Loading BC
+        #region Loading BC
             GameObject loadingP_old = ab.LoadAsset<GameObject>("LoadingMods_old.prefab"); //BC for MOP
             loading_bc = GameObject.Instantiate(loadingP_old);
             loading_bc.SetActive(false);
             loading_bc.name = "MSCLoader loading screen";
             loading_bc.transform.SetParent(ModUI.GetCanvas().transform, false);
             loading_bc.transform.GetChild(2).GetComponent<Text>().text = $"MSCLOADER <color=green>{MSCLoader_Ver}</color> (BC Mode)";
-            #endregion
+        #endregion
             loading = GameObject.Instantiate(loadingP);
             loading.SetActive(false);
             loading.name = "MSCLoader loading dialog";
@@ -597,7 +603,7 @@ namespace MSCLoader
             client.DownloadStringCompleted += VersionCheckCompleted;
             string branch = "unknown";
             if (experimental)
-                branch = "exp_build";
+                branch = "exp";
             else
                 branch = "stable";
             client.DownloadStringAsync(new Uri($"{serverURL}/ver.php?core={branch}"));
@@ -632,27 +638,37 @@ namespace MSCLoader
                 }
                 else if (result[0] == "ok")
                 {
-                    if (result[1].Trim().Length > 8)
-                        throw new Exception("Parse Error, please report that problem!");
-                    int i;
-                    if (experimental)
-                        i = expBuild.CompareTo(result[1].Trim());
-                    else
-                        i = MSCLoader_Ver.CompareTo(result[1].Trim());
-                    if (i != 0)
+                    int newBuild = 0;
+                    try
+                    {
+                        newBuild = int.Parse(result[2]);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                        throw new Exception("Failed to parse build number");
+                    }
+
+                    if (newBuild > currentBuild)
+                    {
                         if (experimental)
-                            info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready! [<color=magenta>Experimental</color> <color=lime>build {expBuild}</color>] (<color=orange>New build available: <b>{result[1]}</b></color>)";
+                            info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready! [<color=magenta>Experimental</color> <color=lime>build {currentBuild}</color>] (<color=orange>New build available: <b>{newBuild}</b></color>)";
                         else
-                            info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready! (<color=orange>New version available: <b>v{result[1].Trim()}</b></color>)";
-                    else if (i == 0)
+                            info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready! (<color=orange>New version available: <b>v{result[1]}</b></color>)";
+                        ModloaderUpdateMessage = true;
+                        ModUI.ShowYesNoMessage($"New ModLoader version is available{Environment.NewLine}<color=lime>{result[1]} build {newBuild}</color>{Environment.NewLine}{Environment.NewLine}Do you want to download it now?", "MSCLoader update", DownloadModloaderUpdate);
+                    }
+                    else
+                    {
                         if (experimental)
-                            info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready! [<color=magenta>Experimental</color> <color=lime>build {expBuild}</color>]";
+                            info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready! [<color=magenta>Experimental</color> <color=lime>build {currentBuild}</color>]";
                         else
                             info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready! (<color=lime>Up to date</color>)";
+                    }
                 }
                 else
                 {
-                    System.Console.WriteLine("Unknown: " + result[0]);
+                    Console.WriteLine("Unknown: " + result[0]);
                     throw new Exception("Unknown server response.");
                 }
             }
@@ -661,9 +677,9 @@ namespace MSCLoader
                 ModConsole.Error($"Check for new version failed with error: {ex.Message}");
                 if (devMode)
                     ModConsole.Error(ex.ToString());
-                System.Console.WriteLine(ex);
+                Console.WriteLine(ex);
                 if (experimental)
-                    info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready! [<color=magenta>Experimental</color> <color=lime>build {expBuild}</color>]";
+                    info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready! [<color=magenta>Experimental</color> <color=lime>build {currentBuild}</color>]";
                 else
                     info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready!";
 
