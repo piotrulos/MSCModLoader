@@ -98,6 +98,7 @@
     <Compile Include="AudioLibrary\Playlists.cs" />
     <Compile Include="Commands\CommandVersion.cs" />
     <Compile Include="Commands\CommandLogAll.cs" />
+    <Compile Include="Commands\EarlyAccessCommand.cs" />
     <Compile Include="Commands\MetadataCommand.cs" />
     <Compile Include="ConsoleCommand.cs" />
     <Compile Include="ConsoleController.cs" />

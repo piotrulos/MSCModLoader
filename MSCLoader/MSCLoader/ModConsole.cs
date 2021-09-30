@@ -124,6 +124,7 @@ namespace MSCLoader
             ConsoleCommand.Add(new CommandVersion());
             ConsoleCommand.Add(new CommandLogAll());
             ConsoleCommand.Add(new MetadataCommand());
+            ConsoleCommand.Add(new EarlyAccessCommand());
         }
         /// <summary>
         /// Print a message to console.
