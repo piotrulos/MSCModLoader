@@ -7,6 +7,7 @@ using UnityEngine.UI;
 namespace MSCLoader
 {
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [System.Obsolete("=> Settings")]
     public class ModSettings
     {
         Mod mod;
@@ -15,7 +16,10 @@ namespace MSCLoader
         {
             this.mod = mod;
         }
+        [System.Obsolete("=> Settings.AddButton", true)]
+
         public SettingButton AddButton(string id, string buttonText, UnityAction action = null, bool blockSuspension = false) => AddButton(id, buttonText, "", action, blockSuspension);
+        [System.Obsolete("=> Settings.AddButton", true)]
         public SettingButton AddButton(string id, string buttonText, string name = "", UnityAction action = null, bool blockSuspension = false)
         {
             Settings set = new Settings(id, buttonText, action, blockSuspension);
@@ -23,11 +27,15 @@ namespace MSCLoader
             mod.proSettings = true;
             return new SettingButton(set);
         }
+        [System.Obsolete("=> Settings.AddHeader", true)]
         public SettingHeader AddHeader(string text) => AddHeader(text, new Color32(0, 128, 0, 255));
+        [System.Obsolete("=> Settings.AddHeader", true)]
 
         public SettingHeader AddHeader(string text, Color backgroundColor) => AddHeader(text, backgroundColor, Color.white);
+        [System.Obsolete("=> Settings.AddHeader", true)]
 
         public SettingHeader AddHeader(string text, Color backgroundColor, Color textColor) => AddHeader(text, backgroundColor, textColor, Color.white);
+        [System.Obsolete("=> Settings.AddHeader", true)]
 
         public SettingHeader AddHeader(string text, Color backgroundColor, Color textColor, Color outlineColor)
         {
@@ -36,14 +44,18 @@ namespace MSCLoader
             Settings.AddHeader(mod, text, backgroundColor, textColor, set);
             return new SettingHeader(set);
         }
+        [System.Obsolete("=> Keybind.Add", true)]
         public SettingKeybind AddKeybind(string id, string name, KeyCode key, params KeyCode[] modifiers)
         {
             Keybind keyb = new Keybind(id, name, key, modifiers[0]);
             Keybind.Add(mod, keyb);
             return new SettingKeybind(keyb);
         }
+        [System.Obsolete("=> Settings.AddCheckBox (group)", true)]
         public SettingRadioButtons AddRadioButtons(string id, string name, int value, params string[] options) => AddRadioButtons(id,name,value,(UnityAction)null, options);
+        [System.Obsolete("=> Settings.AddCheckBox (group)", true)]
         public SettingRadioButtons AddRadioButtons(string id, string name, int value, UnityAction<int> action, params string[] options) => null;
+        [System.Obsolete("=> Settings.AddCheckBox (group)", true)]
         public SettingRadioButtons AddRadioButtons(string id, string name, int value, UnityAction action, params string[] options) 
         {
             mod.proSettings = true;
@@ -56,8 +68,11 @@ namespace MSCLoader
             return new SettingRadioButtons(set);
         }
 
-        public SettingSlider AddSlider(string id, string name, float value, float minValue, float maxValue, int roundDigits = 2) => AddSlider(id, name, value, minValue, maxValue, roundDigits, (UnityAction)null);       
+        [System.Obsolete("=> Settings.AddSlider", true)]
+        public SettingSlider AddSlider(string id, string name, float value, float minValue, float maxValue, int roundDigits = 2) => AddSlider(id, name, value, minValue, maxValue, roundDigits, (UnityAction)null);
+        [System.Obsolete("=> Settings.AddSlider", true)]
         public SettingSlider AddSlider(string id, string name, float value, float minValue, float maxValue, int roundDigits = 2, UnityAction<float> action = null) => null;
+        [System.Obsolete("=> Settings.AddSlider", true)]
         public SettingSlider AddSlider(string id, string name, float value, float minValue, float maxValue, int roundDigits = 2, UnityAction action = null)
         {
             mod.proSettings = true;
@@ -66,7 +81,9 @@ namespace MSCLoader
             return new SettingSlider(set);
         }
 
+        [System.Obsolete("=> Settings.AddSlider", true)]
         public SettingSlider AddSlider(string id, string name, float value, float minValue, float maxValue, UnityAction<float> action = null) => null;
+        [System.Obsolete("=> Settings.AddSlider", true)]
         public SettingSlider AddSlider(string id, string name, float value, float minValue, float maxValue, UnityAction action = null)
         {
             mod.proSettings = true;
@@ -74,8 +91,11 @@ namespace MSCLoader
             Settings.AddSlider(mod, set, minValue, maxValue);
             return new SettingSlider(set);
         }
+        [System.Obsolete("=> Settings.AddSlider", true)]
         public SettingSlider AddSlider(string id, string name, int value, int minValue, int maxValue) => AddSlider(id, name, value, minValue, maxValue, (UnityAction)null);
+        [System.Obsolete("=> Settings.AddSlider", true)]
         public SettingSlider AddSlider(string id, string name, int value, int minValue, int maxValue, UnityAction<float> action) => null;
+        [System.Obsolete("=> Settings.AddSlider", true)]
         public SettingSlider AddSlider(string id, string name, int value, int minValue, int maxValue, UnityAction action)
         {
             mod.proSettings = true;
@@ -84,11 +104,16 @@ namespace MSCLoader
             Settings.AddSlider(mod, set, minValue, maxValue);
             return new SettingSlider(set);
         }
-      
+
+        [System.Obsolete("Does nothing", true)]
         public SettingSpacer AddSpacer(float height) => null;
+        [System.Obsolete("=> Settings.AddText", true)]
         public SettingText AddText(string text, Color backgroundColor) => AddText(text);
+        [System.Obsolete("=> Settings.AddText", true)]
         public SettingText AddText(string text, Color backgroundColor, Color textColor) => AddText(text);
+        [System.Obsolete("=> Settings.AddText", true)]
         public SettingText AddText(string text, Color backgroundColor, Color textColor, Color outlineColor) => AddText(text);
+        [System.Obsolete("=> Settings.AddText", true)]
         public SettingText AddText(string text)
         {
             mod.proSettings = true;
@@ -96,8 +121,11 @@ namespace MSCLoader
             return new SettingText();
         }
 
+        [System.Obsolete("=> Settings.AddTextBox", true)]
         public SettingTextBox AddTextBox(string id, string name, string value, string placeholder = "ENTER TEXT...", InputField.CharacterValidation inputType = InputField.CharacterValidation.None) => null;
+        [System.Obsolete("=> Settings.AddTextBox", true)]
         public SettingTextBox AddTextBox(string id, string name, string value, UnityAction<string> action, string placeholder = "ENTER TEXT...", InputField.CharacterValidation inputType = InputField.CharacterValidation.None) => null;
+        [System.Obsolete("=> Settings.AddTextBox", true)]
         public SettingTextBox AddTextBox(string id, string name, string value, UnityAction action, string placeholder = "ENTER TEXT...", InputField.CharacterValidation inputType = InputField.CharacterValidation.None) 
         {
             mod.proSettings = true;
@@ -105,18 +133,25 @@ namespace MSCLoader
             Settings.AddTextBox(mod, set, placeholder);
             return new SettingTextBox(set);
         }
+        [System.Obsolete("=> Settings.AddCheckBox", true)]
         public SettingToggle AddToggle(string id, string name, bool value) => AddToggle(id,name,value,(UnityAction)null);
+        [System.Obsolete("=> Settings.AddCheckBox", true)]
         public SettingToggle AddToggle(string id, string name, bool value, UnityAction<bool> action) => null;
+        [System.Obsolete("=> Settings.AddCheckBox", true)]
         public SettingToggle AddToggle(string id, string name, bool value, UnityAction action)
         {
             mod.proSettings = true;
             Settings.AddCheckBox(mod, new Settings(id, name, value, action, false));
             return new SettingToggle();
         }
+        [System.Obsolete("Useless", true)]
         public SettingBoolean AddBoolean(string id, bool value) => null;
+        [System.Obsolete("Useless", true)]
         public SettingNumber AddNumber(string id, float value) => null;
+        [System.Obsolete("Useless", true)]
         public SettingNumber AddNumber(string id, int value) => null;
 
+        [System.Obsolete("Useless", true)]
         public SettingString AddString(string id, string value) => null;
     }
 }

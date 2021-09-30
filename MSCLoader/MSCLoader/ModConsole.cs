@@ -39,7 +39,6 @@ namespace MSCLoader
             Settings.AddText(this, "Basic settings for console");
             typing = Settings.AddCheckBox(this, "MSCLoader_ConsoleTyping", "Start typing when you open console", false);
             ConsoleFontSize = Settings.AddSlider(this, "MSCLoader_ConsoleFontSize", "Change console font size", 10, 20, 12, ChangeFontSize);
-            Settings.AddResetButton(this, "Reset console settings", new Settings[] { typing.Instance, ConsoleFontSize.Instance });
         }
 
         public override void ModSettingsLoaded()
