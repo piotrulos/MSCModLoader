@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -1015,6 +1016,48 @@ namespace MSCLoader
             MethodInfo method = mod.GetType().GetMethod(methodName);
             return (method.IsVirtual && method.DeclaringType == mod.GetType() && method.GetMethodBody().GetILAsByteArray().Length > 2);
         }
+        private void LoadEADll(string file)
+        {
+            string dwl = string.Empty;
+            WebClient getdwl = new WebClient();
+            getdwl.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfo.operatingSystem})");
+            try
+            {
+                dwl = getdwl.DownloadString($"{serverURL}/ea_test.php?file={Path.GetFileNameWithoutExtension(file)}"); //TODO: SteamID shit
+            }
+            catch (Exception e)
+            {
+                ModConsole.Error($"Failed to check early access info for mod {Path.GetFileNameWithoutExtension(file)}"); 
+                Console.WriteLine(e);
+            }
+            string[] result = dwl.Split('|');
+            if (result[0] == "error")
+            {
+                switch (result[1])
+                {
+                    case "0":
+                        ModConsole.Error($"[{Path.GetFileNameWithoutExtension(file)}] Failed to check early access info: Invalid request");
+                        break;
+                    case "1":
+                        ModConsole.Error($"[{Path.GetFileNameWithoutExtension(file)}] You are not whitelisted for this mod");
+                        break;
+                    case "2":
+                        ModConsole.Error($"[{Path.GetFileNameWithoutExtension(file)}] Early Access ended");
+                        break;
+                    default:
+                        ModConsole.Error($"[{Path.GetFileNameWithoutExtension(file)}] Failed to check early access info: Unknown error");
+                        break;
+                }
+               // failed = true;
+            }
+            else if (result[0] == "ok")
+            {
+                byte[] input = File.ReadAllBytes(file);
+                byte[] key = Encoding.ASCII.GetBytes(result[1]);
+                LoadDLL($"{Path.GetFileNameWithoutExtension(file)}.dll", input.Cry_ScrambleByteRightDec(key));
+                //  ModConsole.Error();
+            }
+        }
         private void PreLoadMods()
         {
             // Load .dll files
@@ -1024,6 +1067,10 @@ namespace MSCLoader
                 if (files[i].EndsWith(".dll"))
                 {
                     LoadDLL(files[i]);
+                }
+                if (files[i].EndsWith(".dII"))
+                {
+                    LoadEADll(files[i]);
                 }
             }
             actualModList = LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")).ToArray();
@@ -1137,16 +1184,23 @@ namespace MSCLoader
             ModMenu.LoadSettings();
         }
 
-        private void LoadDLL(string file)
+        private void LoadDLL(string file, byte[] byteFile = null)
         {
             try
             {
-                Assembly asm = Assembly.LoadFrom(file);
+                Assembly asm = null;
+                if (byteFile == null)
+                    asm = Assembly.LoadFrom(file);
+                else
+                    asm = Assembly.Load(byteFile);
                 bool isMod = false;
 
                 AssemblyName[] list = asm.GetReferencedAssemblies();
-                if (File.ReadAllText(file).Contains("RegistryKey"))
-                    throw new FileLoadException();
+                if (byteFile == null)
+                {
+                    if (File.ReadAllText(file).Contains("RegistryKey"))
+                        throw new FileLoadException();
+                }
 
                 //Warn about wrong .net target, source of some mod crashes.
                 if (!asm.ImageRuntimeVersion.Equals(Assembly.GetExecutingAssembly().ImageRuntimeVersion))
