@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("$safeprojectname$")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("My Summer Car Mod file")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("$safeprojectname$")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: AssemblyCopyright("Copyright © $year$ by $modAuthor$")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

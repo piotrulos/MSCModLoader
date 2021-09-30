@@ -6,13 +6,10 @@ namespace $safeprojectname$
     public class $safeprojectname$ : Mod
     {
         public override string ID => "$safeprojectname$"; //Your mod ID (unique)
-        public override string Name => "$projectname$"; //You mod name
-        public override string Author => "Your Username"; //Your Username
-        public override string Version => "1.0"; //Version
-
-        // Set this to true if you will be load custom assets from Assets folder.
-        // This will create subfolder in Assets folder for your mod.
-        public override bool UseAssetsFolder => false;
+        public override string Name => "$modName$"; //You mod name
+        public override string Author => "$modAuthor$"; //Your Username
+        public override string Version => "$modVersion$"; //Version
+        
 
         public override void OnNewGame()
         {

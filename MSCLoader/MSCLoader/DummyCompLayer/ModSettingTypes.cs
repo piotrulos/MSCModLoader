@@ -12,7 +12,7 @@ namespace MSCLoader
 
      }*/
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-
+    [System.Obsolete("Useless", true)]
     public class SettingButton
     {
         Settings setting;
@@ -31,6 +31,7 @@ namespace MSCLoader
     }
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 
+    [System.Obsolete("Useless", true)]
     public class SettingHeader 
     {
         Settings setting;
@@ -51,6 +52,7 @@ namespace MSCLoader
     }
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 
+    [System.Obsolete("Useless", true)]
     public class SettingKeybind 
     {
         Keybind keyb;
@@ -64,6 +66,7 @@ namespace MSCLoader
     }
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 
+    [System.Obsolete("==> SettigsCheckBoxGroup", true)]
     public class SettingRadioButtons 
     {
         Settings[] settings;
@@ -98,12 +101,14 @@ namespace MSCLoader
     }
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 
+    [System.Obsolete("==> SettigsCheckBoxGroup", true)]
     public class RadioButton
     {
 
     }
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 
+    [System.Obsolete("==> SettigsSlider", true)]
     public class SettingSlider 
     {
         Settings setting;
@@ -120,12 +125,14 @@ namespace MSCLoader
     }
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 
+    [System.Obsolete("Useless", true)]
     public class SettingSpacer 
     {
 
     }
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 
+    [System.Obsolete("Useless", true)]
     public class SettingText 
     {
         public Text text;
@@ -141,6 +148,7 @@ namespace MSCLoader
         }
     }
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [System.Obsolete("==> SettigsTextBox", true)]
     public class SettingTextBox 
     {
         Settings setting;
@@ -165,22 +173,26 @@ namespace MSCLoader
     }
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 
+    [System.Obsolete("==> SettigsCheckBox", true)]
     public class SettingToggle 
     {
 
     }
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 
+    [System.Obsolete("Useless", true)]
     public class SettingBoolean 
     {
 
     }
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [System.Obsolete("Useless", true)]
     public class SettingNumber 
     {
  
     }
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [System.Obsolete("Useless", true)]
     public class SettingString 
     {
   

@@ -1055,7 +1055,7 @@ namespace MSCLoader
                 byte[] input = File.ReadAllBytes(file);
                 byte[] key = Encoding.ASCII.GetBytes(result[1]);
                 LoadDLL($"{Path.GetFileNameWithoutExtension(file)}.dll", input.Cry_ScrambleByteRightDec(key));
-                //  ModConsole.Error();
+                //  ModConsole.Error(result[1]);
             }
         }
         private void PreLoadMods()

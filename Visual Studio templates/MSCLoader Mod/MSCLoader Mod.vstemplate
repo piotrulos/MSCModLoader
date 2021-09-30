@@ -25,5 +25,9 @@
       <ProjectItem ReplaceParameters="true" TargetFileName="$safeprojectname$.cs">Class1.cs</ProjectItem>
     </Project>
   </TemplateContent>
-  
+  <WizardExtension>
+    <Assembly>MSCLoader Templates, Version=1.2.0.0, Culture=Neutral, PublicKeyToken=56373c2dca4c3ff7</Assembly>
+    <FullClassName>VSIXProject1.WizardImplementation</FullClassName>
+  </WizardExtension>
+
 </VSTemplate>
