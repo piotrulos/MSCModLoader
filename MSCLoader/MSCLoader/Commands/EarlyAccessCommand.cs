@@ -31,7 +31,7 @@ namespace MSCLoader.Commands
                             byte[] modFile = File.ReadAllBytes(Path.Combine(ModLoader.ModsFolder, args[1]));
                             byte[] modoutput = modFile.Cry_ScrambleByteRightEnc(System.Text.Encoding.ASCII.GetBytes(s));
                             File.WriteAllBytes(Path.Combine(output, $"{Path.GetFileNameWithoutExtension(Path.Combine(ModLoader.ModsFolder, args[1]))}.dII"), modoutput);
-                            string txt = $"Here is your key:{Environment.NewLine}{Environment.NewLine}{s}{Environment.NewLine}Use it to whitelist your early access mod.";
+                            string txt = $"Use this command to register your mod:{Environment.NewLine}{Environment.NewLine}.ea registerfile {Path.GetFileNameWithoutExtension(Path.Combine(ModLoader.ModsFolder, args[1]))} {s}{Environment.NewLine}{Environment.NewLine}If you already registered that file before and want to update key use this:{Environment.NewLine}{Environment.NewLine}.ea setkey {Path.GetFileNameWithoutExtension(Path.Combine(ModLoader.ModsFolder, args[1]))} {s}";
                             File.WriteAllText(Path.Combine(output, $"{Path.GetFileNameWithoutExtension(Path.Combine(ModLoader.ModsFolder, args[1]))}.txt"), txt);
                             ModConsole.Print($"Go to: {Path.GetFullPath(output)}");
                         }
@@ -58,6 +58,11 @@ namespace MSCLoader.Commands
                 {
                     try
                     {
+                        if (args[2].Contains("|"))
+                        {
+                            ModConsole.Error("Forbidden charater '|' in key");
+                            return;
+                        }
                         string s = args[2];
                         string output = Path.Combine(ModLoader.ModsFolder, "EA_Output");
                         if (File.Exists(Path.Combine(ModLoader.ModsFolder, args[1])))
@@ -67,7 +72,7 @@ namespace MSCLoader.Commands
                             byte[] modFile = File.ReadAllBytes(Path.Combine(ModLoader.ModsFolder, args[1]));
                             byte[] modoutput = modFile.Cry_ScrambleByteRightEnc(System.Text.Encoding.ASCII.GetBytes(s));
                             File.WriteAllBytes(Path.Combine(output, $"{Path.GetFileNameWithoutExtension(Path.Combine(ModLoader.ModsFolder, args[1]))}.dII"), modoutput);
-                            string txt = $"Here is your key:{Environment.NewLine}{Environment.NewLine}{s}{Environment.NewLine}Use it to whitelist your early access mod.";
+                            string txt = $"Use this command to register your mod:{Environment.NewLine}{Environment.NewLine}.ea registerfile {Path.GetFileNameWithoutExtension(Path.Combine(ModLoader.ModsFolder, args[1]))} {s}{Environment.NewLine}";
                             File.WriteAllText(Path.Combine(output, $"{Path.GetFileNameWithoutExtension(Path.Combine(ModLoader.ModsFolder, args[1]))}.txt"), txt);
                             ModConsole.Print($"Go to: {Path.GetFullPath(output)}");
                         }

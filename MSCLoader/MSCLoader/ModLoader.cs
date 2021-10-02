@@ -225,7 +225,7 @@ namespace MSCLoader
             if (!Directory.Exists(Path.Combine("Updates","References")))
                 Directory.CreateDirectory(Path.Combine("Updates", "References"));        
             if (!Directory.Exists(Path.Combine("Updates","Core")))
-                Directory.CreateDirectory(Path.Combine("Updates", "References"));
+                Directory.CreateDirectory(Path.Combine("Updates", "Core"));
 
             if (!Directory.Exists(ConfigFolder))
             {
@@ -267,8 +267,6 @@ namespace MSCLoader
         void ContinueInit()
         {
             LoadReferences();
-            PreLoadMods();
-            ModConsole.Print($"<color=orange>Found <color=green><b>{actualModList.Length}</b></color> mods!</color>");
             try
             {
                 if (File.Exists(Path.GetFullPath(Path.Combine("LAUNCHER.exe", ""))) || File.Exists(Path.GetFullPath(Path.Combine("SmartSteamEmu64.dll", ""))) || File.Exists(Path.GetFullPath(Path.Combine("SmartSteamEmu.dll", ""))))
@@ -304,6 +302,8 @@ namespace MSCLoader
                     Environment.Exit(0);
                 }
             }
+            PreLoadMods();
+            ModConsole.Print($"<color=orange>Found <color=green><b>{actualModList.Length}</b></color> mods!</color>");
             LoadModsSettings();
             ModMenu.LoadBinds();
             GameObject old_callbacks = new GameObject("BC Callbacks");
@@ -1018,12 +1018,13 @@ namespace MSCLoader
         }
         private void LoadEADll(string file)
         {
+            if (!CheckSteam()) return;
             string dwl = string.Empty;
             WebClient getdwl = new WebClient();
             getdwl.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfo.operatingSystem})");
             try
             {
-                dwl = getdwl.DownloadString($"{serverURL}/ea_test.php?file={Path.GetFileNameWithoutExtension(file)}"); //TODO: SteamID shit
+                dwl = getdwl.DownloadString($"{earlyAccessURL}/ea_test?steam={steamID}&file={Path.GetFileNameWithoutExtension(file)}");
             }
             catch (Exception e)
             {
@@ -1042,20 +1043,18 @@ namespace MSCLoader
                         ModConsole.Error($"[{Path.GetFileNameWithoutExtension(file)}] You are not whitelisted for this mod");
                         break;
                     case "2":
-                        ModConsole.Error($"[{Path.GetFileNameWithoutExtension(file)}] Early Access ended");
+                        ModConsole.Error($"[{Path.GetFileNameWithoutExtension(file)}] File not registered or Early Access ended");
                         break;
                     default:
                         ModConsole.Error($"[{Path.GetFileNameWithoutExtension(file)}] Failed to check early access info: Unknown error");
                         break;
                 }
-               // failed = true;
             }
             else if (result[0] == "ok")
             {
                 byte[] input = File.ReadAllBytes(file);
                 byte[] key = Encoding.ASCII.GetBytes(result[1]);
                 LoadDLL($"{Path.GetFileNameWithoutExtension(file)}.dll", input.Cry_ScrambleByteRightDec(key));
-                //  ModConsole.Error(result[1]);
             }
         }
         private void PreLoadMods()
