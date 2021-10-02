@@ -129,7 +129,7 @@ namespace MSCLoader
                     uv.FillSettings(mod);
                 });
             }
-            if(Keybind.Get(mod).Count > 0)
+            if (Keybind.Get(mod).Count > 0)
             {
                 KeybindsBtn.gameObject.SetActive(true);
                 KeybindsBtn.onClick.AddListener(delegate
@@ -137,6 +137,11 @@ namespace MSCLoader
                     uv.FillKeybinds(mod);
                 });
             }
+            MoreInfoBtn.onClick.AddListener(delegate
+            {
+                uv.FillMetadataInfo(mod);
+            });
+
         }
         public void InvalidMod(string name)
         {

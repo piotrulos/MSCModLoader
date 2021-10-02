@@ -75,12 +75,129 @@ namespace MSCLoader
                 else
                     SettingsList(Settings.Get(ModLoader.LoadedMods[0])[i], currentTransform);
             }
+            GameObject keyBind = Instantiate(KeyBindPrefab);
+            keyBind.GetComponent<KeyBinding>().LoadBind(ModLoader.LoadedMods[0].Keybinds[0], ModLoader.LoadedMods[0]);
+            keyBind.transform.SetParent(currentTransform, false);
             for (int i = 0; i < Settings.Get(ModLoader.LoadedMods[1]).Count; i++)
             {
                 if (Settings.Get(ModLoader.LoadedMods[1])[i].SettingType == SettingsType.Header)
                     currentTransform = SettingsHeader(Settings.Get(ModLoader.LoadedMods[1])[i], listView.transform);
                 else
                     SettingsList(Settings.Get(ModLoader.LoadedMods[1])[i], currentTransform);
+            }
+        }
+        public void MetadataInfoList(GameObject listView, Mod mod)
+        {
+            RemoveChildren(listView.transform);
+            //Info Header
+            GameObject hdr = GameObject.Instantiate(HeaderGroupPrefab);
+            SettingsGroup header = hdr.GetComponent<SettingsGroup>();
+            header.HeaderTitle.text = "Mod Information".ToUpper();
+            hdr.transform.SetParent(listView.transform, false);
+            GameObject tx = Instantiate(LabelPrefab);
+            tx.GetComponent<Text>().text = $"<color=yellow>ID:</color> <color=aqua>{mod.ID}</color> (Compiled using MSCLoader <color=yellow>{mod.compiledVersion}</color>){Environment.NewLine}" +
+                $"<color=yellow>Version:</color> <color=aqua>{mod.Version}</color>{Environment.NewLine}" +
+                $"<color=yellow>Author:</color> <color=aqua>{mod.Author}</color>{Environment.NewLine}" +
+                $"<color=yellow>Additional references used by this Mod:</color>{Environment.NewLine}";
+            if (mod.AdditionalReferences != null)
+                tx.GetComponent<Text>().text += $"<color=aqua>{string.Join(", ",mod.AdditionalReferences)}</color>";
+            else
+                tx.GetComponent<Text>().text += $"<color=aqua>[None]</color>";
+            tx.transform.SetParent(header.HeaderListView.transform, false);
+            if (mod.metadata == null)
+            {
+                GameObject hdr2 = GameObject.Instantiate(HeaderGroupPrefab);
+                SettingsGroup header2 = hdr2.GetComponent<SettingsGroup>();
+                header2.HeaderTitle.text = "No metadata".ToUpper();
+                header2.HeaderTitle.color = Color.yellow;
+                // header2.HeaderBackground.color = (Color)setting.Vals[1];
+                hdr2.transform.SetParent(listView.transform, false);
+                GameObject tx2 = Instantiate(LabelPrefab);
+                tx2.GetComponent<Text>().text = $"<color=yellow>This mod doesn't contain additional information</color>";
+                tx2.transform.SetParent(header2.HeaderListView.transform, false);
+            }
+            else
+            {
+                GameObject hdr2 = GameObject.Instantiate(HeaderGroupPrefab);
+                SettingsGroup header2 = hdr2.GetComponent<SettingsGroup>();
+                header2.HeaderTitle.text = "Website Links".ToUpper();
+                header2.HeaderTitle.color = Color.yellow;
+                // header2.HeaderBackground.color = (Color)setting.Vals[1];
+                hdr2.transform.SetParent(listView.transform, false);
+                if (string.IsNullOrEmpty(mod.metadata.links.nexusLink) && string.IsNullOrEmpty(mod.metadata.links.rdLink) && string.IsNullOrEmpty(mod.metadata.links.githubLink))
+                {
+                    GameObject tx2 = Instantiate(LabelPrefab);
+                    tx2.GetComponent<Text>().text = $"<color=yellow>This mod doesn't contain links</color>";
+                    tx2.transform.SetParent(header2.HeaderListView.transform, false);
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(mod.metadata.links.nexusLink))
+                    {
+                        GameObject nexusBtnP = Instantiate(ButtonPrefab);
+                        SettingsElement nexusBtn = nexusBtnP.GetComponent<SettingsElement>();
+                        nexusBtn.settingName.text = "SHOW ON <color=orange>NEXUSMODS.COM</color>";
+                        nexusBtn.iconElement.texture = nexusBtn.iconPack[1];
+                        nexusBtn.iconElement.gameObject.SetActive(true);
+                        nexusBtn.button.GetComponent<Image>().color = Color.black;
+                        nexusBtn.button.onClick.AddListener(() => OpenModLink(mod.metadata.links.nexusLink));
+                        nexusBtn.transform.SetParent(header2.HeaderListView.transform, false);
+                    }
+                    if (!string.IsNullOrEmpty(mod.metadata.links.rdLink))
+                    {
+                        GameObject rdBtnP = Instantiate(ButtonPrefab);
+                        SettingsElement rdBtn = rdBtnP.GetComponent<SettingsElement>();
+                        rdBtn.settingName.text = "SHOW ON <color=orange>RACEDEPARTMENT.COM</color>";
+                        rdBtn.iconElement.texture = rdBtn.iconPack[0];
+                        rdBtn.iconElement.gameObject.SetActive(true);
+                        rdBtn.button.GetComponent<Image>().color = Color.black;
+                        rdBtn.button.onClick.AddListener(() => OpenModLink(mod.metadata.links.rdLink));
+                        rdBtn.transform.SetParent(header2.HeaderListView.transform, false);
+                    }
+                    if (!string.IsNullOrEmpty(mod.metadata.links.githubLink))
+                    {
+                        GameObject ghBtnP = Instantiate(ButtonPrefab);
+                        SettingsElement ghBtn = ghBtnP.GetComponent<SettingsElement>();
+                        ghBtn.settingName.text = "SHOW ON <color=orange>GITHUB.COM</color>";
+                        ghBtn.iconElement.texture = ghBtn.iconPack[2];
+                        ghBtn.iconElement.gameObject.SetActive(true);
+                        ghBtn.button.GetComponent<Image>().color = Color.black;
+                        ghBtn.button.onClick.AddListener(() => OpenModLink(mod.metadata.links.githubLink));
+                        ghBtn.transform.SetParent(header2.HeaderListView.transform, false);
+                    }
+                }
+                GameObject hdr3 = GameObject.Instantiate(HeaderGroupPrefab);
+                SettingsGroup header3 = hdr3.GetComponent<SettingsGroup>();
+                header3.HeaderTitle.text = "Description".ToUpper();
+                header3.HeaderTitle.color = Color.yellow;
+                // header2.HeaderBackground.color = (Color)setting.Vals[1];
+                hdr3.transform.SetParent(listView.transform, false);
+                GameObject tx3 = Instantiate(LabelPrefab);
+                tx3.GetComponent<Text>().text = mod.metadata.description;
+                tx3.transform.SetParent(header3.HeaderListView.transform, false);
+            }
+        }
+        private void OpenModLink(string url)
+        {
+            if (ModMenu.openLinksOverlay.GetValue())
+            {
+                //try opening in steam overlay
+                try
+                {
+                    Steamworks.SteamFriends.ActivateGameOverlayToWebPage(url);
+                }
+                catch (Exception e)
+                {
+                    ModConsole.Error(e.Message);
+                    System.Console.WriteLine(e);
+                    Application.OpenURL(url);
+                    System.Console.WriteLine(url);
+                }
+            }
+            else
+            {
+                Application.OpenURL(url);
+                System.Console.WriteLine(url);
             }
         }
         public void ModSettingsList(GameObject listView, Mod mod)

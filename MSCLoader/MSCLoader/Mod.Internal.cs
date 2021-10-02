@@ -78,6 +78,8 @@ namespace MSCLoader
         internal List<Settings> modSettingsDefault = new List<Settings>();
         internal List<Keybind> Keybinds = new List<Keybind>();
         internal List<Keybind> DefaultKeybinds = new List<Keybind>();
+        internal string[] AdditionalReferences = new string[0];
+
         /// <summary>
         /// Setup selected function for your mod
         /// </summary>

@@ -16,8 +16,6 @@ namespace MSCLoader
         public override string Version => ModLoader.MSCLoader_Ver;
         public override string Author => "piotrulos";
 
-        private Keybind menuKey;
-
         internal static SettingsCheckBox dm_disabler, dm_logST, dm_operr, dm_warn, dm_pcon;
         internal static SettingsCheckBox expWarning, modPath, forceMenuVsync, openLinksOverlay, skipGameIntro, syncLoad;
 
@@ -37,7 +35,6 @@ namespace MSCLoader
         public override void ModSettings()
         {
             instance = this;
-            menuKey = Keybind.Add(this, "Open", "Open menu", KeyCode.M, KeyCode.LeftControl);
             if (ModLoader.devMode)
             {
                 Settings.AddHeader(this, "DevMode Settings", new Color32(101, 34, 18, 255), new Color32(0, 255, 255, 255));
@@ -60,6 +57,13 @@ namespace MSCLoader
             checkLaunch = Settings.AddCheckBoxGroup(this, "MSCLoader_checkLaunch", "Every launch", true, "cfmu_set");
             checkDaily = Settings.AddCheckBoxGroup(this, "MSCLoader_checkDaily", "Daily", false, "cfmu_set");
             checkWeekly = Settings.AddCheckBoxGroup(this, "MSCLoader_checkWeekly", "Weekly", false, "cfmu_set");
+
+            Settings.AddHeader(this, "MSCLoader Credits",Color.black);
+            Settings.AddText(this, "All source code contributors and used libraries are listed on Github");
+            Settings.AddText(this, "Outside Github contributions:");
+            Settings.AddText(this, "<color=aqua>Horsey4</color> - Backend for mod Early Access feature.");
+            Settings.AddText(this, "<color=aqua>BrennFuchS</color> - New default mod icon and expanded Playmaker extensions.");
+
         }
         public override void ModSettingsLoaded()
         {
