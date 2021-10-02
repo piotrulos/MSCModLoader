@@ -318,9 +318,9 @@ namespace MSCLoader
             if (Mod_FixedUpdate.Length > 0) mod_callbacks.AddComponent<A_ModFixedUpdate>().modLoader = this;
             if (!rtmm)
             {
+                string sp = Path.Combine(SettingsFolder, @"MSCLoader_Settings\lastCheck");
                 if (ModMenu.cfmu_set != 0)
                 {
-                    string sp = Path.Combine(SettingsFolder, @"MSCLoader_Settings\lastCheck");
                     if (File.Exists(sp))
                     {
                         DateTime lastCheck;
@@ -349,7 +349,9 @@ namespace MSCLoader
                 else
                 {
                     StartCoroutine(CheckForModsUpdates());
+                    File.WriteAllText(sp, DateTime.Now.ToString());
                 }
+
             }
 
             if (devMode)
@@ -652,12 +654,13 @@ namespace MSCLoader
 
                     if (newBuild > currentBuild)
                     {
+                        newVersion = result[1];
                         if (experimental)
                             info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready! [<color=magenta>Experimental</color> <color=lime>build {currentBuild}</color>] (<color=orange>New build available: <b>{newBuild}</b></color>)";
                         else
-                            info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready! (<color=orange>New version available: <b>v{result[1]}</b></color>)";
+                            info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready! (<color=orange>New version available: <b>v{newVersion}</b></color>)";
                         ModloaderUpdateMessage = true;
-                        ModUI.ShowYesNoMessage($"New ModLoader version is available{Environment.NewLine}<color=lime>{result[1]} build {newBuild}</color>{Environment.NewLine}{Environment.NewLine}Do you want to download it now?", "MSCLoader update", DownloadModloaderUpdate);
+                        ModUI.ShowYesNoMessage($"New ModLoader version is available{Environment.NewLine}<color=lime>{newVersion} build {newBuild}</color>{Environment.NewLine}{Environment.NewLine}Do you want to download it now?", "MSCLoader update", DownloadModloaderUpdate);
                     }
                     else
                     {
@@ -1195,6 +1198,31 @@ namespace MSCLoader
                 bool isMod = false;
 
                 AssemblyName[] list = asm.GetReferencedAssemblies();
+
+                string msVer = null;
+                string test2 = string.Empty;
+                List<string> addRef = new List<string>();
+                for (int i = 0; i < list.Length; i++)
+                {
+                    if (!stdRef.Contains(list[i].Name))
+                    {
+                        addRef.Add(list[i].Name);
+                    }
+                    if (list[i].Name == "MSCLoader")
+                    {
+                        string[] verparse = list[i].Version.ToString().Split('.');
+                        if (list[i].Version.ToString() == "1.0.0.0")
+                            msVer = "0.1";
+                        else
+                        {
+                            if (verparse[2] == "0")
+                                msVer = $"{verparse[0]}.{verparse[1]}";
+                            else
+                                msVer = $"{verparse[0]}.{verparse[1]}.{verparse[2]}";
+                        }
+                    }
+                }
+                
                 if (byteFile == null)
                 {
                     if (File.ReadAllText(file).Contains("RegistryKey"))
@@ -1209,28 +1237,13 @@ namespace MSCLoader
                 Type[] asmTypes = asm.GetTypes();
                 for (int j = 0; j < asmTypes.Length; j++)
                 {
-                    string msVer = null;
                     if (typeof(Mod).IsAssignableFrom(asmTypes[j]))
                     {
-                        for (int i = 0; i < list.Length; i++)
-                        {
-                            if (list[i].Name == "MSCLoader")
-                            {
-                                string[] verparse = list[i].Version.ToString().Split('.');
-                                if (list[i].Version.ToString() == "1.0.0.0")
-                                    msVer = "0.1";
-                                else
-                                {
-                                    if (verparse[2] == "0")
-                                        msVer = $"{verparse[0]}.{verparse[1]}";
-                                    else
-                                        msVer = $"{verparse[0]}.{verparse[1]}.{verparse[2]}";
-                                }
-                            }
-
-                        }
                         isMod = true;
-                        LoadMod((Mod)Activator.CreateInstance(asmTypes[j]), msVer, file);
+                        if (addRef.Count > 0)
+                            LoadMod((Mod)Activator.CreateInstance(asmTypes[j]), msVer, file, addRef.ToArray());
+                        else
+                            LoadMod((Mod)Activator.CreateInstance(asmTypes[j]), msVer, file);
                         break;
                     }
                     else
@@ -1256,7 +1269,7 @@ namespace MSCLoader
 
         }
 
-        private void LoadMod(Mod mod, string msver, string fname = null)
+        private void LoadMod(Mod mod, string msver, string fname = null, string[] additionalRef = null)
         {
             // Check if mod already exists
             if (!LoadedMods.Contains(mod))
@@ -1268,6 +1281,7 @@ namespace MSCLoader
                 }
                 mod.compiledVersion = msver;
                 mod.fileName = fname;
+                mod.AdditionalReferences = additionalRef;
                 LoadedMods.Add(mod);
                 Console.WriteLine($"Detected As: {mod.Name} (ID: {mod.ID}) v{mod.Version}");
                 try

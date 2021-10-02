@@ -4,12 +4,14 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Text.RegularExpressions;
 using System.Collections;
+using System;
+
 namespace MSCLoader
 {
     /// <summary>
     /// The console for MSCLoader.
     /// </summary>
-    internal class ModConsole : Mod
+    public class ModConsole : Mod
     {
 #pragma warning disable CS1591
 
@@ -34,7 +36,27 @@ namespace MSCLoader
 
         public override void ModSettings()
         {
-            consoleKey = Keybind.Add(this, "Open", "Open console", KeyCode.BackQuote);
+            consoleKey = Keybind.Add(this, "Open", "<color=lime>Open console key combination</color>", KeyCode.BackQuote);
+            Settings.AddHeader(this, "MSCLoader info", Color.black);
+            Settings.AddText(this, $"<color=lime>MSCLoader {ModLoader.MSCLoader_Ver} build {ModLoader.Instance.currentBuild}</color>");
+            if (ModLoader.Instance.newBuild > ModLoader.Instance.currentBuild)
+            {
+                Settings.AddText(this, $"New update available:");
+                Settings.AddText(this, $"<color=aqua>MSCLoader {ModLoader.Instance.newVersion} build {ModLoader.Instance.newBuild}</color>");
+            }
+            else
+            {
+                Settings.AddText(this, $"No new updates available");
+            }
+            string sp = System.IO.Path.Combine(ModLoader.SettingsFolder, @"MSCLoader_Settings\lastCheck");
+            if (System.IO.File.Exists(sp))
+            {
+                DateTime lastCheck;
+                string lastCheckS = System.IO.File.ReadAllText(sp);
+                DateTime.TryParse(lastCheckS, out lastCheck);
+                Settings.AddText(this, $"Last checked for mod updates: <color=aqua>{lastCheck.ToString("dd.MM.yyyy HH:mm:ss")}</color>");
+
+            }
             Settings.AddHeader(this, "Console Settings");
             Settings.AddText(this, "Basic settings for console");
             typing = Settings.AddCheckBox(this, "MSCLoader_ConsoleTyping", "Start typing when you open console", false);
@@ -59,7 +81,7 @@ namespace MSCLoader
             Texture2D cursor = ab.LoadAsset<Texture2D>("resizeCur.png");
             Texture2D cursorX = ab.LoadAsset<Texture2D>("resizeCurX.png");
             ab.Unload(false);
-            UI = Object.Instantiate(UI);
+            UI = GameObject.Instantiate(UI);
             UI.name = "MSCLoader Console";
             console = UI.AddComponent<ConsoleView>();
             console.viewContainer = UI.transform.GetChild(0).gameObject;

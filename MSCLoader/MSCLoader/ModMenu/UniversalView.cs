@@ -12,6 +12,17 @@ namespace MSCLoader
         public Text Title;
         private Mod mod;
         private bool set = false;
+
+        public void FillMetadataInfo(Mod m)
+        {
+            mod = m;
+            set = false;
+            gameObject.SetActive(true);
+            mmv.MetadataInfoList(listView, mod);
+            GoBackBtn.SetActive(true);
+            Title.text = $"{mod.Name} - Details".ToUpper();
+
+        }
         public void FillSettings(Mod m)
         {
             mod = m;

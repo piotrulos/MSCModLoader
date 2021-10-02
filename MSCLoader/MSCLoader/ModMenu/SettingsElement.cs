@@ -10,11 +10,15 @@ namespace MSCLoader
         public Toggle checkBox;
 
         public Button button;
+        public RawImage iconElement;
 
         public Slider slider;
         public Text value;
 
         public InputField textBox;
         public Text placeholder;
+
+        public Texture2D[] iconPack;
+
     }
 }
