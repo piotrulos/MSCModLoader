@@ -51,10 +51,11 @@ namespace MSCLoader
         /// The Mod this Setting belongs to (This is set when using Add whatever).
         /// </summary>
         public Mod Mod;
+
         /// <summary>
         /// Default Value for setting.
         /// </summary>
-        public object Value;
+        public object Value { get; set; }
 
         /// <summary>
         /// Action to execute for specifed setting.
