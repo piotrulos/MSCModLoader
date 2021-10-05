@@ -27,7 +27,7 @@ namespace MSCLoader
         /// <summary>
         /// The current version of the ModLoader.
         /// </summary>
-        public static readonly string MSCLoader_Ver = $"{Assembly.GetExecutingAssembly().GetName().Version.Major}.{Assembly.GetExecutingAssembly().GetName().Version.Minor}.{Assembly.GetExecutingAssembly().GetName().Version.Build}";
+        public static readonly string MSCLoader_Ver;
 
         /// <summary>
         /// Is this version of ModLoader experimental (this is NOT game experimental branch)
@@ -49,7 +49,14 @@ namespace MSCLoader
 
         internal static string GetMetadataFolder(string fn) => Path.Combine(MetadataFolder, fn);
 
-
+        //Constructor version number
+        static ModLoader()
+        {
+            if (Assembly.GetExecutingAssembly().GetName().Version.Build == 0)
+                MSCLoader_Ver = $"{Assembly.GetExecutingAssembly().GetName().Version.Major}.{Assembly.GetExecutingAssembly().GetName().Version.Minor}";
+            else
+                MSCLoader_Ver = $"{Assembly.GetExecutingAssembly().GetName().Version.Major}.{Assembly.GetExecutingAssembly().GetName().Version.Minor}.{Assembly.GetExecutingAssembly().GetName().Version.Build}";
+        }
         void Awake()
         {
             StopAskingForMscoSupport();
@@ -219,12 +226,12 @@ namespace MSCLoader
             if (!Directory.Exists(ModsFolder))
                 Directory.CreateDirectory(ModsFolder);
             if (!Directory.Exists("Updates"))
-                Directory.CreateDirectory("Updates");    
-            if (!Directory.Exists(Path.Combine("Updates","Mods")))
-                Directory.CreateDirectory(Path.Combine("Updates", "Mods"));    
-            if (!Directory.Exists(Path.Combine("Updates","References")))
-                Directory.CreateDirectory(Path.Combine("Updates", "References"));        
-            if (!Directory.Exists(Path.Combine("Updates","Core")))
+                Directory.CreateDirectory("Updates");
+            if (!Directory.Exists(Path.Combine("Updates", "Mods")))
+                Directory.CreateDirectory(Path.Combine("Updates", "Mods"));
+            if (!Directory.Exists(Path.Combine("Updates", "References")))
+                Directory.CreateDirectory(Path.Combine("Updates", "References"));
+            if (!Directory.Exists(Path.Combine("Updates", "Core")))
                 Directory.CreateDirectory(Path.Combine("Updates", "Core"));
 
             if (!Directory.Exists(ConfigFolder))
@@ -254,7 +261,7 @@ namespace MSCLoader
             else
                 ModConsole.Print($"<color=green>ModLoader <b>v{MSCLoader_Ver}</b> ready</color>");
             MainMenuInfo();
-            ModsUpdateDir = Directory.GetFiles(Path.Combine("Updates","Mods"), "*.zip");
+            ModsUpdateDir = Directory.GetFiles(Path.Combine("Updates", "Mods"), "*.zip");
             if (ModsUpdateDir.Length == 0)
             {
                 ContinueInit();
@@ -274,11 +281,21 @@ namespace MSCLoader
                     ModConsole.Print($"<color=orange>Hello <color=green><b>{"SmartSteamEmu!"}</b></color>!</color>");
                     throw new Exception("[EMULATOR] Do What You Want, Cause A Pirate Is Free... You Are A Pirate!");
                 }
+                if (ModMetadata.CalculateFileChecksum(Path.Combine("", "steam_api.dll")) != "7B857C897BC69313E4936DC3DCCE5193")
+                {
+                    ModConsole.Print($"<color=orange>Hello <color=green><b>{"Emulator!"}</b></color>!</color>");
+                    throw new Exception("[EMULATOR] Do What You Want, Cause A Pirate Is Free... You Are A Pirate!");
+                }
+                if (ModMetadata.CalculateFileChecksum(Path.Combine("", "steam_api64.dll")) != "6C23EAB28F1CD1BFD128934B08288DD8")
+                {
+                    ModConsole.Print($"<color=orange>Hello <color=green><b>{"Emulator!"}</b></color>!</color>");
+                    throw new Exception("[EMULATOR] Do What You Want, Cause A Pirate Is Free... You Are A Pirate!");
+                }
                 Steamworks.SteamAPI.Init();
                 steamID = Steamworks.SteamUser.GetSteamID().ToString();
                 ModConsole.Print($"<color=orange>Hello <color=green><b>{Steamworks.SteamFriends.GetPersonaName()}</b></color>!</color>");
                 WebClient webClient = new WebClient();
-                webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfo.operatingSystem})");
+                webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
                 webClient.DownloadStringCompleted += sAuthCheckCompleted;
                 webClient.DownloadStringAsync(new Uri($"{serverURL}/sauth.php?sid={steamID}"));
                 if (LoadedMods.Count >= 100)
@@ -356,7 +373,7 @@ namespace MSCLoader
 
             if (devMode)
                 ModConsole.Warning("You are running ModLoader in <color=red><b>DevMode</b></color>, this mode is <b>only for modders</b> and shouldn't be use in normal gameplay.");
-            System.Console.WriteLine(SystemInfo.operatingSystem); //operating system version to output_log.txt
+            System.Console.WriteLine(SystemInfoFix()); //operating system version to output_log.txt
             if (saveErrors != null)
             {
                 if (saveErrors.Count > 0 && wasSaving)
@@ -497,10 +514,14 @@ namespace MSCLoader
                 {
                     try
                     {
-                        Assembly ass = Assembly.LoadFrom(files[i]);
-                        LoadReferencesMeta(ass, Path.GetFileName(files[i]));
+                        Assembly asm = Assembly.LoadFrom(files[i]);
+                        if (asm.EntryPoint != null)
+                        {
+                            asm.EntryPoint.Invoke(null, new object[] { new string[] { MSCLoader_Ver } });
+                        }
+                        LoadReferencesMeta(asm, Path.GetFileName(files[i]));
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         ModConsole.Error($"<b>References/{Path.GetFileName(files[i])}</b> - Failed to load.");
                         References reference = new References()
@@ -526,7 +547,7 @@ namespace MSCLoader
                 AssemblyID = ass.GetName().Name,
                 FileName = fn
             };
-            if(Attribute.IsDefined(ass, typeof(AssemblyTitleAttribute)))
+            if (Attribute.IsDefined(ass, typeof(AssemblyTitleAttribute)))
                 reference.AssemblyTitle = ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(ass, typeof(AssemblyTitleAttribute))).Title;
             if (Attribute.IsDefined(ass, typeof(AssemblyCompanyAttribute)))
                 reference.AssemblyAuthor = ((AssemblyCompanyAttribute)Attribute.GetCustomAttribute(ass, typeof(AssemblyCompanyAttribute))).Company;
@@ -534,7 +555,7 @@ namespace MSCLoader
                 reference.AssemblyDescription = ((AssemblyDescriptionAttribute)Attribute.GetCustomAttribute(ass, typeof(AssemblyDescriptionAttribute))).Description;
             if (Attribute.IsDefined(ass, typeof(AssemblyFileVersionAttribute)))
                 reference.AssemblyFileVersion = ((AssemblyFileVersionAttribute)Attribute.GetCustomAttribute(ass, typeof(AssemblyFileVersionAttribute))).Version;
-             if (Attribute.IsDefined(ass, typeof(System.Runtime.InteropServices.GuidAttribute)))
+            if (Attribute.IsDefined(ass, typeof(System.Runtime.InteropServices.GuidAttribute)))
                 reference.Guid = ((System.Runtime.InteropServices.GuidAttribute)Attribute.GetCustomAttribute(ass, typeof(System.Runtime.InteropServices.GuidAttribute))).Value;
             //TODO: Reference version check
             ReferencesList.Add(reference);
@@ -551,14 +572,14 @@ namespace MSCLoader
             mainMenuInfo = ab.LoadAsset<GameObject>("MSCLoader Info.prefab");
             GameObject loadingP = ab.LoadAsset<GameObject>("LoadingMods.prefab");
             GameObject loadingMetaP = ab.LoadAsset<GameObject>("MSCLoader pbar.prefab");
-        #region Loading BC
+            #region Loading BC
             GameObject loadingP_old = ab.LoadAsset<GameObject>("LoadingMods_old.prefab"); //BC for MOP
             loading_bc = GameObject.Instantiate(loadingP_old);
             loading_bc.SetActive(false);
             loading_bc.name = "MSCLoader loading screen";
             loading_bc.transform.SetParent(ModUI.GetCanvas().transform, false);
             loading_bc.transform.GetChild(2).GetComponent<Text>().text = $"MSCLOADER <color=green>{MSCLoader_Ver}</color> (BC Mode)";
-        #endregion
+            #endregion
             loading = GameObject.Instantiate(loadingP);
             loading.SetActive(false);
             loading.name = "MSCLoader loading dialog";
@@ -600,7 +621,7 @@ namespace MSCLoader
             modUpdates = mainMenuInfo.transform.GetChild(2).gameObject.GetComponent<Text>();
             info.text = $"Mod Loader MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready! (<color=orange>Checking for updates...</color>)";
             WebClient client = new WebClient();
-            client.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfo.operatingSystem})");
+            client.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
 
             //client.Proxy = new WebProxy("127.0.0.1:8888"); //ONLY FOR TESTING
             client.DownloadStringCompleted += VersionCheckCompleted;
@@ -845,7 +866,7 @@ namespace MSCLoader
                     ModException(e, SecondPassMods[i]);
                 }
             }
-            
+
             loadingProgress.value = 100;
             loadingMod.text = "Finishing touches...";
             yield return null;
@@ -899,7 +920,7 @@ namespace MSCLoader
             }
             loadingTitle.text = "Waiting...".ToUpper();
             loadingMod.text = "Waiting for game to finish load...";
-            while (GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera") == null) 
+            while (GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera") == null)
                 yield return null;
 
             loading_bc.SetActive(true);
@@ -929,7 +950,7 @@ namespace MSCLoader
                 if (BC_ModList[i].isDisabled) continue;
                 try
                 {
-                    BC_ModList[i].OnLoad();                  
+                    BC_ModList[i].OnLoad();
                 }
                 catch (Exception e)
                 {
@@ -971,7 +992,7 @@ namespace MSCLoader
                 }
                 yield return null;
 
-            }            
+            }
             loadingProgress.value = loadingProgress.maxValue;
             loadingMod.text = "Finishing touches...";
             yield return null;
@@ -1024,14 +1045,14 @@ namespace MSCLoader
             if (!CheckSteam()) return;
             string dwl = string.Empty;
             WebClient getdwl = new WebClient();
-            getdwl.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfo.operatingSystem})");
+            getdwl.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
             try
             {
                 dwl = getdwl.DownloadString($"{earlyAccessURL}/ea_test?steam={steamID}&file={Path.GetFileNameWithoutExtension(file)}");
             }
             catch (Exception e)
             {
-                ModConsole.Error($"Failed to check early access info for mod {Path.GetFileNameWithoutExtension(file)}"); 
+                ModConsole.Error($"Failed to check early access info for mod {Path.GetFileNameWithoutExtension(file)}");
                 Console.WriteLine(e);
             }
             string[] result = dwl.Split('|');
@@ -1188,6 +1209,8 @@ namespace MSCLoader
 
         private void LoadDLL(string file, byte[] byteFile = null)
         {
+            bool mscl = false;
+            List<string> addRef = new List<string>();
             try
             {
                 Assembly asm = null;
@@ -1196,12 +1219,10 @@ namespace MSCLoader
                 else
                     asm = Assembly.Load(byteFile);
                 bool isMod = false;
-
                 AssemblyName[] list = asm.GetReferencedAssemblies();
 
                 string msVer = null;
                 string test2 = string.Empty;
-                List<string> addRef = new List<string>();
                 for (int i = 0; i < list.Length; i++)
                 {
                     if (!stdRef.Contains(list[i].Name))
@@ -1210,6 +1231,7 @@ namespace MSCLoader
                     }
                     if (list[i].Name == "MSCLoader")
                     {
+                        mscl = true;
                         string[] verparse = list[i].Version.ToString().Split('.');
                         if (list[i].Version.ToString() == "1.0.0.0")
                             msVer = "0.1";
@@ -1222,7 +1244,7 @@ namespace MSCLoader
                         }
                     }
                 }
-                
+
                 if (byteFile == null)
                 {
                     if (File.ReadAllText(file).Contains("RegistryKey"))
@@ -1259,8 +1281,27 @@ namespace MSCLoader
             }
             catch (Exception e)
             {
-                ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - doesn't look like a mod, remove this file from mods folder!{Environment.NewLine}<b>Details:</b> {e.GetFullMessage()}{Environment.NewLine}");
-                
+                if (mscl)
+                {
+                    ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - crashed during load.<b>Details:</b> {e.GetFullMessage()}{Environment.NewLine}");
+                    if (addRef.Count > 0)
+                    {
+                        if (addRef.Contains("MSCLoader.Features") && !ReferencesList.Select(x => x.AssemblyID).Contains("MSCLoader.Features"))
+                            ModUI.ShowYesNoMessage($"<color=yellow>{Path.GetFileName(file)}</color> - looks like a mod, but It crashed trying to load.{Environment.NewLine}{Environment.NewLine}Detected additional references used by this mod: {Environment.NewLine}<color=aqua>{string.Join(", ", addRef.ToArray())}</color> {Environment.NewLine}{Environment.NewLine} Looks like missing compatibility pack.{Environment.NewLine} Open download page?", "Crashed", delegate
+                             {
+                                 Application.OpenURL("https://www.nexusmods.com/mysummercar/mods/732");
+                             });
+                        else
+                            ModUI.ShowMessage($"<color=yellow>{Path.GetFileName(file)}</color> - looks like a mod, but It crashed trying to load.{Environment.NewLine} {Environment.NewLine}Detected additional references used by this mod: {Environment.NewLine}<color=aqua>{string.Join(", ", addRef.ToArray())}</color> {Environment.NewLine}{Environment.NewLine}Check mod download page for required references.", "Crashed");
+                    }
+                    else
+                        ModUI.ShowMessage($"<color=yellow>{Path.GetFileName(file)}</color> - looks like a mod, but It crashed trying to load.{Environment.NewLine}Reason: Unknown", "Crashed");
+
+                }
+                else
+                {
+                    ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - doesn't look like a mod, remove this file from mods folder!{Environment.NewLine}<b>Details:</b> {e.GetFullMessage()}{Environment.NewLine}");
+                }
                 if (devMode)
                     ModConsole.Error(e.ToString());
                 System.Console.WriteLine(e);
@@ -1469,6 +1510,31 @@ namespace MSCLoader
                 builder.Append(bytes[i].ToString("x2"));
             }
             return builder.ToString();
+        }
+        internal static string SystemInfoFix()
+        {
+            try
+            {
+                if (SystemInfo.operatingSystem.Contains("Windows"))
+                {
+                    string Sinfo = SystemInfo.operatingSystem;
+                    int build = int.Parse(Sinfo.Split('(')[1].Split(')')[0].Split('.')[2]);
+                    if (build > 9841)
+                    {
+                        string windows10fix = $"Windows 10 (10.0.{build})";
+                        if (SystemInfo.operatingSystem.Contains("64bit"))
+                            windows10fix += " 64bit";
+
+                        return windows10fix;
+                    }
+                    else return SystemInfo.operatingSystem;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            return SystemInfo.operatingSystem;
         }
     }
 

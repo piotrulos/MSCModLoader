@@ -27,6 +27,13 @@ namespace MSCLoader
         public void ModList(GameObject listView)
         {
             RemoveChildren(listView.transform);
+            if(ModLoader.Instance.actualModList.Length == 0)
+            {
+                GameObject tx2 = Instantiate(LabelPrefab);
+                tx2.GetComponent<Text>().text = $"<color=aqua>A little empty here, seems like there is no mods installed.{Environment.NewLine}If you think that you installed mods, check if you put mods in correct folder.{Environment.NewLine}Current Mod folder is: <color=yellow>{ModLoader.ModsFolder}</color></color>";
+                tx2.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
+                tx2.transform.SetParent(listView.transform, false);
+            }
             for (int i = 0; i < ModLoader.Instance.actualModList.Length; i++)
             {
                 GameObject mod = GameObject.Instantiate(ModElementPrefab);
@@ -46,6 +53,13 @@ namespace MSCLoader
         public void UpdateList(GameObject listView)
         {
             RemoveChildren(listView.transform);
+            if (ModLoader.Instance.HasUpdateModList.Count == 0)
+            {
+                GameObject tx2 = Instantiate(LabelPrefab);
+                tx2.GetComponent<Text>().text = $"<color=aqua>Everything seems to be up to date!</color>";
+                tx2.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
+                tx2.transform.SetParent(listView.transform, false);
+            }
             for (int i = 0; i < ModLoader.Instance.HasUpdateModList.Count; i++)
             {
                 GameObject mod = GameObject.Instantiate(UpdateElementPrefab);
@@ -57,6 +71,13 @@ namespace MSCLoader
         public void ReferencesList(GameObject listView)
         {
             RemoveChildren(listView.transform);
+            if (ModLoader.Instance.ReferencesList.Count == 0)
+            {
+                GameObject tx2 = Instantiate(LabelPrefab);
+                tx2.GetComponent<Text>().text = $"<color=aqua>No additional references are installed.</color>";
+                tx2.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
+                tx2.transform.SetParent(listView.transform, false);
+            }
             for (int i = 0; i < ModLoader.Instance.ReferencesList.Count; i++)
             {
                 GameObject mod = GameObject.Instantiate(ReferenceElementPrefab);
@@ -89,6 +110,7 @@ namespace MSCLoader
         public void MetadataInfoList(GameObject listView, Mod mod)
         {
             RemoveChildren(listView.transform);
+            listView.GetComponentInParent<ScrollRect>().verticalNormalizedPosition = 0;
             //Info Header
             GameObject hdr = GameObject.Instantiate(HeaderGroupPrefab);
             SettingsGroup header = hdr.GetComponent<SettingsGroup>();
@@ -137,9 +159,10 @@ namespace MSCLoader
                         GameObject nexusBtnP = Instantiate(ButtonPrefab);
                         SettingsElement nexusBtn = nexusBtnP.GetComponent<SettingsElement>();
                         nexusBtn.settingName.text = "SHOW ON <color=orange>NEXUSMODS.COM</color>";
+                        nexusBtn.settingName.alignment = TextAnchor.MiddleLeft;
                         nexusBtn.iconElement.texture = nexusBtn.iconPack[1];
                         nexusBtn.iconElement.gameObject.SetActive(true);
-                        nexusBtn.button.GetComponent<Image>().color = Color.black;
+                        nexusBtn.button.GetComponent<Image>().color = new Color32(2, 35, 60, 255);
                         nexusBtn.button.onClick.AddListener(() => OpenModLink(mod.metadata.links.nexusLink));
                         nexusBtn.transform.SetParent(header2.HeaderListView.transform, false);
                     }
@@ -148,9 +171,10 @@ namespace MSCLoader
                         GameObject rdBtnP = Instantiate(ButtonPrefab);
                         SettingsElement rdBtn = rdBtnP.GetComponent<SettingsElement>();
                         rdBtn.settingName.text = "SHOW ON <color=orange>RACEDEPARTMENT.COM</color>";
+                        rdBtn.settingName.alignment = TextAnchor.MiddleLeft; 
                         rdBtn.iconElement.texture = rdBtn.iconPack[0];
                         rdBtn.iconElement.gameObject.SetActive(true);
-                        rdBtn.button.GetComponent<Image>().color = Color.black;
+                        rdBtn.button.GetComponent<Image>().color = new Color32(2, 35, 49, 255);
                         rdBtn.button.onClick.AddListener(() => OpenModLink(mod.metadata.links.rdLink));
                         rdBtn.transform.SetParent(header2.HeaderListView.transform, false);
                     }
@@ -159,6 +183,7 @@ namespace MSCLoader
                         GameObject ghBtnP = Instantiate(ButtonPrefab);
                         SettingsElement ghBtn = ghBtnP.GetComponent<SettingsElement>();
                         ghBtn.settingName.text = "SHOW ON <color=orange>GITHUB.COM</color>";
+                        ghBtn.settingName.alignment = TextAnchor.MiddleLeft;
                         ghBtn.iconElement.texture = ghBtn.iconPack[2];
                         ghBtn.iconElement.gameObject.SetActive(true);
                         ghBtn.button.GetComponent<Image>().color = Color.black;
@@ -177,7 +202,7 @@ namespace MSCLoader
                 tx3.transform.SetParent(header3.HeaderListView.transform, false);
             }
         }
-        private void OpenModLink(string url)
+        internal static void OpenModLink(string url)
         {
             if (ModMenu.openLinksOverlay.GetValue())
             {
@@ -206,7 +231,14 @@ namespace MSCLoader
             listView.GetComponentInParent<ScrollRect>().verticalNormalizedPosition = 0;
             Transform currentTransform = null;
             //If first settings element is not header, create one.
-            if(Settings.Get(mod)[0].SettingType != SettingsType.Header)
+            if (mod.proSettings)
+            {
+                GameObject tx2 = Instantiate(LabelPrefab);
+                tx2.GetComponent<Text>().text = $"<color=aqua>Incompatible settings format! Settings below may not load correctly.</color>";
+                tx2.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
+                tx2.transform.SetParent(listView.transform, false);
+            }
+            if (Settings.Get(mod)[0].SettingType != SettingsType.Header)
             {
                 GameObject hdr = GameObject.Instantiate(HeaderGroupPrefab);
                 SettingsGroup header = hdr.GetComponent<SettingsGroup>();
@@ -222,6 +254,18 @@ namespace MSCLoader
                 else
                     SettingsList(Settings.Get(mod)[i], currentTransform);
             }
+            GameObject rbtnP = Instantiate(ButtonPrefab);
+            SettingsElement rbtn = rbtnP.GetComponent<SettingsElement>();
+            rbtn.settingName.text = "Reset all settings to default".ToUpper();
+            rbtn.settingName.color = Color.white;
+            rbtn.button.GetComponent<Image>().color = Color.black;
+            rbtn.button.onClick.AddListener(delegate
+            {
+                ModMenu.ResetSettings(mod);
+                universalView.FillSettings(mod);
+                mod.ModSettingsLoaded();
+            });
+            rbtn.transform.SetParent(listView.transform, false);
         }
         public void KeyBindsList(GameObject listView, Mod mod)
         {
@@ -255,8 +299,18 @@ namespace MSCLoader
                     keyBind.GetComponent<KeyBinding>().LoadBind(mod.Keybinds[i], mod);
                     keyBind.transform.SetParent(currentTransform, false);
                 }
-
             }
+            GameObject rbtnP = Instantiate(ButtonPrefab);
+            SettingsElement rbtn = rbtnP.GetComponent<SettingsElement>();
+            rbtn.settingName.text = "Reset all Keybinds to default".ToUpper();
+            rbtn.settingName.color = Color.white;
+            rbtn.button.GetComponent<Image>().color = Color.black;
+            rbtn.button.onClick.AddListener(delegate
+            {
+                ModMenu.ResetBinds(mod);
+                universalView.FillKeybinds(mod);
+            });
+            rbtn.transform.SetParent(listView.transform, false);
         }
         Transform SettingsHeader(Settings setting, Transform listView)
         {

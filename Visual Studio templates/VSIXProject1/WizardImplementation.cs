@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TemplateWizard;
 using System.Windows.Forms;
 using EnvDTE;
+using System.IO;
 
 namespace VSIXProject1
 {
     class WizardImplementation : IWizard
     {
         private UserInputForm inputForm;
-        private string managedPath;
+      /*  private string managedPath;
         private string authorName;
         private string modName;
-        private string modVersion;
+        private string modVersion;*/
 
         // This method is called before opening any item that
         // has the OpenInEditor attribute.
@@ -154,7 +155,7 @@ namespace VSIXProject1
         private LinkLabel linkLabel2;
         private LinkLabel linkLabel1;
         private Label label7;
-
+        private string[] saveData =null;
         private void InitializeComponent()
         {
             this.doneButton = new System.Windows.Forms.Button();
@@ -515,6 +516,7 @@ namespace VSIXProject1
             this.linkLabel3.TabIndex = 2;
             this.linkLabel3.TabStop = true;
             this.linkLabel3.Text = "Order of Execution";
+            this.linkLabel3.LinkClicked += LinkLabel3_LinkClicked;
             // 
             // linkLabel2
             // 
@@ -525,6 +527,7 @@ namespace VSIXProject1
             this.linkLabel2.TabIndex = 1;
             this.linkLabel2.TabStop = true;
             this.linkLabel2.Text = "MSCLoader documentation";
+            this.linkLabel2.LinkClicked += LinkLabel2_LinkClicked;
             // 
             // linkLabel1
             // 
@@ -535,6 +538,7 @@ namespace VSIXProject1
             this.linkLabel1.TabIndex = 0;
             this.linkLabel1.TabStop = true;
             this.linkLabel1.Text = "Template explained";
+            this.linkLabel1.LinkClicked += LinkLabel1_LinkClicked;
             // 
             // comboBox1
             // 
@@ -598,9 +602,44 @@ namespace VSIXProject1
             this.PerformLayout();
 
         }
+
+        private void LinkLabel3_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            linkLabel3.LinkVisited = true;
+
+            // Navigate to a URL.
+            System.Diagnostics.Process.Start("https://github.com/piotrulos/MSCModLoader/wiki/Order-of-execution-in-mod-class");
+        }
+
+        private void LinkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            linkLabel2.LinkVisited = true;
+
+            // Navigate to a URL.
+            System.Diagnostics.Process.Start("https://github.com/piotrulos/MSCModLoader/wiki");
+        }
+
+        private void LinkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            linkLabel1.LinkVisited = true;
+
+            // Navigate to a URL.
+            System.Diagnostics.Process.Start("https://github.com/piotrulos/MSCModLoader/wiki/How-to-use-templates");
+        }
+
         public UserInputForm()
         {
             InitializeComponent();
+            if(File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),"MSCLoader_template.txt")))
+            {
+                saveData = File.ReadAllLines(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MSCLoader_template.txt"));
+                if (Directory.Exists(saveData[0]))
+                {
+                    managedPathBox.Text = saveData[0];
+                }
+                if (saveData.Length > 1)
+                    authorNameBox.Text = saveData[1];
+            }
             comboBox1.SelectedIndex = 0;
         }
         private void button1_Click(object sender, EventArgs e)
@@ -631,6 +670,8 @@ namespace VSIXProject1
                 MessageBox.Show("Please select Managed path", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+            saveData = new string[] { managedPath, modAuthor };
+            File.WriteAllLines(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MSCLoader_template.txt"), saveData);
             this.Close();
         }
         private void browseManaged_Click(object sender, EventArgs e)
