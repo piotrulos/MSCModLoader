@@ -394,8 +394,8 @@ namespace MSCLoader
                     SettingsElement btn = btnP.GetComponent<SettingsElement>();
                     setting.NameText = btn.settingName;
                     setting.NameText.text = setting.Name.ToUpper();                    
-                    setting.NameText.color = (Color)setting.Vals[4];
-                    btn.button.GetComponent<Image>().color = (Color)setting.Vals[1];
+                    setting.NameText.color = (Color)setting.Vals[1];
+                    btn.button.GetComponent<Image>().color = (Color)setting.Vals[0];
                     btn.button.onClick.AddListener(setting.DoAction.Invoke);
                     btn.transform.SetParent(listView, false);
                     break;

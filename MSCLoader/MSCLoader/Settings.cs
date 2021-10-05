@@ -270,6 +270,59 @@ namespace MSCLoader
         }
 
         /// <summary>
+        /// Add TextBox where user can type any text
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="settingID">Your unique settings ID</param>
+        /// <param name="name">Name of text box</param>
+        /// <param name="value">Default TextBox value</param>
+        /// <param name="placeholderText">Placeholder text (like "Enter text...")</param>
+        public static SettingsTextBox AddTextBox(Mod mod, string settingID, string name, string value, string placeholderText) => AddTextBox(mod, settingID, name, value, placeholderText, InputField.ContentType.Standard);
+
+        /// <summary>
+        /// Add TextBox where user can type any text
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="settingID">Your unique settings ID</param>
+        /// <param name="name">Name of text box</param>
+        /// <param name="value">Default TextBox value</param>
+        /// <param name="placeholderText">Placeholder text (like "Enter text...")</param>
+        /// <param name="contentType">InputField content type</param>
+        public static SettingsTextBox AddTextBox(Mod mod, string settingID, string name, string value, string placeholderText, InputField.ContentType contentType)
+        {
+            Settings set = new Settings(mod, settingID, name, value, null, SettingsType.TextBox); 
+            mod.modSettingsDefault.Add(new Settings(mod, settingID, name, value, null, SettingsType.TextBox));
+
+            set.Vals = new object[3] { placeholderText, Color.white, contentType };
+            mod.modSettingsList.Add(set);
+            return new SettingsTextBox(set);
+        }
+
+        /// <summary>
+        /// Add button that can execute function.
+        /// </summary>
+        /// <param name="mod">your mod</param>
+        /// <param name="settingID">unique settings ID</param>
+        /// <param name="name">Text on the button</param>
+        /// <param name="onClick">What to do when button is clicked</param>
+        public static void AddButton(Mod mod, string settingID, string name, Action onClick) => AddButton(mod, settingID, name, onClick, new Color32(85, 38, 0, 255), Color.white);
+        /// <summary>
+        /// Add button that can execute function.
+        /// </summary>
+        /// <param name="mod">your mod</param>
+        /// <param name="settingID">unique settings ID</param>
+        /// <param name="name">Text on the button</param>
+        /// <param name="onClick">What to do when button is clicked</param>
+        /// <param name="btnColor">Button background color</param>
+        /// <param name="buttonTextColor">Button text color</param>
+        public static void AddButton(Mod mod, string settingID, string name, Action onClick, UnityEngine.Color btnColor, UnityEngine.Color buttonTextColor)
+        {
+            Settings set = new Settings(mod, settingID, name, "DoAction", onClick, SettingsType.Button);
+            set.Vals = new object[2] { btnColor, buttonTextColor };
+            mod.modSettingsList.Add(set);
+        }
+
+        /// <summary>
         /// Add checkbox to settings menu (only bool Value accepted)
         /// Can execute action when its value is changed.
         /// </summary>
@@ -376,18 +429,15 @@ namespace MSCLoader
         public static void AddButton(Mod mod, Settings setting, UnityEngine.Color normalColor, UnityEngine.Color highlightedColor, UnityEngine.Color pressedColor, UnityEngine.Color buttonTextColor, string description = null)
         {
             setting.Mod = mod;
-            setting.Vals = new object[5];
+            setting.Vals = new object[2];
             if (string.IsNullOrEmpty(description))
                 description = string.Empty;
 
             if (setting.DoAction != null || setting.DoUnityAction != null)
             {
                 setting.SettingType = SettingsType.Button;
-                setting.Vals[0] = description;
-                setting.Vals[1] = normalColor;
-                setting.Vals[2] = highlightedColor;
-                setting.Vals[3] = pressedColor;
-                setting.Vals[4] = buttonTextColor;
+                setting.Vals[0] = normalColor;
+                setting.Vals[1] = buttonTextColor;
                 mod.modSettingsList.Add(setting);
             }
             else
