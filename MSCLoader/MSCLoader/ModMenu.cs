@@ -17,7 +17,7 @@ namespace MSCLoader
         public override string Author => "piotrulos";
 
         internal static SettingsCheckBox dm_disabler, dm_logST, dm_operr, dm_warn, dm_pcon;
-        internal static SettingsCheckBox expWarning, modPath, forceMenuVsync, openLinksOverlay, skipGameIntro, syncLoad;
+        internal static SettingsCheckBox expWarning, modPath, forceMenuVsync, openLinksOverlay, skipGameIntro, syncLoad, showIcons;
 
         private static SettingsCheckBoxGroup checkLaunch, checkDaily, checkWeekly;
 
@@ -37,7 +37,7 @@ namespace MSCLoader
             instance = this;
             if (ModLoader.devMode)
             {
-                Settings.AddHeader(this, "DevMode Settings", new Color32(101, 34, 18, 255), new Color32(0, 255, 255, 255));
+                Settings.AddHeader(this, "DevMode Settings", new Color32(0, 0, 128, 255), Color.green);
                 dm_disabler = Settings.AddCheckBox(this, "MSCLoader_dm_disabler", "Disable mods throwing errors", false);
                 dm_logST = Settings.AddCheckBox(this, "MSCLoader_dm_logST", "Log-all stack trace (not recommended)", false);
                 dm_operr = Settings.AddCheckBox(this, "MSCLoader_dm_operr", "Log-all open console on error", false);
@@ -45,19 +45,21 @@ namespace MSCLoader
                 dm_pcon = Settings.AddCheckBox(this, "MSCLoader_dm_pcon", "Persistent console (sometimes may break font)", false);
             }
             Settings.AddHeader(this, "Basic Settings");
-            expWarning = Settings.AddCheckBox(this, "MSCLoader_expWarning", "Show experimental warning", true);
-            modPath = Settings.AddCheckBox(this, "MSCLoader_modPath", "Show mods folder", true, ModLoader.MainMenuPath);
-            forceMenuVsync = Settings.AddCheckBox(this, "MSCLoader_forceMenuVsync", "60FPS limit in Main Menu", true, VSyncSwitchCheckbox);
+            expWarning = Settings.AddCheckBox(this, "MSCLoader_expWarning", "Show experimental warning (experimental on steam)", true);
+            modPath = Settings.AddCheckBox(this, "MSCLoader_modPath", "Show mods folder (top left corner)", true, ModLoader.MainMenuPath);
+            forceMenuVsync = Settings.AddCheckBox(this, "MSCLoader_forceMenuVsync", "60 FPS limit in Main Menu", true, VSyncSwitchCheckbox);
             openLinksOverlay = Settings.AddCheckBox(this, "MSCLoader_openLinksOverlay", "Open URLs in steam overlay", true);
             skipGameIntro = Settings.AddCheckBox(this, "MSCLoader_skipGameIntro", "Skip game Splash Screen", false, SkipIntroSet);
+            Settings.AddText(this, "If you notice a big lag spike when opening mods tab, you can uncheck Show custom icons. This can happen if someone put unnecessary large icon.");
+            showIcons = Settings.AddCheckBox(this, "MSCLoader_showIcons", "Show custom icons on mod list", true);
+
             Settings.AddText(this, $"If for whatever reason you want to save half a second of mods loading time, enable below option.{Environment.NewLine}(Loading progress <color=yellow>cannot</color> be displayed in synchronous mode, and game may look frozen during loading)");
             syncLoad = Settings.AddCheckBox(this, "MSCLoader_syncLoad", "Load mods synchronously", false);
             Settings.AddHeader(this, "Update Settings");
             Settings.AddText(this, "How often MSCLoader should check for Mod/References updates.");
-            checkLaunch = Settings.AddCheckBoxGroup(this, "MSCLoader_checkLaunch", "Every launch", true, "cfmu_set");
-            checkDaily = Settings.AddCheckBoxGroup(this, "MSCLoader_checkDaily", "Daily", false, "cfmu_set");
+            checkLaunch = Settings.AddCheckBoxGroup(this, "MSCLoader_checkLaunch", "Every launch", false, "cfmu_set");
+            checkDaily = Settings.AddCheckBoxGroup(this, "MSCLoader_checkDaily", "Daily", true, "cfmu_set");
             checkWeekly = Settings.AddCheckBoxGroup(this, "MSCLoader_checkWeekly", "Weekly", false, "cfmu_set");
-
             Settings.AddHeader(this, "MSCLoader Credits",Color.black);
             Settings.AddText(this, "All source code contributors and used libraries are listed on Github");
             Settings.AddText(this, "Outside Github contributions:");

@@ -57,6 +57,7 @@ namespace MSCLoader
         internal bool hasUpdate = false;
         internal bool newFormat = false;
         internal bool menuCallbacks = false;
+        internal bool hideResetAllSettings = false;
         internal int modErrors = 0;
         internal string compiledVersion;
         internal string fileName;

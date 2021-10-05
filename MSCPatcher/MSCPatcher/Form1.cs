@@ -353,6 +353,12 @@ namespace MSCPatcher
                     {
                         resetConfig = true;
                     }
+                    string targetAsm = ini["UnityDoorstop"]["targetAssembly"];
+                    if (targetAsm == @"mysummercar_Data\Managed\MSCLoader.dll")
+                    {
+                        ini["UnityDoorstop"]["targetAssembly"] = @"mysummercar_Data\Managed\MSCLoader.Preloader.dll";
+                        new FileIniDataParser().WriteFile(Path.Combine(mscPath, @"doorstop_config.ini"), ini, System.Text.Encoding.ASCII);
+                    }
                 }
                 else
                 {
@@ -366,7 +372,7 @@ namespace MSCPatcher
                     {
                         tw.WriteLine(@"[UnityDoorstop]");
                         tw.WriteLine(@"enabled=true");
-                        tw.WriteLine(@"targetAssembly=mysummercar_Data\Managed\MSCLoader.dll");
+                        tw.WriteLine(@"targetAssembly=mysummercar_Data\Managed\MSCLoader.Preloader.dll");
                         tw.WriteLine(@"redirectOutputLog=true");
                         tw.WriteLine(@"ignoreDisableSwitch=true");
                         tw.WriteLine(@"[MSCLoader]");
@@ -443,7 +449,7 @@ namespace MSCPatcher
                 {
                     tw.WriteLine(@"[UnityDoorstop]");
                     tw.WriteLine(@"enabled=true");
-                    tw.WriteLine(@"targetAssembly=mysummercar_Data\Managed\MSCLoader.dll");
+                    tw.WriteLine(@"targetAssembly=mysummercar_Data\Managed\MSCLoader.Preloader.dll");
                     tw.WriteLine(@"redirectOutputLog=true");
                     tw.WriteLine(@"ignoreDisableSwitch=true");
                     tw.WriteLine(@"[MSCLoader]");

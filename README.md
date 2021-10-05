@@ -1,5 +1,4 @@
 [![](https://img.shields.io/github/release/piotrulos/MSCModLoader.svg?style=flat-square)](#) 
-[![](https://img.shields.io/badge/experimental-v1.2-yellow.svg?style=flat-square)](#) 
 [![](https://img.shields.io/github/downloads/piotrulos/MSCModLoader/total.svg?style=flat-square)](#) 
 [![](https://img.shields.io/github/license/piotrulos/MSCModLoader.svg?style=flat-square)](#) 
 

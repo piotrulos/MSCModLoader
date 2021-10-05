@@ -135,7 +135,7 @@
     <Compile Include="ModMenu\SettingsElement.cs" />
     <Compile Include="ModMenu\SettingsGroup.cs" />
     <Compile Include="ModMenu\UniversalView.cs" />
-    <Compile Include="ModSave.cs" />
+    <Compile Include="DummyCompLayer\ModSave.cs" />
     <Compile Include="ModMenu.cs" />
     <Compile Include="ModMetadata.cs" />
     <Compile Include="ModUI.cs" />

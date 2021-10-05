@@ -54,29 +54,49 @@ namespace MSCLoader
                 else
                     QuickInfo.text += $"<color=yellow>Version:</color> <color=aqua>{mod.Version}</color>{Environment.NewLine}";
                 QuickInfo.text += $"<color=yellow>Author:</color> <color=aqua>{mod.Author}</color>";
-
-                if (mod.metadata != null)
+                if (ModMenu.showIcons.GetValue())
                 {
-                    if (!string.IsNullOrEmpty(mod.metadata.description))
+                    if (mod.metadata != null)
                     {
-                        if (string.IsNullOrEmpty(mod.Description))
-                            Description.text = mod.metadata.description;
-                    }
-                    if (!string.IsNullOrEmpty(mod.metadata.icon.iconFileName))
-                    {
-                        if (File.Exists(Path.Combine(ModLoader.MetadataFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName)))
+                        if (!string.IsNullOrEmpty(mod.metadata.description))
+                        {
+                            if (string.IsNullOrEmpty(mod.Description))
+                                Description.text = mod.metadata.description;
+                        }
+                        if (!string.IsNullOrEmpty(mod.metadata.icon.iconFileName))
+                        {
+                            if (File.Exists(Path.Combine(ModLoader.MetadataFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName)))
+                            {
+                                try
+                                {
+                                    Texture2D t2d = new Texture2D(1, 1);
+                                    t2d.LoadImage(File.ReadAllBytes(Path.Combine(ModLoader.MetadataFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName)));
+                                    icon.texture = t2d;
+                                }
+                                catch (Exception e)
+                                {
+                                    ModConsole.Error(e.Message);
+                                    System.Console.WriteLine(e);
+                                }
+                            }
+                        }
+                        else
                         {
                             try
                             {
-                                Texture2D t2d = new Texture2D(1, 1);
-                                t2d.LoadImage(File.ReadAllBytes(Path.Combine(ModLoader.MetadataFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName)));
-                                icon.texture = t2d;
+                                if (mod.Icon != null)
+                                {
+                                    Texture2D t2d = new Texture2D(1, 1);
+                                    t2d.LoadImage(mod.Icon);
+                                    icon.texture = t2d;
+                                }
                             }
                             catch (Exception e)
                             {
                                 ModConsole.Error(e.Message);
                                 System.Console.WriteLine(e);
                             }
+
                         }
                     }
                     else
@@ -97,24 +117,6 @@ namespace MSCLoader
                         }
 
                     }
-                }
-                else
-                {
-                    try
-                    {
-                        if (mod.Icon != null)
-                        {
-                            Texture2D t2d = new Texture2D(1, 1);
-                            t2d.LoadImage(mod.Icon);
-                            icon.texture = t2d;
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        ModConsole.Error(e.Message);
-                        System.Console.WriteLine(e);
-                    }
-
                 }
             }
         }
@@ -204,51 +206,57 @@ namespace MSCLoader
         {
             if (mod != null)
             {
-                Title.text = $"<color=lime>{mod.Name}</color>";              
+                Title.text = $"<color=lime>{mod.Name}</color>";
                 Author.text = $"by <color=orange>{mod.Author}</color> (<color=aqua>{mod.Version}</color>)";
-
-                if (mod.metadata != null)
-                {
-                    DownloadInfoTxt.text = $"Update available ({mod.RemMetadata.version})";
-                    if (!string.IsNullOrEmpty(mod.metadata.description))
-                    {
-                        if (string.IsNullOrEmpty(mod.Description))
-                            Description.text = mod.metadata.description;
-                    }
-                    if (!string.IsNullOrEmpty(mod.metadata.icon.iconFileName))
-                    {
-                        if (File.Exists(Path.Combine(ModLoader.MetadataFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName)))
+                DownloadInfoTxt.text = $"Update available ({mod.RemMetadata.version})";
+                if (ModLoader.Instance.mod_aulist.Contains(mod.ID))
+                    DownloadUpdateBtn.onClick.AddListener(delegate {
+                        if (ModLoader.Instance.downloadInProgress)
                         {
-                            try
-                            {
-                                Texture2D t2d = new Texture2D(1, 1);
-                                t2d.LoadImage(File.ReadAllBytes(Path.Combine(ModLoader.MetadataFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName)));
-                                icon.texture = t2d;
-                            }
-                            catch (Exception e)
-                            {
-                                ModConsole.Error(e.Message);
-                                System.Console.WriteLine(e);
-                            }
+                            ModUI.ShowMessage("Another download is in progress.", "Mod Updates");
+                            return;
                         }
-                    }
-                    else
+                        else
+                            ModLoader.Instance.DownloadModUpdate(mod);
+                    });
+                else
+                    DownloadUpdateBtn.gameObject.SetActive(false);
+                if (!string.IsNullOrEmpty(mod.metadata.description))
+                {
+                    if (string.IsNullOrEmpty(mod.Description))
+                        Description.text = mod.metadata.description;
+                }
+                if (!string.IsNullOrEmpty(mod.metadata.links.nexusLink))
+                {
+                    OpenDownloadWebsiteBtn.onClick.AddListener(() => Application.OpenURL(mod.metadata.links.nexusLink));
+                }
+                else if (!string.IsNullOrEmpty(mod.metadata.links.githubLink))
+                {
+                    OpenDownloadWebsiteBtn.onClick.AddListener(() => Application.OpenURL(mod.metadata.links.githubLink));
+                }
+                else if (!string.IsNullOrEmpty(mod.metadata.links.rdLink))
+                {
+                    OpenDownloadWebsiteBtn.onClick.AddListener(() => Application.OpenURL(mod.metadata.links.rdLink));
+                }
+                else
+                {
+                    OpenDownloadWebsiteBtn.gameObject.SetActive(false);
+                }
+                if (!string.IsNullOrEmpty(mod.metadata.icon.iconFileName))
+                {
+                    if (File.Exists(Path.Combine(ModLoader.MetadataFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName)))
                     {
                         try
                         {
-                            if (mod.Icon != null)
-                            {
-                                Texture2D t2d = new Texture2D(1, 1);
-                                t2d.LoadImage(mod.Icon);
-                                icon.texture = t2d;
-                            }
+                            Texture2D t2d = new Texture2D(1, 1);
+                            t2d.LoadImage(File.ReadAllBytes(Path.Combine(ModLoader.MetadataFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName)));
+                            icon.texture = t2d;
                         }
                         catch (Exception e)
                         {
                             ModConsole.Error(e.Message);
                             System.Console.WriteLine(e);
                         }
-
                     }
                 }
                 else
@@ -269,6 +277,7 @@ namespace MSCLoader
                     }
 
                 }
+
             }
         }
         public void DisableThisMod(bool ischecked)

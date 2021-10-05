@@ -206,7 +206,7 @@ namespace MSCLoader
                     return;
                 }
             }
-            if (mod.metadata.type == 1 || mod.metadata.type == 4)
+            if (mod.metadata.type == 1 || mod.metadata.type == 4 || mod.metadata.type == 5)
             {
                 if (mod.metadata.icon.iconFileName != null && mod.metadata.icon.iconFileName != string.Empty)
                 {
@@ -215,9 +215,9 @@ namespace MSCLoader
                         if (!File.Exists(Path.Combine(ModLoader.MetadataFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName)))
                         {
                             WebClient webClient = new WebClient();
-                            webClient.Headers.Add("user-agent", string.Format("MSCLoader/{0} ({1})", ModLoader.MSCLoader_Ver, SystemInfo.operatingSystem));
+                            webClient.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
                             webClient.DownloadFileCompleted += ModIcon_DownloadCompleted;
-                            webClient.DownloadFileAsync(new Uri(string.Format("{0}/images/modicons/{1}", ModLoader.metadataURL, mod.metadata.icon.iconFileName)), Path.Combine(ModLoader.MetadataFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName));
+                            webClient.DownloadFileAsync(new Uri($"{ModLoader.metadataURL}/images/modicons/{mod.metadata.icon.iconFileName}"), Path.Combine(ModLoader.MetadataFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName));
                         }
                     }
                 }

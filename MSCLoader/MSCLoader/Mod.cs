@@ -64,13 +64,12 @@
         /// Called once when mod has been disabled
         /// </summary>
         public virtual void OnModDisabled() { }
-  
+
         /// <summary>
         /// 
         /// </summary>
-        public Mod()
-        {
-            modSettings = new ModSettings(this);
-        }
+#pragma warning disable CS0618 // Type or member is obsolete
+        public Mod() => modSettings = new ModSettings(this);
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 }

@@ -75,7 +75,6 @@ namespace MSCLoader
 
         internal Text NameText;
         internal Text ValueText;
-        //TODO: setactive();  
         internal GameObject button, checkbox, label, slider, textbox;
 
         void UpdateName()
@@ -176,9 +175,18 @@ namespace MSCLoader
         /// <summary>
         /// Hides "reset all settings to default" button.
         /// </summary>
-        public static void HideResetAllButton(Mod mod) => mod.modSettingsDefault.Add(new Settings("MSCL_HideResetAllButton", null, null) { Mod = mod });
+        public static void HideResetAllButton(Mod mod) => mod.hideResetAllSettings = true;
 
-
+        /// <summary>
+        /// Add checkbox to settings menu
+        /// Can execute action when its value is changed.
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="settingID">Unique settings ID for your mod</param>
+        /// <param name="name">Name of the setting</param>
+        /// <param name="value">Default Value for this setting</param>
+        /// <param name="onValueChanged">Function to execute when checkbox value change</param>
+        /// <returns>SettingsCheckBox</returns>
         public static SettingsCheckBox AddCheckBox(Mod mod, string settingID, string name, bool value = false, Action onValueChanged = null)
         {
             Settings set = new Settings(mod, settingID, name, value, onValueChanged, SettingsType.CheckBox);
@@ -186,6 +194,17 @@ namespace MSCLoader
             mod.modSettingsDefault.Add(new Settings(mod, settingID, name, value, onValueChanged, SettingsType.CheckBox));
             return new SettingsCheckBox(set);
         }
+        /// <summary>
+        /// Add checkbox group (radio buttons) to settings menu
+        /// Can execute action when its value is changed.
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="settingID">Unique settings ID for your mod</param>
+        /// <param name="name">Name of the setting</param>
+        /// <param name="value">Default Value for this setting</param>
+        /// <param name="group">Group name (all checkboxes should have same group)</param>
+        /// <param name="onValueChanged">Function to execute when checkbox value change</param>
+        /// <returns>SettingsCheckBoxGroup</returns>
         public static SettingsCheckBoxGroup AddCheckBoxGroup(Mod mod, string settingID, string name, bool value = false, string group = null, Action onValueChanged = null)
         {
             Settings set = new Settings(mod, settingID, name, value, onValueChanged, SettingsType.CheckBoxGroup);
@@ -195,6 +214,18 @@ namespace MSCLoader
             return new SettingsCheckBoxGroup(set);
         }
 
+        /// <summary>
+        /// Add Integer Slider to settings menu
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="settingID">Unique settings ID for your mod</param>
+        /// <param name="name">Name of the setting</param>
+        /// <param name="minValue">minimum int value</param>
+        /// <param name="maxValue">maximum int value</param>
+        /// <param name="value">Default Value for this setting</param>
+        /// <param name="onValueChanged">Function to execute when slider value change</param>
+        /// <param name="textValues">Optional text values array (array index = slider value)</param>
+        /// <returns>SettingsSliderInt</returns>
         public static SettingsSliderInt AddSlider(Mod mod, string settingID, string name, int minValue, int maxValue, int value = 0, Action onValueChanged = null, string[] textValues = null)
         {
             Settings set = new Settings(mod, settingID, name, value, onValueChanged, SettingsType.Slider);
@@ -211,6 +242,19 @@ namespace MSCLoader
             return new SettingsSliderInt(set);
 
         }
+
+        /// <summary>
+        /// Add Slider to settings menu
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="settingID">Unique settings ID for your mod</param>
+        /// <param name="name">Name of the setting</param>
+        /// <param name="minValue">minimum float value</param>
+        /// <param name="maxValue">maximum float value</param>
+        /// <param name="value">Default Value for this setting</param>
+        /// <param name="onValueChanged">Function to execute when slider value chang</param>
+        /// <param name="decimalPoints">Round value to number of decimal points</param>
+        /// <returns></returns>
         public static SettingsSlider AddSlider(Mod mod, string settingID, string name, float minValue, float maxValue, float value = 0f, Action onValueChanged = null, int decimalPoints = 2)
         {
             Settings set = new Settings(mod, settingID, name, value, onValueChanged, SettingsType.Slider);
@@ -500,7 +544,7 @@ namespace MSCLoader
         /// </summary>
         /// <param name="mod">Your mod instance</param>
         /// <param name="HeaderTitle">Title of your header</param>
-        public static void AddHeader(Mod mod, string HeaderTitle) => AddHeader(mod, HeaderTitle, new UnityEngine.Color32(101, 34, 18, 255), new Color32(236, 229, 2, 255));
+        public static void AddHeader(Mod mod, string HeaderTitle) => AddHeader(mod, HeaderTitle, new UnityEngine.Color32(95, 34, 18, 255), new Color32(236, 229, 2, 255));
 
         /// <summary>
         /// Add Header, blue title bar that can be used to separate settings.
@@ -563,11 +607,20 @@ namespace MSCLoader
             mod.modSettingsList.Add(setting);
         }
     }
-
+    /// <summary>
+    /// Settings checkbox
+    /// </summary>
     public class SettingsCheckBox
     {
+        /// <summary>
+        /// Settings Instance (used for custom reset button)
+        /// </summary>
         public Settings Instance;
 
+        /// <summary>
+        /// Get checkbox value
+        /// </summary>
+        /// <returns>true/false</returns>
         public bool GetValue()
         {
             try
@@ -580,19 +633,36 @@ namespace MSCLoader
                 return false;
             }
         }
+
+        /// <summary>
+        /// Set checkbox value
+        /// </summary>
+        /// <param name="value">true/false</param>
         public void SetValue(bool value)
         {
             Instance.Value = value;
         }
+
         internal SettingsCheckBox(Settings setting)
         {
             Instance = setting;
         }
     }
+
+    /// <summary>
+    /// CheckBox group (aka radio button)
+    /// </summary>
     public class SettingsCheckBoxGroup
     {
-       public Settings Instance;
+        /// <summary>
+        /// Settings Instance (used for custom reset button)
+        /// </summary>
+        public Settings Instance;
 
+        /// <summary>
+        /// Get checkbox value
+        /// </summary>
+        /// <returns>true/false</returns>
         public bool GetValue()
         {
             try
@@ -605,6 +675,11 @@ namespace MSCLoader
                 return false;
             }
         }
+
+        /// <summary>
+        /// Set checkbox value
+        /// </summary>
+        /// <param name="value">true/false</param>
         public void SetValue(bool value)
         {
             Instance.Value = value;
@@ -614,10 +689,21 @@ namespace MSCLoader
             Instance = setting;
         }
     }
+
+    /// <summary>
+    /// Integer version of Settings Slider
+    /// </summary>
     public class SettingsSliderInt
     {
+        /// <summary>
+        /// Settings Instance (used for custom reset button)
+        /// </summary>
         public Settings Instance;
 
+        /// <summary>
+        /// Get slider value
+        /// </summary>
+        /// <returns>slider value in int</returns>
         public int GetValue()
         {
             try
@@ -636,10 +722,20 @@ namespace MSCLoader
         }
     }
 
+    /// <summary>
+    /// Settings Slider
+    /// </summary>
     public class SettingsSlider
     {
+        /// <summary>
+        /// Settings Instance (used for custom reset button)
+        /// </summary>
         public Settings Instance;
 
+        /// <summary>
+        /// Get slider value
+        /// </summary>
+        /// <returns>slider value in float</returns>
         public float GetValue()
         {
             try
@@ -652,25 +748,41 @@ namespace MSCLoader
                 return 0;
             }
         }
+
         internal SettingsSlider(Settings s)
         {
             Instance = s;
         }
     }
 
+    /// <summary>
+    /// Settings TextBox
+    /// </summary>
     public class SettingsTextBox
     {
+        /// <summary>
+        /// Settings Instance (used for custom reset button)
+        /// </summary>
         public Settings Instance;
 
+        /// <summary>
+        /// Get TextBox value
+        /// </summary>
+        /// <returns>TextBox string value</returns>
         public string GetValue()
         {
             return Instance.GetValue().ToString();
         }
 
+        /// <summary>
+        /// Set value for textbox
+        /// </summary>
+        /// <param name="value">value</param>
         public void SetValue(string value)
         {
             Instance.Value = value;
         }
+
         internal SettingsTextBox(Settings s)
         {
             Instance = s;

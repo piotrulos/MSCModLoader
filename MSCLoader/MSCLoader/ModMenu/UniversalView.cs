@@ -28,7 +28,15 @@ namespace MSCLoader
             mod = m;
             set = true;
             gameObject.SetActive(true);
-            mmv.ModSettingsList(listView, mod);
+            try
+            {
+                mmv.ModSettingsList(listView, mod);
+            }
+            catch (System.Exception e)
+            {
+                ModConsole.Error(e.Message);
+                System.Console.WriteLine(e);
+            }
             GoBackBtn.SetActive(true);
             Title.text = $"{mod.Name} - Settings".ToUpper();
         }
