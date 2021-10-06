@@ -109,7 +109,14 @@ namespace MSCLoader
                 return true;
             return false;
         }
-
+        /// <summary>
+        /// [compatibility only]
+        /// </summary>
+        /// <param name="mod">Your mod Class.</param>
+        /// <param name="create">DOES NOTHING</param>
+        /// <returns></returns>
+        [Obsolete("This overload is compatibility only")]
+        public static string GetModSettingsFolder(Mod mod, bool create = true) => GetModSettingsFolder(mod);
         /// <summary>
         /// Mod settings folder, use this if you want save something. 
         /// </summary>

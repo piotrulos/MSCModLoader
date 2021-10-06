@@ -57,9 +57,9 @@ namespace MSCLoader
             syncLoad = Settings.AddCheckBox(this, "MSCLoader_syncLoad", "Load mods synchronously", false);
             Settings.AddHeader(this, "Update Settings");
             Settings.AddText(this, "How often MSCLoader should check for Mod/References updates.");
-            checkLaunch = Settings.AddCheckBoxGroup(this, "MSCLoader_checkLaunch", "Every launch", false, "cfmu_set");
-            checkDaily = Settings.AddCheckBoxGroup(this, "MSCLoader_checkDaily", "Daily", true, "cfmu_set");
-            checkWeekly = Settings.AddCheckBoxGroup(this, "MSCLoader_checkWeekly", "Weekly", false, "cfmu_set");
+            checkLaunch = Settings.AddCheckBoxGroup(this, "MSCLoader_checkOnLaunch", "Every launch", true, "cfmu_set");
+            checkDaily = Settings.AddCheckBoxGroup(this, "MSCLoader_checkEveryDay", "Daily", false, "cfmu_set");
+            checkWeekly = Settings.AddCheckBoxGroup(this, "MSCLoader_checkEveryWeek", "Weekly", false, "cfmu_set");
             Settings.AddHeader(this, "MSCLoader Credits",Color.black);
             Settings.AddText(this, "All source code contributors and used libraries are listed on Github");
             Settings.AddText(this, "Outside Github contributions:");

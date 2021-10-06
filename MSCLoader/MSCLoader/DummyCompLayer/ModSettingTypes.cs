@@ -59,6 +59,9 @@ namespace MSCLoader
         public bool GetKey() => keyb.GetKeybind();
         public bool GetKeyDown() => keyb.GetKeybindDown();
         public bool GetKeyUp() => keyb.GetKeybindUp();
+        public UnityEvent OnKeyDown = new UnityEvent();
+        public UnityEvent OnKey = new UnityEvent();
+        public UnityEvent OnKeyUp = new UnityEvent();
         public SettingKeybind(Keybind key)
         {
             keyb = key;

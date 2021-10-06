@@ -146,12 +146,16 @@ namespace MSCLoader
                                             mod[i].metadata = mod[i].RemMetadata;
                                         }
                                     }
-                                    if (mod[i].RemMetadata.type == 4 || mod[i].RemMetadata.type == 5)
+                                    if (mod[i].RemMetadata.type == 4 || mod[i].RemMetadata.type == 5 || mod[i].RemMetadata.type == 6)
                                     {
                                         mod_aulist.Add(mod[i].ID);
                                     }
                                     break;
                                 case -1:
+                                    if (mod[i].RemMetadata.type == 6)
+                                    {
+                                        mod_aulist.Add(mod[i].ID);
+                                    }
                                     if (mod[i].RemMetadata.sid_sign != SidChecksumCalculator(steamID + mod[i].ID) && mod[i].RemMetadata.type == 3)
                                         File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod[i].ID)), cfmuResult);
                                     if (!File.Exists(GetMetadataFolder(string.Format("{0}.json", mod[i].ID))))
