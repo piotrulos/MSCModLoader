@@ -206,7 +206,7 @@ namespace MSCLoader
                     return;
                 }
             }
-            if (mod.metadata.type == 1 || mod.metadata.type == 4 || mod.metadata.type == 5)
+            if (mod.metadata.type == 1 || mod.metadata.type == 4 || mod.metadata.type == 5 || mod.metadata.type == 6)
             {
                 if (mod.metadata.icon.iconFileName != null && mod.metadata.icon.iconFileName != string.Empty)
                 {
