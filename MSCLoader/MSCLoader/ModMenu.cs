@@ -25,7 +25,7 @@ namespace MSCLoader
         public GameObject UI;
         internal static byte cfmu_set = 0;
 
-        static ModMenu instance;
+        internal static ModMenu instance;
 
         public override void ModSetup()
         {
@@ -126,8 +126,11 @@ namespace MSCLoader
         public void CreateSettingsUI()
         {
             AssetBundle ab = LoadAssets.LoadBundle(this, "settingsui.unity3d");
-            UI = GameObject.Instantiate(ab.LoadAsset<GameObject>("Mod Menu.prefab"));
+            GameObject UIp = ab.LoadAsset<GameObject>("Mod Menu.prefab");
+            UI = GameObject.Instantiate(UIp);
+            UI.name = "MSCLoader Mod Menu";
             UI.transform.SetParent(ModUI.GetCanvas().transform, false);
+            GameObject.Destroy(UIp);
             ab.Unload(false);
         }
 

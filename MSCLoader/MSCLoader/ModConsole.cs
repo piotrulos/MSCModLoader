@@ -57,6 +57,11 @@ namespace MSCLoader
                 Settings.AddText(this, $"Last checked for mod updates: <color=aqua>{lastCheck.ToString("dd.MM.yyyy HH:mm:ss")}</color>");
 
             }
+            Settings.AddButton(this, "checkForUpd", "Check For Mods Updates", delegate
+            {
+                if (!ModLoader.Instance.checkForUpdatesProgress)
+                    ModLoader.Instance.CheckForModsUpd(true);
+            }, Color.black, Color.white);
             Settings.AddHeader(this, "Console Settings");
             Settings.AddText(this, "Basic settings for console");
             typing = Settings.AddCheckBox(this, "MSCLoader_ConsoleTyping", "Start typing when you open console", false);

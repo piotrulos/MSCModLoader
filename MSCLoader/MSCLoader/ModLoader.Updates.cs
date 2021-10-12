@@ -53,7 +53,7 @@ namespace MSCLoader
         internal Slider updateProgress;
         internal Text updateTitle;
         internal Text updateStatus;
-        bool checkForUpdatesProgress = false;
+        internal bool checkForUpdatesProgress = false;
         IEnumerator CheckForModsUpdates()
         {
             checkForUpdatesProgress = true;
@@ -195,6 +195,7 @@ namespace MSCLoader
                 updateStatus.text = string.Format("Done!");
             if (cfmuErrored)
                 updateStatus.text = string.Format("<color=red>Connection error!</color>");
+            ModMenu.instance.UI.GetComponent<ModMenuView>().RefreshTabs();
             checkForUpdatesProgress = false;
             yield return new WaitForSeconds(3f);
             if (!dnsaf)
