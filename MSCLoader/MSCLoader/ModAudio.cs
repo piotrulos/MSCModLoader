@@ -7,7 +7,7 @@ using UnityEngine;
 namespace MSCLoader
 {
     /// <summary>
-    /// Audio library (play local *.mp3, *.ogg, *.wav, *.aiff)
+    /// Audio library (play local *.mp3, *.ogg, *.wav, *.aiff, *.flac)
     /// </summary>
     public class ModAudio : MonoBehaviour
     {

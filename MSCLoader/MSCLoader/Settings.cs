@@ -106,8 +106,6 @@ namespace MSCLoader
         /// <param name="id">Unique settings ID for your mod</param>
         /// <param name="name">Name of the setting</param>
         /// <param name="value">Default Value for this setting</param>
-        /// <example><code source="SettingsExamples.cs" region="Constructor1" lang="C#" 
-        /// title="Settings constructor" /></example>
         public Settings(string id, string name, object value)
         {
             ID = id;
@@ -122,8 +120,6 @@ namespace MSCLoader
         /// <param name="id">Unique settings ID for your mod</param>
         /// <param name="name">Name of the setting</param>
         /// <param name="doAction">Function to execute for this setting</param>
-        /// <example><code source="SettingsExamples.cs" region="Constructor2" lang="C#" 
-        /// title="Settings constructor" /></example>
         public Settings(string id, string name, Action doAction)
         {
             ID = id;
@@ -146,8 +142,6 @@ namespace MSCLoader
         /// <param name="name">Name of the setting</param>
         /// <param name="value">Default Value for this setting</param>
         /// <param name="doAction">Function to execute for this setting</param>
-        /// <example><code source="SettingsExamples.cs" region="Constructor3" lang="C#" 
-        /// title="Settings constructor" /></example>
         public Settings(string id, string name, object value, Action doAction)
         {
             ID = id;
@@ -328,8 +322,6 @@ namespace MSCLoader
         /// </summary>
         /// <param name="mod">Your mod instance</param>
         /// <param name="setting">Your settings variable</param>
-        /// <example><code source="SettingsExamples.cs" region="AddCheckBox" lang="C#" 
-        /// title="Add checkbox" /></example>
         public static void AddCheckBox(Mod mod, Settings setting)
         {
             setting.Mod = mod;
@@ -352,8 +344,6 @@ namespace MSCLoader
         /// <param name="mod">Your mod instance</param>
         /// <param name="setting">Your settings variable</param>
         /// <param name="group">Unique group name, same for all checkboxes that will be grouped</param>
-        /// <example><code source="SettingsExamples.cs" region="AddCheckBoxGroup" lang="C#" 
-        /// title="Add grouped checkboxes" /></example>
         public static void AddCheckBox(Mod mod, Settings setting, string group)
         {
             setting.Mod = mod;
@@ -393,15 +383,15 @@ namespace MSCLoader
                 ModConsole.Error($"[<b>{mod.ID}</b>] AddResetButton: provide at least one setting to reset.");
             }
         }
+       
         /// <summary>
         /// Add button that can execute function.
         /// </summary>
         /// <param name="mod">Your mod instance</param>
         /// <param name="setting">Your settings variable</param>
         /// <param name="description">Short optional description for this button</param>
-        /// <example><code source="SettingsExamples.cs" region="AddButton" lang="C#" 
-        /// title="Add button" /></example>
         public static void AddButton(Mod mod, Settings setting, string description = null) => AddButton(mod, setting, new UnityEngine.Color32(0, 113, 166, 255), new UnityEngine.Color32(0, 153, 166, 255), new UnityEngine.Color32(0, 183, 166, 255), description);
+  
         /// <summary>
         /// Add button that can execute function.
         /// </summary>
@@ -411,9 +401,8 @@ namespace MSCLoader
         /// <param name="highlightedColor">Button color when highlighted</param>
         /// <param name="pressedColor">Button color when pressed</param>
         /// <param name="description">Short optional description for this button</param>
-        /// <example><code source="SettingsExamples.cs" region="AddButton" lang="C#" 
-        /// title="Add button" /></example>
         public static void AddButton(Mod mod, Settings setting, UnityEngine.Color normalColor, UnityEngine.Color highlightedColor, UnityEngine.Color pressedColor, string description = null) => AddButton(mod, setting, normalColor, highlightedColor, pressedColor, UnityEngine.Color.white, description);
+
         /// <summary>
         /// Add button that can execute function.
         /// </summary>
@@ -424,8 +413,6 @@ namespace MSCLoader
         /// <param name="pressedColor">Button color when pressed</param>
         /// <param name="buttonTextColor">Text color on Button</param>
         /// <param name="description">Short optional description for this button</param>
-        /// <example><code source="SettingsExamples.cs" region="AddButton" lang="C#" 
-        /// title="Add button" /></example>
         public static void AddButton(Mod mod, Settings setting, UnityEngine.Color normalColor, UnityEngine.Color highlightedColor, UnityEngine.Color pressedColor, UnityEngine.Color buttonTextColor, string description = null)
         {
             setting.Mod = mod;
@@ -453,8 +440,6 @@ namespace MSCLoader
         /// <param name="setting">Your settings variable</param>
         /// <param name="maxValue">Max value of slider</param>
         /// <param name="minValue">Min value of slider</param>
-        /// <example><code source="SettingsExamples.cs" region="AddSlider" lang="C#" 
-        /// title="Add Slider" /></example>
         public static void AddSlider(Mod mod, Settings setting, int minValue, int maxValue) => AddSlider(mod, setting, minValue, maxValue, null);
       
         /// <summary>
@@ -465,8 +450,6 @@ namespace MSCLoader
         /// <param name="maxValue">Max value of slider</param>
         /// <param name="minValue">Min value of slider</param>
         /// <param name="textValues">Array of text values (array index equals to slider value)</param>
-        /// <example><code source="SettingsExamples.cs" region="AddSlider" lang="C#" 
-        /// title="Add Slider" /></example>
         public static void AddSlider(Mod mod, Settings setting, int minValue, int maxValue, string[] textValues)
         {
             setting.Mod = mod;
@@ -508,8 +491,6 @@ namespace MSCLoader
         /// <param name="setting">Your settings variable</param>
         /// <param name="maxValue">Max value of slider</param>
         /// <param name="minValue">Min value of slider</param>
-        /// <example><code source="SettingsExamples.cs" region="AddSlider" lang="C#" 
-        /// title="Add Slider" /></example>
         public static void AddSlider(Mod mod, Settings setting, float minValue, float maxValue) => AddSlider(mod, setting, minValue, maxValue, 2);
 
 
@@ -521,8 +502,6 @@ namespace MSCLoader
         /// <param name="maxValue">Max value of slider</param>
         /// <param name="minValue">Min value of slider</param>
         /// <param name="decimalPoints">Round value to set number of decimal points (default = 2)</param>
-        /// <example><code source="SettingsExamples.cs" region="AddSlider" lang="C#" 
-        /// title="Add Slider" /></example>
         public static void AddSlider(Mod mod, Settings setting, float minValue, float maxValue, int decimalPoints)
         {
             setting.Mod = mod;
@@ -636,12 +615,11 @@ namespace MSCLoader
             };
             mod.modSettingsList.Add(setting);
         }
+
         /// <summary>
         /// Get value of setting.
         /// </summary>
-        /// <returns><see cref="Value"/> of setting</returns>
-        /// <example><code source="SettingsExamples.cs" region="GetValue" lang="C#" 
-        /// title="Get Value" /></example>
+        /// <returns>Raw value of setting</returns>
         public object GetValue() => Value; //Return whatever is there
 
         //Unused shit for pro compatibility

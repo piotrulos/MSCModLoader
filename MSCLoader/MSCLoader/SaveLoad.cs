@@ -71,8 +71,6 @@ namespace MSCLoader
         /// <param name="mod">Mod Instance</param>
         /// <param name="saveDataClass">Your class</param>
         /// <param name="fileName">Name of the save file</param>
-        /// <example><code source="SaveExamples.cs" region="Serializer" lang="C#" 
-        /// title="Example of save class" /></example>
         public static void SerializeSaveFile<T>(Mod mod, T saveDataClass, string fileName)
         {
             var config = new JsonSerializerSettings();
@@ -90,8 +88,6 @@ namespace MSCLoader
         /// <param name="mod">Mod Instance</param>
         /// <param name="fileName">Name of the save file</param>
         /// <returns>Deserialized class</returns>
-        /// <example><code source="SaveExamples.cs" region="Deserializer" lang="C#" 
-        /// title="Example of loading class" /></example>
         public static T DeserializeSaveFile<T>(Mod mod, string fileName) where T : new()
         {
             string path = Path.Combine(ModLoader.GetModSettingsFolder(mod), fileName);

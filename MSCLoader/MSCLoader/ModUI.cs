@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace MSCLoader
 {
     /// <summary>
-    /// UI stuff
+    /// UI elements like creating Message Boxes
     /// </summary>
     public class ModUI
     {

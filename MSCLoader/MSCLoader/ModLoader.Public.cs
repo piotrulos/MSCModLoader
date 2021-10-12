@@ -122,11 +122,6 @@ namespace MSCLoader
         /// </summary>
         /// <returns>Path to your mod settings folder</returns>
         /// <param name="mod">Your mod Class.</param>
-        /// <example>Example Code in Mod subclass.
-        /// <code source="Examples.cs" region="GetModConfigFolder" lang="C#" />
-        /// Example from other than Mod subclass.
-        /// <code source="Examples.cs" region="GetModConfigFolder2" lang="C#" />
-        /// </example>
         public static string GetModSettingsFolder(Mod mod) => Path.Combine(SettingsFolder, mod.ID);
 
         /// <summary>
@@ -134,11 +129,6 @@ namespace MSCLoader
         /// </summary>
         /// <returns>Path to your mod config folder</returns>
         /// <param name="mod">Your mod Class.</param>
-        /// <example>Example Code in Mod subclass.
-        /// <code source="Examples.cs" region="GetModConfigFolder" lang="C#" />
-        /// Example from other than Mod subclass.
-        /// <code source="Examples.cs" region="GetModConfigFolder2" lang="C#" />
-        /// </example>
         [Obsolete("Rename to GetModSettingsFolder(), config is old unused name", true)]
         public static string GetModConfigFolder(Mod mod)
         {
@@ -150,11 +140,6 @@ namespace MSCLoader
         /// </summary>
         /// <returns>Path to your mod assets folder</returns>
         /// <param name="mod">Your mod Class.</param>
-        /// <example>Example Code in Mod subclass.
-        /// <code source="Examples.cs" region="GetModAssetsFolder" lang="C#" />
-        /// Example from other than Mod subclass.
-        /// <code source="Examples.cs" region="GetModAssetsFolder2" lang="C#" />
-        /// </example> 
         public static string GetModAssetsFolder(Mod mod)
         {
             if (!Directory.Exists(Path.Combine(AssetsFolder, mod.ID))) Directory.CreateDirectory(Path.Combine(AssetsFolder, mod.ID));          

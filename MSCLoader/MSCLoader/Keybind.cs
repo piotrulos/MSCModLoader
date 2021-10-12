@@ -44,8 +44,6 @@ namespace MSCLoader
         /// </summary>
         /// <param name="mod">The instance of your mod.</param>
         /// <param name="key">The Keybind to add.</param>
-        /// <example><code source="Examples.cs" region="KeyBindAdd" lang="C#" 
-        /// title="Keybind Add" /></example>
         public static void Add(Mod mod, Keybind key)
         {
             key.Mod = mod;
@@ -133,8 +131,6 @@ namespace MSCLoader
         /// <param name="id">The ID of the Keybind.</param>
         /// <param name="name">The name of the Keybind.</param>
         /// <param name="key">The KeyCode the user will press.</param>
-        /// <example><code source="Examples.cs" region="KeyBind1" lang="C#" 
-        /// title="Keybind without modifier" /></example>
         public Keybind(string id, string name, KeyCode key)
 		{
 			ID = id;
@@ -150,8 +146,6 @@ namespace MSCLoader
         /// <param name="name">The name of the Keybind that will be displayed.</param>
         /// <param name="key">The KeyCode the user will press.</param>
         /// <param name="modifier">The modifier KeyCode the user will have to press.</param>
-        /// <example><code source="Examples.cs" region="KeyBind2" lang="C#" 
-        /// title="Keybind and modifier" /></example>
         public Keybind(string id, string name, KeyCode key, KeyCode modifier)
 		{
 			ID = id;
@@ -164,8 +158,6 @@ namespace MSCLoader
         /// Check if keybind is being hold down. (Same behaviour as GetKey)
         /// </summary>
         /// <returns>true, if the keybind is being hold down.</returns>
-        /// <example><code source="Examples.cs" region="GetKeybind" lang="C#" 
-        /// title="Keybind and modifier" /></example>
         public bool GetKeybind()
         {
             if (Modifier != KeyCode.None)
@@ -180,8 +172,6 @@ namespace MSCLoader
         /// Check if the keybind was just pressed once. (Same behaviour as GetKeyDown)
         /// </summary>
         /// <returns>true, Check if the keybind was just pressed.</returns>
-        /// <example><code source="Examples.cs" region="GetKeybindDown" lang="C#" 
-        /// title="Keybind and modifier" /></example>
         public bool GetKeybindDown()
         {
             if (Modifier != KeyCode.None)
@@ -196,8 +186,6 @@ namespace MSCLoader
         /// Check if the keybind was just released. (Same behaviour as GetKeyUp)
         /// </summary>
         /// <returns>true, Check if the keybind was just released.</returns>
-        /// <example><code source="Examples.cs" region="GetKeybindUp" lang="C#" 
-        /// title="Keybind and modifier" /></example>
         public bool GetKeybindUp()
         {
             if (Modifier != KeyCode.None)
@@ -212,8 +200,6 @@ namespace MSCLoader
         /// [DEPRECATED] Checks if the Keybind is being held down.
         /// </summary>
         /// <returns>true, if the Keybind is being held down.</returns>
-        /// <example><code source="Examples.cs" region="KeyBindPress" lang="C#" 
-        /// title="Keybind and modifier" /></example>
         [Obsolete("IsPressed() is deprecated, just rename it to GetKeybind()", true)]
         public bool IsPressed()
 		{
@@ -224,8 +210,6 @@ namespace MSCLoader
         /// [DEPRECATED] Checks if the Keybind was just pressed.
         /// </summary>
         /// <returns>true, if the Keybind is being pressed.</returns>
-        /// <example><code source="Examples.cs" region="KeyBindDown" lang="C#" 
-        /// title="Keybind and modifier" /></example>
         [Obsolete("IsDown() is deprecated, just rename it to GetKeybindDown()", true)]
         public bool IsDown()
 		{

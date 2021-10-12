@@ -5,9 +5,6 @@ namespace MSCLoader
 {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
-    /// <summary>
-    /// Compatibility layer only
-    /// </summary>
     [System.Obsolete("Same exact shit as LoadAssets")]
     public static class ModAssets
     {

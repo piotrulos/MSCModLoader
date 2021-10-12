@@ -3,8 +3,6 @@
     /// <summary>
     /// The base mod class, all mods should have this class.
     /// </summary>
-    /// <example><code source="Examples.cs" region="Mod" lang="C#" 
-    /// title="Example Mod Class" /></example>
     public abstract partial class Mod
     {
         /// <summary>
