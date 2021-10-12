@@ -175,7 +175,7 @@ namespace MSCLoader
         }
 
         // TGALoader by https://gist.github.com/mikezila/10557162
-        static Texture2D LoadTGA(string fileName)
+        internal static Texture2D LoadTGA(string fileName)
         {
             using (var imageFile = File.OpenRead(fileName))
             {
@@ -183,37 +183,41 @@ namespace MSCLoader
             }
         }
 
-        //DDS loader by https://gist.github.com/tomazsaraiva/8be91104fa0f4a52e0a7629eb1e59844#file-loaddds-cs
-        static Texture2D LoadDDS(string ddsPath)
+        //DDS loader based on https://raw.githubusercontent.com/hobbitinisengard/crashday-3d-editor/7e7c6c78c9f67588156787af1af92cfad1019de9/Assets/IO/DDSDecoder.cs
+        internal static Texture2D LoadDDS(string ddsPath)
         {
             try
             {
-                byte[] data = File.ReadAllBytes(ddsPath);
-                FileInfo finf = new FileInfo(ddsPath);
-                TextureFormat textureFormat = TextureFormat.ARGB32;
-                byte DXTType = data[87];
+                byte[] ddsBytes = File.ReadAllBytes(ddsPath);
+
+                byte ddsSizeCheck = ddsBytes[4];
+                if (ddsSizeCheck != 124)
+                    throw new Exception("Invalid DDS DXTn texture. Unable to read"); //header byte should be 124 for DDS image files
+
+                int height = ddsBytes[13] * 256 + ddsBytes[12];
+                int width = ddsBytes[17] * 256 + ddsBytes[16];
+
+                byte DXTType = ddsBytes[87];
+                TextureFormat textureFormat = TextureFormat.DXT5;
                 if (DXTType == 49)
-                     textureFormat = TextureFormat.DXT1;
-                if (DXTType == 53)               
-                    textureFormat = TextureFormat.DXT5;                
-                if (textureFormat != TextureFormat.DXT1 && textureFormat != TextureFormat.DXT5)               
-                    throw new Exception("Invalid TextureFormat. Only DXT1 and DXT5 formats are supported by this method.");              
+                {
+                    textureFormat = TextureFormat.DXT1;
+                }
 
-                byte ddsSizeCheck = data[4];
-                if (ddsSizeCheck != 124)                
-                    throw new Exception("Invalid DDS DXTn texture. Unable to read");  //this header byte should be 124 for DDS image files              
-
-                int height = data[13] * 256 + data[12];
-                int width = data[17] * 256 + data[16];
-
+                if (DXTType == 53)
+                {
+                    textureFormat = TextureFormat.DXT5;
+                }
                 int DDS_HEADER_SIZE = 128;
-                byte[] dxtBytes = new byte[data.Length - DDS_HEADER_SIZE];
-                Buffer.BlockCopy(data, DDS_HEADER_SIZE, dxtBytes, 0, data.Length - DDS_HEADER_SIZE);
+                byte[] dxtBytes = new byte[ddsBytes.Length - DDS_HEADER_SIZE];
+                Buffer.BlockCopy(ddsBytes, DDS_HEADER_SIZE, dxtBytes, 0, ddsBytes.Length - DDS_HEADER_SIZE);
 
+                FileInfo finf = new FileInfo(ddsPath);
                 Texture2D texture = new Texture2D(width, height, textureFormat, false);
                 texture.LoadRawTextureData(dxtBytes);
                 texture.Apply();
                 texture.name = finf.Name;
+
                 return texture;
             }
             catch (Exception ex)

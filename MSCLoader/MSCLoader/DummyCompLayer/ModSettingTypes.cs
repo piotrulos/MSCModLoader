@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
@@ -16,7 +17,7 @@ namespace MSCLoader
     public class SettingButton
     {
         Settings setting;
-        public bool Enabled;
+        public bool Enabled { get; set; }
         public string ID { get => setting.ID; set => setting.ID = value; }
         public string Name { get => setting.Vals[0].ToString(); set => setting.Vals[0] = value; }
         public string ButtonText { get => setting.Name; set => setting.Name = value; }
@@ -27,7 +28,17 @@ namespace MSCLoader
         public SettingButton(Settings set)
         {
             setting = set;
+            nameText = set.NameText;
         }
+        public bool suspendActions = false;
+        public Button.ButtonClickedEvent OnClick { get => button.onClick; set => button.onClick = value; }
+        public Text nameText;
+        public Shadow nameShadow;
+
+        public Button button;
+        public Image buttonImage;
+        public Text buttonText;
+        public Shadow buttonTextShadow;
     }
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 
@@ -36,9 +47,9 @@ namespace MSCLoader
     {
         Settings setting;
 
-        public bool Enabled;
+        public bool Enabled { get; set; }
 
-        public float Height;
+        public float Height { get; set; }
 
         public Color BackgroundColor { get => (Color)setting.Vals[1]; set => setting.Vals[1] = value; }
         /// <summary>The Outline color for the header.</summary>
@@ -49,6 +60,11 @@ namespace MSCLoader
         {
             setting = set;
         }
+        public LayoutElement layoutElement;
+        public Image background;
+
+        public Text text;
+        public Shadow textShadow;
     }
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 
@@ -72,6 +88,10 @@ namespace MSCLoader
     [System.Obsolete("==> SettigsCheckBoxGroup", true)]
     public class SettingRadioButtons 
     {
+        public class RadioEvent : UnityEvent<int> { }
+
+        internal int radioValue;
+        public List<RadioButton> buttons = new List<RadioButton>();
         Settings[] settings;
         public int Value
         {
@@ -107,7 +127,19 @@ namespace MSCLoader
     [System.Obsolete("==> SettigsCheckBoxGroup", true)]
     public class RadioButton
     {
+        public SettingRadioButtons settingRadioButtons;
+        public int radioID = 0;
 
+        public Toggle toggle;
+        public Image offImage, onImage;
+
+        public Text labelText;
+        public Shadow labelShadow;
+
+        public bool suspendSetValue = false;
+        public void SetSettingValue()
+        {
+        }
     }
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 
@@ -115,23 +147,40 @@ namespace MSCLoader
     public class SettingSlider 
     {
         Settings setting;
-        public bool Enabled;
+        public bool Enabled { get; set; }
         public string ID { get => setting.ID; set => setting.ID = value; }
         public string Name { get => setting.Name; set => setting.Name = value; }
         public float Value { get => float.Parse(setting.Value.ToString()); set => setting.Value = value; }
         public int ValueInt { get => int.Parse(setting.Value.ToString()); set => setting.Value = value; }
 
+        public float MinValue { get; set; }
+        public float MaxValue { get; set; }
+        public bool WholeNumbers { get; set; }
+        public int RoundDigits { get; set; }
+        public Slider.SliderEvent OnValueChanged { get; set; }
+
         public SettingSlider(Settings set)
         {
             setting = set;
         }
+
+        public Text nameText;
+        public Shadow nameShadow;
+
+        public Text valueText;
+        public Shadow valueShadow;
+
+        public Slider slider;
+        public Image backgroundImage, handleImage;
     }
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 
     [System.Obsolete("Useless", true)]
     public class SettingSpacer 
     {
-
+        public LayoutElement layoutElement;
+        public bool Enabled { get; set; }
+        public float Height { get; set; }
     }
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 
@@ -142,6 +191,7 @@ namespace MSCLoader
         public Shadow textShadow;
 
         public Image background;
+        public bool Enabled { get; set; }
         public string Text { get => text.text; set => text.text = value; }
         public Color TextColor { get => text.color; set => text.color = value; }
         public Color BackgroundColor { get => background.color; set => background.color = value; }
@@ -161,7 +211,7 @@ namespace MSCLoader
         public InputField inputField;
         public Image inputImage;
         public Text inputPlaceholderText;
-        public bool Enabled;
+        public bool Enabled { get; set; }
         public string ID { get => setting.ID; set => setting.ID = value; }
         public string Name { get => setting.Name; set => setting.Name = value; }
         public string Value { get => setting.Value.ToString(); set => setting.Value = value; }
@@ -179,6 +229,23 @@ namespace MSCLoader
     [System.Obsolete("==> SettigsCheckBox", true)]
     public class SettingToggle 
     {
+        public Text nameText;
+        public Shadow nameShadow;
+
+        public Toggle toggle;
+        public Image offImage, onImage;
+
+        public bool Enabled { get; set; }
+        public string ID { get => setting.ID; set => setting.ID = value; }
+        public string Name { get => setting.Name; set => setting.Name = value; }
+        public bool Value { get => bool.Parse(setting.Value.ToString()); set => setting.Value = value; }
+        public Toggle.ToggleEvent OnValueChanged { get => toggle.onValueChanged; }
+        Settings setting;
+        public SettingToggle(Settings set)
+        {
+            setting = set;
+        }
+
 
     }
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
@@ -186,19 +253,35 @@ namespace MSCLoader
     [System.Obsolete("Useless", true)]
     public class SettingBoolean 
     {
+        public string ID { get; set; }
+        public bool Value;
+        public SettingBoolean()
+        {
 
+        }
     }
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     [System.Obsolete("Useless", true)]
     public class SettingNumber 
     {
- 
+        public string ID { get; set; }
+        public float Value;
+        public int ValueInt { get => (int)Value; set => Value = value; }
+        public SettingNumber()
+        {
+
+        }
     }
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     [System.Obsolete("Useless", true)]
     public class SettingString 
     {
-  
+        public string ID { get; set; }
+        public string Value;
+        public SettingString()
+        {
+
+        }
     }
 }
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member

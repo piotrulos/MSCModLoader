@@ -16,11 +16,16 @@ namespace MSCLoader
 
         public bool modList = false;
         public GameObject modListView;
-        public void ModMenuOpened()
+
+        public void RefreshTabs()
         {
             ModTab.text = $"Mods ({ModLoader.Instance.actualModList.Length})";
             ReferenceTab.text = $"References ({ModLoader.Instance.ReferencesList.Count})";
             UpdateTab.text = $"Updates ({ModLoader.Instance.HasUpdateModList.Count})";
+        }
+        public void ModMenuOpened()
+        {
+            RefreshTabs();
             if (modList) ModList(modListView);
         }
 
@@ -252,7 +257,9 @@ namespace MSCLoader
                 if (Settings.Get(mod)[i].SettingType == SettingsType.Header)
                     currentTransform = SettingsHeader(Settings.Get(mod)[i], listView.transform);
                 else
+                {
                     SettingsList(Settings.Get(mod)[i], currentTransform);
+                }
             }
             GameObject rbtnP = Instantiate(ButtonPrefab);
             SettingsElement rbtn = rbtnP.GetComponent<SettingsElement>();
@@ -396,8 +403,12 @@ namespace MSCLoader
                     setting.NameText.text = setting.Name.ToUpper();                    
                     setting.NameText.color = (Color)setting.Vals[1];
                     btn.button.GetComponent<Image>().color = (Color)setting.Vals[0];
-                    btn.button.onClick.AddListener(setting.DoAction.Invoke);
+                    if(setting.Value.ToString() == "DoUnityAction")
+                        btn.button.onClick.AddListener(setting.DoUnityAction.Invoke);
+                    else
+                        btn.button.onClick.AddListener(setting.DoAction.Invoke);
                     btn.transform.SetParent(listView, false);
+                    setting.button = btn.button.gameObject;
                     break;
                 case SettingsType.RButton:
                     GameObject rbtnP = Instantiate(ButtonPrefab);

@@ -335,40 +335,7 @@ namespace MSCLoader
             if (Mod_FixedUpdate.Length > 0) mod_callbacks.AddComponent<A_ModFixedUpdate>().modLoader = this;
             if (!rtmm)
             {
-                string sp = Path.Combine(SettingsFolder, @"MSCLoader_Settings\lastCheck");
-                if (ModMenu.cfmu_set != 0)
-                {
-                    if (File.Exists(sp))
-                    {
-                        DateTime lastCheck;
-                        string lastCheckS = File.ReadAllText(sp);
-                        DateTime.TryParse(lastCheckS, out lastCheck);
-                        if ((DateTime.Now - lastCheck).TotalDays >= ModMenu.cfmu_set || (DateTime.Now - lastCheck).TotalDays < 0)
-                        {
-                            StartCoroutine(CheckForModsUpdates());
-                            File.WriteAllText(sp, DateTime.Now.ToString());
-                        }
-                        else
-                        {
-                            Mod[] mod = LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")).ToArray();
-                            for (int i = 0; i < mod.Length; i++)
-                            {
-                                ModMetadata.ReadMetadata(mod[i]);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        StartCoroutine(CheckForModsUpdates());
-                        File.WriteAllText(sp, DateTime.Now.ToString());
-                    }
-                }
-                else
-                {
-                    StartCoroutine(CheckForModsUpdates());
-                    File.WriteAllText(sp, DateTime.Now.ToString());
-                }
-
+                CheckForModsUpd();
             }
 
             if (devMode)
@@ -387,7 +354,48 @@ namespace MSCLoader
                 wasSaving = false;
             }
         }
-
+        internal void CheckForModsUpd(bool force = false)
+        {
+            string sp = Path.Combine(SettingsFolder, @"MSCLoader_Settings\lastCheck");
+            if (force)
+            {
+                StartCoroutine(CheckForModsUpdates());
+                File.WriteAllText(sp, DateTime.Now.ToString());
+                return;
+            }
+            if (ModMenu.cfmu_set != 0)
+            {
+                if (File.Exists(sp))
+                {
+                    DateTime lastCheck;
+                    string lastCheckS = File.ReadAllText(sp);
+                    DateTime.TryParse(lastCheckS, out lastCheck);
+                    if ((DateTime.Now - lastCheck).TotalDays >= ModMenu.cfmu_set || (DateTime.Now - lastCheck).TotalDays < 0)
+                    {
+                        StartCoroutine(CheckForModsUpdates());
+                        File.WriteAllText(sp, DateTime.Now.ToString());
+                    }
+                    else
+                    {
+                        Mod[] mod = LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")).ToArray();
+                        for (int i = 0; i < mod.Length; i++)
+                        {
+                            ModMetadata.ReadMetadata(mod[i]);
+                        }
+                    }
+                }
+                else
+                {
+                    StartCoroutine(CheckForModsUpdates());
+                    File.WriteAllText(sp, DateTime.Now.ToString());
+                }
+            }
+            else
+            {
+                StartCoroutine(CheckForModsUpdates());
+                File.WriteAllText(sp, DateTime.Now.ToString());
+            }
+        }
         [Serializable]
         class SaveOtk
         {
