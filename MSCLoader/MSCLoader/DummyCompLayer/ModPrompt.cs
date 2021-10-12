@@ -2,19 +2,12 @@
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace MSCLoader
 {
-    /// <summary>
-    /// Dummy class
-    /// </summary>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     [System.Obsolete("Nothing", true)]
 
     public class ModPromptButton
     {
-    }
-    /// <summary>
-    /// ModPrompt redirects.
-    /// </summary>
-    
+    }  
     
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     [System.Obsolete("=> ModUI", true)]

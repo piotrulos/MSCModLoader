@@ -23,9 +23,6 @@ namespace MSCLoader
         /// <summary>
         /// Load texture (*.dds, *.jpg, *.png, *.tga) from mod assets folder
         /// </summary>
-        /// <example>
-        /// You need to enter file name from your mod's asset folder.<code source="Examples.cs" region="LoadTexture" lang="C#" 
-        /// title="Example for change texture when we press key" /></example>
         /// <param name="mod">Mod instance.</param>
         /// <param name="fileName">File name to load from assets folder (for example "texture.dds")</param>
         /// <param name="normalMap">Normal mapping (default false)</param>
@@ -69,9 +66,6 @@ namespace MSCLoader
         /// <param name="collider">Apply mesh collider to object</param>
         /// <param name="rigidbody">Apply rigidbody to object to affect gravity (don't do it without collider)</param>
         /// <returns>Returns unity GameObject</returns>
-        /// <example>Example Code
-        /// <code source="Examples.cs" region="LoadOBJ" lang="C#" />
-        /// </example>
         [Obsolete("LoadOBJ is deprecated, please use AssetBundles instead.", true)]
         public static GameObject LoadOBJ(Mod mod, string fileName, bool collider = true, bool rigidbody = false)
         {
@@ -102,9 +96,6 @@ namespace MSCLoader
         /// <param name="mod">Mod instance.</param>
         /// <param name="fileName">File name to load from assets folder (for example "beer.obj")</param>
         /// <returns>Returns unity Mesh</returns>
-        /// <example>Example Code
-        /// <code source="Examples.cs" region="LoadOBJMesh" lang="C#" />
-        /// </example>
         [Obsolete("LoadOBJMesh is deprecated, please use AssetBundles instead.", true)]
         public static Mesh LoadOBJMesh(Mod mod, string fileName)
         {
@@ -129,8 +120,6 @@ namespace MSCLoader
         /// <summary>
         /// Loads assetbundle from Assets folder
         /// </summary>
-        /// <example> Example based on loading settings assets.
-        /// <code source="Examples.cs" region="LoadBundle" lang="C#"/></example>
         /// <param name="mod">Mod instance.</param>
         /// <param name="bundleName">File name to load (for example "something.unity3d")</param>
         /// <returns>Unity AssetBundle</returns>

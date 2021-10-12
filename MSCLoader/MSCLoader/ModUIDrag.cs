@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 namespace MSCLoader
 {
     /// <summary>
-    /// Make window draggable, attach to UI gameobject 
+    /// Make Unity.UI element draggable, attachable to UI gameobject 
     /// </summary>
     public class ModUIDrag : MonoBehaviour, IDragHandler
     {

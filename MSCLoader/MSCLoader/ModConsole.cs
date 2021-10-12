@@ -9,7 +9,7 @@ using System;
 namespace MSCLoader
 {
     /// <summary>
-    /// The console for MSCLoader.
+    /// MSCLoader console related functions.
     /// </summary>
     public class ModConsole : Mod
     {
@@ -77,47 +77,13 @@ namespace MSCLoader
         void CreateConsoleUI()
         {
             AssetBundle ab = LoadAssets.LoadBundle(this, "console.unity3d");
-            UI = ab.LoadAsset<GameObject>("MSCLoader Console.prefab");
-            Texture2D cursor = ab.LoadAsset<Texture2D>("resizeCur.png");
-            Texture2D cursorX = ab.LoadAsset<Texture2D>("resizeCurX.png");
-            ab.Unload(false);
-            UI = GameObject.Instantiate(UI);
-            UI.name = "MSCLoader Console";
-            console = UI.AddComponent<ConsoleView>();
-            console.viewContainer = UI.transform.GetChild(0).gameObject;
-            console.inputField = console.viewContainer.transform.GetChild(0).gameObject.GetComponent<InputField>();
-            console.viewContainer.transform.GetChild(1).gameObject.GetComponent<Button>().onClick.AddListener(() => console.RunCommand());
-            console.logTextArea = console.viewContainer.transform.GetChild(2).GetChild(0).gameObject.GetComponent<Text>();
-            console.viewContainer.transform.GetChild(4).gameObject.AddComponent<ConsoleUIResizer>().logview = console.viewContainer.transform.GetChild(2).gameObject;
-            console.viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().scrollbar = console.viewContainer.transform.GetChild(3).gameObject;
-            console.viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().otherResizer = console.viewContainer.transform.GetChild(5).gameObject;
-            console.viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().cursor = cursor;
-            console.viewContainer.transform.GetChild(5).gameObject.AddComponent<ConsoleUIResizer>().inputField = console.viewContainer.transform.GetChild(0).gameObject;
-            console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().submitBtn = console.viewContainer.transform.GetChild(1).gameObject;
-            console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().logview = console.viewContainer.transform.GetChild(2).gameObject;
-            console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().scrollbar = console.viewContainer.transform.GetChild(3).gameObject;
-            console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().otherResizer = console.viewContainer.transform.GetChild(4).gameObject;
-            console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().cursor = cursorX;
-            console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().Xresizer = true;
-            EventTrigger trigger = console.viewContainer.transform.GetChild(4).gameObject.GetComponent<EventTrigger>();
-            EventTrigger.Entry entry = new EventTrigger.Entry();
-            entry.eventID = EventTriggerType.PointerEnter;
-            entry.callback.AddListener((eventData) => { console.viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().OnMouseEnter(); });
-            trigger.delegates.Add(entry);
-            entry = new EventTrigger.Entry();
-            entry.eventID = EventTriggerType.PointerExit;
-            entry.callback.AddListener((eventData) => { console.viewContainer.transform.GetChild(4).gameObject.GetComponent<ConsoleUIResizer>().OnMouseExit(); });
-            trigger.delegates.Add(entry);
-            trigger = console.viewContainer.transform.GetChild(5).gameObject.GetComponent<EventTrigger>();
-            entry = new EventTrigger.Entry();
-            entry.eventID = EventTriggerType.PointerEnter;
-            entry.callback.AddListener((eventData) => { console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().OnMouseEnter(); });
-            trigger.delegates.Add(entry);
-            entry = new EventTrigger.Entry();
-            entry.eventID = EventTriggerType.PointerExit;
-            entry.callback.AddListener((eventData) => { console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().OnMouseExit(); });
-            trigger.delegates.Add(entry);
+            GameObject UIp = ab.LoadAsset<GameObject>("MSCLoader Console.prefab");
+            UI = GameObject.Instantiate(UIp);
+            UI.name = "MSCLoader Console";           
+            console = UI.GetComponent<ConsoleView>();
             UI.transform.SetParent(ModUI.GetCanvas().transform, false);
+            GameObject.Destroy(UIp);
+            ab.Unload(false);
         }
 
         void Mod_Update()
@@ -151,8 +117,6 @@ namespace MSCLoader
         /// Print a message to console.
         /// </summary>
         /// <param name="str">Text to print to console.</param>
-        /// <example><code source="Examples.cs" region="ModConsolePrint" lang="C#" 
-        /// title="Example Code" /></example>
         public static void Print(string str)
         {
             try
@@ -166,8 +130,6 @@ namespace MSCLoader
         /// Prints anything to console.
         /// </summary>
         /// <param name="obj">Text or object to print to console.</param>
-        /// <example><code source="Examples.cs" region="ModConsolePrint" lang="C#" 
-        /// title="Example Code" /></example>
         public static void Print(object obj)
         {
             try
@@ -182,8 +144,6 @@ namespace MSCLoader
         /// Print an error to the console.
         /// </summary>
         /// <param name="str">Text to print to error log.</param>
-        /// <example><code source="Examples.cs" region="ModConsoleError" lang="C#" 
-        /// title="Example Code" /></example>
         public static void Error(string str)
         {
             try
@@ -199,8 +159,6 @@ namespace MSCLoader
         /// Print an warning to the console.
         /// </summary>
         /// <param name="str">Text to print to error log.</param>
-        /// <example><code source="Examples.cs" region="ModConsoleError" lang="C#" 
-        /// title="Example Code" /></example>
         public static void Warning(string str)
         {
             try

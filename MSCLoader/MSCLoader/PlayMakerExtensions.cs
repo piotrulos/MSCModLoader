@@ -113,8 +113,6 @@ namespace MSCLoader
         /// <param name="gameObject">GameObject where to hook</param>
         /// <param name="stateName">Name of the state</param>
         /// <param name="hook">Your function to hook</param>
-        /// <example><code lang="C#" title="Fsm Inject as Extension">GameObject.Find("Some game object").FsmInject("state name", function);</code></example>
-
         public static void FsmInject(this GameObject gameObject, string stateName, Action hook)
         {
             FsmHook.FsmInject(gameObject, stateName, hook);

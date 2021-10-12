@@ -5,14 +5,11 @@ using System.Text;
 
 namespace MSCLoader
 {
-    /// <summary>
-    /// Redirect Only [TO USE THIS YOU NEED TO GET REFERENCES SEPARATELY]
-    /// 
-    /// </summary>
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
     [Obsolete("This class requires user to have 'Compatibility References' installed")]
     public class ModSave
     {
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         [Obsolete("This requires user to have 'Compatibility References' installed")]
         public static void Save<T>(string fileName, T data, string encryptionKey = null) where T : class, new() => MSCLoaderHelpers.ModSave.Save<T>(fileName, data, encryptionKey);
         [Obsolete("This requires user to have 'Compatibility References' installed")]
