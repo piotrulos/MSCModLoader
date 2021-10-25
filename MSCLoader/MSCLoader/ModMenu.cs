@@ -349,7 +349,7 @@ namespace MSCLoader
             }
         }
 
-        internal static void ModButton_temp()
+        internal static void ModMenuHandle()
         {
             GameObject.Find("Systems").transform.Find("OptionsMenu").gameObject.AddComponent<ModMenuHandler>().modMenuUI = instance.UI;
             instance.UI.SetActive(false);

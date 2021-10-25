@@ -183,8 +183,8 @@ namespace MSCLoader
             }
             if (modUpdCount > 0)
             {
-                modUpdates.text = string.Format("<size=20><color=aqua>New Version available for <color=orange>{0}</color> mods.</color></size>", modUpdCount);
-                updateStatus.text = string.Format("Done! <color=lime>{0} updates available</color>", modUpdCount);
+                modUpdates.text = $"<color=aqua>New Version available for <color=orange>{modUpdCount}</color> mods.</color>";
+                updateStatus.text = $"Done! <color=lime>{modUpdCount} updates available</color>";
                 if (mod_aulist.Count > 0)
                 {
                     if (!ModloaderUpdateMessage)
