@@ -88,7 +88,10 @@ namespace MSCLoader
         {
             if (ValueText != null)
             {
-                ValueText.text = Value.ToString();
+                if (SettingType==SettingsType.TextBox)
+                    ValueText.GetComponentInParent<InputField>().text = Value.ToString();
+                else
+                    ValueText.text = Value.ToString();
             }
         }
         /// <summary>
