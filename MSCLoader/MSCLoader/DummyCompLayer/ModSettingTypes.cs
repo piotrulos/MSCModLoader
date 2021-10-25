@@ -158,7 +158,21 @@ namespace MSCLoader
         public bool WholeNumbers { get; set; }
         public int RoundDigits { get; set; }
         public Slider.SliderEvent OnValueChanged { get; set; }
-
+        public string[] TextValues
+        {
+            get;
+            set;
+        }
+        public string ValuePrefix
+        {
+            get;
+            set;
+        }
+        public string ValueSuffix
+        {
+            get;
+            set;
+        }
         public SettingSlider(Settings set)
         {
             setting = set;
@@ -202,12 +216,11 @@ namespace MSCLoader
     }
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     [System.Obsolete("==> SettigsTextBox", true)]
-    public class SettingTextBox 
+    public class SettingTextBox
     {
         Settings setting;
         public Text nameText;
         public Shadow nameShadow;
-        public GameObject gameObject;
         public InputField inputField;
         public Image inputImage;
         public Text inputPlaceholderText;
@@ -219,7 +232,6 @@ namespace MSCLoader
         public string defaultValue;
         public SettingTextBox(Settings set)
         {
-            gameObject = new GameObject();
             setting = set;
         }
 

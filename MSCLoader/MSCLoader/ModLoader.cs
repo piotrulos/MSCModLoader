@@ -159,7 +159,7 @@ namespace MSCLoader
 
                     menuInfoAnim.Play("fade_out");
                     StartLoadingMods(!ModMenu.syncLoad.GetValue());
-                    ModMenu.ModButton_temp();
+                    ModMenu.ModMenuHandle();
                     break;
                 case "Ending":
                     CurrentScene = CurrentScene.Ending;
@@ -586,13 +586,13 @@ namespace MSCLoader
             loading_bc.SetActive(false);
             loading_bc.name = "MSCLoader loading screen";
             loading_bc.transform.SetParent(ModUI.GetCanvas().transform, false);
-            loading_bc.transform.GetChild(2).GetComponent<Text>().text = $"MSCLOADER <color=green>{MSCLoader_Ver}</color> (BC Mode)";
+            loading_bc.transform.GetChild(2).GetComponent<Text>().text = $"MSCLoader <color=green>{MSCLoader_Ver}</color> (BC Mode)";
             #endregion
             loading = GameObject.Instantiate(loadingP);
             loading.SetActive(false);
             loading.name = "MSCLoader loading dialog";
             loading.transform.SetParent(ModUI.GetCanvas().transform, false);
-            loading.transform.GetChild(0).GetComponent<Text>().text = $"MSCLoader <color=green>{MSCLoader_Ver}</color>";
+            loading.transform.GetChild(0).GetComponent<Text>().text = $"MSCLOADER <color=green>{MSCLoader_Ver}</color>";
             loadingTitle = loading.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(0).GetComponent<Text>();
             loadingMod = loading.transform.GetChild(1).GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>();
             loadingProgress = loading.transform.GetChild(1).GetChild(0).GetChild(2).GetComponent<Slider>();

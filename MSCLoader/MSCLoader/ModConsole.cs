@@ -46,7 +46,7 @@ namespace MSCLoader
             }
             else
             {
-                Settings.AddText(this, $"No new updates available");
+                Settings.AddText(this, $"No new MSCLoader update available");
             }
             string sp = System.IO.Path.Combine(ModLoader.SettingsFolder, @"MSCLoader_Settings\lastCheck");
             if (System.IO.File.Exists(sp))

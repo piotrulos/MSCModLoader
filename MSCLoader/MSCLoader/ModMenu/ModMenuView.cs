@@ -340,6 +340,7 @@ namespace MSCLoader
                     SettingsElement checkbox = checkboxP.GetComponent<SettingsElement>();
                     setting.NameText = checkbox.settingName;
                     setting.NameText.text = setting.Name;
+                    setting.ValueText = checkbox.value;
                     try
                     {
                         checkbox.checkBox.isOn = bool.Parse(setting.Value.ToString());
@@ -373,6 +374,7 @@ namespace MSCLoader
                     SettingsElement checkboxG = checkboxGP.GetComponent<SettingsElement>();
                     setting.NameText = checkboxG.settingName;
                     setting.NameText.text = setting.Name;
+                    setting.ValueText = checkboxG.value;
 
                     checkboxG.checkBox.group = group.GetComponent<ToggleGroup>();
                     try
@@ -393,6 +395,8 @@ namespace MSCLoader
                         setting.Value = checkboxG.checkBox.isOn;
                         if (setting.DoAction != null)
                             setting.DoAction.Invoke();
+                        if (setting.DoUnityAction != null)
+                            setting.DoUnityAction.Invoke();
                     });
                     checkboxG.transform.SetParent(listView, false);
                     break;
@@ -402,6 +406,8 @@ namespace MSCLoader
                     setting.NameText = btn.settingName;
                     setting.NameText.text = setting.Name.ToUpper();                    
                     setting.NameText.color = (Color)setting.Vals[1];
+                    setting.ValueText = btn.value;
+
                     btn.button.GetComponent<Image>().color = (Color)setting.Vals[0];
                     if(setting.Value.ToString() == "DoUnityAction")
                         btn.button.onClick.AddListener(setting.DoUnityAction.Invoke);
@@ -417,6 +423,8 @@ namespace MSCLoader
                     setting.NameText = rbtn.settingName;
                     setting.NameText.text = setting.Name.ToUpper(); 
                     setting.NameText.color = Color.white;
+                    setting.ValueText = rbtn.value;
+
                     rbtn.button.GetComponent<Image>().color = Color.black;
                     rbtn.button.onClick.AddListener(delegate
                     {
@@ -431,6 +439,8 @@ namespace MSCLoader
                     SettingsElement slidr = slidrP.GetComponent<SettingsElement>();
                     setting.NameText = slidr.settingName;
                     setting.NameText.text = setting.Name;
+                    setting.ValueText = slidr.value;
+
                     slidr.value.text = setting.Value.ToString();
                     slidr.slider.minValue = float.Parse(setting.Vals[0].ToString());
                     slidr.slider.maxValue = float.Parse(setting.Vals[1].ToString());
@@ -463,6 +473,8 @@ namespace MSCLoader
                         }
                         if (setting.DoAction != null)
                             setting.DoAction.Invoke();
+                        if (setting.DoUnityAction != null)
+                            setting.DoUnityAction.Invoke();
                     });
                     slidr.transform.SetParent(listView, false);
                     break;
@@ -473,6 +485,8 @@ namespace MSCLoader
                     setting.NameText = txt.settingName;
                     setting.NameText.text = setting.Name;
                     setting.NameText.color = (Color)setting.Vals[1];
+                    setting.ValueText = txt.value;
+
                     txt.placeholder.text = setting.Vals[0].ToString();
                     txt.textBox.contentType = (InputField.ContentType)setting.Vals[2];
                     txt.textBox.text = setting.Value.ToString();
@@ -488,6 +502,7 @@ namespace MSCLoader
                     GameObject tx = Instantiate(LabelPrefab);
                     setting.NameText = tx.GetComponent<Text>();
                     setting.NameText.text = setting.Name;
+
                     tx.transform.SetParent(listView, false);
                     break;
             }

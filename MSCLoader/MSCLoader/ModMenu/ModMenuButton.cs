@@ -10,7 +10,7 @@ namespace MSCLoader
         public RawImage image;
         public Animation btnAnim;
         Animation anim;
-        bool opened = false;
+        internal bool opened = false;
 
         void Start()
         {

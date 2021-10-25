@@ -91,7 +91,7 @@ namespace MSCLoader
         public SettingSlider AddSlider(string id, string name, float value, float minValue, float maxValue, int roundDigits = 2, UnityAction action = null)
         {
             mod.proSettings = true;
-            Settings set = new Settings(id, name, value);
+            Settings set = new Settings(id, name, value, action, false);
             Settings.AddSlider(mod, set, minValue, maxValue, roundDigits);
             return new SettingSlider(set);
         }
@@ -106,7 +106,7 @@ namespace MSCLoader
         public SettingSlider AddSlider(string id, string name, float value, float minValue, float maxValue, UnityAction action = null)
         {
             mod.proSettings = true;
-            Settings set = new Settings(id, name, value);
+            Settings set = new Settings(id, name, value, action, false);
             Settings.AddSlider(mod, set, minValue, maxValue);
             return new SettingSlider(set);
         }
@@ -122,7 +122,7 @@ namespace MSCLoader
         public SettingSlider AddSlider(string id, string name, int value, int minValue, int maxValue, UnityAction action)
         {
             mod.proSettings = true;
-            Settings set = new Settings(id, name, value);
+            Settings set = new Settings(id, name, value, action, false);
 
             Settings.AddSlider(mod, set, minValue, maxValue);
             return new SettingSlider(set);

@@ -41,7 +41,7 @@ namespace MSCLoader
                     WarningText.text = string.Empty;
                     WarningText.gameObject.SetActive(false);
                 }
-                Author.text = $"by <color=orange>{mod.Author}</color> (<color=aqua>{mod.Version}</color>)";
+                Author.text = $"by <color=orange><b>{mod.Author}</b></color> (<color=aqua>{mod.Version}</color>)";
                 if (string.IsNullOrEmpty(mod.Description))
                     Description.text = "No short description provided...";
                 else

@@ -12,7 +12,7 @@ namespace MSCLoader
         public Text Title;
         private Mod mod;
         private bool set = false;
-
+        private string previousText = "INSTALLED MODS";
         public void FillMetadataInfo(Mod m)
         {
             mod = m;
@@ -49,9 +49,18 @@ namespace MSCLoader
             GoBackBtn.SetActive(true);
             Title.text = $"{mod.Name} - Keybinds".ToUpper();
         }
+        public void CloseView()
+        {
+            GoBackBtn.SetActive(false);
+            Title.text = previousText;
+            gameObject.SetActive(false);
+        }
+        void OnEnable()
+        {
+            previousText = Title.text;
+        }
         void OnDisable()
         {
-            Title.text = "Installed mods".ToUpper();
             if (set)
                 ModMenu.SaveSettings(mod);
         }

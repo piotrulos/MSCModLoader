@@ -36,7 +36,7 @@ namespace MSCLoader
     public class Settings
     {
         private string settingName = string.Empty;
-
+        private object valueName = string.Empty;
         /// <summary>
         /// The ID of the settings (Should only be used once in your mod).
         /// </summary>
@@ -55,7 +55,7 @@ namespace MSCLoader
         /// <summary>
         /// Default Value for setting.
         /// </summary>
-        public object Value { get; set; }
+        public object Value { get => valueName; set { valueName = value; UpdateValue(); } }
 
         /// <summary>
         /// Action to execute for specifed setting.
@@ -84,7 +84,13 @@ namespace MSCLoader
                 NameText.text = Name;
             }
         }
-
+        void UpdateValue()
+        {
+            if (ValueText != null)
+            {
+                ValueText.text = Value.ToString();
+            }
+        }
         /// <summary>
         /// Return all settings for mod.
         /// </summary>

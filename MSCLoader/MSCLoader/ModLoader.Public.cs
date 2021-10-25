@@ -115,7 +115,7 @@ namespace MSCLoader
         /// <param name="mod">Your mod Class.</param>
         /// <param name="create">DOES NOTHING</param>
         /// <returns></returns>
-        [Obsolete("This overload is compatibility only")]
+        [Obsolete("This overload is compatibility only", true)]
         public static string GetModSettingsFolder(Mod mod, bool create = true) => GetModSettingsFolder(mod);
         /// <summary>
         /// Mod settings folder, use this if you want save something. 
@@ -145,5 +145,14 @@ namespace MSCLoader
             if (!Directory.Exists(Path.Combine(AssetsFolder, mod.ID))) Directory.CreateDirectory(Path.Combine(AssetsFolder, mod.ID));          
             return Path.Combine(AssetsFolder, mod.ID);
         }
+
+        /// <summary>
+        /// [compatibility only]
+        /// </summary>
+        /// <param name="mod">Your mod Class.</param>
+        /// <param name="create">DOES NOTHING</param>
+        /// <returns></returns>
+        [Obsolete("This overload is compatibility only", true)]
+        public static string GetModAssetsFolder(Mod mod, bool create = true) => GetModAssetsFolder(mod);
     }
 }
