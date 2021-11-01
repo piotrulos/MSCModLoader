@@ -359,7 +359,7 @@ namespace MSCLoader
             string sp = Path.Combine(SettingsFolder, @"MSCLoader_Settings\lastCheck");
             if (force)
             {
-                StartCoroutine(CheckForModsUpdates());
+                DownloadUpdateData();
                 File.WriteAllText(sp, DateTime.Now.ToString());
                 return;
             }
@@ -372,30 +372,63 @@ namespace MSCLoader
                     DateTime.TryParse(lastCheckS, out lastCheck);
                     if ((DateTime.Now - lastCheck).TotalDays >= ModMenu.cfmu_set || (DateTime.Now - lastCheck).TotalDays < 0)
                     {
-                        StartCoroutine(CheckForModsUpdates());
+                        DownloadUpdateData();
                         File.WriteAllText(sp, DateTime.Now.ToString());
                     }
                     else
                     {
-                        Mod[] mod = LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")).ToArray();
-                        for (int i = 0; i < mod.Length; i++)
+                        if (File.Exists(Path.Combine(SettingsFolder, @"MSCLoader_Settings\updateInfo.json")))
                         {
-                            ModMetadata.ReadMetadata(mod[i]);
+                            string s = File.ReadAllText(Path.Combine(SettingsFolder, @"MSCLoader_Settings\updateInfo.json"));
+                            ModVersions v = JsonConvert.DeserializeObject<ModVersions>(s);
+                            ModMetadata.ReadUpdateInfo(v);
                         }
+                        else
+                        {
+                            DownloadUpdateData();
+                            File.WriteAllText(sp, DateTime.Now.ToString());
+                        }
+
                     }
                 }
                 else
                 {
-                    StartCoroutine(CheckForModsUpdates());
+                    DownloadUpdateData();
                     File.WriteAllText(sp, DateTime.Now.ToString());
                 }
             }
             else
             {
-                StartCoroutine(CheckForModsUpdates());
+                DownloadUpdateData();
                 File.WriteAllText(sp, DateTime.Now.ToString());
             }
         }
+
+        private void DownloadUpdateData()
+        {
+            StartCoroutine(CheckForRefModUpdates());
+        }
+        private void ModsUpdateDataProgress(object sender, UploadProgressChangedEventArgs e)
+        {
+            cfmuInProgress = true;
+        }
+        private void ModsUpdateData(object sender, UploadValuesCompletedEventArgs e)
+        {
+            cfmuInProgress = false;
+            if (e.Error != null)
+            {
+                ModConsole.Error("Failed to check for mods updates");
+                ModConsole.Error(e.Error.Message);
+                Console.WriteLine(e.Error);
+                cfmuErrored = true;
+                return;
+            }
+            else
+            {
+                cfmuResult = System.Text.Encoding.UTF8.GetString(e.Result, 0, e.Result.Length);
+            }
+        }
+
         [Serializable]
         class SaveOtk
         {
@@ -721,14 +754,23 @@ namespace MSCLoader
                 info.text += " [<color=red><b>Dev Mode!</b></color>]";
         }
 
-        internal static void ModException(Exception e, Mod mod)
+        internal static void ModException(Exception e, Mod mod, bool save = false)
         {
             string errorDetails = $"{Environment.NewLine}<b>Details: </b>{e.Message} in <b>{new StackTrace(e, true).GetFrame(0).GetMethod()}</b>";
-            ModConsole.Error($"Mod <b>{mod.ID}</b> throw an error!{errorDetails}");
-            if (devMode)
-                ModConsole.Error(e.ToString());
+            if (save)
+                saveErrors.Add($"Mod <b>{mod.ID}</b> throw an error!{errorDetails}");
+            else
+                ModConsole.Error($"Mod <b>{mod.ID}</b> throw an error!{errorDetails}");
+            if (devMode) 
+            {
+                if(save)
+                    saveErrors.Add(e.ToString());
+                else
+                    ModConsole.Error(e.ToString());
+            }
             System.Console.WriteLine(e);
         }
+
         Text loadingTitle;
         Text loadingMod;
         Slider loadingProgress;
@@ -1025,7 +1067,7 @@ namespace MSCLoader
                 }
                 catch (Exception e)
                 {
-                    ModException(e, Mod_OnSave[i]);
+                    ModException(e, Mod_OnSave[i], true);
                 }
             }
             for (int i = 0; i < OnSaveMods.Length; i++)
@@ -1037,7 +1079,7 @@ namespace MSCLoader
                 }
                 catch (Exception e)
                 {
-                    ModException(e, OnSaveMods[i]);
+                    ModException(e, OnSaveMods[i], true);
                 }
             }
         }
@@ -1345,11 +1387,7 @@ namespace MSCLoader
                 {
                     ModException(e, mod);
                 }
-                if (File.Exists(GetMetadataFolder($"{mod.ID}.json")))
-                {
-                    string serializedData = File.ReadAllText(GetMetadataFolder($"{mod.ID}.json"));
-                    mod.metadata = JsonConvert.DeserializeObject<ModsManifest>(serializedData);
-                }
+                mod.metadata = ModMetadata.LoadMetadata(mod);
             }
             else
             {

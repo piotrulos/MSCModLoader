@@ -63,6 +63,7 @@ namespace MSCLoader
         internal string fileName;
         internal ModsManifest metadata;    //Local metadata
         internal ModsManifest RemMetadata; //Remote metadata
+        internal MetaVersion UpdateInfo; //Remote metadata
 
         //Action list
         internal Action A_OnMenuLoad;  //Load in main menu

@@ -51,17 +51,17 @@ namespace MSCLoader
         internal static string MetadataFolder = Path.Combine(ConfigFolder, "Mod Metadata");
         internal static string AssetsFolder = Path.Combine(ModsFolder, "Assets");
         internal string[] ModsUpdateDir;
-        internal List<string> mod_aulist;
+        internal List<string> ModSelfUpdateList;
         internal GameObject mainMenuInfo;
         internal GameObject loading;
         internal GameObject loadingMeta;
         internal Animation menuInfoAnim;
         internal GUISkin guiskin;
 
-        internal static readonly string serverURL = "http://my-summer-car.ml";
+        //internal static readonly string serverURL = "http://my-summer-car.ml";
         internal static readonly string metadataURL = "http://my-summer-car.ml:4000";
         internal static readonly string earlyAccessURL = "http://ec2-3-23-131-103.us-east-2.compute.amazonaws.com:8080"; //Hosted by Horsey4
-        //internal static readonly string serverURL = "http://localhost/msc2"; //localhost for testing only
+        internal static readonly string serverURL = "http://localhost/msc2"; //localhost for testing only
         //internal static readonly string metadataURL = "http://localhost:4000";
 
         internal bool IsModsLoading = false;

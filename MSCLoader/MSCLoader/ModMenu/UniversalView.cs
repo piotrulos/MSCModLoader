@@ -49,6 +49,15 @@ namespace MSCLoader
             GoBackBtn.SetActive(true);
             Title.text = $"{mod.Name} - Keybinds".ToUpper();
         }
+        public void FillUpdate(Mod m)
+        {
+            mod = m;
+            set = false;
+            gameObject.SetActive(true);
+            mmv.MetadataUploadForm(listView, mod);
+            GoBackBtn.SetActive(true);
+            Title.text = $"{mod.Name} - Update File".ToUpper();                
+        }
         public void CloseView()
         {
             GoBackBtn.SetActive(false);

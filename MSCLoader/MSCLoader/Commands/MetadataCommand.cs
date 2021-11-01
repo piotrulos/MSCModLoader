@@ -17,34 +17,54 @@ namespace MSCLoader.Commands
         {
             if (args.Length == 2)
             {
-                if (args[0].ToLower() == "create")
+                Mod mod = ModLoader.LoadedMods.Where(w => w.ID == args[1]).FirstOrDefault();
+                switch (args[0].ToLower())
                 {
-                    Mod mod = ModLoader.LoadedMods.Where(w => w.ID == args[1]).FirstOrDefault();
-                    if (mod != null)
-                    {
-                        ModMetadata.CreateMetadata(mod);
-                    }
-                    else
-                    {
-                        ModConsole.Error("Invalid ModID (ModID is case sensitive)");
-                    }
-                }
-                else if (args[0].ToLower() == "update")
-                {
-                    Mod mod = ModLoader.LoadedMods.Where(w => w.ID == args[1]).FirstOrDefault();
-                    if (mod != null)
-                    {
-                        ModMetadata.UpdateMetadata(mod);
-                    }
-                    else
-                    {
-                        ModConsole.Error("Invalid ModID (ModID is case sensitive)");
-                    }
+                    case "create":
+                        if (mod != null)
+                        {
+                            ModMetadata.CreateMetadata(mod);
+                        }
+                        else
+                        {
+                            ModConsole.Error("Invalid ModID (ModID is case sensitive)");
+                        }
+                        break;
+
+                   /* case "update":
+                        if (mod != null)
+                        {
+                            ModMetadata.UpdateMetadata(mod);
+                        }
+                        else
+                        {
+                            ModConsole.Error("Invalid ModID (ModID is case sensitive)");
+                        }
+                        break;*/
+
+                    case "update":
+                        if (mod != null)
+                        {
+                            ModMetadata.UploadUpdateMenu(mod);
+                        }
+                        else
+                        {
+                            ModConsole.Error("Invalid ModID (ModID is case sensitive)");
+                        }
+                        break;
+
+                    case "auth":
+                        ModMetadata.AuthMe(args[1]);
+                        break;
+                    default:
+                        ModConsole.Warning($"Usage: metadata <create|update|upload> <ModID>");
+                        break;
+
                 }
             }
             else
             {
-                ModConsole.Warning($"Usage: metadata <create|update> <ModID>");
+                ModConsole.Warning($"Usage: metadata <create|update|upload> <ModID>");
             }
         }
 

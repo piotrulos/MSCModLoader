@@ -1,5 +1,6 @@
 ﻿using MSCLoader;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -206,6 +207,87 @@ namespace MSCLoader
                 tx3.GetComponent<Text>().text = mod.metadata.description;
                 tx3.transform.SetParent(header3.HeaderListView.transform, false);
             }
+        }
+        internal void MetadataUploadForm(GameObject listView, Mod mod)
+        {
+            RemoveChildren(listView.transform);
+            listView.GetComponentInParent<ScrollRect>().verticalNormalizedPosition = 0;
+            //Info Header
+            SettingsGroup header = CreateHeader(listView.transform, "Mod Information", Color.cyan);
+            GameObject tx = Instantiate(LabelPrefab);
+            tx.GetComponent<Text>().text = $"<color=yellow>ID:</color> <color=aqua>{mod.ID}</color> (Compiled using MSCLoader <color=yellow>{mod.compiledVersion}</color>){Environment.NewLine}" +
+               $"<color=yellow>Version:</color> <color=aqua>{mod.Version}</color>{Environment.NewLine}" +
+               $"<color=yellow>Author:</color> <color=aqua>{mod.Author}</color>{Environment.NewLine}" +
+               $"<color=yellow>Additional references used by this Mod:</color>{Environment.NewLine}";
+            if (mod.AdditionalReferences != null)
+                tx.GetComponent<Text>().text += $"<color=aqua>{string.Join(", ", mod.AdditionalReferences)}</color>";
+            else
+                tx.GetComponent<Text>().text += $"<color=aqua>[None]</color>";
+            tx.transform.SetParent(header.HeaderListView.transform, false);
+            //----------------------------------
+            bool assets = false, references = false, plus12 = false;
+            List<References> refList = new List<References>();
+            //----------------------------------
+            SettingsGroup header2 = CreateHeader(listView.transform, "Bundle Assets", Color.yellow);
+            GameObject tx2 = Instantiate(LabelPrefab);
+            tx2.transform.SetParent(header2.HeaderListView.transform, false);
+            if (!System.IO.Directory.Exists(System.IO.Path.Combine(ModLoader.AssetsFolder, mod.ID)))
+                tx2.GetComponent<Text>().text = $"<color=yellow>Looks like this mod doesn't have assets folder.</color>";
+            else
+            {
+                tx2.GetComponent<Text>().text = $"<color=yellow>Select below option if you want to include Assets folder (in most cases you should do it)</color>";
+                GameObject checkboxP = Instantiate(CheckBoxPrefab);
+                SettingsElement checkbox = checkboxP.GetComponent<SettingsElement>();
+                checkbox.settingName.text = "Include Assets Folder";
+                checkbox.checkBox.isOn = true;
+                assets = true;
+                checkbox.checkBox.onValueChanged.AddListener(delegate
+                {
+                    assets = checkbox.checkBox.isOn;
+                });
+                checkbox.transform.SetParent(header2.HeaderListView.transform, false);
+            }
+            SettingsGroup header3 = CreateHeader(listView.transform, "Bundle References", Color.yellow);
+            GameObject tx3 = Instantiate(LabelPrefab);
+            tx3.transform.SetParent(header3.HeaderListView.transform, false);
+            if (mod.AdditionalReferences == null)
+                tx3.GetComponent<Text>().text = $"<color=yellow>Looks like this mod doesn't use additional references.</color>";
+            else
+                tx3.GetComponent<Text>().text = $"<color=yellow>You can bundle references{Environment.NewLine}Do it only if reference is exclusive to your mod, otherwise you should create Reference update separately.</color>";
+        
+            SettingsGroup header4 = CreateHeader(listView.transform, "Update Settigns", Color.yellow);
+            GameObject checkboxP2 = Instantiate(CheckBoxPrefab);
+            SettingsElement checkbox2 = checkboxP2.GetComponent<SettingsElement>();
+            checkbox2.settingName.text = "Offer this file to MSCLoader 1.2+ only";
+            checkbox2.checkBox.isOn = false;
+            plus12 = false;
+            checkbox2.checkBox.onValueChanged.AddListener(delegate
+            {
+                plus12 = checkbox2.checkBox.isOn;
+            });
+            checkbox2.transform.SetParent(header4.HeaderListView.transform, false);
+
+            GameObject btnP = Instantiate(ButtonPrefab);
+            SettingsElement uploadBtn = btnP.GetComponent<SettingsElement>();
+            uploadBtn.settingName.text = "Upload Updated Mod".ToUpper();
+            uploadBtn.settingName.color = Color.white;
+            uploadBtn.button.GetComponent<Image>().color = Color.black;
+            uploadBtn.button.onClick.AddListener(delegate
+            {
+                ModMetadata.UploadUpdate(mod, assets, references, plus12);
+            });
+            uploadBtn.transform.SetParent(listView.transform, false);
+
+            GameObject btnP2 = Instantiate(ButtonPrefab);
+            SettingsElement uploadBtn2 = btnP2.GetComponent<SettingsElement>();
+            uploadBtn2.settingName.text = "Update Mod version only".ToUpper();
+            uploadBtn2.settingName.color = Color.white;
+            uploadBtn2.button.GetComponent<Image>().color = Color.black;
+            uploadBtn2.button.onClick.AddListener(delegate
+            {
+                ModMetadata.UpdateVersionNumber(mod, plus12);
+            });
+            uploadBtn2.transform.SetParent(listView.transform, false);
         }
         internal static void OpenModLink(string url)
         {
@@ -514,6 +596,16 @@ namespace MSCLoader
                 for (int i = 0; i < parent.childCount; i++)
                     Destroy(parent.GetChild(i).gameObject);
             }
+        }
+
+        public SettingsGroup CreateHeader(Transform listView, string title, Color textColor)
+        {
+            GameObject hdr = GameObject.Instantiate(HeaderGroupPrefab);
+            SettingsGroup header = hdr.GetComponent<SettingsGroup>();
+            header.HeaderTitle.text = title.ToUpper();
+            header.HeaderTitle.color = textColor;
+            hdr.transform.SetParent(listView, false);
+            return header;
         }
     }
 }
