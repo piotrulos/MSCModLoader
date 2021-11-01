@@ -116,6 +116,7 @@ namespace MSCLoader
         /// <param name="create">DOES NOTHING</param>
         /// <returns></returns>
         [Obsolete("This overload is compatibility only", true)]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public static string GetModSettingsFolder(Mod mod, bool create = true) => GetModSettingsFolder(mod);
         /// <summary>
         /// Mod settings folder, use this if you want save something. 
@@ -153,6 +154,7 @@ namespace MSCLoader
         /// <param name="create">DOES NOTHING</param>
         /// <returns></returns>
         [Obsolete("This overload is compatibility only", true)]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public static string GetModAssetsFolder(Mod mod, bool create = true) => GetModAssetsFolder(mod);
     }
 }

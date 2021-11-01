@@ -50,7 +50,7 @@ namespace MSCLoader
                 DisableMod.onValueChanged.AddListener(DisableThisMod);
                 QuickInfo.text = $"<color=yellow>ID:</color> <color=aqua>{mod.ID}</color> (MSCLoader <color=yellow>{mod.compiledVersion}</color>){Environment.NewLine}";
                 if (mod.hasUpdate)
-                    QuickInfo.text += $"<color=yellow>Version:</color> <color=aqua>{mod.Version}</color> (<color=lime>{mod.RemMetadata.version} available</color>){Environment.NewLine}";
+                    QuickInfo.text += $"<color=yellow>Version:</color> <color=aqua>{mod.Version}</color> (<color=lime>{mod.UpdateInfo.mod_version} available</color>){Environment.NewLine}";
                 else
                     QuickInfo.text += $"<color=yellow>Version:</color> <color=aqua>{mod.Version}</color>{Environment.NewLine}";
                 QuickInfo.text += $"<color=yellow>Author:</color> <color=aqua>{mod.Author}</color>";
@@ -208,8 +208,8 @@ namespace MSCLoader
             {
                 Title.text = $"<color=lime>{mod.Name}</color>";
                 Author.text = $"by <color=orange>{mod.Author}</color> (<color=aqua>{mod.Version}</color>)";
-                DownloadInfoTxt.text = $"Update available ({mod.RemMetadata.version})";
-                if (ModLoader.Instance.mod_aulist.Contains(mod.ID))
+                DownloadInfoTxt.text = $"Update available ({mod.UpdateInfo.mod_version})";
+                if (ModLoader.Instance.ModSelfUpdateList.Contains(mod.ID))
                     DownloadUpdateBtn.onClick.AddListener(delegate {
                         if (ModLoader.Instance.downloadInProgress)
                         {

@@ -54,7 +54,72 @@ namespace MSCLoader
         internal Text updateTitle;
         internal Text updateStatus;
         internal bool checkForUpdatesProgress = false;
-        IEnumerator CheckForModsUpdates()
+        IEnumerator CheckForRefModUpdates()
+        {
+            checkForUpdatesProgress = true;
+            updateTitle.text = "Checking for mod updates...".ToUpper();
+            updateProgress.maxValue = 2;
+            updateStatus.text = "Connecting...";
+            loadingMeta.transform.SetAsLastSibling();
+            loadingMeta.SetActive(true);
+            yield return new WaitForSeconds(.3f);
+            string modlist = string.Join(",", actualModList.Select(x => x.ID).ToArray());
+            System.Collections.Specialized.NameValueCollection modvals = new System.Collections.Specialized.NameValueCollection();
+            modvals.Add("mods", modlist);
+            cfmuInProgress = true;
+            WebClient webClient = new WebClient();
+            webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
+            webClient.UploadValuesCompleted += ModsUpdateData;
+            webClient.UploadProgressChanged += ModsUpdateDataProgress;
+            webClient.UploadValuesAsync(new Uri($"{serverURL}/mods_ver.php"), "POST", modvals);
+            updateProgress.value = 1;
+            updateStatus.text = "Downloading mods update info...";
+            while (cfmuInProgress)
+                yield return null;
+            if (!cfmuErrored)
+            {
+                if (cfmuResult.StartsWith("error"))
+                {
+                    string[] ed = cfmuResult.Split('|');
+                    if (ed[0] == "error")
+                    {
+                        switch (ed[1])
+                        {
+                            case "0":
+                                ModConsole.Error("Failed to check for mods updates");
+                                ModConsole.Error("Invalid request");
+                                break;
+                            case "1":
+                                ModConsole.Error("Failed to check for mods updates");
+                                ModConsole.Error("Database connection problem");
+                                break;
+                            case "2":
+                                //Not error
+                                Console.WriteLine("No update info for selected mods");
+                                break;
+                            default:
+                                ModConsole.Error("Failed to check for mods updates");
+                                ModConsole.Error("Unknown error.");
+                                break;
+                        }
+                    }
+                }
+                else if (cfmuResult.StartsWith("{"))
+                {
+                    ModVersions v = JsonConvert.DeserializeObject<ModVersions>(cfmuResult);
+                    File.WriteAllText(Path.Combine(SettingsFolder, @"MSCLoader_Settings\updateInfo.json"), cfmuResult);
+                    ModMetadata.ReadUpdateInfo(v);
+                }
+            }
+            updateProgress.value = 2;
+            updateStatus.text = string.Format("Done!");
+            checkForUpdatesProgress = false;
+            yield return new WaitForSeconds(3f);
+            if (!dnsaf)
+                loadingMeta.SetActive(false);
+        }
+
+        IEnumerator DownloadMetadataFiles()
         {
             checkForUpdatesProgress = true;
             int modUpdCount = 0;
@@ -65,7 +130,7 @@ namespace MSCLoader
             updateStatus.text = "Connecting...";
             loadingMeta.transform.SetAsLastSibling();
             loadingMeta.SetActive(true);
-            mod_aulist = new List<string>();
+            ModSelfUpdateList = new List<string>();
             for (int i = 0; i < mod.Length; i++)
             {
                 updateProgress.value = i + 1;
@@ -148,13 +213,13 @@ namespace MSCLoader
                                     }
                                     if (mod[i].RemMetadata.type == 4 || mod[i].RemMetadata.type == 5 || mod[i].RemMetadata.type == 6)
                                     {
-                                        mod_aulist.Add(mod[i].ID);
+                                        ModSelfUpdateList.Add(mod[i].ID);
                                     }
                                     break;
                                 case -1:
                                     if (mod[i].RemMetadata.type == 6)
                                     {
-                                        mod_aulist.Add(mod[i].ID);
+                                        ModSelfUpdateList.Add(mod[i].ID);
                                     }
                                     if (mod[i].RemMetadata.sid_sign != SidChecksumCalculator(steamID + mod[i].ID) && mod[i].RemMetadata.type == 3)
                                         File.WriteAllText(GetMetadataFolder(string.Format("{0}.json", mod[i].ID)), cfmuResult);
@@ -185,10 +250,10 @@ namespace MSCLoader
             {
                 modUpdates.text = $"<color=aqua>New Version available for <color=orange>{modUpdCount}</color> mods.</color>";
                 updateStatus.text = $"Done! <color=lime>{modUpdCount} updates available</color>";
-                if (mod_aulist.Count > 0)
+                if (ModSelfUpdateList.Count > 0)
                 {
                     if (!ModloaderUpdateMessage)
-                        ModUI.ShowYesNoMessage($"There are updates to mods that can be updated automatically{Environment.NewLine}Mods: <color=aqua>{string.Join(", ", mod_aulist.ToArray())}</color>{Environment.NewLine}{Environment.NewLine}Do you want to download updates now?", "Mod Updates Available", DownloadModsUpdates);
+                        ModUI.ShowYesNoMessage($"There are updates to mods that can be updated automatically{Environment.NewLine}Mods: <color=aqua>{string.Join(", ", ModSelfUpdateList.ToArray())}</color>{Environment.NewLine}{Environment.NewLine}Do you want to download updates now?", "Mod Updates Available", DownloadModsUpdates);
                 }
             }
             else
@@ -248,7 +313,8 @@ namespace MSCLoader
                 StartCoroutine(DownloadSingleUpdateC(0));
             }
         }
-        void DownloadModsUpdates()
+
+        internal void DownloadModsUpdates()
         {
             if (downloadInProgress)
             {
@@ -260,8 +326,136 @@ namespace MSCLoader
                 StartCoroutine(DownloadModsUpdatesC());
             }
         }
+
+        internal void UploadFileUpdate(Mod mod, bool plus12, string key)
+        {
+            if (downloadInProgress)
+            {
+                ModUI.ShowMessage("Another download/upload is in progress.", "Mod Updates");
+                return;
+            }
+            else
+            {
+                StartCoroutine(UploadModFile(mod, plus12, key));
+            }
+        }
         internal bool downloadInProgress = false;
-        // private bool downloadErrored = false;
+        private bool downloadErrored = false;
+
+        IEnumerator UploadModFile(Mod mod, bool plus12, string key)
+        {
+            dnsaf = true;
+            if (CheckSteam())
+            {
+                if (!File.Exists(Path.Combine("Updates", $"Meta_temp\\{mod.ID}.zip")))
+                {
+                    ModConsole.Error("Couldn't find zip file.");
+                }
+                else
+                {
+                    steamID = Steamworks.SteamUser.GetSteamID().ToString();
+                    WebClient Client = new WebClient();
+                    Client.Headers.Add("Content-Type", "binary/octet-stream");
+                    Client.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
+                    Client.UploadFileCompleted += UploadModUpdateCompleted;
+                    Client.UploadProgressChanged += UploadModUpdateProgress;
+                    Client.UploadFileAsync(new Uri($"{serverURL}/meta_f.php?steam={steamID}&key={key}&modid={mod.ID}"), "POST",
+                                                      Path.Combine("Updates", $"Meta_temp\\{mod.ID}.zip"));
+                    ModConsole.Print("Uploading File...");
+
+                    updateTitle.text = string.Format("Uploading Update FIle...").ToUpper();
+                    updateProgress.maxValue = 100;
+                    updateStatus.text = string.Format("Connecting...");
+                    loadingMeta.SetActive(true);
+                    yield return null;
+                    downloadInProgress = true;
+                    while (downloadInProgress)
+                    {
+                        updateProgress.value = downloadPercentage;
+                        updateStatus.text = $"(Uploading) <color=aqua>{mod.ID}.zip</color> [<color=lime>{downloadPercentage}%</color>]";
+                        yield return null;
+                    }
+                    yield return null;
+                    updateProgress.value = 100;
+                    File.Delete(Path.Combine("Updates", $"Meta_temp\\{mod.ID}.zip"));
+                    if (!downloadErrored)
+                    {
+                        updateStatus.text = string.Format($"<color=lime>Upload Complete</color>");
+                        ModMetadata.UpdateVersionNumber(mod, plus12);
+                    }
+                }
+            }
+            else
+            {
+                ModConsole.Error("Steam auth failed");
+                yield return null;
+            }
+            dnsaf = false;
+            yield return new WaitForSeconds(3f);
+            if (!dnsaf)
+                loadingMeta.SetActive(false);
+        }
+
+        private void UploadModUpdateProgress(object sender, UploadProgressChangedEventArgs e)
+        {
+            downloadInProgress = true;
+            downloadPercentage = e.ProgressPercentage;
+            //throw new NotImplementedException();
+        }
+
+        private void UploadModUpdateCompleted(object sender, UploadFileCompletedEventArgs e)
+        {
+            downloadInProgress = false;
+            downloadPercentage = 100;
+            if (e.Error != null)
+            {
+                downloadErrored = true;
+                ModConsole.Error("Failed to upload Mod Update");
+                ModConsole.Error(e.Error.Message);
+                return;
+            }
+            else
+            {
+                string s = System.Text.Encoding.UTF8.GetString(e.Result, 0, e.Result.Length);
+                string[] result = s.Split('|');
+                if (result[0] == "error")
+                {
+                    ModConsole.Error("Failed to upload Mod Update");
+                    switch (result[1])
+                    {
+                        case "0":
+                            ModConsole.Error($"Invalid or non existent key");
+                            break;
+                        case "1":
+                            ModConsole.Error($"Database error");
+                            break;
+                        case "2":
+                            ModConsole.Error($"User not found");
+                            break;
+                        case "3":
+                            ModConsole.Error($"This Mod ID doesn't exist in database");
+                            break;
+                        case "4":
+                            ModConsole.Error($"This is not your mod");
+                            break;
+                        case "5":
+                            ModConsole.Error($"File rejected by server");
+                            break;
+                        default:
+                            ModConsole.Error($"Unknown error");
+                            break;
+                    }
+                }
+                else if (result[0] == "ok")
+                {
+                    downloadErrored = false;
+                }
+                else
+                {
+                    ModConsole.Error($"Unknown response");
+                }
+            }
+        }
         IEnumerator DownloadSingleUpdateC(byte type, string mod = null)
         {
             while (checkForUpdatesProgress)
@@ -377,9 +571,9 @@ namespace MSCLoader
             loadingMeta.SetActive(true);
             yield return null;
             bool failed = false;
-            for (int i = 0; i < mod_aulist.Count; i++)
+            for (int i = 0; i < ModSelfUpdateList.Count; i++)
             {
-                string mod = mod_aulist[i];
+                string mod = ModSelfUpdateList[i];
                 string dwl = string.Empty;
                 WebClient getdwl = new WebClient();
                 getdwl.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
@@ -416,7 +610,7 @@ namespace MSCLoader
                     while (downloadInProgress)
                     {
                         updateProgress.value = downloadPercentage;
-                        updateStatus.text = $"({i + 1}/{mod_aulist.Count}) <color=aqua>{mod}.zip</color> [<color=lime>{downloadPercentage}%</color>]";
+                        updateStatus.text = $"({i + 1}/{ModSelfUpdateList.Count}) <color=aqua>{mod}.zip</color> [<color=lime>{downloadPercentage}%</color>]";
                         yield return null;
                     }
                     yield return new WaitForSeconds(1f);
