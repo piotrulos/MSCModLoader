@@ -52,6 +52,7 @@ namespace MSCLoader
         internal static string AssetsFolder = Path.Combine(ModsFolder, "Assets");
         internal string[] ModsUpdateDir;
         internal List<string> ModSelfUpdateList;
+        internal List<string> MetadataUpdateList;
         internal GameObject mainMenuInfo;
         internal GameObject loading;
         internal GameObject loadingMeta;

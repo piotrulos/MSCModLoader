@@ -44,6 +44,7 @@ namespace MSCLoader
         /// </summary>
         /// <param name="mod">The instance of your mod.</param>
         /// <param name="key">The Keybind to add.</param>
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public static void Add(Mod mod, Keybind key)
         {
             key.Mod = mod;

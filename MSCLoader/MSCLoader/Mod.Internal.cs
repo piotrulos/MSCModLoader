@@ -62,7 +62,7 @@ namespace MSCLoader
         internal string compiledVersion;
         internal string fileName;
         internal ModsManifest metadata;    //Local metadata
-        internal ModsManifest RemMetadata; //Remote metadata
+   //     internal ModsManifest RemMetadata; //Remote metadata
         internal MetaVersion UpdateInfo; //Remote metadata
 
         //Action list

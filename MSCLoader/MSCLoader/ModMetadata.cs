@@ -24,7 +24,7 @@ namespace MSCLoader
     internal class ModsManifest
     {
         public string modID;
-        public string version;
+       // public string version;
         public string description;
         public ManifestLinks links =new ManifestLinks();
         public ManifestIcon icon = new ManifestIcon();
@@ -48,7 +48,7 @@ namespace MSCLoader
     {
         public string iconFileName = null;
         public bool isIconRemote = false;
-        public bool isIconUrl = false;
+       // public bool isIconUrl = false;
     }
     internal class ManifestMinReq
     {
@@ -217,7 +217,6 @@ namespace MSCLoader
                     ModsManifest mm = new ModsManifest
                     {
                         modID = mod.ID,
-                        version = mod.Version,
                         description = "<i>No description provided...</i>",
                         sign = CalculateFileChecksum(mod.fileName),
                         sid_sign = ModLoader.SidChecksumCalculator(steamID+mod.ID),
@@ -234,7 +233,7 @@ namespace MSCLoader
                     getdwl.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
                     try
                     {
-                        dwl = getdwl.DownloadString($"{ModLoader.serverURL}/meta_c.php?steam={steamID}&key={key}&modid={mm.modID}&ver={mm.version}&sign={mm.sign}&sid={mm.sid_sign}");
+                        dwl = getdwl.DownloadString($"{ModLoader.serverURL}/meta_c.php?steam={steamID}&key={key}&modid={mm.modID}&ver={mod.Version}&sign={mm.sign}&sid={mm.sid_sign}");
                     }
                     catch (Exception e)
                     {
@@ -451,22 +450,26 @@ namespace MSCLoader
             key = File.ReadAllText(auth);
             if (ModLoader.CheckSteam())
             {
+                if(mod.UpdateInfo == null) 
+                {
+                    ModConsole.Error($"Update information is null");
+                    return;
+                }
                 ModsManifest umm = mod.metadata;
-                Version v1 = new Version(mod.Version);
-                Version v2 = new Version(mod.metadata.version);
                 if (umm.type != 1)
                 {
+                    Version v1 = new Version(mod.Version);
+                    Version v2 = new Version(mod.UpdateInfo.mod_version);
                     switch (v1.CompareTo(v2))
                     {
                         case 0:
-                            ModConsole.Error($"Mod version {mod.Version} is same as current metadata version {mod.metadata.version}, nothing to update.");
+                            ModConsole.Error($"Mod version <b>{mod.Version}</b> is same as current offered version <b>{mod.UpdateInfo.mod_version}</b>, nothing to update.");
                             return;
                         case 1:
-                            umm.version = mod.Version;
                             umm.sign = CalculateFileChecksum(mod.fileName);
                             break;
                         case -1:
-                            ModConsole.Error($"Mod version {mod.Version} is <b>earlier</b> than current metadata version {mod.metadata.version}, cannot update.");
+                            ModConsole.Error($"Mod version <b>{mod.Version}</b> is <b>LOWER</b> than current offered version <b>{mod.UpdateInfo.mod_version}</b>, cannot update.");
                             return;
                     }
                 }
@@ -481,7 +484,7 @@ namespace MSCLoader
                 getdwl.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
                 try
                 {
-                    dwl = getdwl.DownloadString($"{ModLoader.serverURL}/meta_v.php?steam={steamID}&key={key}&modid={mod.ID}&ver={umm.version}&sign={umm.sign}&type={umm.type}");
+                    dwl = getdwl.DownloadString($"{ModLoader.serverURL}/meta_v.php?steam={steamID}&key={key}&modid={mod.ID}&ver={mod.Version}&sign={umm.sign}&type={umm.type}");
                 }
                 catch (Exception e)
                 {
@@ -534,6 +537,8 @@ namespace MSCLoader
         internal static void ReadUpdateInfo(ModVersions mv)
         {
             ModLoader.Instance.ModSelfUpdateList = new List<string>();
+            ModLoader.Instance.MetadataUpdateList = new List<string>();
+            ModLoader.Instance.HasUpdateModList = new List<Mod>();
             for (int i = 0; i < mv.versions.Count; i++)
             {
                 Mod mod = ModLoader.GetMod(mv.versions[i].mod_id, true);
@@ -549,11 +554,12 @@ namespace MSCLoader
                         {
                             ModLoader.Instance.ModSelfUpdateList.Add(mod.ID);
                         }
-                        ModConsole.Warning($"Update {mod.ID}");
+                        ModConsole.Warning($"Update {mod.ID}"); //TODO remove
                         break;
                     case -1:
                         if (mv.versions[i].mod_type == 6)
                         {
+                            mod.hasUpdate = true;
                             ModLoader.Instance.ModSelfUpdateList.Add(mod.ID);
                         }
                         break;
@@ -562,8 +568,12 @@ namespace MSCLoader
                 {
                     if(mod.metadata.rev != mv.versions[i].mod_rev)
                     {
-                        //TODO Upd meta
+                        ModLoader.Instance.MetadataUpdateList.Add(mod.ID);
                     }
+                }
+                else
+                {
+                    ModLoader.Instance.MetadataUpdateList.Add(mod.ID);
                 }
             }
             ModMenu.instance.UI.GetComponent<ModMenuView>().RefreshTabs();
@@ -576,20 +586,16 @@ namespace MSCLoader
 
         internal static void ReadMetadata(Mod mod)
         {
-            if (mod.metadata == null && mod.RemMetadata == null)
+            if (mod.metadata == null)
                 return;
-            if (mod.metadata == null && mod.RemMetadata != null)
-                mod.metadata = mod.RemMetadata;
-            else if (mod.metadata != null && mod.RemMetadata == null)
-                mod.RemMetadata = mod.metadata;
             if (mod.metadata.type == 9)
             {
                 //Disabled by reason
                 mod.isDisabled = true;
                 if (!string.IsNullOrEmpty(mod.metadata.msg))
-                    ModConsole.Error(string.Format("Mod <b>{0}</b> has been disabled, Reason: <b>{1}</b>", mod.ID, mod.metadata.msg));
+                    ModConsole.Error($"Mod <b>{mod.ID}</b> has been disabled, Reason: <b>{mod.metadata.msg}</b>");
                 else
-                    ModConsole.Error(string.Format("Mod <b>{0}</b> has been disabled, Reason: <i>No reason given...</i>", mod.ID));
+                    ModConsole.Error($"Mod <b>{mod.ID}</b> has been disabled, Reason: <i>No reason given...</i>");
                 return;
             }
             if (mod.metadata.type == 2)
@@ -597,14 +603,14 @@ namespace MSCLoader
                 //Disabled by user
                 mod.isDisabled = true;
                 if (!string.IsNullOrEmpty(mod.metadata.msg))
-                    ModConsole.Error(string.Format("Mod <b>{0}</b> has been disabled by author, Reason: <b>{1}</b>", mod.ID, mod.metadata.msg));
+                    ModConsole.Error($"Mod <b>{mod.ID}</b> has been disabled by author, Reason: <b>{mod.metadata.msg}</b>");
                 else
-                    ModConsole.Error(string.Format("Mod <b>{0}</b> has been disabled by author, Reason: <i>No reason given...</i>", mod.ID));
+                    ModConsole.Error($"Mod <b>{mod.ID}</b> has been disabled by author, Reason: <i>No reason given...</i>");
                 return;
             }
-            if (mod.RemMetadata.type == 3 && !mod.hasUpdate)
+            if (mod.metadata.type == 3)
             {
-                if (mod.RemMetadata.sign != CalculateFileChecksum(mod.fileName))
+                if (mod.metadata.sign != CalculateFileChecksum(mod.fileName))
                 {
                     mod.isDisabled = true;
                     return;
@@ -612,7 +618,7 @@ namespace MSCLoader
             }
             if (mod.metadata.type == 1 || mod.metadata.type == 4 || mod.metadata.type == 5 || mod.metadata.type == 6)
             {
-                if (mod.metadata.icon.iconFileName != null && mod.metadata.icon.iconFileName != string.Empty)
+                if (!string.IsNullOrEmpty(mod.metadata.icon.iconFileName))
                 {
                     if (mod.metadata.icon.isIconRemote)
                     {
@@ -634,20 +640,20 @@ namespace MSCLoader
                             if (mod.metadata.minimumRequirements.disableIfVer)
                             {
                                 mod.isDisabled = true;
-                                ModConsole.Error(string.Format("Mod <b>{0}</b> requires MSC build at least <b>{1}</b>, your current build is <b>{2}</b>. Author marked this as required!", mod.ID, mod.metadata.minimumRequirements.MSCbuildID, Steamworks.SteamApps.GetAppBuildId()));
+                                ModConsole.Error($"Mod <b>{mod.ID}</b> requires MSC build at least <b>{mod.metadata.minimumRequirements.MSCbuildID}</b>, your current build is <b>{Steamworks.SteamApps.GetAppBuildId()}</b>. Author marked this as required! Please update your game!");
                             }
                             else
                             {
-                                ModConsole.Warning(string.Format("Mod <b>{0}</b> requires MSC build at least <b>{1}</b>, your current build is <b>{2}</b>. This may cause issues!", mod.ID, mod.metadata.minimumRequirements.MSCbuildID, Steamworks.SteamApps.GetAppBuildId()));
+                                ModConsole.Warning($"Mod <b>{mod.ID}</b> requires MSC build at least <b>{mod.metadata.minimumRequirements.MSCbuildID}</b>, your current build is <b>{Steamworks.SteamApps.GetAppBuildId()}</b>. This may cause issues! Please update your game!");
                             }
                         }
                     }
                     catch (Exception e)
                     {
-                        System.Console.WriteLine("Can't get buildID compare " + e);
+                        Console.WriteLine($"Can't get buildID compare: {e.Message}");
                     }
                 }
-                if (mod.metadata.minimumRequirements.MSCLoaderVer != null && mod.metadata.minimumRequirements.MSCLoaderVer != string.Empty)
+                if (!string.IsNullOrEmpty(mod.metadata.minimumRequirements.MSCLoaderVer))
                 {
                     Version v1 = new Version(mod.metadata.minimumRequirements.MSCLoaderVer);
                     Version v2 = new Version(ModLoader.MSCLoader_Ver);
@@ -656,68 +662,68 @@ namespace MSCLoader
                         if (mod.metadata.minimumRequirements.disableIfVer)
                         {
                             mod.isDisabled = true;
-                            ModConsole.Error(string.Format("Mod <b>{0}</b> requires MSCLoader at least <b>{1}</b>, your current version is <b>{2}</b>. Author marked this as required!", mod.ID, mod.metadata.minimumRequirements.MSCLoaderVer, ModLoader.MSCLoader_Ver));
+                            ModConsole.Error($"Mod <b>{mod.ID}</b> requires MSCLoader at least <b>{mod.metadata.minimumRequirements.MSCLoaderVer}</b>, your current version is <b>{ModLoader.MSCLoader_Ver}</b>. Author marked this as required!");
                         }
                         else
                         {
-                            ModConsole.Warning(string.Format("Mod <b>{0}</b> requires MSCLoader at least <b>{1}</b>, your current version is <b>{2}</b>. This may cause issues!", mod.ID, mod.metadata.minimumRequirements.MSCLoaderVer, ModLoader.MSCLoader_Ver));
+                            ModConsole.Warning($"Mod <b>{mod.ID}</b> requires MSCLoader at least <b>{mod.metadata.minimumRequirements.MSCLoaderVer}</b>, your current version is <b>{ModLoader.MSCLoader_Ver}</b>. This may cause issues!");
                         }
                     }
                 }
-                if (mod.metadata.modConflicts.modIDs != null && mod.metadata.modConflicts.modIDs != string.Empty)
+                if (!string.IsNullOrEmpty(mod.metadata.modConflicts.modIDs))
                 {
                     string[] modIDs = mod.metadata.modConflicts.modIDs.Trim().Split(',');
                     for (int i = 0; i < modIDs.Length; i++)
                     {
-                        if (ModLoader.LoadedMods.Select(s => s.ID).Where(x => x.Equals(modIDs[i])).Count() != 0)
+                        if (ModLoader.GetMod(modIDs[i], true) != null)
                         {
                             if (mod.metadata.modConflicts.disableIfConflict)
                             {
                                 mod.isDisabled = true;
-                                if (mod.metadata.modConflicts.customMessage != null && mod.metadata.modConflicts.customMessage != string.Empty)
-                                    ModConsole.Error(string.Format("Mod <color=orange><b>{0}</b></color> is marked as conflict with installed mod <color=orange><b>{1}</b></color>. Author's message: {2}", mod.ID, modIDs[i], mod.metadata.modConflicts.customMessage));
+                                if (!string.IsNullOrEmpty(mod.metadata.modConflicts.customMessage))
+                                    ModConsole.Error($"Mod <color=orange><b>{mod.ID}</b></color> is marked as conflict with installed mod <color=orange><b>{modIDs[i]}</b></color>. Author's message: {mod.metadata.modConflicts.customMessage}");
                                 else
-                                    ModConsole.Error(string.Format("Mod <color=orange><b>{0}</b></color> is marked as conflict with installed mod <color=orange><b>{1}</b></color>.", mod.ID, modIDs[i]));
+                                    ModConsole.Error($"Mod <color=orange><b>{mod.ID}</b></color> is marked as conflict with installed mod <color=orange><b>{modIDs[i]}</b></color>.");
                             }
                             else
                             {
-                                if (mod.metadata.modConflicts.customMessage != null && mod.metadata.modConflicts.customMessage != string.Empty)
-                                    ModConsole.Warning(string.Format("Mod <color=red><b>{0}</b></color> is marked as conflict with installed mod <color=red><b>{1}</b></color>. Author's message: {2}", mod.ID, modIDs[i], mod.metadata.modConflicts.customMessage));
+                                if (!string.IsNullOrEmpty(mod.metadata.modConflicts.customMessage))
+                                    ModConsole.Warning($"Mod <color=red><b>{mod.ID}</b></color> is marked as conflict with installed mod <color=red><b>{modIDs[i]}</b></color>. Author's message: {mod.metadata.modConflicts.customMessage}");
                                 else
-                                    ModConsole.Warning(string.Format("Mod <color=red><b>{0}</b></color> is marked as conflict with installed mod <color=red><b>{1}</b></color>.", mod.ID, modIDs[i]));
+                                    ModConsole.Warning($"Mod <color=red><b>{mod.ID}</b></color> is marked as conflict with installed mod <color=red><b>{modIDs[i]}</b></color>.");
                             }
                         }
                     }
                 }
-                if (mod.metadata.requiredMods.modID != null && mod.metadata.requiredMods.modID != string.Empty)
+                if (!string.IsNullOrEmpty(mod.metadata.requiredMods.modID))
                 {
                     string[] modIDs = mod.metadata.requiredMods.modID.Trim().Split(',');
                     string[] modIDvers = mod.metadata.requiredMods.minVer.Trim().Split(',');
 
                     for (int i = 0; i < modIDs.Length; i++)
                     {
-                        string m = modIDs[i];
-                        if (ModLoader.LoadedMods.Select(s => s.ID).Where(x => x.Equals(m)).Count() == 0)
+                        if (ModLoader.GetMod(modIDs[i], true) == null)
                         {
                             mod.isDisabled = true;
-                            if (mod.metadata.requiredMods.customMessage != null && mod.metadata.requiredMods.customMessage != string.Empty)
-                                ModConsole.Error($"Mod <b>{mod.ID}</b> is missing required mod <b>{m}</b>. Author's message: {mod.metadata.requiredMods.customMessage}");
+                            if (!string.IsNullOrEmpty(mod.metadata.requiredMods.customMessage))
+                                ModConsole.Error($"Mod <b>{mod.ID}</b> is missing required mod <b>{modIDs[i]}</b>. Author's message: {mod.metadata.requiredMods.customMessage}");
                             else
-                                ModConsole.Error($"Mod <b>{mod.ID}</b> is missing required mod <b>{m}</b>.");
-                            OpenRequiredDownloadPage(m);
+                                ModConsole.Error($"Mod <b>{mod.ID}</b> is missing required mod <b>{modIDs[i]}</b>.");
+                            OpenRequiredDownloadPage(modIDs[i]);
                         }
                         else
                         {
                             try
                             {
                                 Version v1 = new Version(modIDvers[i]);
-                                Version v2 = new Version(ModLoader.LoadedMods.Where(x => x.ID.Equals(m)).FirstOrDefault().Version);
+                                Version v2 = new Version(ModLoader.GetMod(modIDs[i], true).Version);
                                 if (v1.CompareTo(v2) == 1)
                                 {
-                                    if (mod.metadata.requiredMods.customMessage != null && mod.metadata.requiredMods.customMessage != string.Empty)
-                                        ModConsole.Warning(string.Format("Mod <b>{0}</b> requires mod <b>{1}</b> to be at least version <b>{3}</b>. Author's message: {2}", mod.ID, m, mod.metadata.requiredMods.customMessage, v1));
+                                    if (!string.IsNullOrEmpty(mod.metadata.requiredMods.customMessage))
+                                        ModConsole.Warning($"Mod <b>{mod.ID}</b> requires mod <b>{modIDs[i]}</b> to be at least version <b>{v1}</b>. Author's message: {mod.metadata.requiredMods.customMessage}");
                                     else
-                                        ModConsole.Warning(string.Format("Mod <b>{0}</b> requires mod <b>{1}</b> to be at least version <b>{2}</b>.", mod.ID, m, v1));
+                                        ModConsole.Warning($"Mod <b>{mod.ID}</b> requires mod <b>{modIDs[i]}</b> to be at least version <b>{v1}</b>.");
+                                    OpenRequiredDownloadPage(modIDs[i]);
                                 }
                             }
                             catch (Exception e)
@@ -780,9 +786,8 @@ namespace MSCLoader
         {
             if (showedMissingModMessage) return;
             showedMissingModMessage = true;
-            ModUI.ShowYesNoMessage($"Some of the mods requires mod <color=aqua>{m}</color> to be installed.{Environment.NewLine}{Environment.NewLine}Do you want to open download page for this mod?", "Missing mods", delegate {
-
-                Application.OpenURL($"http://my-summer-car.ml/redir.php?mod={m}");
+            ModUI.ShowYesNoMessage($"Some of the mods requires mod <color=aqua>{m}</color> to be installed.{Environment.NewLine}{Environment.NewLine}Do you want to open download this mod now?", "Missing mods", delegate {
+                ModLoader.Instance.DownloadRequiredMod(m);
             });
         }
         internal static string CalculateFileChecksum(string fn)

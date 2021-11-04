@@ -718,9 +718,9 @@ namespace MSCLoader
                     {
                         newVersion = result[1];
                         if (experimental)
-                            info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready! [<color=magenta>Experimental</color> <color=lime>build {currentBuild}</color>] (<color=orange>New build available: <b>{newBuild}</b></color>)";
+                            info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready! [<color=magenta>Experimental</color> <color=lime>build {currentBuild}</color>] (<color=aqua>Update is available</color>)";
                         else
-                            info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready! (<color=orange>New version available: <b>v{newVersion}</b></color>)";
+                            info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready! (<color=aqua>Update is available</color>)";
                         ModloaderUpdateMessage = true;
                         ModUI.ShowYesNoMessage($"New ModLoader version is available{Environment.NewLine}<color=lime>{newVersion} build {newBuild}</color>{Environment.NewLine}{Environment.NewLine}Do you want to download it now?", "MSCLoader update", DownloadModloaderUpdate);
                     }
@@ -1272,7 +1272,6 @@ namespace MSCLoader
                 AssemblyName[] list = asm.GetReferencedAssemblies();
 
                 string msVer = null;
-                string test2 = string.Empty;
                 for (int i = 0; i < list.Length; i++)
                 {
                     if (!stdRef.Contains(list[i].Name))
@@ -1293,12 +1292,6 @@ namespace MSCLoader
                                 msVer = $"{verparse[0]}.{verparse[1]}.{verparse[2]}";
                         }
                     }
-                }
-
-                if (byteFile == null)
-                {
-                    if (File.ReadAllText(file).Contains("RegistryKey"))
-                        throw new FileLoadException();
                 }
 
                 //Warn about wrong .net target, source of some mod crashes.
