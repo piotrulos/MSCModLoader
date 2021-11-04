@@ -35,10 +35,8 @@ namespace MSCLoader
             RemoveChildren(listView.transform);
             if(ModLoader.Instance.actualModList.Length == 0)
             {
-                GameObject tx2 = Instantiate(LabelPrefab);
-                tx2.GetComponent<Text>().text = $"<color=aqua>A little empty here, seems like there is no mods installed.{Environment.NewLine}If you think that you installed mods, check if you put mods in correct folder.{Environment.NewLine}Current Mod folder is: <color=yellow>{ModLoader.ModsFolder}</color></color>";
-                tx2.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
-                tx2.transform.SetParent(listView.transform, false);
+               SettingsElement tx = CreateText(listView.transform, $"<color=aqua>A little empty here, seems like there is no mods installed.{Environment.NewLine}If you think that you installed mods, check if you put mods in correct folder.{Environment.NewLine}Current Mod folder is: <color=yellow>{ModLoader.ModsFolder}</color></color>");
+               tx.value.alignment = TextAnchor.MiddleCenter;
             }
             for (int i = 0; i < ModLoader.Instance.actualModList.Length; i++)
             {
@@ -61,10 +59,8 @@ namespace MSCLoader
             RemoveChildren(listView.transform);
             if (ModLoader.Instance.HasUpdateModList.Count == 0)
             {
-                GameObject tx2 = Instantiate(LabelPrefab);
-                tx2.GetComponent<Text>().text = $"<color=aqua>Everything seems to be up to date!</color>";
-                tx2.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
-                tx2.transform.SetParent(listView.transform, false);
+                SettingsElement tx = CreateText(listView.transform, $"<color=aqua>Everything seems to be up to date!</color>");
+                tx.value.alignment = TextAnchor.MiddleCenter;
             }
             for (int i = 0; i < ModLoader.Instance.HasUpdateModList.Count; i++)
             {
@@ -79,10 +75,8 @@ namespace MSCLoader
             RemoveChildren(listView.transform);
             if (ModLoader.Instance.ReferencesList.Count == 0)
             {
-                GameObject tx2 = Instantiate(LabelPrefab);
-                tx2.GetComponent<Text>().text = $"<color=aqua>No additional references are installed.</color>";
-                tx2.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
-                tx2.transform.SetParent(listView.transform, false);
+                SettingsElement tx = CreateText(listView.transform, $"<color=aqua>No additional references are installed.</color>");
+                tx.value.alignment = TextAnchor.MiddleCenter;
             }
             for (int i = 0; i < ModLoader.Instance.ReferencesList.Count; i++)
             {
@@ -118,94 +112,56 @@ namespace MSCLoader
             RemoveChildren(listView.transform);
             listView.GetComponentInParent<ScrollRect>().verticalNormalizedPosition = 0;
             //Info Header
-            GameObject hdr = GameObject.Instantiate(HeaderGroupPrefab);
-            SettingsGroup header = hdr.GetComponent<SettingsGroup>();
-            header.HeaderTitle.text = "Mod Information".ToUpper();
-            hdr.transform.SetParent(listView.transform, false);
-            GameObject tx = Instantiate(LabelPrefab);
-            tx.GetComponent<Text>().text = $"<color=yellow>ID:</color> <color=aqua>{mod.ID}</color> (Compiled using MSCLoader <color=yellow>{mod.compiledVersion}</color>){Environment.NewLine}" +
+            SettingsGroup header = CreateHeader(listView.transform, "Mod Information", Color.cyan);
+            SettingsElement tx = CreateText(header.HeaderListView.transform, $"<color=yellow>ID:</color> <color=aqua>{mod.ID}</color> (Compiled using MSCLoader <color=yellow>{mod.compiledVersion}</color>){Environment.NewLine}" +
                 $"<color=yellow>Version:</color> <color=aqua>{mod.Version}</color>{Environment.NewLine}" +
                 $"<color=yellow>Author:</color> <color=aqua>{mod.Author}</color>{Environment.NewLine}" +
-                $"<color=yellow>Additional references used by this Mod:</color>{Environment.NewLine}";
-            if (mod.AdditionalReferences != null)
-                tx.GetComponent<Text>().text += $"<color=aqua>{string.Join(", ",mod.AdditionalReferences)}</color>";
+                $"<color=yellow>Additional references used by this Mod:</color>{Environment.NewLine}");
+             if (mod.AdditionalReferences != null)
+                tx.value.text += $"<color=aqua>{string.Join(", ",mod.AdditionalReferences)}</color>";
             else
-                tx.GetComponent<Text>().text += $"<color=aqua>[None]</color>";
-            tx.transform.SetParent(header.HeaderListView.transform, false);
+                tx.value.text += $"<color=aqua>[None]</color>";
             if (mod.metadata == null)
             {
-                GameObject hdr2 = GameObject.Instantiate(HeaderGroupPrefab);
-                SettingsGroup header2 = hdr2.GetComponent<SettingsGroup>();
-                header2.HeaderTitle.text = "No metadata".ToUpper();
-                header2.HeaderTitle.color = Color.yellow;
-                // header2.HeaderBackground.color = (Color)setting.Vals[1];
-                hdr2.transform.SetParent(listView.transform, false);
-                GameObject tx2 = Instantiate(LabelPrefab);
-                tx2.GetComponent<Text>().text = $"<color=yellow>This mod doesn't contain additional information</color>";
-                tx2.transform.SetParent(header2.HeaderListView.transform, false);
+                SettingsGroup header2 = CreateHeader(listView.transform, "No metadata", Color.yellow);
+                CreateText(header2.HeaderListView.transform, $"<color=yellow>This mod doesn't contain additional information</color>");
             }
             else
             {
-                GameObject hdr2 = GameObject.Instantiate(HeaderGroupPrefab);
-                SettingsGroup header2 = hdr2.GetComponent<SettingsGroup>();
-                header2.HeaderTitle.text = "Website Links".ToUpper();
-                header2.HeaderTitle.color = Color.yellow;
-                // header2.HeaderBackground.color = (Color)setting.Vals[1];
-                hdr2.transform.SetParent(listView.transform, false);
+                SettingsGroup header2 = CreateHeader(listView.transform, "Website Links", Color.yellow);
                 if (string.IsNullOrEmpty(mod.metadata.links.nexusLink) && string.IsNullOrEmpty(mod.metadata.links.rdLink) && string.IsNullOrEmpty(mod.metadata.links.githubLink))
                 {
-                    GameObject tx2 = Instantiate(LabelPrefab);
-                    tx2.GetComponent<Text>().text = $"<color=yellow>This mod doesn't contain links</color>";
-                    tx2.transform.SetParent(header2.HeaderListView.transform, false);
+                    CreateText(header2.HeaderListView.transform, $"<color=yellow>This mod doesn't contain links</color>");
                 }
                 else
                 {
                     if (!string.IsNullOrEmpty(mod.metadata.links.nexusLink))
                     {
-                        GameObject nexusBtnP = Instantiate(ButtonPrefab);
-                        SettingsElement nexusBtn = nexusBtnP.GetComponent<SettingsElement>();
-                        nexusBtn.settingName.text = "SHOW ON <color=orange>NEXUSMODS.COM</color>";
+                        SettingsElement nexusBtn = CreateButton(header2.HeaderListView.transform, "SHOW ON <color=orange>NEXUSMODS.COM</color>", Color.white, new Color32(2, 35, 60, 255));
                         nexusBtn.settingName.alignment = TextAnchor.MiddleLeft;
                         nexusBtn.iconElement.texture = nexusBtn.iconPack[1];
                         nexusBtn.iconElement.gameObject.SetActive(true);
-                        nexusBtn.button.GetComponent<Image>().color = new Color32(2, 35, 60, 255);
                         nexusBtn.button.onClick.AddListener(() => OpenModLink(mod.metadata.links.nexusLink));
-                        nexusBtn.transform.SetParent(header2.HeaderListView.transform, false);
                     }
                     if (!string.IsNullOrEmpty(mod.metadata.links.rdLink))
                     {
-                        GameObject rdBtnP = Instantiate(ButtonPrefab);
-                        SettingsElement rdBtn = rdBtnP.GetComponent<SettingsElement>();
-                        rdBtn.settingName.text = "SHOW ON <color=orange>RACEDEPARTMENT.COM</color>";
+                        SettingsElement rdBtn = CreateButton(header2.HeaderListView.transform, "SHOW ON <color=orange>RACEDEPARTMENT.COM</color>", Color.white, new Color32(2, 35, 49, 255));
                         rdBtn.settingName.alignment = TextAnchor.MiddleLeft; 
                         rdBtn.iconElement.texture = rdBtn.iconPack[0];
                         rdBtn.iconElement.gameObject.SetActive(true);
-                        rdBtn.button.GetComponent<Image>().color = new Color32(2, 35, 49, 255);
                         rdBtn.button.onClick.AddListener(() => OpenModLink(mod.metadata.links.rdLink));
-                        rdBtn.transform.SetParent(header2.HeaderListView.transform, false);
                     }
                     if (!string.IsNullOrEmpty(mod.metadata.links.githubLink))
                     {
-                        GameObject ghBtnP = Instantiate(ButtonPrefab);
-                        SettingsElement ghBtn = ghBtnP.GetComponent<SettingsElement>();
-                        ghBtn.settingName.text = "SHOW ON <color=orange>GITHUB.COM</color>";
+                        SettingsElement ghBtn = CreateButton(header2.HeaderListView.transform, "SHOW ON <color=orange>GITHUB.COM</color>", Color.white, Color.black);
                         ghBtn.settingName.alignment = TextAnchor.MiddleLeft;
                         ghBtn.iconElement.texture = ghBtn.iconPack[2];
                         ghBtn.iconElement.gameObject.SetActive(true);
-                        ghBtn.button.GetComponent<Image>().color = Color.black;
                         ghBtn.button.onClick.AddListener(() => OpenModLink(mod.metadata.links.githubLink));
-                        ghBtn.transform.SetParent(header2.HeaderListView.transform, false);
                     }
                 }
-                GameObject hdr3 = GameObject.Instantiate(HeaderGroupPrefab);
-                SettingsGroup header3 = hdr3.GetComponent<SettingsGroup>();
-                header3.HeaderTitle.text = "Description".ToUpper();
-                header3.HeaderTitle.color = Color.yellow;
-                // header2.HeaderBackground.color = (Color)setting.Vals[1];
-                hdr3.transform.SetParent(listView.transform, false);
-                GameObject tx3 = Instantiate(LabelPrefab);
-                tx3.GetComponent<Text>().text = mod.metadata.description;
-                tx3.transform.SetParent(header3.HeaderListView.transform, false);
+                SettingsGroup header3 = CreateHeader(listView.transform, "Description", Color.yellow);
+                CreateText(header3.HeaderListView.transform, mod.metadata.description);
             }
         }
         internal void MetadataUploadForm(GameObject listView, Mod mod)
@@ -214,28 +170,25 @@ namespace MSCLoader
             listView.GetComponentInParent<ScrollRect>().verticalNormalizedPosition = 0;
             //Info Header
             SettingsGroup header = CreateHeader(listView.transform, "Mod Information", Color.cyan);
-            GameObject tx = Instantiate(LabelPrefab);
-            tx.GetComponent<Text>().text = $"<color=yellow>ID:</color> <color=aqua>{mod.ID}</color> (Compiled using MSCLoader <color=yellow>{mod.compiledVersion}</color>){Environment.NewLine}" +
-               $"<color=yellow>Version:</color> <color=aqua>{mod.Version}</color>{Environment.NewLine}" +
-               $"<color=yellow>Author:</color> <color=aqua>{mod.Author}</color>{Environment.NewLine}" +
-               $"<color=yellow>Additional references used by this Mod:</color>{Environment.NewLine}";
+            SettingsElement tx = CreateText(header.HeaderListView.transform, $"<color=yellow>ID:</color> <color=aqua>{mod.ID}</color> (Compiled using MSCLoader <color=yellow>{mod.compiledVersion}</color>){Environment.NewLine}" +
+                $"<color=yellow>Version:</color> <color=aqua>{mod.Version}</color>{Environment.NewLine}" +
+                $"<color=yellow>Author:</color> <color=aqua>{mod.Author}</color>{Environment.NewLine}" +
+                $"<color=yellow>Additional references used by this Mod:</color>{Environment.NewLine}");
             if (mod.AdditionalReferences != null)
-                tx.GetComponent<Text>().text += $"<color=aqua>{string.Join(", ", mod.AdditionalReferences)}</color>";
+                tx.value.text += $"<color=aqua>{string.Join(", ", mod.AdditionalReferences)}</color>";
             else
-                tx.GetComponent<Text>().text += $"<color=aqua>[None]</color>";
-            tx.transform.SetParent(header.HeaderListView.transform, false);
+                tx.value.text += $"<color=aqua>[None]</color>";
             //----------------------------------
             bool assets = false, references = false, plus12 = false;
             List<References> refList = new List<References>();
             //----------------------------------
             SettingsGroup header2 = CreateHeader(listView.transform, "Bundle Assets", Color.yellow);
-            GameObject tx2 = Instantiate(LabelPrefab);
-            tx2.transform.SetParent(header2.HeaderListView.transform, false);
+            SettingsElement tx2 = CreateText(header2.HeaderListView.transform, "");
             if (!System.IO.Directory.Exists(System.IO.Path.Combine(ModLoader.AssetsFolder, mod.ID)))
-                tx2.GetComponent<Text>().text = $"<color=yellow>Looks like this mod doesn't have assets folder.</color>";
+                tx2.value.text = $"<color=yellow>Looks like this mod doesn't have assets folder.</color>";
             else
             {
-                tx2.GetComponent<Text>().text = $"<color=yellow>Select below option if you want to include Assets folder (in most cases you should do it)</color>";
+                tx2.value.text = $"<color=yellow>Select below option if you want to include Assets folder (in most cases you should do it)</color>";
                 GameObject checkboxP = Instantiate(CheckBoxPrefab);
                 SettingsElement checkbox = checkboxP.GetComponent<SettingsElement>();
                 checkbox.settingName.text = "Include Assets Folder";
@@ -248,12 +201,11 @@ namespace MSCLoader
                 checkbox.transform.SetParent(header2.HeaderListView.transform, false);
             }
             SettingsGroup header3 = CreateHeader(listView.transform, "Bundle References", Color.yellow);
-            GameObject tx3 = Instantiate(LabelPrefab);
-            tx3.transform.SetParent(header3.HeaderListView.transform, false);
+            SettingsElement tx3 = CreateText(header3.HeaderListView.transform, "");
             if (mod.AdditionalReferences == null)
-                tx3.GetComponent<Text>().text = $"<color=yellow>Looks like this mod doesn't use additional references.</color>";
+                tx3.value.text = $"<color=yellow>Looks like this mod doesn't use additional references.</color>";
             else
-                tx3.GetComponent<Text>().text = $"<color=yellow>You can bundle references{Environment.NewLine}Do it only if reference is exclusive to your mod, otherwise you should create Reference update separately.</color>";
+                tx3.value.text = $"<color=yellow>You can bundle references{Environment.NewLine}Do it only if reference is exclusive to your mod, otherwise you should create Reference update separately.</color>";
         
             SettingsGroup header4 = CreateHeader(listView.transform, "Update Settigns", Color.yellow);
             GameObject checkboxP2 = Instantiate(CheckBoxPrefab);
@@ -267,27 +219,17 @@ namespace MSCLoader
             });
             checkbox2.transform.SetParent(header4.HeaderListView.transform, false);
 
-            GameObject btnP = Instantiate(ButtonPrefab);
-            SettingsElement uploadBtn = btnP.GetComponent<SettingsElement>();
-            uploadBtn.settingName.text = "Upload Updated Mod".ToUpper();
-            uploadBtn.settingName.color = Color.white;
-            uploadBtn.button.GetComponent<Image>().color = Color.black;
+            SettingsElement uploadBtn = CreateButton(listView.transform, "Upload Updated Mod", Color.white, Color.black);
             uploadBtn.button.onClick.AddListener(delegate
             {
                 ModMetadata.UploadUpdate(mod, assets, references, plus12);
             });
-            uploadBtn.transform.SetParent(listView.transform, false);
 
-            GameObject btnP2 = Instantiate(ButtonPrefab);
-            SettingsElement uploadBtn2 = btnP2.GetComponent<SettingsElement>();
-            uploadBtn2.settingName.text = "Update Mod version only".ToUpper();
-            uploadBtn2.settingName.color = Color.white;
-            uploadBtn2.button.GetComponent<Image>().color = Color.black;
+            SettingsElement uploadBtn2 = CreateButton(listView.transform, "Update Mod version only", Color.white, Color.black);
             uploadBtn2.button.onClick.AddListener(delegate
             {
                 ModMetadata.UpdateVersionNumber(mod, plus12);
             });
-            uploadBtn2.transform.SetParent(listView.transform, false);
         }
         internal static void OpenModLink(string url)
         {
@@ -320,17 +262,11 @@ namespace MSCLoader
             //If first settings element is not header, create one.
             if (mod.proSettings)
             {
-                GameObject tx2 = Instantiate(LabelPrefab);
-                tx2.GetComponent<Text>().text = $"<color=aqua>Incompatible settings format! Settings below may not load correctly.</color>";
-                tx2.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
-                tx2.transform.SetParent(listView.transform, false);
+                CreateText(listView.transform, $"<color=aqua>Incompatible settings format! Settings below may not load correctly.</color>");
             }
             if (Settings.Get(mod)[0].SettingType != SettingsType.Header)
             {
-                GameObject hdr = GameObject.Instantiate(HeaderGroupPrefab);
-                SettingsGroup header = hdr.GetComponent<SettingsGroup>();
-                header.HeaderTitle.text = "Settings".ToUpper();
-                hdr.transform.SetParent(listView.transform, false);
+                SettingsGroup header = CreateHeader(listView.transform, "Settings", Color.cyan);
                 currentTransform = header.HeaderListView.transform;
             }
 
@@ -343,18 +279,13 @@ namespace MSCLoader
                     SettingsList(Settings.Get(mod)[i], currentTransform);
                 }
             }
-            GameObject rbtnP = Instantiate(ButtonPrefab);
-            SettingsElement rbtn = rbtnP.GetComponent<SettingsElement>();
-            rbtn.settingName.text = "Reset all settings to default".ToUpper();
-            rbtn.settingName.color = Color.white;
-            rbtn.button.GetComponent<Image>().color = Color.black;
+            SettingsElement rbtn = CreateButton(listView.transform, "Reset all settings to default", Color.white, Color.black);
             rbtn.button.onClick.AddListener(delegate
             {
                 ModMenu.ResetSettings(mod);
                 universalView.FillSettings(mod);
                 mod.ModSettingsLoaded();
             });
-            rbtn.transform.SetParent(listView.transform, false);
         }
         public void KeyBindsList(GameObject listView, Mod mod)
         {
@@ -364,22 +295,15 @@ namespace MSCLoader
             //If first settings element is not header, create one.
             if (mod.Keybinds[0].ID != null && mod.Keybinds[0].Vals == null)
             {
-                GameObject hdr = GameObject.Instantiate(HeaderGroupPrefab);
-                SettingsGroup header = hdr.GetComponent<SettingsGroup>();
-                header.HeaderTitle.text = "Keybinds".ToUpper();
-                hdr.transform.SetParent(listView.transform, false);
+                SettingsGroup header = CreateHeader(listView.transform, "Keybinds", Color.yellow);
                 currentTransform = header.HeaderListView.transform;
             }
             for (int i = 0; i < mod.Keybinds.Count; i++)
             {
                 if (mod.Keybinds[i].ID == null && mod.Keybinds[i].Vals != null)
                 {
-                    GameObject hdr = GameObject.Instantiate(HeaderGroupPrefab);
-                    SettingsGroup header = hdr.GetComponent<SettingsGroup>();
-                    header.HeaderTitle.text = mod.Keybinds[i].Name.ToUpper();
-                    header.HeaderTitle.color = (Color)mod.Keybinds[i].Vals[1];
+                    SettingsGroup header = CreateHeader(listView.transform, mod.Keybinds[i].Name, (Color)mod.Keybinds[i].Vals[1]);
                     header.HeaderBackground.color = (Color)mod.Keybinds[i].Vals[0];
-                    hdr.transform.SetParent(listView.transform, false);
                     currentTransform = header.HeaderListView.transform;
                 }
                 else
@@ -389,28 +313,18 @@ namespace MSCLoader
                     keyBind.transform.SetParent(currentTransform, false);
                 }
             }
-            GameObject rbtnP = Instantiate(ButtonPrefab);
-            SettingsElement rbtn = rbtnP.GetComponent<SettingsElement>();
-            rbtn.settingName.text = "Reset all Keybinds to default".ToUpper();
-            rbtn.settingName.color = Color.white;
-            rbtn.button.GetComponent<Image>().color = Color.black;
+            SettingsElement rbtn = CreateButton(listView.transform, "Reset all Keybinds to default", Color.white, Color.black);
             rbtn.button.onClick.AddListener(delegate
             {
                 ModMenu.ResetBinds(mod);
                 universalView.FillKeybinds(mod);
             });
-            rbtn.transform.SetParent(listView.transform, false);
         }
         Transform SettingsHeader(Settings setting, Transform listView)
         {
-            GameObject hdr = GameObject.Instantiate(HeaderGroupPrefab);
-            SettingsGroup header = hdr.GetComponent<SettingsGroup>();
-            header.HeaderTitle.text = setting.Name.ToUpper();
-            header.HeaderTitle.color = (Color)setting.Vals[2];
+            SettingsGroup header = CreateHeader(listView.transform, setting.Name, (Color)setting.Vals[2]);
             header.HeaderBackground.color = (Color)setting.Vals[1];
-            hdr.transform.SetParent(listView.transform, false);
             return header.HeaderListView.transform;
-
         }
 
         public void SettingsList(Settings setting, Transform listView)
@@ -606,6 +520,24 @@ namespace MSCLoader
             header.HeaderTitle.color = textColor;
             hdr.transform.SetParent(listView, false);
             return header;
+        }
+        public SettingsElement CreateButton(Transform listView, string text, Color textColor, Color btnColor)
+        {
+            GameObject btnP = Instantiate(ButtonPrefab);
+            SettingsElement btn = btnP.GetComponent<SettingsElement>();
+            btn.settingName.text = text.ToUpper();
+            btn.settingName.color = textColor;
+            btn.button.GetComponent<Image>().color = btnColor;
+            btn.transform.SetParent(listView.transform, false);
+            return btn;
+        }
+        public SettingsElement CreateText(Transform listView, string text)
+        {
+            GameObject tx = Instantiate(LabelPrefab);
+            SettingsElement txt = tx.GetComponent<SettingsElement>();
+            txt.value.text = text;
+            tx.transform.SetParent(listView.transform, false);
+            return txt;
         }
     }
 }
