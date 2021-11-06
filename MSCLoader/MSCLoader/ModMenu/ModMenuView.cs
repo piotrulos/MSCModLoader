@@ -1,6 +1,7 @@
 ﻿using MSCLoader;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,7 +23,7 @@ namespace MSCLoader
         {
             ModTab.text = $"Mods ({ModLoader.Instance.actualModList.Length})";
             ReferenceTab.text = $"References ({ModLoader.Instance.ReferencesList.Count})";
-            UpdateTab.text = $"Updates ({ModLoader.Instance.HasUpdateModList.Count})";
+            UpdateTab.text = $"Updates ({ModLoader.HasUpdateModList.Count + ModLoader.HasUpdateRefList.Count})";
         }
         public void ModMenuOpened()
         {
@@ -57,15 +58,22 @@ namespace MSCLoader
         public void UpdateList(GameObject listView)
         {
             RemoveChildren(listView.transform);
-            if (ModLoader.Instance.HasUpdateModList.Count == 0)
+            if (ModLoader.HasUpdateModList.Count == 0 && ModLoader.HasUpdateRefList.Count == 0)
             {
                 SettingsElement tx = CreateText(listView.transform, $"<color=aqua>Everything seems to be up to date!</color>");
                 tx.value.alignment = TextAnchor.MiddleCenter;
             }
-            for (int i = 0; i < ModLoader.Instance.HasUpdateModList.Count; i++)
+            for (int i = 0; i < ModLoader.HasUpdateModList.Count; i++)
             {
                 GameObject mod = GameObject.Instantiate(UpdateElementPrefab);
-                mod.GetComponent<MenuElementList>().mod = ModLoader.Instance.HasUpdateModList[i];
+                mod.GetComponent<MenuElementList>().mod = ModLoader.HasUpdateModList[i];
+                mod.GetComponent<MenuElementList>().UpdateInfoFill();
+                mod.transform.SetParent(listView.transform, false);
+            }
+            for (int i = 0; i < ModLoader.HasUpdateRefList.Count; i++)
+            {
+                GameObject mod = GameObject.Instantiate(UpdateElementPrefab);
+                mod.GetComponent<MenuElementList>().refs = ModLoader.HasUpdateRefList[i];
                 mod.GetComponent<MenuElementList>().UpdateInfoFill();
                 mod.transform.SetParent(listView.transform, false);
             }
@@ -205,8 +213,59 @@ namespace MSCLoader
             if (mod.AdditionalReferences == null)
                 tx3.value.text = $"<color=yellow>Looks like this mod doesn't use additional references.</color>";
             else
+            {
                 tx3.value.text = $"<color=yellow>You can bundle references{Environment.NewLine}Do it only if reference is exclusive to your mod, otherwise you should create Reference update separately.</color>";
-        
+                foreach (string rf in mod.AdditionalReferences)
+                {
+                    if (rf.StartsWith("MSCLoader"))
+                    {
+                        tx3.value.text += $"{Environment.NewLine}<color=red><b>{rf}</b></color> - Cannot be bundled (blacklisted)";
+                        continue;
+                    }
+                    References refe = ModLoader.Instance.ReferencesList.Where(x => x.AssemblyID == rf).FirstOrDefault();
+                    if(refe == null)
+                    {
+                        tx3.value.text += $"{Environment.NewLine}<color=aqua><b>{rf}</b></color> - Looks like mod, cannot be bundled.";
+                        continue;
+                    }
+                    else
+                    {
+                        if (refe.UpdateInfo != null)
+                        {
+                            if (refe.UpdateInfo.ref_type == 1)
+                            {
+                                tx3.value.text += $"{Environment.NewLine}<color=lime><b>{rf}</b></color> - Reference is updated separately";
+                                continue;
+                            }
+                            else
+                            {
+                                tx3.value.text += $"{Environment.NewLine}<color=orange><b>{rf}</b></color> - Registered Reference, update it first";
+                                continue;
+                            }
+                        }
+                        else
+                        {
+                            references = true;
+                            GameObject checkboxP3 = Instantiate(CheckBoxPrefab);
+                            SettingsElement checkbox3 = checkboxP3.GetComponent<SettingsElement>();
+                            checkbox3.settingName.text = rf;
+                            checkbox3.checkBox.isOn = false;
+                            checkbox3.checkBox.onValueChanged.AddListener(delegate
+                            {
+                                if (checkbox3.checkBox.isOn)
+                                {
+                                    refList.Add(refe);
+                                }
+                                else
+                                {
+                                    refList.Remove(refe);
+                                }
+                            });
+                            checkbox3.transform.SetParent(header3.HeaderListView.transform, false);
+                        }
+                    }
+                }
+            }
             SettingsGroup header4 = CreateHeader(listView.transform, "Update Settigns", Color.yellow);
             GameObject checkboxP2 = Instantiate(CheckBoxPrefab);
             SettingsElement checkbox2 = checkboxP2.GetComponent<SettingsElement>();
@@ -222,7 +281,7 @@ namespace MSCLoader
             SettingsElement uploadBtn = CreateButton(listView.transform, "Upload Updated Mod", Color.white, Color.black);
             uploadBtn.button.onClick.AddListener(delegate
             {
-                ModMetadata.UploadUpdate(mod, assets, references, plus12);
+                ModMetadata.UploadUpdate(mod, assets, references, plus12, refList.ToArray());
             });
 
             SettingsElement uploadBtn2 = CreateButton(listView.transform, "Update Mod version only", Color.white, Color.black);

@@ -1,5 +1,6 @@
 ﻿//Class for adding console commands
 using System;
+using System.IO;
 
 namespace MSCLoader.Commands
 {
@@ -16,18 +17,85 @@ namespace MSCLoader.Commands
         private bool warnings = false;
         private bool messages = false;
         private bool setup = false;
+
+        public void Save()
+        {
+            try
+            {
+                string savedata = $"{ModLoader.LogAllErrors},{errors},{warnings},{messages}";
+                File.WriteAllText(Path.Combine(ModLoader.SettingsFolder, @"MSCLoader_Settings\logall.save"), savedata);
+                ModConsole.Print($"<color=lime>Log All settings has been saved</color>");
+            }
+            catch(Exception e)
+            {
+                ModConsole.Error($"Error: {e.Message}");
+                Console.WriteLine(e);
+            }
+        }
+        public void Load()
+        {
+            try
+            {
+                if (File.Exists(Path.Combine(ModLoader.SettingsFolder, @"MSCLoader_Settings\logall.save")))
+                {
+                    string savedata = File.ReadAllText(Path.Combine(ModLoader.SettingsFolder, @"MSCLoader_Settings\logall.save"));
+                    string[] data = savedata.Split(',');
+                    ModLoader.LogAllErrors = bool.Parse(data[0]);
+                    errors = bool.Parse(data[1]);
+                    warnings = bool.Parse(data[2]);
+                    messages = bool.Parse(data[3]);
+                    if (errors || warnings || messages)
+                    {
+                        if (!setup)
+                        {
+                            setup = true;
+                            UnityEngine.Application.logMessageReceived += HandleLog;
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ModConsole.Error($"Error: {e.Message}");
+                Console.WriteLine(e);
+                File.Delete(Path.Combine(ModLoader.SettingsFolder, @"MSCLoader_Settings\logall.save"));
+            }
+        }
         public override void Run(string[] args)
         {
             if (args.Length > 0)
             {
-                if (!setup)
+                if (args[0].ToLower() == "save")
                 {
-                    setup = true;
-                    UnityEngine.Application.logMessageReceived += HandleLog;
+                    Save();
+                    return;
                 }
-                if (args[0].ToLower() == "help")
+                else if (args[0].ToLower() == "status")
                 {
-                    ModConsole.Print($"<color=green><b>Available settings:</b></color>{Environment.NewLine}" +
+                    ModConsole.Print($"<color=lime><b>Status:</b></color>");
+                    if (setup)
+                        ModConsole.Print($"<color=orange><b>enabled</b></color>: <color=lime>{setup}</color>");
+                    else
+                        ModConsole.Print($"<color=orange><b>enabled</b></color>: <color=red>{setup}</color>");
+                    if (errors)
+                        ModConsole.Print($"<color=orange><b>errors</b></color>: <color=lime>{errors}</color>");
+                    else
+                        ModConsole.Print($"<color=orange><b>errors</b></color>: <color=red>{errors}</color>");
+                    if (warnings)
+                        ModConsole.Print($"<color=orange><b>warnings</b></color>: <color=lime>{warnings}</color>");
+                    else
+                        ModConsole.Print($"<color=orange><b>warnings</b></color>: <color=red>{warnings}</color>");
+                    if (messages)
+                        ModConsole.Print($"<color=orange><b>messages</b></color>: <color=lime>{messages}</color>");
+                    else
+                        ModConsole.Print($"<color=orange><b>messages</b></color>: <color=red>{messages}</color>");
+                    return;
+                }
+                else if (args[0].ToLower() == "help")
+                {
+                    ModConsole.Print($"<color=lime><b>Available settings:</b></color>{Environment.NewLine}" +
+                        $"<color=orange><b>save</b></color>: Save log all state{Environment.NewLine}" +
+                        $"<color=orange><b>status</b></color>: Current logall status{Environment.NewLine}" +
                         $"<color=orange><b>mods</b></color>: log all errors from mod class{Environment.NewLine}" +
                         $"<color=orange><b>errors</b></color>: Show all errors from game{Environment.NewLine}" +
                         $"<color=orange><b>warnings</b></color>: Show all warnings from game{Environment.NewLine}" +
@@ -67,7 +135,6 @@ namespace MSCLoader.Commands
                         errors = !errors;
                         ModConsole.Print($"<color=orange>Log All errors set to <b>{errors}</b></color>");
                     }
-                    return;
                 }
                 else if (args[0].ToLower() == "warnings")
                 {
@@ -84,7 +151,6 @@ namespace MSCLoader.Commands
                         warnings = !warnings;
                         ModConsole.Print($"<color=orange>Log All warnings set to <b>{warnings}</b></color>");
                     }
-                    return;
                 }
                 else if (args[0].ToLower() == "messages")
                 {
@@ -101,7 +167,6 @@ namespace MSCLoader.Commands
                         messages = !messages;
                         ModConsole.Print($"<color=orange>Log All messages set to <b>{messages}</b></color>");
                     }
-                    return;
                 }
                 else if (args[0].ToLower() == "everything")
                 {
@@ -130,14 +195,28 @@ namespace MSCLoader.Commands
                     {
                         ModConsole.Warning("For <b>everything</b> specify [true|false]");
                     }
-                    return;
                 }
                 else
                 {
                     ModConsole.Warning("<b>Usage:</b> log-all <mods|errors|warnings|messages|everything> [true|false]");
                     ModConsole.Print("Use <color=orange><b>log-all help</b></color> for more info");
                 }
-
+                if (messages || warnings || errors)
+                {
+                    if (!setup)
+                    {
+                        setup = true;
+                        UnityEngine.Application.logMessageReceived += HandleLog;
+                    }
+                }
+                else if (!messages && !warnings && !errors)
+                {
+                    if (setup)
+                    {
+                        setup = false;
+                        UnityEngine.Application.logMessageReceived -= HandleLog;
+                    }
+                }
             }
             else
             {
@@ -151,11 +230,13 @@ namespace MSCLoader.Commands
             {
                 case UnityEngine.LogType.Error:
                     if (errors)
+                    {
                         ModConsole.console.controller.AppendLogLine($"<color=red><b>Error: </b>{logString}</color>");
-                    if (ModMenu.dm_logST.GetValue())
-                        ModConsole.console.controller.AppendLogLine($"<color=red>{stackTrace}</color>");
-                    if (ModMenu.dm_operr.GetValue())
-                        ModConsole.console.SetVisibility(true);
+                        if (ModMenu.dm_logST.GetValue())
+                            ModConsole.console.controller.AppendLogLine($"<color=red>{stackTrace}</color>");
+                        if (ModMenu.dm_operr.GetValue())
+                            ModConsole.console.SetVisibility(true);
+                    }
                     break;
                 case UnityEngine.LogType.Assert:
                     if (messages)
@@ -163,9 +244,11 @@ namespace MSCLoader.Commands
                     break;
                 case UnityEngine.LogType.Warning:
                     if (warnings)
+                    {
                         ModConsole.console.controller.AppendLogLine($"<color=yellow><b>Warning: </b>{logString}</color>");
-                    if (ModMenu.dm_warn.GetValue())
-                        ModConsole.console.SetVisibility(true);
+                        if (ModMenu.dm_warn.GetValue())
+                            ModConsole.console.SetVisibility(true);
+                    }
                     break;
                 case UnityEngine.LogType.Log:
                     if (messages)
@@ -173,11 +256,13 @@ namespace MSCLoader.Commands
                     break;
                 case UnityEngine.LogType.Exception:
                     if (errors)
+                    {
                         ModConsole.console.controller.AppendLogLine($"<color=red><b>Exception: </b>{logString}</color>");
-                    if (ModMenu.dm_logST.GetValue())
-                        ModConsole.console.controller.AppendLogLine($"<color=red>{stackTrace}</color>");
-                    if (ModMenu.dm_operr.GetValue())
-                        ModConsole.console.SetVisibility(true);
+                        if (ModMenu.dm_logST.GetValue())
+                            ModConsole.console.controller.AppendLogLine($"<color=red>{stackTrace}</color>");
+                        if (ModMenu.dm_operr.GetValue())
+                            ModConsole.console.SetVisibility(true);
+                    }
                     break;
                 default:
                     break;

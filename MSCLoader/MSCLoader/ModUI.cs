@@ -80,20 +80,15 @@ namespace MSCLoader
         /// <param name="title">Title of message</param>
         /// <param name="ifYes">What to do when user click yes</param>
         public static void ShowYesNoMessage(string message, string title, Action ifYes) => ShowYesNoMessage(message, title, ifYes, null);
-        /// <summary>
-        /// Show simple question message, and do something when user click yes.
-        /// </summary>
-        /// <param name="message">Message content</param>
-        /// <param name="title">Title of message</param>
-        /// <param name="ifYes">What to do when user click yes</param>
-        /// <param name="ifYesUA">What to do when user click yes (UnityAction)</param>
-        public static void ShowYesNoMessage(string message, string title, Action ifYes, UnityAction ifYesUA = null)
+
+        internal static void ShowYesNoMessage(string message, string title, Action ifYes, UnityAction ifYesUA = null)
         {
             GameObject mb = GameObject.Instantiate(messageBox);
             GameObject.Instantiate(messageBoxBtn).transform.SetParent(mb.transform.GetChild(0).GetChild(2), false);
             GameObject.Instantiate(messageBoxBtn).transform.SetParent(mb.transform.GetChild(0).GetChild(2), false);
             mb.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Text>().text = title.ToUpper();
             mb.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>().text = message;
+        //    mb.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>().alignment = TextAnchor.MiddleLeft;
             if (ifYesUA != null)
                 mb.transform.GetChild(0).GetChild(2).GetChild(0).GetComponent<Button>().onClick.AddListener(() => { ifYesUA?.Invoke(); GameObject.Destroy(mb); });
             else
@@ -110,8 +105,9 @@ namespace MSCLoader
         /// <param name="message">>Message content</param>
         /// <param name="title">Title of message</param>
         /// <param name="ifRetry">What to do when user click retry</param>
-        /// <param name="ifRetryUA">What to do when user click retry (UnityAction)</param>
-        public static void ShowRetryCancelMessage(string message, string title, Action ifRetry, UnityAction ifRetryUA = null)
+        public static void ShowRetryCancelMessage(string message, string title, Action ifRetry) => ShowRetryCancelMessage(message, title, ifRetry, null);
+
+        internal static void ShowRetryCancelMessage(string message, string title, Action ifRetry, UnityAction ifRetryUA = null)
         {
             GameObject mb = GameObject.Instantiate(messageBox);
             GameObject.Instantiate(messageBoxBtn).transform.SetParent(mb.transform.GetChild(0).GetChild(2), false);
@@ -134,8 +130,9 @@ namespace MSCLoader
         /// <param name="message">>Message content</param>
         /// <param name="title">Title of message</param>
         /// <param name="ifContinue">>What to do when user click Continue</param>
-        /// <param name="ifContinueUA">What to do when user click Continue (UnityAction)</param>
-        public static void ShowContinueAbortMessage(string message, string title, Action ifContinue, UnityAction ifContinueUA = null)
+        public static void ShowContinueAbortMessage(string message, string title, Action ifContinue) => ShowContinueAbortMessage(message, title, ifContinue, null);
+
+        internal static void ShowContinueAbortMessage(string message, string title, Action ifContinue, UnityAction ifContinueUA = null)
         {
             GameObject mb = GameObject.Instantiate(messageBox);
             GameObject.Instantiate(messageBoxBtn).transform.SetParent(mb.transform.GetChild(0).GetChild(2), false);

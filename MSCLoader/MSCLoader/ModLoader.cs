@@ -262,7 +262,8 @@ namespace MSCLoader
                 ModConsole.Print($"<color=green>ModLoader <b>v{MSCLoader_Ver}</b> ready</color>");
             MainMenuInfo();
             ModsUpdateDir = Directory.GetFiles(Path.Combine("Updates", "Mods"), "*.zip");
-            if (ModsUpdateDir.Length == 0)
+            RefsUpdateDir = Directory.GetFiles(Path.Combine("Updates", "References"), "*.zip");
+            if (ModsUpdateDir.Length == 0 && RefsUpdateDir.Length == 0)
             {
                 ContinueInit();
             }
@@ -382,6 +383,16 @@ namespace MSCLoader
                             string s = File.ReadAllText(Path.Combine(SettingsFolder, @"MSCLoader_Settings\updateInfo.json"));
                             ModVersions v = JsonConvert.DeserializeObject<ModVersions>(s);
                             ModMetadata.ReadUpdateInfo(v);
+                            if(File.Exists(Path.Combine(SettingsFolder, @"MSCLoader_Settings\ref_updateInfo.json")))
+                            {
+                                string s2 = File.ReadAllText(Path.Combine(SettingsFolder, @"MSCLoader_Settings\ref_updateInfo.json"));
+                                RefVersions v2 = JsonConvert.DeserializeObject<RefVersions>(s2);
+                                ModMetadata.ReadRefUpdateInfo(v2);
+                            }
+                            else
+                            {
+                                ModMetadata.ReadRefUpdateInfo(new RefVersions());
+                            }
                         }
                         else
                         {
@@ -560,7 +571,7 @@ namespace MSCLoader
                         {
                             asm.EntryPoint.Invoke(null, new object[] { new string[] { MSCLoader_Ver } });
                         }
-                        LoadReferencesMeta(asm, Path.GetFileName(files[i]));
+                        LoadReferencesMeta(asm, files[i]);
                     }
                     catch (Exception e)
                     {
@@ -598,7 +609,6 @@ namespace MSCLoader
                 reference.AssemblyFileVersion = ((AssemblyFileVersionAttribute)Attribute.GetCustomAttribute(ass, typeof(AssemblyFileVersionAttribute))).Version;
             if (Attribute.IsDefined(ass, typeof(System.Runtime.InteropServices.GuidAttribute)))
                 reference.Guid = ((System.Runtime.InteropServices.GuidAttribute)Attribute.GetCustomAttribute(ass, typeof(System.Runtime.InteropServices.GuidAttribute))).Value;
-            //TODO: Reference version check
             ReferencesList.Add(reference);
 
         }
@@ -1236,6 +1246,7 @@ namespace MSCLoader
         {
             for (int i = 0; i < LoadedMods.Count; i++)
             {
+                ModMetadata.ReadMetadata(LoadedMods[i]);
                 if (LoadedMods[i].ID.StartsWith("MSCLoader_"))
                     continue;
                 try

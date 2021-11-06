@@ -17,7 +17,9 @@ namespace MSCLoader
 
         internal Mod[] actualModList = new Mod[0];
         internal Mod[] BC_ModList = new Mod[0];
-        internal List<Mod> HasUpdateModList = new List<Mod>();
+        internal static List<Mod> HasUpdateModList = new List<Mod>();
+        internal static List<References> HasUpdateRefList = new List<References>();
+
         internal List<References> ReferencesList = new List<References>();
         internal string[] stdRef = new string[] { "mscorlib", "System.Core", "UnityEngine", "PlayMaker", "MSCLoader", "System", "Assembly-CSharp", "Assembly-CSharp-firstpass", "Assembly-UnityScript", "Assembly-UnityScript-firstpass", "ES2", "Ionic.Zip", "UnityEngine.UI", "0Harmony", "cInput", "Newtonsoft.Json", "System.Xml" };
         //Old stuff
@@ -51,19 +53,22 @@ namespace MSCLoader
         internal static string MetadataFolder = Path.Combine(ConfigFolder, "Mod Metadata");
         internal static string AssetsFolder = Path.Combine(ModsFolder, "Assets");
         internal string[] ModsUpdateDir;
-        internal List<string> ModSelfUpdateList;
-        internal List<string> MetadataUpdateList;
+        internal string[] RefsUpdateDir;
+        internal static List<string> ModSelfUpdateList;
+        internal static List<string> RefSelfUpdateList;
+
+        internal List<string> MetadataUpdateList = new List<string>();
         internal GameObject mainMenuInfo;
         internal GameObject loading;
         internal GameObject loadingMeta;
         internal Animation menuInfoAnim;
         internal GUISkin guiskin;
 
-        //internal static readonly string serverURL = "http://my-summer-car.ml";
+        internal static readonly string serverURL = "http://my-summer-car.ml";
         internal static readonly string metadataURL = "http://my-summer-car.ml:4000";
         internal static readonly string earlyAccessURL = "http://ec2-3-23-131-103.us-east-2.compute.amazonaws.com:8080"; //Hosted by Horsey4
-        internal static readonly string serverURL = "http://localhost/msc2"; //localhost for testing only
-        //internal static readonly string metadataURL = "http://localhost:4000";
+       // internal static readonly string serverURL = "http://localhost/msc2"; //localhost for testing only
+       // internal static readonly string metadataURL = "http://localhost:4000";
 
         internal bool IsModsLoading = false;
         internal bool fullyLoaded = false;
