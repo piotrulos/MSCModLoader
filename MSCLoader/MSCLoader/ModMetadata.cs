@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using UnityEngine;
 
 namespace MSCLoader
@@ -21,12 +20,22 @@ namespace MSCLoader
         public byte mod_type;
         public int mod_rev;
     }
+    internal class RefVersions
+    {
+        public List<RefVersion> versions = new List<RefVersion>();
+    }
+    internal class RefVersion
+    {
+        public string ref_id;
+        public string ref_version;
+        public byte ref_type;
+    }
     internal class ModsManifest
     {
         public string modID;
-       // public string version;
+        // public string version;
         public string description;
-        public ManifestLinks links =new ManifestLinks();
+        public ManifestLinks links = new ManifestLinks();
         public ManifestIcon icon = new ManifestIcon();
         public ManifestMinReq minimumRequirements = new ManifestMinReq();
         public ManifestModConflict modConflicts = new ManifestModConflict();
@@ -35,7 +44,7 @@ namespace MSCLoader
         public string sid_sign;
         public byte type;
         public string msg = null;
-        public int rev;
+        public int rev = 0;
 
     }
     internal class ManifestLinks
@@ -70,7 +79,7 @@ namespace MSCLoader
     }
     internal class ModMetadata
     {
-        public static bool VerifyOwnership(Mod mod)
+        public static bool VerifyOwnership(string ID, bool reference)
         {
             string steamID;
             string key;
@@ -89,7 +98,10 @@ namespace MSCLoader
                 getdwl.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
                 try
                 {
-                    dwl = getdwl.DownloadString($"{ModLoader.serverURL}/meta_u.php?steam={steamID}&key={key}&modid={mod.ID}");
+                    if (reference)
+                        dwl = getdwl.DownloadString($"{ModLoader.serverURL}/meta_ur.php?steam={steamID}&key={key}&refid={ID}");
+                    else
+                        dwl = getdwl.DownloadString($"{ModLoader.serverURL}/meta_u.php?steam={steamID}&key={key}&modid={ID}");
                 }
                 catch (Exception e)
                 {
@@ -112,10 +124,16 @@ namespace MSCLoader
                             ModConsole.Error($"User not found");
                             break;
                         case "3":
-                            ModConsole.Error($"This Mod ID doesn't exist in database, create it first");
+                            if (reference)
+                                ModConsole.Error($"This Reference ID doesn't exist in database, create it first");
+                            else
+                                ModConsole.Error($"This Mod ID doesn't exist in database, create it first");
                             break;
                         case "4":
-                            ModConsole.Error($"You are not owner of this mod");
+                            if (reference)
+                                ModConsole.Error($"You are not owner of this Reference");
+                            else
+                                ModConsole.Error($"You are not owner of this Mod");
                             break;
                         default:
                             ModConsole.Error($"Unknown error");
@@ -200,6 +218,11 @@ namespace MSCLoader
                 return;
             }
             key = File.ReadAllText(auth);
+            if (mod.ID.StartsWith("MSCLoader"))
+            {
+                ModConsole.Error("Not allowed ID pattern, ModID cannot start with MSCLoader.");
+                return;
+            }
             if (ModLoader.CheckSteam())
             {
                 try
@@ -223,11 +246,6 @@ namespace MSCLoader
                         type = 1
                     };
                     string path = ModLoader.GetMetadataFolder($"{mod.ID}.json");
-                    if (File.Exists(path))
-                    {
-                        ModConsole.Error("Metadata file already exists, to update use update command");
-                        return;
-                    }
                     string dwl = string.Empty;
                     WebClient getdwl = new WebClient();
                     getdwl.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
@@ -237,8 +255,9 @@ namespace MSCLoader
                     }
                     catch (Exception e)
                     {
-                        ModConsole.Error($"Failed to verify key");
+                        ModConsole.Error($"Failed to create mod metadata");
                         Console.WriteLine(e);
+                        return;
                     }
                     string[] result = dwl.Split('|');
                     if (result[0] == "error")
@@ -268,6 +287,9 @@ namespace MSCLoader
                         File.WriteAllText(path, serializedData);
                         ModConsole.Print("<color=lime>Metadata created successfully</color>");
                         ModConsole.Print("<color=lime>To edit details like description, links, conflicts, etc. go to metadata website.</color>");
+                        ModConsole.Print($"<color=lime>To upload update file just type <b>metadata update {mod.ID}</b>.</color>");
+                        if (!ModLoader.Instance.checkForUpdatesProgress)
+                            ModLoader.Instance.CheckForModsUpd(true);
                     }
 
                 }
@@ -283,57 +305,68 @@ namespace MSCLoader
             }
 
         }
-   /*     public static void UpdateMetadata(Mod mod)
+        public static void CreateReference(References refs)
         {
-            if (!File.Exists(ModLoader.GetMetadataFolder(string.Format("{0}.json", mod.ID))))
-            {
-                ModConsole.Error("Metadata file doesn't exists, to create use create command");
-                return;
-            }
-            if (mod.RemMetadata == null)
-            {
-                ModConsole.Error(string.Format("Your metadata file doesn't seem to be public, you need to upload first before you can update file.{0}If you want to just recreate metadata, delete old file and use create command", Environment.NewLine));
-                return;
-            }
             string steamID;
+            string key;
+            string auth = ModLoader.GetMetadataFolder("auth.bin");
+            if (!File.Exists(auth))
+            {
+                ModConsole.Error("No auth key detected. Please set auth first.");
+                return;
+            }
+            key = File.ReadAllText(auth);
+            if(refs.AssemblyID.StartsWith("MSCLoader"))
+            {
+                ModConsole.Error("Not allowed ID pattern, reference cannot start with MSCLoader.");
+                return;
+            }
             if (ModLoader.CheckSteam())
             {
-                try
-                {
-                    new Version(mod.Version);
-                }
-                catch
-                {
-                    ModConsole.Error(string.Format("Invalid version: {0}{1}Please use proper version format: (0.0 or 0.0.0 or 0.0.0.0)", mod.Version, Environment.NewLine));
-                    return;
-                }
                 steamID = Steamworks.SteamUser.GetSteamID().ToString();
-                if (mod.RemMetadata.sid_sign != ModLoader.SidChecksumCalculator(steamID + mod.ID))
-                {
-                    ModConsole.Error("This mod doesn't belong to you, can't continue");
-                    return;
-                }
                 try
                 {
-                    ModsManifest umm = mod.metadata;
-                    Version v1 = new Version(mod.Version);
-                    Version v2 = new Version(mod.metadata.version);
-                    switch (v1.CompareTo(v2))
+                    string dwl = string.Empty;
+                    WebClient getdwl = new WebClient();
+                    getdwl.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
+                    try
                     {
-                        case 0:
-                            ModConsole.Error(string.Format("Mod version {0} is same as current metadata version {1}, nothing to update.", mod.Version, mod.metadata.version));
-                            break;
-                        case 1:
-                            umm.version = mod.Version;
-                            umm.sign = CalculateFileChecksum(mod.fileName);
-                            string msad = ModLoader.GetMetadataFolder(string.Format("{0}.json", mod.ID));
-                            string serializedData = JsonConvert.SerializeObject(umm, Formatting.Indented);
-                            File.WriteAllText(msad, serializedData);
-                            ModConsole.Print("<color=green>Metadata file updated successfully, you can upload it now!</color>");
-                            break;
-                        case -1:
-                            ModConsole.Error(string.Format("Mod version {0} is <b>earlier</b> than current metadata version {1}, cannot update.", mod.Version, mod.metadata.version));
-                            break;
+                        dwl = getdwl.DownloadString($"{ModLoader.serverURL}/meta_cr.php?steam={steamID}&key={key}&refid={refs.AssemblyID}&ver={refs.AssemblyFileVersion}");
+                    }
+                    catch (Exception e)
+                    {
+                        ModConsole.Error($"Failed to create reference");
+                        Console.WriteLine(e);
+                        return;
+                    }
+                    string[] result = dwl.Split('|');
+                    if (result[0] == "error")
+                    {
+                        switch (result[1])
+                        {
+                            case "0":
+                                ModConsole.Error($"Invalid or non existent key");
+                                break;
+                            case "1":
+                                ModConsole.Error($"Database error");
+                                break;
+                            case "2":
+                                ModConsole.Error($"User not found");
+                                break;
+                            case "3":
+                                ModConsole.Error($"This Reference ID already exist in database");
+                                break;
+                            default:
+                                ModConsole.Error($"Unknown error");
+                                break;
+                        }
+                    }
+                    else if (result[0] == "ok")
+                    {
+                        ModConsole.Print("<color=lime>Reference registered successfully</color>");
+                        ModConsole.Print($"<color=lime>To upload update file just type <b>metadata update_ref {refs.AssemblyID}</b>.</color>");
+                        if (!ModLoader.Instance.checkForUpdatesProgress)
+                            ModLoader.Instance.CheckForModsUpd(true);
                     }
                 }
                 catch (Exception e)
@@ -346,7 +379,9 @@ namespace MSCLoader
             {
                 ModConsole.Error("No valid steam detected");
             }
-        }*/
+
+        }
+ 
         public static void UploadUpdateMenu(Mod mod)
         {
             if (!File.Exists(ModLoader.GetMetadataFolder($"{mod.ID}.json")))
@@ -363,7 +398,7 @@ namespace MSCLoader
                 ModConsole.Error($"Invalid version: {mod.Version}{Environment.NewLine}Please use proper version format: (0.0 or 0.0.0 or 0.0.0.0)");
                 return;
             }
-            if (!VerifyOwnership(mod))
+            if (!VerifyOwnership(mod.ID,false))
                 return;
             ModMenuButton mmb = GameObject.Find("MSCLoader Mod Menu").GetComponentInChildren<ModMenuButton>();
             ModMenuView muv = GameObject.Find("MSCLoader Mod Menu").GetComponentInChildren<ModMenuView>();
@@ -382,10 +417,24 @@ namespace MSCLoader
                 return;
             }
             key = File.ReadAllText(auth);
-            if (!VerifyOwnership(mod))
+            if (!VerifyOwnership(mod.ID,false))
                 return;
             if (ModLoader.CheckSteam())
             {
+                if (mod.UpdateInfo.mod_type != 1)
+                {
+                    Version v1 = new Version(mod.Version);
+                    Version v2 = new Version(mod.UpdateInfo.mod_version);
+                    switch (v1.CompareTo(v2))
+                    {
+                        case 0:
+                            ModConsole.Error($"Mod version <b>{mod.Version}</b> is same as current offered version <b>{mod.UpdateInfo.mod_version}</b>, nothing to update.");
+                            return;
+                        case -1:
+                            ModConsole.Error($"Mod version <b>{mod.Version}</b> is <b>LOWER</b> than current offered version <b>{mod.UpdateInfo.mod_version}</b>, cannot update.");
+                            return;
+                    }
+                }
                 ModConsole.Print("Preparing Files...");
                 steamID = Steamworks.SteamUser.GetSteamID().ToString();
                 if (!Directory.Exists(Path.Combine("Updates", "Meta_temp")))
@@ -399,6 +448,14 @@ namespace MSCLoader
                     {
                         Directory.CreateDirectory(Path.Combine(dir, "Assets"));
                         DirectoryCopy(Path.Combine(ModLoader.AssetsFolder, mod.ID), Path.Combine(Path.Combine(dir, "Assets"), mod.ID), true);
+                    }
+                    if (references)
+                    {
+                        Directory.CreateDirectory(Path.Combine(dir, "References"));
+                        for (int i = 0; i < referencesList.Length; i++)
+                        {
+                            File.Copy(referencesList[i].FileName, Path.Combine(Path.Combine(dir, "References"), Path.GetFileName(referencesList[i].FileName)));
+                        }
                     }
                 }
                 catch (Exception e)
@@ -414,10 +471,15 @@ namespace MSCLoader
                     ZipFile zip = new ZipFile();
                     if (assets)
                         zip.AddDirectory(Path.Combine(dir, "Assets"), "Assets");
+                    if (references)
+                        zip.AddDirectory(Path.Combine(dir, "References"), "References");
+
                     zip.AddFile(Path.Combine(dir, Path.GetFileName(mod.fileName)), "");
                     zip.Save(Path.Combine(dir, $"{mod.ID}.zip"));
                     if (assets)
                         Directory.Delete(Path.Combine(dir, "Assets"), true);
+                    if(references)
+                        Directory.Delete(Path.Combine(dir, "References"), true);
                     File.Delete(Path.Combine(dir, Path.GetFileName(mod.fileName)));
                 }
                 catch (Exception e)
@@ -427,7 +489,62 @@ namespace MSCLoader
                     return;
                 }
 
-                ModLoader.Instance.UploadFileUpdate(mod, plus12, key);
+                ModLoader.Instance.UploadFileUpdate(mod.ID, key, false, plus12);
+            }
+            else
+            {
+                ModConsole.Error("Steam auth failed");
+            }
+        }
+
+        public static void UploadUpdateRef(References refs)
+        {
+            string steamID;
+            string key;
+            string auth = ModLoader.GetMetadataFolder("auth.bin");
+            if (!File.Exists(auth))
+            {
+                ModConsole.Error("No auth key detected. Please set auth first.");
+                return;
+            }
+            key = File.ReadAllText(auth);
+            if (!VerifyOwnership(refs.AssemblyID,true))
+                return;
+            if (ModLoader.CheckSteam())
+            {
+                ModConsole.Print("Preparing Files...");
+                steamID = Steamworks.SteamUser.GetSteamID().ToString();
+                if (!Directory.Exists(Path.Combine("Updates", "Meta_temp")))
+                    Directory.CreateDirectory(Path.Combine("Updates", "Meta_temp"));
+                string dir = Path.Combine("Updates", "Meta_temp");
+
+                try
+                {
+                    File.Copy(refs.FileName, Path.Combine(dir, Path.GetFileName(refs.FileName)));
+                }
+                catch (Exception e)
+                {
+                    ModConsole.Error(e.Message);
+                    System.Console.WriteLine(e);
+                    return;
+                }
+
+                try
+                {
+                    ModConsole.Print("Zipping Files...");
+                    ZipFile zip = new ZipFile();
+                    zip.AddFile(Path.Combine(dir, Path.GetFileName(refs.FileName)), "");
+                    zip.Save(Path.Combine(dir, $"{refs.AssemblyID}.zip"));
+                    File.Delete(Path.Combine(dir, Path.GetFileName(refs.FileName)));
+                }
+                catch (Exception e)
+                {
+                    ModConsole.Error(e.Message);
+                    System.Console.WriteLine(e);
+                    return;
+                }
+
+                ModLoader.Instance.UploadFileUpdate(refs.AssemblyID, key, true, false);
             }
             else
             {
@@ -445,18 +562,18 @@ namespace MSCLoader
                 ModConsole.Error("No auth key detected. Please set auth first.");
                 return;
             }
-            if (!VerifyOwnership(mod))
+            if (!VerifyOwnership(mod.ID,false))
                 return;
             key = File.ReadAllText(auth);
             if (ModLoader.CheckSteam())
             {
                 if(mod.UpdateInfo == null) 
                 {
-                    ModConsole.Error($"Update information is null");
+                    ModConsole.Error($"Update information is null, click 'check for updates' in main settings first");
                     return;
                 }
                 ModsManifest umm = mod.metadata;
-                if (umm.type != 1)
+                if (mod.UpdateInfo.mod_type != 1)
                 {
                     Version v1 = new Version(mod.Version);
                     Version v2 = new Version(mod.UpdateInfo.mod_version);
@@ -506,7 +623,8 @@ namespace MSCLoader
                             ModConsole.Error($"User not found");
                             break;
                         case "3":
-                            ModConsole.Error($"This Mod ID doesn't exist in database");
+                            ModConsole.Error($"This Mod ID doesn't exist in database, create it first");
+
                             break;
                         case "4":
                             ModConsole.Error($"This is not your mod.");
@@ -521,7 +639,9 @@ namespace MSCLoader
                     string metadataFile = ModLoader.GetMetadataFolder($"{mod.ID}.json");
                     string serializedData = JsonConvert.SerializeObject(umm, Formatting.Indented);
                     File.WriteAllText(metadataFile, serializedData);
-                    ModConsole.Print("<color=green>Metadata file updated successfully!</color>");
+                    ModConsole.Print("<color=lime>Metadata file updated successfully!</color>");
+                    if (!ModLoader.Instance.checkForUpdatesProgress)
+                        ModLoader.Instance.CheckForModsUpd(true);
                 }
                 else
                 {
@@ -533,12 +653,82 @@ namespace MSCLoader
                 ModConsole.Error("Steam auth failed");
             }
         }
-
+        public static void UpdateVersionNumberRef(string ID)
+        {
+            References refs = ModLoader.Instance.ReferencesList.Where(w => w.AssemblyID == ID).FirstOrDefault();
+            ModConsole.Print("Updating version...");
+            string steamID;
+            string key;
+            string auth = ModLoader.GetMetadataFolder("auth.bin");
+            if (!File.Exists(auth))
+            {
+                ModConsole.Error("No auth key detected. Please set auth first.");
+                return;
+            }
+            if (!VerifyOwnership(ID, true))
+                return;
+            key = File.ReadAllText(auth);
+            if (ModLoader.CheckSteam())
+            {
+                steamID = Steamworks.SteamUser.GetSteamID().ToString();
+                string dwl = string.Empty;
+                WebClient getdwl = new WebClient();
+                getdwl.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
+                try
+                {
+                    dwl = getdwl.DownloadString($"{ModLoader.serverURL}/meta_vr.php?steam={steamID}&key={key}&refid={ID}&ver={refs.AssemblyFileVersion}&type=1");
+                }
+                catch (Exception e)
+                {
+                    ModConsole.Error($"Failed to verify key");
+                    Console.WriteLine(e);
+                }
+                string[] result = dwl.Split('|');
+                if (result[0] == "error")
+                {
+                    switch (result[1])
+                    {
+                        case "0":
+                            ModConsole.Error($"Invalid or non existent key");
+                            break;
+                        case "1":
+                            ModConsole.Error($"Database error");
+                            break;
+                        case "2":
+                            ModConsole.Error($"User not found");
+                            break;
+                        case "3":
+                            ModConsole.Error($"This Reference ID doesn't exist in database");
+                            break;
+                        case "4":
+                            ModConsole.Error($"This is not your Reference.");
+                            break;
+                        default:
+                            ModConsole.Error($"Unknown error");
+                            break;
+                    }
+                }
+                else if (result[0] == "ok")
+                {
+                    ModConsole.Print("<color=lime>Reference info updated successfully!</color>");
+                    if (!ModLoader.Instance.checkForUpdatesProgress)
+                        ModLoader.Instance.CheckForModsUpd(true);
+                }
+                else
+                {
+                    ModConsole.Error("Unknown response");
+                }
+            }
+            else
+            {
+                ModConsole.Error("Steam auth failed");
+            }
+        }
         internal static void ReadUpdateInfo(ModVersions mv)
         {
-            ModLoader.Instance.ModSelfUpdateList = new List<string>();
+            ModLoader.ModSelfUpdateList = new List<string>();
             ModLoader.Instance.MetadataUpdateList = new List<string>();
-            ModLoader.Instance.HasUpdateModList = new List<Mod>();
+            ModLoader.HasUpdateModList = new List<Mod>();
             for (int i = 0; i < mv.versions.Count; i++)
             {
                 Mod mod = ModLoader.GetMod(mv.versions[i].mod_id, true);
@@ -549,18 +739,18 @@ namespace MSCLoader
                 {
                     case 1:
                         mod.hasUpdate = true;
-                        ModLoader.Instance.HasUpdateModList.Add(mod);
+                        ModLoader.HasUpdateModList.Add(mod);
                         if (mv.versions[i].mod_type == 4 || mv.versions[i].mod_type == 5 || mv.versions[i].mod_type == 6)
                         {
-                            ModLoader.Instance.ModSelfUpdateList.Add(mod.ID);
+                            ModLoader.ModSelfUpdateList.Add(mod.ID);
                         }
-                        ModConsole.Warning($"Update {mod.ID}"); //TODO remove
                         break;
                     case -1:
                         if (mv.versions[i].mod_type == 6)
                         {
                             mod.hasUpdate = true;
-                            ModLoader.Instance.ModSelfUpdateList.Add(mod.ID);
+                            ModLoader.ModSelfUpdateList.Add(mod.ID);
+                            ModLoader.HasUpdateModList.Add(mod);
                         }
                         break;
                 }
@@ -577,13 +767,59 @@ namespace MSCLoader
                 }
             }
             ModMenu.instance.UI.GetComponent<ModMenuView>().RefreshTabs();
-            if (ModLoader.Instance.ModSelfUpdateList.Count > 0)
-            {
-                if (!ModLoader.Instance.ModloaderUpdateMessage)
-                    ModUI.ShowYesNoMessage($"There are updates to mods that can be updated automatically{Environment.NewLine}Mods: <color=aqua>{string.Join(", ", ModLoader.Instance.ModSelfUpdateList.ToArray())}</color>{Environment.NewLine}{Environment.NewLine}Do you want to download updates now?", "Mod Updates Available", ModLoader.Instance.DownloadModsUpdates);
-            }
-        }
 
+        }
+        internal static void ReadRefUpdateInfo(RefVersions mv)
+        {
+            ModLoader.RefSelfUpdateList = new List<string>();
+            ModLoader.HasUpdateRefList = new List<References>();
+            for (int i = 0; i < mv.versions.Count; i++)
+            {
+                References refs = ModLoader.Instance.ReferencesList.Where(x => x.AssemblyID.Equals(mv.versions[i].ref_id)).FirstOrDefault();
+                refs.UpdateInfo = mv.versions[i];
+                Version v1 = new Version(mv.versions[i].ref_version);
+                Version v2 = new Version(refs.AssemblyFileVersion);
+                switch (v1.CompareTo(v2))
+                {
+                    case 1:
+                        ModLoader.HasUpdateRefList.Add(refs);
+                        if (mv.versions[i].ref_type == 1)
+                        {
+                            ModLoader.RefSelfUpdateList.Add(refs.AssemblyID);
+                        }
+                        break;
+                }
+            }
+            ModMenu.instance.UI.GetComponent<ModMenuView>().RefreshTabs();
+            bool upd = false;
+            string Upd_list = string.Empty;
+            if (ModLoader.ModSelfUpdateList.Count > 0)
+            {
+                upd = true;
+                Upd_list += $"Mods:{Environment.NewLine}";
+                for (int i = 0; i < ModLoader.ModSelfUpdateList.Count; i++)
+                {
+                    Mod m = ModLoader.GetMod(ModLoader.ModSelfUpdateList[i], true);
+                    Upd_list += $"<color=yellow>{m.Name}</color>: <color=aqua>{m.Version}</color> => <color=lime>{m.UpdateInfo.mod_version}</color>{Environment.NewLine}";
+                }
+                Upd_list += Environment.NewLine;
+            }
+            if (ModLoader.RefSelfUpdateList.Count > 0)
+            {
+                upd = true;
+                Upd_list += $"References:{Environment.NewLine}";
+                for (int i = 0; i < ModLoader.RefSelfUpdateList.Count; i++)
+                {
+                    References r = ModLoader.Instance.ReferencesList.Where(x => x.AssemblyID.Equals(ModLoader.RefSelfUpdateList[i])).FirstOrDefault();
+                    Upd_list += $"<color=yellow>{r.AssemblyTitle}</color>: <color=aqua>{r.AssemblyFileVersion}</color> => <color=lime>{r.UpdateInfo.ref_version}</color>{Environment.NewLine}";
+                }
+                Upd_list += Environment.NewLine;
+            }
+
+            if (!ModLoader.Instance.ModloaderUpdateMessage && upd)
+                ModUI.ShowYesNoMessage($"There are updates to mods that can be updated automatically{Environment.NewLine}{Environment.NewLine}{Upd_list}Do you want to install updates now?", "Updates Available", ModLoader.Instance.DownloadModsUpdates);
+
+        }
         internal static void ReadMetadata(Mod mod)
         {
             if (mod.metadata == null)
@@ -627,7 +863,7 @@ namespace MSCLoader
                             WebClient webClient = new WebClient();
                             webClient.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
                             webClient.DownloadFileCompleted += ModIcon_DownloadCompleted;
-                            webClient.DownloadFileAsync(new Uri($"{ModLoader.metadataURL}/images/modicons/{mod.metadata.icon.iconFileName}"), Path.Combine(ModLoader.MetadataFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName));
+                            webClient.DownloadFileAsync(new Uri($"{ModLoader.serverURL}/images/modicons/{mod.metadata.icon.iconFileName}"), Path.Combine(ModLoader.MetadataFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName));
                         }
                     }
                 }

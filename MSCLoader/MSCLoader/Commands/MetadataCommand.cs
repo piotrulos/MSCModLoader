@@ -18,9 +18,15 @@ namespace MSCLoader.Commands
             if (args.Length == 2)
             {
                 Mod mod = ModLoader.LoadedMods.Where(w => w.ID == args[1]).FirstOrDefault();
+                References refs = ModLoader.Instance.ReferencesList.Where(w => w.AssemblyID == args[1]).FirstOrDefault();
                 switch (args[0].ToLower())
                 {
                     case "create":
+                        if(args[1].Contains(" "))
+                        {
+                            ModConsole.Error("ModID with spaces are not allowed");
+                            return;
+                        }
                         if (mod != null)
                         {
                             ModMetadata.CreateMetadata(mod);
@@ -30,19 +36,23 @@ namespace MSCLoader.Commands
                             ModConsole.Error("Invalid ModID (ModID is case sensitive)");
                         }
                         break;
-
-                   /* case "update":
-                        if (mod != null)
+                    case "create_ref":
+                        if (refs != null)
                         {
-                            ModMetadata.UpdateMetadata(mod);
+                            ModMetadata.CreateReference(refs);
                         }
                         else
                         {
-                            ModConsole.Error("Invalid ModID (ModID is case sensitive)");
+                            ModConsole.Error("Invalid ReferenceID, it's usually your assembly name. (case sensitive)");
+                            ModConsole.Warning("This command is only for references located in <b>References</b> folder, for regular mods use create command.");
                         }
-                        break;*/
-
+                        break;
                     case "update":
+                        if (args[1].Contains(" "))
+                        {
+                            ModConsole.Error("ModID with spaces are not allowed");
+                            return;
+                        }
                         if (mod != null)
                         {
                             ModMetadata.UploadUpdateMenu(mod);
@@ -52,7 +62,17 @@ namespace MSCLoader.Commands
                             ModConsole.Error("Invalid ModID (ModID is case sensitive)");
                         }
                         break;
-
+                    case "update_ref":
+                        if (refs != null)
+                        {
+                            ModMetadata.UploadUpdateRef(refs);
+                        }
+                        else
+                        {
+                            ModConsole.Error("Invalid ReferenceID, it's usually your assembly name. (case sensitive)");
+                            ModConsole.Warning("This command is only for references located in <b>References</b> folder, for regular mods use create command.");
+                        }
+                        break;
                     case "auth":
                         ModMetadata.AuthMe(args[1]);
                         break;

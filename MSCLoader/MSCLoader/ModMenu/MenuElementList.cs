@@ -10,12 +10,13 @@ namespace MSCLoader
     internal class MenuElementList : MonoBehaviour
     {
         public Mod mod;
+        public References refs;
         [Header("Values")]
         public RawImage icon;
         public Text Title, Author, Description, QuickInfo, WarningInfo, WarningText;
         public Button SettingsBtn, KeybindsBtn, MoreInfoBtn, WarningBtn;
         public Toggle DisableMod;
-        public Texture2D invalidIcon;
+        public Texture2D invalidModIcon, ReferenceIcon, invalidReferenceIcon;
         [Header("Additional Values")]
         public Button DownloadUpdateBtn, OpenDownloadWebsiteBtn;
         public Text DownloadInfoTxt;
@@ -152,7 +153,7 @@ namespace MSCLoader
             WarningText.text = "Failed to load";
             Author.text = string.Empty;
             Description.text = "Failed to load this mod";
-            icon.texture = invalidIcon;
+            icon.texture = invalidModIcon;
         }
         public void ReferenceInfoFill(References rf)
         {
@@ -165,7 +166,7 @@ namespace MSCLoader
 
                 WarningText.gameObject.SetActive(true);
                 WarningBtn.gameObject.SetActive(true);
-                icon.texture = invalidIcon;
+                icon.texture = invalidReferenceIcon;
                 WarningInfo.text = $"<color=orange>This Reference failed to load.</color>{Environment.NewLine}";
                 WarningInfo.text += $"If this is native (c++) library, put in near .exe file{Environment.NewLine}";
                 WarningInfo.text += $"Exception: <color=yellow>{rf.ExMessage}</color>";
@@ -204,20 +205,37 @@ namespace MSCLoader
         }
         public void UpdateInfoFill()
         {
+            if(refs != null)
+            {
+                Title.text = $"<color=lime>{refs.AssemblyTitle}</color>";
+                if (string.IsNullOrEmpty(refs.AssemblyAuthor))
+                    Author.text = $"by <color=orange>Unknown</color> (<color=aqua>{refs.AssemblyFileVersion}</color>)";
+                else
+                    Author.text = $"by <color=orange>{refs.AssemblyAuthor}</color> (<color=aqua>{refs.AssemblyFileVersion}</color>)";
+                if (string.IsNullOrEmpty(refs.AssemblyDescription))
+                    Description.text = "No description provided...";
+                else
+                    Description.text = refs.AssemblyDescription;
+                DownloadInfoTxt.text = $"Update available ({refs.UpdateInfo.ref_version})";
+                if (ModLoader.RefSelfUpdateList.Contains(refs.AssemblyID))
+                    DownloadUpdateBtn.onClick.AddListener(delegate
+                    {
+                        ModLoader.Instance.DownloadRefUpdate(refs);
+                    });
+                else
+                    DownloadUpdateBtn.gameObject.SetActive(false);
+                OpenDownloadWebsiteBtn.gameObject.SetActive(false);
+                icon.texture = ReferenceIcon;
+            }
             if (mod != null)
             {
                 Title.text = $"<color=lime>{mod.Name}</color>";
                 Author.text = $"by <color=orange>{mod.Author}</color> (<color=aqua>{mod.Version}</color>)";
                 DownloadInfoTxt.text = $"Update available ({mod.UpdateInfo.mod_version})";
-                if (ModLoader.Instance.ModSelfUpdateList.Contains(mod.ID))
-                    DownloadUpdateBtn.onClick.AddListener(delegate {
-                        if (ModLoader.Instance.downloadInProgress)
-                        {
-                            ModUI.ShowMessage("Another download is in progress.", "Mod Updates");
-                            return;
-                        }
-                        else
-                            ModLoader.Instance.DownloadModUpdate(mod);
+                if (ModLoader.ModSelfUpdateList.Contains(mod.ID))
+                    DownloadUpdateBtn.onClick.AddListener(delegate
+                    {
+                        ModLoader.Instance.DownloadModUpdate(mod);
                     });
                 else
                     DownloadUpdateBtn.gameObject.SetActive(false);

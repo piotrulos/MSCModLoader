@@ -16,5 +16,6 @@ namespace MSCLoader
         public string Guid; //Conflict check
         public bool Invalid = false;
         public string ExMessage;
+        public RefVersion UpdateInfo;
     }
 }

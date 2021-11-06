@@ -27,7 +27,7 @@ namespace MSCLoader
         private Keybind consoleKey;
         public static SettingsCheckBox typing;
         static SettingsSliderInt ConsoleFontSize;
-
+        static CommandLogAll cla;
         public override void ModSetup()
         {
             SetupFunction(Setup.OnMenuLoad, Mod_OnMenuLoad);
@@ -114,9 +114,11 @@ namespace MSCLoader
             console.SetVisibility(false);
             console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().LoadConsoleSize();
             ConsoleCommand.Add(new CommandVersion());
-            ConsoleCommand.Add(new CommandLogAll());
+            cla = new CommandLogAll();
+            ConsoleCommand.Add(cla);
             ConsoleCommand.Add(new MetadataCommand());
             ConsoleCommand.Add(new EarlyAccessCommand());
+            cla.Load();
         }
         /// <summary>
         /// Print a message to console.
