@@ -731,39 +731,51 @@ namespace MSCLoader
             ModLoader.HasUpdateModList = new List<Mod>();
             for (int i = 0; i < mv.versions.Count; i++)
             {
-                Mod mod = ModLoader.GetMod(mv.versions[i].mod_id, true);
-                mod.UpdateInfo = mv.versions[i];
-                Version v1 = new Version(mv.versions[i].mod_version);
-                Version v2 = new Version(mod.Version);
-                switch (v1.CompareTo(v2))
+                try
                 {
-                    case 1:
-                        mod.hasUpdate = true;
-                        ModLoader.HasUpdateModList.Add(mod);
-                        if (mv.versions[i].mod_type == 4 || mv.versions[i].mod_type == 5 || mv.versions[i].mod_type == 6)
-                        {
-                            ModLoader.ModSelfUpdateList.Add(mod.ID);
-                        }
-                        break;
-                    case -1:
-                        if (mv.versions[i].mod_type == 6)
-                        {
+                    Mod mod = ModLoader.GetMod(mv.versions[i].mod_id, true);
+                    mod.UpdateInfo = mv.versions[i];
+                    if (mv.versions[i].mod_type == 2 || mv.versions[i].mod_type == 9)
+                        mod.isDisabled = true;
+                    Version v1 = new Version(mv.versions[i].mod_version);
+                    Version v2 = new Version(mod.Version);
+                    switch (v1.CompareTo(v2))
+                    {
+                        case 1:
                             mod.hasUpdate = true;
-                            ModLoader.ModSelfUpdateList.Add(mod.ID);
                             ModLoader.HasUpdateModList.Add(mod);
+                            if (mv.versions[i].mod_type == 4 || mv.versions[i].mod_type == 5 || mv.versions[i].mod_type == 6)
+                            {
+                                ModLoader.ModSelfUpdateList.Add(mod.ID);
+                            }
+                            break;
+                        case -1:
+                            if (mv.versions[i].mod_type == 6)
+                            {
+                                mod.hasUpdate = true;
+                                ModLoader.ModSelfUpdateList.Add(mod.ID);
+                                ModLoader.HasUpdateModList.Add(mod);
+                            }
+                            break;
+                    }
+                    if (mod.metadata != null)
+                    {
+                        if (mod.metadata.rev != mv.versions[i].mod_rev)
+                        {
+                            ModLoader.Instance.MetadataUpdateList.Add(mod.ID);
                         }
-                        break;
-                }
-                if (mod.metadata != null)
-                {
-                    if(mod.metadata.rev != mv.versions[i].mod_rev)
+                    }
+                    else
                     {
                         ModLoader.Instance.MetadataUpdateList.Add(mod.ID);
                     }
                 }
-                else
+                catch(Exception e)
                 {
-                    ModLoader.Instance.MetadataUpdateList.Add(mod.ID);
+                    ModConsole.Error($"Failed to read update info for mod {mv.versions[i].mod_id}");
+                    ModConsole.Error($"{e.Message}");
+                    Console.WriteLine(e);
+                    continue;
                 }
             }
             ModMenu.instance.UI.GetComponent<ModMenuView>().RefreshTabs();
@@ -775,19 +787,29 @@ namespace MSCLoader
             ModLoader.HasUpdateRefList = new List<References>();
             for (int i = 0; i < mv.versions.Count; i++)
             {
-                References refs = ModLoader.Instance.ReferencesList.Where(x => x.AssemblyID.Equals(mv.versions[i].ref_id)).FirstOrDefault();
-                refs.UpdateInfo = mv.versions[i];
-                Version v1 = new Version(mv.versions[i].ref_version);
-                Version v2 = new Version(refs.AssemblyFileVersion);
-                switch (v1.CompareTo(v2))
+                try
                 {
-                    case 1:
-                        ModLoader.HasUpdateRefList.Add(refs);
-                        if (mv.versions[i].ref_type == 1)
-                        {
-                            ModLoader.RefSelfUpdateList.Add(refs.AssemblyID);
-                        }
-                        break;
+                    References refs = ModLoader.Instance.ReferencesList.Where(x => x.AssemblyID.Equals(mv.versions[i].ref_id)).FirstOrDefault();
+                    refs.UpdateInfo = mv.versions[i];
+                    Version v1 = new Version(mv.versions[i].ref_version);
+                    Version v2 = new Version(refs.AssemblyFileVersion);
+                    switch (v1.CompareTo(v2))
+                    {
+                        case 1:
+                            ModLoader.HasUpdateRefList.Add(refs);
+                            if (mv.versions[i].ref_type == 1)
+                            {
+                                ModLoader.RefSelfUpdateList.Add(refs.AssemblyID);
+                            }
+                            break;
+                    }
+                }
+                catch (Exception e)
+                {
+                    ModConsole.Error($"Failed to read update info for reference {mv.versions[i].ref_id}");
+                    ModConsole.Error($"{e.Message}");
+                    Console.WriteLine(e);
+                    continue;
                 }
             }
             ModMenu.instance.UI.GetComponent<ModMenuView>().RefreshTabs();
