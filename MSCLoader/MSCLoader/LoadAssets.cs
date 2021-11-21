@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
@@ -10,6 +11,7 @@ namespace MSCLoader
     /// </summary>
     public static class LoadAssets
     {
+        internal static List<string> assetNames = new List<string>();
         /// <summary>
         /// Make GameObject Pickable, make sure your GameObject has Rigidbody and colliders attached.
         /// </summary>
@@ -129,7 +131,13 @@ namespace MSCLoader
             if(File.Exists(bundle))
             {
                 ModConsole.Print($"Loading Asset: {bundleName}...");
-                return AssetBundle.CreateFromMemoryImmediate(File.ReadAllBytes(bundle));
+                AssetBundle ab = AssetBundle.CreateFromMemoryImmediate(File.ReadAllBytes(bundle));
+                string[] array = ab.GetAllAssetNames();
+                for (int i = 0; i < array.Length; i++)
+                {
+                    assetNames.Add(Path.GetFileNameWithoutExtension(array[i]));
+                }
+                return ab;
             }
             else
             {
@@ -144,8 +152,16 @@ namespace MSCLoader
         /// <returns>Unity AssetBundle</returns>
         public static AssetBundle LoadBundle(byte[] assetBundleFromResources)
         {
-            if(assetBundleFromResources != null)
-                return AssetBundle.CreateFromMemoryImmediate(assetBundleFromResources);
+            if (assetBundleFromResources != null)
+            {
+                AssetBundle ab = AssetBundle.CreateFromMemoryImmediate(assetBundleFromResources);
+                string[] array = ab.GetAllAssetNames();
+                for (int i = 0; i < array.Length; i++)
+                {
+                    assetNames.Add(Path.GetFileNameWithoutExtension(array[i]));
+                }
+                return ab;
+            }
             else
                 throw new Exception($"<b>LoadBundle() Error:</b> Resource doesn't exists{Environment.NewLine}");
         }
@@ -162,14 +178,19 @@ namespace MSCLoader
             {
                 if (resFilestream == null)
                 {
-
                     throw new Exception($"<b>LoadBundle() Error:</b> Resource doesn't exists{Environment.NewLine}");
                 }
                 else
                 {
                     byte[] ba = new byte[resFilestream.Length];
                     resFilestream.Read(ba, 0, ba.Length);
-                    return AssetBundle.CreateFromMemoryImmediate(ba);
+                    AssetBundle ab = AssetBundle.CreateFromMemoryImmediate(ba); 
+                    string[] array = ab.GetAllAssetNames();
+                    for (int i = 0; i < array.Length; i++)
+                    {
+                        assetNames.Add(Path.GetFileNameWithoutExtension(array[i]));
+                    }
+                    return ab;
                 }
             }                             
         }

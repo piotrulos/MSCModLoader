@@ -17,7 +17,7 @@ namespace MSCLoader
         public override string Author => "piotrulos";
 
         internal static SettingsCheckBox dm_disabler, dm_logST, dm_operr, dm_warn, dm_pcon;
-        internal static SettingsCheckBox expWarning, modPath, forceMenuVsync, openLinksOverlay, skipGameIntro, syncLoad, showIcons;
+        internal static SettingsCheckBox expWarning, modPath, forceMenuVsync, openLinksOverlay, skipGameIntro, syncLoad;
 
         private static SettingsCheckBoxGroup checkLaunch, checkDaily, checkWeekly;
 
@@ -50,8 +50,6 @@ namespace MSCLoader
             forceMenuVsync = Settings.AddCheckBox(this, "MSCLoader_forceMenuVsync", "60 FPS limit in Main Menu", true, VSyncSwitchCheckbox);
             openLinksOverlay = Settings.AddCheckBox(this, "MSCLoader_openLinksOverlay", "Open URLs in steam overlay", true);
             skipGameIntro = Settings.AddCheckBox(this, "MSCLoader_skipGameIntro", "Skip game Splash Screen", false, SkipIntroSet);
-            Settings.AddText(this, "If you notice a big lag spike when opening mods tab, you can uncheck Show custom icons. This can happen if someone put unnecessary large icon.");
-            showIcons = Settings.AddCheckBox(this, "MSCLoader_showIcons", "Show custom icons on mod list", true);
 
             Settings.AddText(this, $"If for whatever reason you want to save half a second of mods loading time, enable below option.{Environment.NewLine}(Loading progress <color=yellow>cannot</color> be displayed in synchronous mode, and game may look frozen during loading)");
             syncLoad = Settings.AddCheckBox(this, "MSCLoader_syncLoad", "Load mods synchronously", false);

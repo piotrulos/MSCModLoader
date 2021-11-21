@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 // Unload All changes when back to main menu
@@ -31,11 +32,20 @@ namespace MSCLoader
         {
             if(doReset && !Application.isLoadingLevel) //if menu is fully loaded.
             {
-                foreach (GameObject o in FindObjectsOfType<GameObject>())
+                GameObject[] gos = FindObjectsOfType<GameObject>();
+                for (int i = 0; i < gos.Length; i++)
                 {
-                    if (o.name == "MSCUnloader")
+                    if (gos[i].name == "MSCUnloader")
                         continue;
-                    Destroy(o);                    
+                    Destroy(gos[i]);                    
+                }
+                GameObject[] gosAll = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => !x.activeInHierarchy && x.transform.parent == null).ToArray();
+                for (int i = 0; i < gos.Length; i++)
+                {
+                    if (LoadAssets.assetNames.Contains(gosAll[i].name.ToLower()))
+                    {
+                        Destroy(gosAll[i]);
+                    }
                 }
                 PlayMakerGlobals.Instance.Variables.FindFsmBool("SongImported").Value = false; //stupid variable name.
                 ModLoader.unloader = false;
