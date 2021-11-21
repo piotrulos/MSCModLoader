@@ -55,49 +55,29 @@ namespace MSCLoader
                 else
                     QuickInfo.text += $"<color=yellow>Version:</color> <color=aqua>{mod.Version}</color>{Environment.NewLine}";
                 QuickInfo.text += $"<color=yellow>Author:</color> <color=aqua>{mod.Author}</color>";
-                if (ModMenu.showIcons.GetValue())
+
+                if (mod.metadata != null)
                 {
-                    if (mod.metadata != null)
+                    if (!string.IsNullOrEmpty(mod.metadata.description))
                     {
-                        if (!string.IsNullOrEmpty(mod.metadata.description))
-                        {
-                            if (string.IsNullOrEmpty(mod.Description))
-                                Description.text = mod.metadata.description;
-                        }
-                        if (!string.IsNullOrEmpty(mod.metadata.icon.iconFileName))
-                        {
-                            if (File.Exists(Path.Combine(ModLoader.MetadataFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName)))
-                            {
-                                try
-                                {
-                                    Texture2D t2d = new Texture2D(1, 1);
-                                    t2d.LoadImage(File.ReadAllBytes(Path.Combine(ModLoader.MetadataFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName)));
-                                    icon.texture = t2d;
-                                }
-                                catch (Exception e)
-                                {
-                                    ModConsole.Error(e.Message);
-                                    System.Console.WriteLine(e);
-                                }
-                            }
-                        }
-                        else
+                        if (string.IsNullOrEmpty(mod.Description))
+                            Description.text = mod.metadata.description;
+                    }
+                    if (!string.IsNullOrEmpty(mod.metadata.icon.iconFileName))
+                    {
+                        if (File.Exists(Path.Combine(ModLoader.MetadataFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName)))
                         {
                             try
                             {
-                                if (mod.Icon != null)
-                                {
-                                    Texture2D t2d = new Texture2D(1, 1);
-                                    t2d.LoadImage(mod.Icon);
-                                    icon.texture = t2d;
-                                }
+                                Texture2D t2d = new Texture2D(1, 1);
+                                t2d.LoadImage(File.ReadAllBytes(Path.Combine(ModLoader.MetadataFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName)));
+                                icon.texture = t2d;
                             }
                             catch (Exception e)
                             {
                                 ModConsole.Error(e.Message);
                                 System.Console.WriteLine(e);
                             }
-
                         }
                     }
                     else
@@ -119,6 +99,25 @@ namespace MSCLoader
 
                     }
                 }
+                else
+                {
+                    try
+                    {
+                        if (mod.Icon != null)
+                        {
+                            Texture2D t2d = new Texture2D(1, 1);
+                            t2d.LoadImage(mod.Icon);
+                            icon.texture = t2d;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        ModConsole.Error(e.Message);
+                        System.Console.WriteLine(e);
+                    }
+
+                }
+
             }
         }
 
