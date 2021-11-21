@@ -13,21 +13,18 @@ namespace MSCLoader
     {
         internal static GameObject messageBox;
         internal static GameObject messageBoxBtn;
-        private static GameObject canvasGO;
+        internal static GameObject canvasPrefab;
+        private static GameObject msclCanv, msgboxCanv, lodadingCanv, modMenuCanv, consoleCanv;
 
-        internal static void CreateCanvas()
+        internal static void CreateCanvases()
         {
-            canvasGO = new GameObject();
-            canvasGO.name = "MSCLoader Canvas";
-            canvasGO.layer = 5;
-            canvasGO.AddComponent<Canvas>();
-            canvasGO.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
-            canvasGO.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            canvasGO.GetComponent<CanvasScaler>().referenceResolution = new Vector2(1280f, 720f);
-            canvasGO.GetComponent<CanvasScaler>().screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
-            canvasGO.GetComponent<CanvasScaler>().referencePixelsPerUnit = 100;
-            canvasGO.AddComponent<GraphicRaycaster>();
-            GameObject.DontDestroyOnLoad(canvasGO);
+            msclCanv = CreateCanvas("MSCLoader Canvas", true);
+            modMenuCanv = CreateCanvas("MSCLoader Canvas menu", true);
+            consoleCanv = CreateCanvas("MSCLoader Canvas console", true);
+            msgboxCanv = CreateCanvas("MSCLoader Canvas msgbox", true);
+            msgboxCanv.GetComponent<Canvas>().sortingOrder = 1;
+            lodadingCanv = CreateCanvas("MSCLoader Canvas loading", true);
+            lodadingCanv.GetComponent<Canvas>().sortingOrder = 2;
 
             //create EventSystem
             GameObject evSys = new GameObject();
@@ -38,10 +35,43 @@ namespace MSCLoader
         }
 
         /// <summary>
+        /// Create Canvas for your UI.
+        /// </summary>
+        /// <param name="name">Name for your canvas</param>
+        /// <param name="dontDestroyOnLoad">Add dont destroy on load flag (optional)</param>
+        /// <returns>Created canvas as GameObject</returns>
+        public static GameObject CreateCanvas(string name, bool dontDestroyOnLoad = false)
+        {
+            GameObject go = GameObject.Instantiate(canvasPrefab);
+            go.name = name;
+            if (dontDestroyOnLoad)
+                GameObject.DontDestroyOnLoad(go);
+            return go;
+        }
+
+        internal static GameObject GetCanvas(byte type)
+        {
+            switch (type)
+            {
+                case 0:
+                    return msclCanv;
+                case 1:
+                    return modMenuCanv;
+                case 2:
+                    return consoleCanv;
+                case 3:
+                    return lodadingCanv;
+                case 4:
+                    return msgboxCanv;
+                default:
+                    return msclCanv;
+            }
+        }
+        /// <summary>
         /// Get UI canvas
         /// </summary>
         /// <returns>Canvas GameObject</returns>
-        public static GameObject GetCanvas() => canvasGO;
+        public static GameObject GetCanvas() => msclCanv;
     
         /// <summary>
         /// Show Message Box with simple message
@@ -62,7 +92,7 @@ namespace MSCLoader
             mb.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>().text = message;            
             mb.transform.GetChild(0).GetChild(2).GetChild(0).GetComponent<Button>().onClick.AddListener(() => GameObject.Destroy(mb));
             mb.transform.GetChild(0).GetChild(2).GetChild(0).GetChild(0).GetComponent<Text>().text = "OK";
-            mb.transform.SetParent(GetCanvas().transform, false);
+            mb.transform.SetParent(GetCanvas(4).transform, false);
             mb.SetActive(true);
         }
 
@@ -96,7 +126,7 @@ namespace MSCLoader
             mb.transform.GetChild(0).GetChild(2).GetChild(0).GetChild(0).GetComponent<Text>().text = "YES";
             mb.transform.GetChild(0).GetChild(2).GetChild(1).GetComponent<Button>().onClick.AddListener(() => GameObject.Destroy(mb));
             mb.transform.GetChild(0).GetChild(2).GetChild(1).GetChild(0).GetComponent<Text>().text = "NO";
-            mb.transform.SetParent(GetCanvas().transform, false);
+            mb.transform.SetParent(GetCanvas(4).transform, false);
             mb.SetActive(true);
         }
         /// <summary>
@@ -121,7 +151,7 @@ namespace MSCLoader
             mb.transform.GetChild(0).GetChild(2).GetChild(0).GetChild(0).GetComponent<Text>().text = "RETRY";
             mb.transform.GetChild(0).GetChild(2).GetChild(1).GetComponent<Button>().onClick.AddListener(() => GameObject.Destroy(mb));
             mb.transform.GetChild(0).GetChild(2).GetChild(1).GetChild(0).GetComponent<Text>().text = "CANCEL";
-            mb.transform.SetParent(GetCanvas().transform, false);
+            mb.transform.SetParent(GetCanvas(4).transform, false);
             mb.SetActive(true);
         }
         /// <summary>
@@ -146,7 +176,7 @@ namespace MSCLoader
             mb.transform.GetChild(0).GetChild(2).GetChild(0).GetChild(0).GetComponent<Text>().text = "CONTINUE";
             mb.transform.GetChild(0).GetChild(2).GetChild(1).GetComponent<Button>().onClick.AddListener(() => GameObject.Destroy(mb));
             mb.transform.GetChild(0).GetChild(2).GetChild(1).GetChild(0).GetComponent<Text>().text = "ABORT";
-            mb.transform.SetParent(GetCanvas().transform, false);
+            mb.transform.SetParent(GetCanvas(4).transform, false);
             mb.SetActive(true);
         }
     }

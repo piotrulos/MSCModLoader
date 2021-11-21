@@ -129,7 +129,7 @@ namespace MSCLoader
             GameObject UIp = ab.LoadAsset<GameObject>("Mod Menu.prefab");
             UI = GameObject.Instantiate(UIp);
             UI.name = "MSCLoader Mod Menu";
-            UI.transform.SetParent(ModUI.GetCanvas().transform, false);
+            UI.transform.SetParent(ModUI.GetCanvas(1).transform, false);
             GameObject.Destroy(UIp);
             ab.Unload(false);
         }
