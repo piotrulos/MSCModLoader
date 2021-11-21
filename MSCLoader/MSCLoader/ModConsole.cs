@@ -86,7 +86,7 @@ namespace MSCLoader
             UI = GameObject.Instantiate(UIp);
             UI.name = "MSCLoader Console";           
             console = UI.GetComponent<ConsoleView>();
-            UI.transform.SetParent(ModUI.GetCanvas().transform, false);
+            UI.transform.SetParent(ModUI.GetCanvas(2).transform, false);
             GameObject.Destroy(UIp);
             ab.Unload(false);
         }

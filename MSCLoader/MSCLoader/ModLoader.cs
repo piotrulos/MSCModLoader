@@ -218,7 +218,6 @@ namespace MSCLoader
             {
                 mscUnloader = GameObject.Find("MSCUnloader").GetComponent<MSCUnloader>();
             }
-            ModUI.CreateCanvas();
             allModsLoaded = false;
             LoadedMods = new List<Mod>();
             InvalidMods = new List<string>();
@@ -257,9 +256,9 @@ namespace MSCLoader
             LoadedMods[1].ModSettings();
             ModMenu.LoadSettings();
             if (experimental)
-                ModConsole.Print($"<color=green>ModLoader <b>v{MSCLoader_Ver}</b> ready</color> [<color=magenta>Experimental</color> <color=lime>build {currentBuild}</color>]");
+                ModConsole.Print($"<color=lime>ModLoader <b><color=aqua>v{MSCLoader_Ver}</color></b> ready</color> [<color=magenta>Experimental</color> <color=lime>build {currentBuild}</color>]");
             else
-                ModConsole.Print($"<color=green>ModLoader <b>v{MSCLoader_Ver}</b> ready</color>");
+                ModConsole.Print($"<color=lime>ModLoader <b><color=aqua>v{MSCLoader_Ver}</color></b> ready</color>");
             MainMenuInfo();
             ModsUpdateDir = Directory.GetFiles(Path.Combine("Updates", "Mods"), "*.zip");
             RefsUpdateDir = Directory.GetFiles(Path.Combine("Updates", "References"), "*.zip");
@@ -279,25 +278,25 @@ namespace MSCLoader
             {
                 if (File.Exists(Path.GetFullPath(Path.Combine("LAUNCHER.exe", ""))) || File.Exists(Path.GetFullPath(Path.Combine("SmartSteamEmu64.dll", ""))) || File.Exists(Path.GetFullPath(Path.Combine("SmartSteamEmu.dll", ""))))
                 {
-                    ModConsole.Print($"<color=orange>Hello <color=green><b>{"SmartSteamEmu!"}</b></color>!</color>");
+                    ModConsole.Print($"<b><color=orange>Hello <color=lime>{"SmartSteamEmu!"}</color>!</color></b>");
                     throw new Exception("[EMULATOR] Do What You Want, Cause A Pirate Is Free... You Are A Pirate!");
                 }
                 if (ModMetadata.CalculateFileChecksum(Path.Combine("", "steam_api.dll")) != "7B857C897BC69313E4936DC3DCCE5193")
                 {
-                    ModConsole.Print($"<color=orange>Hello <color=green><b>{"Emulator!"}</b></color>!</color>");
+                    ModConsole.Print($"<b><color=orange>Hello <color=lime>{"Emulator!"}</color>!</color></b>");
                     throw new Exception("[EMULATOR] Do What You Want, Cause A Pirate Is Free... You Are A Pirate!");
                 }
                 if (ModMetadata.CalculateFileChecksum(Path.Combine("", "steam_api64.dll")) != "6C23EAB28F1CD1BFD128934B08288DD8")
                 {
-                    ModConsole.Print($"<color=orange>Hello <color=green><b>{"Emulator!"}</b></color>!</color>");
+                    ModConsole.Print($"<b><color=orange>Hello <color=lime>{"Emulator!"}</color>!</color></b>");
                     throw new Exception("[EMULATOR] Do What You Want, Cause A Pirate Is Free... You Are A Pirate!");
                 }
                 Steamworks.SteamAPI.Init();
                 steamID = Steamworks.SteamUser.GetSteamID().ToString();
-                ModConsole.Print($"<color=orange>Hello <color=green><b>{Steamworks.SteamFriends.GetPersonaName()}</b></color>!</color>");
+                ModConsole.Print($"<b><color=orange>Hello <color=lime>{Steamworks.SteamFriends.GetPersonaName()}</color>!</color></b>");
                 WebClient webClient = new WebClient();
                 webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
-                webClient.DownloadStringCompleted += sAuthCheckCompleted;
+                webClient.DownloadStringCompleted += SAuthCheckCompleted;
                 webClient.DownloadStringAsync(new Uri($"{serverURL}/sauth.php?sid={steamID}"));
                 if (LoadedMods.Count >= 100)
                     Steamworks.SteamFriends.SetRichPresence("status", $"This madman is playing with {actualModList.Length} mods.");
@@ -321,7 +320,10 @@ namespace MSCLoader
                 }
             }
             PreLoadMods();
-            ModConsole.Print($"<color=orange>Found <color=green><b>{actualModList.Length}</b></color> mods!</color>");
+            if(InvalidMods.Count > 0)
+                ModConsole.Print($"<b><color=orange>Loaded <color=aqua>{actualModList.Length}</color> mods (<color=magenta>{InvalidMods.Count}</color> failed to load)!</color></b>{Environment.NewLine}");
+            else
+                ModConsole.Print($"<b><color=orange>Loaded <color=aqua>{actualModList.Length}</color> mods!</color></b>{Environment.NewLine}");
             LoadModsSettings();
             ModMenu.LoadBinds();
             GameObject old_callbacks = new GameObject("BC Callbacks");
@@ -447,7 +449,7 @@ namespace MSCLoader
             public string k2;
         }
 
-        private void sAuthCheckCompleted(object sender, DownloadStringCompletedEventArgs e)
+        private void SAuthCheckCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
             try
             {
@@ -620,6 +622,8 @@ namespace MSCLoader
             guiskin = ab.LoadAsset<GUISkin>("MSCLoader.guiskin");
             ModUI.messageBox = ab.LoadAsset<GameObject>("MSCLoader MB.prefab");
             ModUI.messageBoxBtn = ab.LoadAsset<GameObject>("MB_Button.prefab");
+            ModUI.canvasPrefab = ab.LoadAsset<GameObject>("CanvasPrefab.prefab");
+            ModUI.CreateCanvases();
             mainMenuInfo = ab.LoadAsset<GameObject>("MSCLoader Info.prefab");
             GameObject loadingP = ab.LoadAsset<GameObject>("LoadingMods.prefab");
             GameObject loadingMetaP = ab.LoadAsset<GameObject>("MSCLoader pbar.prefab");
@@ -628,13 +632,13 @@ namespace MSCLoader
             loading_bc = GameObject.Instantiate(loadingP_old);
             loading_bc.SetActive(false);
             loading_bc.name = "MSCLoader loading screen";
-            loading_bc.transform.SetParent(ModUI.GetCanvas().transform, false);
+            loading_bc.transform.SetParent(ModUI.GetCanvas(0).transform, false);
             loading_bc.transform.GetChild(2).GetComponent<Text>().text = $"MSCLoader <color=green>{MSCLoader_Ver}</color> (BC Mode)";
             #endregion
             loading = GameObject.Instantiate(loadingP);
             loading.SetActive(false);
             loading.name = "MSCLoader loading dialog";
-            loading.transform.SetParent(ModUI.GetCanvas().transform, false);
+            loading.transform.SetParent(ModUI.GetCanvas(3).transform, false);
             loading.transform.GetChild(0).GetComponent<Text>().text = $"MSCLOADER <color=green>{MSCLoader_Ver}</color>";
             loadingTitle = loading.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(0).GetComponent<Text>();
             loadingMod = loading.transform.GetChild(1).GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>();
@@ -642,7 +646,7 @@ namespace MSCLoader
             loadingMeta = GameObject.Instantiate(loadingMetaP);
             loadingMeta.SetActive(false);
             loadingMeta.name = "MSCLoader update dialog";
-            loadingMeta.transform.SetParent(ModUI.GetCanvas().transform, false);
+            loadingMeta.transform.SetParent(ModUI.GetCanvas(3).transform, false);
             updateTitle = loadingMeta.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Text>();
             updateStatus = loadingMeta.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>();
             updateProgress = loadingMeta.transform.GetChild(0).GetChild(2).GetComponent<Slider>();
@@ -953,6 +957,7 @@ namespace MSCLoader
                 loadingProgress.value++;
                 loadingMod.text = Mod_PreLoad[i].ID;
                 if (Mod_PreLoad[i].isDisabled) continue;
+                yield return null;
                 try
                 {
                     Mod_PreLoad[i].A_PreLoad.Invoke();
@@ -961,13 +966,13 @@ namespace MSCLoader
                 {
                     ModException(e, Mod_PreLoad[i]);
                 }
-                yield return null;
             }
             for (int i = 0; i < PLoadMods.Length; i++)
             {
                 loadingProgress.value++;
                 loadingMod.text = PLoadMods[i].ID;
                 if (PLoadMods[i].isDisabled) continue;
+                yield return null;
                 try
                 {
                     PLoadMods[i].PreLoad();
@@ -976,7 +981,6 @@ namespace MSCLoader
                 {
                     ModException(e, PLoadMods[i]);
                 }
-                yield return null;
             }
             loadingTitle.text = "Waiting...".ToUpper();
             loadingMod.text = "Waiting for game to finish load...";
@@ -993,6 +997,7 @@ namespace MSCLoader
                 loadingProgress.value++;
                 loadingMod.text = Mod_OnLoad[i].ID;
                 if (Mod_OnLoad[i].isDisabled) continue;
+                yield return null;
                 try
                 {
                     Mod_OnLoad[i].A_OnLoad.Invoke();
@@ -1001,13 +1006,13 @@ namespace MSCLoader
                 {
                     ModException(e, Mod_OnLoad[i]);
                 }
-                yield return null;
             }
             for (int i = 0; i < BC_ModList.Length; i++)
             {
                 loadingProgress.value++;
                 loadingMod.text = BC_ModList[i].ID;
                 if (BC_ModList[i].isDisabled) continue;
+                yield return null;
                 try
                 {
                     BC_ModList[i].OnLoad();
@@ -1016,7 +1021,6 @@ namespace MSCLoader
                 {
                     ModException(e, BC_ModList[i]);
                 }
-                yield return null;
             }
             ModMenu.LoadBinds();
             loadingTitle.text = "Loading mods - Phase 3".ToUpper();
@@ -1028,6 +1032,7 @@ namespace MSCLoader
                 loadingProgress.value++;
                 loadingMod.text = Mod_PostLoad[i].ID;
                 if (Mod_PostLoad[i].isDisabled) continue;
+                yield return null;
                 try
                 {
                     Mod_PostLoad[i].A_PostLoad.Invoke();
@@ -1042,6 +1047,7 @@ namespace MSCLoader
                 loadingProgress.value++;
                 loadingMod.text = SecondPassMods[i].ID;
                 if (SecondPassMods[i].isDisabled) continue;
+                yield return null;
                 try
                 {
                     SecondPassMods[i].SecondPassOnLoad();
@@ -1050,8 +1056,6 @@ namespace MSCLoader
                 {
                     ModException(e, SecondPassMods[i]);
                 }
-                yield return null;
-
             }
             loadingProgress.value = loadingProgress.maxValue;
             loadingMod.text = "Finishing touches...";

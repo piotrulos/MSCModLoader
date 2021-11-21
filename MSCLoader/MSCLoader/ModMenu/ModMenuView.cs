@@ -18,27 +18,22 @@ namespace MSCLoader
 
         public bool modList = false;
         public GameObject modListView;
-
         public void RefreshTabs()
         {
-            ModTab.text = $"Mods ({ModLoader.Instance.actualModList.Length})";
-            ReferenceTab.text = $"References ({ModLoader.Instance.ReferencesList.Count})";
-            UpdateTab.text = $"Updates ({ModLoader.HasUpdateModList.Count + ModLoader.HasUpdateRefList.Count})";
+            if(ModLoader.InvalidMods.Count > 0)
+                ModTab.text = $"Mods (<color=lime>{ModLoader.Instance.actualModList.Length}</color>/<color=magenta>{ModLoader.InvalidMods.Count}</color>)";
+            else
+                ModTab.text = $"Mods (<color=lime>{ModLoader.Instance.actualModList.Length}</color>)";
+            ReferenceTab.text = $"References (<color=aqua>{ModLoader.Instance.ReferencesList.Count}</color>)";
+            UpdateTab.text = $"Updates (<color=yellow>{ModLoader.HasUpdateModList.Count + ModLoader.HasUpdateRefList.Count}</color>)";
         }
         public void ModMenuOpened()
         {
             RefreshTabs();
             if (modList) ModList(modListView);
         }
-
-        public void ModList(GameObject listView)
+        System.Collections.IEnumerator ModListAsync(GameObject listView)
         {
-            RemoveChildren(listView.transform);
-            if(ModLoader.Instance.actualModList.Length == 0)
-            {
-               SettingsElement tx = CreateText(listView.transform, $"<color=aqua>A little empty here, seems like there is no mods installed.{Environment.NewLine}If you think that you installed mods, check if you put mods in correct folder.{Environment.NewLine}Current Mod folder is: <color=yellow>{ModLoader.ModsFolder}</color></color>");
-               tx.value.alignment = TextAnchor.MiddleCenter;
-            }
             for (int i = 0; i < ModLoader.Instance.actualModList.Length; i++)
             {
                 GameObject mod = GameObject.Instantiate(ModElementPrefab);
@@ -46,13 +41,29 @@ namespace MSCLoader
                 mod.GetComponent<MenuElementList>().ModInfoFill();
                 mod.GetComponent<MenuElementList>().ModButtonsPrep(universalView);
                 mod.transform.SetParent(listView.transform, false);
+                mod.SetActive(true);
+                yield return null;
             }
-            for(int i = 0; i < ModLoader.InvalidMods.Count; i++)
+            for (int i = 0; i < ModLoader.InvalidMods.Count; i++)
             {
                 GameObject mod = GameObject.Instantiate(ModElementPrefab);
                 mod.GetComponent<MenuElementList>().InvalidMod(ModLoader.InvalidMods[i]);
                 mod.transform.SetParent(listView.transform, false);
+                mod.SetActive(true);
+                yield return null;
             }
+        }
+        public void ModList(GameObject listView)
+        {
+            StopAllCoroutines();
+            RemoveChildren(listView.transform);
+            if(ModLoader.Instance.actualModList.Length == 0)
+            {
+               SettingsElement tx = CreateText(listView.transform, $"<color=aqua>A little empty here, seems like there is no mods installed.{Environment.NewLine}If you think that you installed mods, check if you put mods in correct folder.{Environment.NewLine}Current Mod folder is: <color=yellow>{ModLoader.ModsFolder}</color></color>");
+               tx.value.alignment = TextAnchor.MiddleCenter;
+            }
+            StartCoroutine(ModListAsync(listView));
+            return;
         }
 
         public void UpdateList(GameObject listView)
@@ -69,6 +80,7 @@ namespace MSCLoader
                 mod.GetComponent<MenuElementList>().mod = ModLoader.HasUpdateModList[i];
                 mod.GetComponent<MenuElementList>().UpdateInfoFill();
                 mod.transform.SetParent(listView.transform, false);
+                mod.SetActive(true);
             }
             for (int i = 0; i < ModLoader.HasUpdateRefList.Count; i++)
             {
@@ -76,6 +88,7 @@ namespace MSCLoader
                 mod.GetComponent<MenuElementList>().refs = ModLoader.HasUpdateRefList[i];
                 mod.GetComponent<MenuElementList>().UpdateInfoFill();
                 mod.transform.SetParent(listView.transform, false);
+                mod.SetActive(true);
             }
         }  
         public void ReferencesList(GameObject listView)
@@ -91,6 +104,7 @@ namespace MSCLoader
                 GameObject mod = GameObject.Instantiate(ReferenceElementPrefab);
                 mod.GetComponent<MenuElementList>().ReferenceInfoFill(ModLoader.Instance.ReferencesList[i]);
                 mod.transform.SetParent(listView.transform, false);
+                mod.SetActive(true);
             }
         }
         public void MainSettingsList(GameObject listView)
