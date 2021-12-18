@@ -71,6 +71,7 @@ namespace MSCLoader
         /// Get UI canvas
         /// </summary>
         /// <returns>Canvas GameObject</returns>
+        [Obsolete("It is recommended to create your own canvas using CreateCanvas() instead.")]
         public static GameObject GetCanvas() => msclCanv;
     
         /// <summary>
