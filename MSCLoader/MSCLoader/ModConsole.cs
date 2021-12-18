@@ -1,10 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
 using MSCLoader.Commands;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using System.Text.RegularExpressions;
 using System.Collections;
-using System;
 
 namespace MSCLoader
 {
