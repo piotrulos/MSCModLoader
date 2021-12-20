@@ -6,6 +6,13 @@ using UnityEngine.UI;
 namespace MSCLoader;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[System.Obsolete("Doesn't do shit.")]
+public class UITooltip : MonoBehaviour
+{
+    public string toolTipText;
+}
+
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 [System.Obsolete("=> Settings")]
 public class ModSettings
 {
@@ -15,8 +22,8 @@ public class ModSettings
     {
         this.mod = mod;
     }
+   
     [System.Obsolete("=> Settings.AddButton", true)]
-
     public SettingButton AddButton(string id, string buttonText, UnityAction action = null, bool blockSuspension = false) => AddButton(id, buttonText, "", action, blockSuspension);
     [System.Obsolete("=> Settings.AddButton", true)]
     public SettingButton AddButton(string id, string buttonText, string name = "", UnityAction action = null, bool blockSuspension = false)
@@ -25,7 +32,9 @@ public class ModSettings
         set.SettingType = SettingsType.Button;
         Settings.AddButton(mod, set, name);
         mod.proSettings = true;
-        return new SettingButton(set);
+        GameObject d = new GameObject("zzzDummyProShitIgnoreThat");
+        d.AddComponent<SettingButton>().SettingButtonC(set);
+        return d.GetComponent<SettingButton>();
     }
     [System.Obsolete("=> Settings.AddHeader", true)]
     public SettingHeader AddHeader(string text) => AddHeader(text, new Color32(0, 128, 0, 255));
@@ -43,7 +52,9 @@ public class ModSettings
         set.SettingType = SettingsType.Header;
         mod.proSettings = true;
         Settings.AddHeader(mod, text, backgroundColor, textColor, set);
-        return new SettingHeader(set);
+        GameObject d = new GameObject("zzzDummyProShitIgnoreThat");
+        d.AddComponent<SettingHeader>().SettingHeaderC(set);
+        return d.GetComponent<SettingHeader>();
     }
     [System.Obsolete("=> Keybind.Add", true)]
     public SettingKeybind AddKeybind(string id, string name, KeyCode key, params KeyCode[] modifiers)
@@ -53,7 +64,9 @@ public class ModSettings
             keyb = Keybind.Add(mod, id, name, key, modifiers[0]);
         else
             keyb = new Keybind(id, name, key, KeyCode.None);
-        return new SettingKeybind(keyb);
+        GameObject d = new GameObject("zzzDummyProShitIgnoreThat");
+        d.AddComponent<SettingKeybind>().SettingKeybindC(keyb);
+        return d.GetComponent<SettingKeybind>();
     }
     [System.Obsolete("=> Settings.AddCheckBox (group)", true)]
     public SettingRadioButtons AddRadioButtons(string id, string name, int value, params string[] options) => AddRadioButtons(id, name, value, (UnityAction)null, options);
@@ -62,7 +75,9 @@ public class ModSettings
     {
         Settings.AddText(mod, $"<color=orange>Incompatible setting - <color=aqua><b>{id}</b></color></color>");
         Settings[] set = new Settings[options.Length];
-        return new SettingRadioButtons(set);
+        GameObject d = new GameObject("zzzDummyProShitIgnoreThat");
+        d.AddComponent<SettingRadioButtons>().SettingRadioButtonsC(set);
+        return d.GetComponent<SettingRadioButtons>();
     }
     [System.Obsolete("=> Settings.AddCheckBox (group)", true)]
     public SettingRadioButtons AddRadioButtons(string id, string name, int value, UnityAction action, params string[] options)
@@ -75,7 +90,9 @@ public class ModSettings
             set[i] = new Settings(id, options[i], false, action, false);
             Settings.AddCheckBox(mod, set[i], "radioGroup");
         }
-        return new SettingRadioButtons(set);
+        GameObject d = new GameObject("zzzDummyProShitIgnoreThat");
+        d.AddComponent<SettingRadioButtons>().SettingRadioButtonsC(set);
+        return d.GetComponent<SettingRadioButtons>();
     }
 
     [System.Obsolete("=> Settings.AddSlider", true)]
@@ -83,8 +100,8 @@ public class ModSettings
     [System.Obsolete("=> Settings.AddSlider", true)]
     public SettingSlider AddSlider(string id, string name, float value, float minValue, float maxValue, int roundDigits = 2, UnityAction<float> action = null)
     {
-        Settings.AddText(mod, $"<color=orange>Incompatible setting - <color=aqua><b>{id}</b></color></color>");
-        return new SettingSlider(new Settings(id, name, value));
+        Settings.AddText(mod, $"<color=orange>Incompatible setting action - <color=aqua><b>{id}</b></color></color>");
+        return AddSlider(id,name,value,minValue,maxValue,roundDigits, (UnityAction)null);
     }
     [System.Obsolete("=> Settings.AddSlider", true)]
     public SettingSlider AddSlider(string id, string name, float value, float minValue, float maxValue, int roundDigits = 2, UnityAction action = null)
@@ -92,14 +109,16 @@ public class ModSettings
         mod.proSettings = true;
         Settings set = new Settings(id, name, value, action, false);
         Settings.AddSlider(mod, set, minValue, maxValue, roundDigits);
-        return new SettingSlider(set);
+        GameObject d = new GameObject("zzzDummyProShitIgnoreThat");
+        d.AddComponent<SettingSlider>().SettingSliderC(set);
+        return d.GetComponent<SettingSlider>();
     }
 
     [System.Obsolete("=> Settings.AddSlider", true)]
     public SettingSlider AddSlider(string id, string name, float value, float minValue, float maxValue, UnityAction<float> action = null)
     {
-        Settings.AddText(mod, $"<color=orange>Incompatible setting - <color=aqua><b>{id}</b></color></color>");
-        return new SettingSlider(new Settings(id, name, value));
+        Settings.AddText(mod, $"<color=orange>Incompatible setting action - <color=aqua><b>{id}</b></color></color>");
+        return AddSlider(id, name, value, minValue, maxValue, (UnityAction)null);
     }
     [System.Obsolete("=> Settings.AddSlider", true)]
     public SettingSlider AddSlider(string id, string name, float value, float minValue, float maxValue, UnityAction action = null)
@@ -107,15 +126,17 @@ public class ModSettings
         mod.proSettings = true;
         Settings set = new Settings(id, name, value, action, false);
         Settings.AddSlider(mod, set, minValue, maxValue);
-        return new SettingSlider(set);
+        GameObject d = new GameObject("zzzDummyProShitIgnoreThat");
+        d.AddComponent<SettingSlider>().SettingSliderC(set);
+        return d.GetComponent<SettingSlider>();
     }
     [System.Obsolete("=> Settings.AddSlider", true)]
     public SettingSlider AddSlider(string id, string name, int value, int minValue, int maxValue) => AddSlider(id, name, value, minValue, maxValue, (UnityAction)null);
     [System.Obsolete("=> Settings.AddSlider", true)]
     public SettingSlider AddSlider(string id, string name, int value, int minValue, int maxValue, UnityAction<float> action)
     {
-        Settings.AddText(mod, $"<color=orange>Incompatible setting - <color=aqua><b>{id}</b></color></color>");
-        return new SettingSlider(new Settings(id, name, value));
+        Settings.AddText(mod, $"<color=orange>Incompatible setting action - <color=aqua><b>{id}</b></color></color>");
+        return AddSlider(id, name, value, minValue, maxValue, (UnityAction)null);
     }
     [System.Obsolete("=> Settings.AddSlider", true)]
     public SettingSlider AddSlider(string id, string name, int value, int minValue, int maxValue, UnityAction action)
@@ -124,7 +145,9 @@ public class ModSettings
         Settings set = new Settings(id, name, value, action, false);
 
         Settings.AddSlider(mod, set, minValue, maxValue);
-        return new SettingSlider(set);
+        GameObject d = new GameObject("zzzDummyProShitIgnoreThat");
+        d.AddComponent<SettingSlider>().SettingSliderC(set);
+        return d.GetComponent<SettingSlider>();
     }
 
     [System.Obsolete("Does nothing", true)]
@@ -150,14 +173,13 @@ public class ModSettings
     [System.Obsolete("=> Settings.AddTextBox", true)]
     public SettingTextBox AddTextBox(string id, string name, string value, string placeholder = "ENTER TEXT...", InputField.CharacterValidation inputType = InputField.CharacterValidation.None)
     {
-        Settings.AddText(mod, $"<color=orange>Incompatible setting - <color=aqua><b>{id}</b></color></color>");
-        return new SettingTextBox(new Settings(id, name, value));
+        return AddTextBox(id, name, value, (UnityAction)null, placeholder, inputType);
     }
     [System.Obsolete("=> Settings.AddTextBox", true)]
     public SettingTextBox AddTextBox(string id, string name, string value, UnityAction<string> action, string placeholder = "ENTER TEXT...", InputField.CharacterValidation inputType = InputField.CharacterValidation.None)
     {
-        Settings.AddText(mod, $"<color=orange>Incompatible setting - <color=aqua><b>{id}</b></color></color>");
-        return new SettingTextBox(new Settings(id, name, value));
+        Settings.AddText(mod, $"<color=orange>Incompatible setting action - <color=aqua><b>{id}</b></color></color>");
+        return AddTextBox(id, name, value, (UnityAction)null, placeholder, inputType);
     }
     [System.Obsolete("=> Settings.AddTextBox", true)]
     public SettingTextBox AddTextBox(string id, string name, string value, UnityAction action, string placeholder = "ENTER TEXT...", InputField.CharacterValidation inputType = InputField.CharacterValidation.None)
@@ -165,15 +187,17 @@ public class ModSettings
         mod.proSettings = true;
         Settings set = new Settings(id, name, value, action, false);
         Settings.AddTextBox(mod, set, placeholder);
-        return new SettingTextBox(set);
+        GameObject d = new GameObject("zzzDummyProShitIgnoreThat");
+        d.AddComponent<SettingTextBox>().SettingTextBoxC(set);
+        return d.GetComponent<SettingTextBox>();
     }
     [System.Obsolete("=> Settings.AddCheckBox", true)]
     public SettingToggle AddToggle(string id, string name, bool value) => AddToggle(id, name, value, (UnityAction)null);
     [System.Obsolete("=> Settings.AddCheckBox", true)]
     public SettingToggle AddToggle(string id, string name, bool value, UnityAction<bool> action)
     {
-        Settings.AddText(mod, $"<color=orange>Incompatible setting - <color=aqua><b>{id}</b></color></color>");
-        return new SettingToggle(new Settings(id, name, value));
+        Settings.AddText(mod, $"<color=orange>Incompatible setting action - <color=aqua><b>{id}</b></color></color>");
+        return AddToggle(id, name, value, (UnityAction)null);
     }
     [System.Obsolete("=> Settings.AddCheckBox", true)]
     public SettingToggle AddToggle(string id, string name, bool value, UnityAction action)
@@ -181,7 +205,9 @@ public class ModSettings
         mod.proSettings = true;
         Settings set = new Settings(id, name, value, action, false);
         Settings.AddCheckBox(mod, set);
-        return new SettingToggle(set);
+        GameObject d = new GameObject("zzzDummyProShitIgnoreThat");
+        d.AddComponent<SettingToggle>().SettingToggleC(set);
+        return d.GetComponent<SettingToggle>();
     }
     [System.Obsolete("Useless", true)]
     public SettingBoolean AddBoolean(string id, bool value) => new SettingBoolean();

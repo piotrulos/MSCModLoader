@@ -14,7 +14,7 @@ namespace MSCLoader;
  }*/
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 [System.Obsolete("Useless", true)]
-public class SettingButton
+public class SettingButton : MonoBehaviour
 {
     Settings setting;
     public bool Enabled { get; set; }
@@ -25,7 +25,7 @@ public class SettingButton
     {
         setting.DoUnityAction += action;
     }
-    public SettingButton(Settings set)
+    public void SettingButtonC(Settings set)
     {
         setting = set;
         nameText = set.NameText;
@@ -43,7 +43,7 @@ public class SettingButton
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 
 [System.Obsolete("Useless", true)]
-public class SettingHeader
+public class SettingHeader : MonoBehaviour
 {
     Settings setting;
 
@@ -56,7 +56,7 @@ public class SettingHeader
     public Color OutlineColor { get => Color.white; set => _ = value; }
     /// <summary>Text displayed on the header.</summary>
     public string Text { get => setting.Name; set => setting.Name = value; }
-    public SettingHeader(Settings set)
+    public void SettingHeaderC(Settings set)
     {
         setting = set;
     }
@@ -69,7 +69,7 @@ public class SettingHeader
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 
 [System.Obsolete("Useless", true)]
-public class SettingKeybind
+public class SettingKeybind : MonoBehaviour
 {
     Keybind keyb;
     public bool GetKey() => keyb.GetKeybind();
@@ -78,7 +78,7 @@ public class SettingKeybind
     public UnityEvent OnKeyDown = new UnityEvent();
     public UnityEvent OnKey = new UnityEvent();
     public UnityEvent OnKeyUp = new UnityEvent();
-    public SettingKeybind(Keybind key)
+    public void SettingKeybindC(Keybind key)
     {
         keyb = key;
     }
@@ -86,7 +86,7 @@ public class SettingKeybind
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 
 [System.Obsolete("==> SettigsCheckBoxGroup", true)]
-public class SettingRadioButtons
+public class SettingRadioButtons : MonoBehaviour
 {
     public class RadioEvent : UnityEvent<int> { }
 
@@ -117,7 +117,7 @@ public class SettingRadioButtons
         }
     }
 
-    public SettingRadioButtons(Settings[] set)
+    public void SettingRadioButtonsC(Settings[] set)
     {
         settings = set;
     }
@@ -125,7 +125,7 @@ public class SettingRadioButtons
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 
 [System.Obsolete("==> SettigsCheckBoxGroup", true)]
-public class RadioButton
+public class RadioButton : MonoBehaviour
 {
     public SettingRadioButtons settingRadioButtons;
     public int radioID = 0;
@@ -144,7 +144,7 @@ public class RadioButton
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 
 [System.Obsolete("==> SettigsSlider", true)]
-public class SettingSlider
+public class SettingSlider : MonoBehaviour
 {
     Settings setting;
     public bool Enabled { get; set; }
@@ -173,7 +173,7 @@ public class SettingSlider
         get;
         set;
     }
-    public SettingSlider(Settings set)
+    public void SettingSliderC(Settings set)
     {
         setting = set;
     }
@@ -190,7 +190,7 @@ public class SettingSlider
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 
 [System.Obsolete("Useless", true)]
-public class SettingSpacer
+public class SettingSpacer : MonoBehaviour
 {
     public LayoutElement layoutElement;
     public bool Enabled { get; set; }
@@ -199,7 +199,7 @@ public class SettingSpacer
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 
 [System.Obsolete("Useless", true)]
-public class SettingText
+public class SettingText : MonoBehaviour
 {
     public Text text;
     public Shadow textShadow;
@@ -209,14 +209,14 @@ public class SettingText
     public string Text { get => text.text; set => text.text = value; }
     public Color TextColor { get => text.color; set => text.color = value; }
     public Color BackgroundColor { get => background.color; set => background.color = value; }
-    public SettingText()
+    public void SettingTextC()
     {
         text = new GameObject("z").AddComponent<Text>();
     }
 }
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 [System.Obsolete("==> SettigsTextBox", true)]
-public class SettingTextBox
+public class SettingTextBox : MonoBehaviour
 {
     Settings setting;
     public Text nameText;
@@ -230,7 +230,7 @@ public class SettingTextBox
     public string Value { get => setting.Value.ToString(); set => setting.Value = value; }
     public string Placeholder { get => setting.Vals[0].ToString(); set => setting.Vals[0] = value; }
     public string defaultValue;
-    public SettingTextBox(Settings set)
+    public void SettingTextBoxC(Settings set)
     {
         setting = set;
     }
@@ -239,7 +239,7 @@ public class SettingTextBox
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 
 [System.Obsolete("==> SettigsCheckBox", true)]
-public class SettingToggle
+public class SettingToggle : MonoBehaviour
 {
     public Text nameText;
     public Shadow nameShadow;
@@ -253,7 +253,7 @@ public class SettingToggle
     public bool Value { get => bool.Parse(setting.Value.ToString()); set => setting.Value = value; }
     public Toggle.ToggleEvent OnValueChanged { get => toggle.onValueChanged; }
     Settings setting;
-    public SettingToggle(Settings set)
+    public void SettingToggleC(Settings set)
     {
         setting = set;
     }
@@ -263,7 +263,7 @@ public class SettingToggle
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 
 [System.Obsolete("Useless", true)]
-public class SettingBoolean
+public class SettingBoolean : MonoBehaviour
 {
     public string ID { get; set; }
     public bool Value;
@@ -274,7 +274,7 @@ public class SettingBoolean
 }
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 [System.Obsolete("Useless", true)]
-public class SettingNumber
+public class SettingNumber : MonoBehaviour
 {
     public string ID { get; set; }
     public float Value;
@@ -286,7 +286,7 @@ public class SettingNumber
 }
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 [System.Obsolete("Useless", true)]
-public class SettingString
+public class SettingString : MonoBehaviour
 {
     public string ID { get; set; }
     public string Value;
