@@ -30,39 +30,58 @@ namespace MSCLoader
         public void ModMenuOpened()
         {
             RefreshTabs();
-            if (modList) ModList(modListView);
+            if (modList) ModList(modListView, string.Empty);
         }
-        System.Collections.IEnumerator ModListAsync(GameObject listView)
+        System.Collections.IEnumerator ModListAsync(GameObject listView, string search)
         {
-            for (int i = 0; i < ModLoader.Instance.actualModList.Length; i++)
+            Mod[] filteredList = new Mod[0];
+            string[] filteredInvalidList = new string[0];
+            if(search == string.Empty)
+            {
+                filteredList = ModLoader.Instance.actualModList;
+                filteredInvalidList = ModLoader.InvalidMods.ToArray();
+            }
+            else
+            {
+                filteredList = ModLoader.Instance.actualModList.Where(x => x.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 || x.ID.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0).ToArray();
+                filteredInvalidList = ModLoader.InvalidMods.Where(x => x.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0).ToArray();
+            }
+          //  ModConsole.Warning(filteredList.Length.ToString());
+            for (int i = 0; i < filteredList.Length; i++)
             {
                 GameObject mod = GameObject.Instantiate(ModElementPrefab);
-                mod.GetComponent<MenuElementList>().mod = ModLoader.Instance.actualModList[i];
+                mod.GetComponent<MenuElementList>().mod = filteredList[i];
                 mod.GetComponent<MenuElementList>().ModInfoFill();
                 mod.GetComponent<MenuElementList>().ModButtonsPrep(universalView);
                 mod.transform.SetParent(listView.transform, false);
                 mod.SetActive(true);
                 yield return null;
             }
-            for (int i = 0; i < ModLoader.InvalidMods.Count; i++)
+            for (int i = 0; i < filteredInvalidList.Length; i++)
             {
                 GameObject mod = GameObject.Instantiate(ModElementPrefab);
-                mod.GetComponent<MenuElementList>().InvalidMod(ModLoader.InvalidMods[i]);
+                mod.GetComponent<MenuElementList>().InvalidMod(filteredInvalidList[i]);
                 mod.transform.SetParent(listView.transform, false);
                 mod.SetActive(true);
                 yield return null;
             }
+            if (filteredList.Length == 0 && filteredInvalidList.Length == 0)
+            {
+                SettingsElement tx = CreateText(listView.transform, $"<color=aqua>Nothing found</color>");
+                tx.value.alignment = TextAnchor.MiddleCenter;
+            }
         }
-        public void ModList(GameObject listView)
+
+        public void ModList(GameObject listView, string search)
         {
             StopAllCoroutines();
             RemoveChildren(listView.transform);
-            if(ModLoader.Instance.actualModList.Length == 0)
+            if(ModLoader.Instance.actualModList.Length == 0 && search == string.Empty)
             {
                SettingsElement tx = CreateText(listView.transform, $"<color=aqua>A little empty here, seems like there is no mods installed.{Environment.NewLine}If you think that you installed mods, check if you put mods in correct folder.{Environment.NewLine}Current Mod folder is: <color=yellow>{ModLoader.ModsFolder}</color></color>");
                tx.value.alignment = TextAnchor.MiddleCenter;
             }
-            StartCoroutine(ModListAsync(listView));
+            StartCoroutine(ModListAsync(listView, search));
             return;
         }
 
@@ -335,7 +354,9 @@ namespace MSCLoader
             //If first settings element is not header, create one.
             if (mod.proSettings)
             {
-                CreateText(listView.transform, $"<color=aqua>Incompatible settings format! Settings below may not load correctly.</color>");
+                SettingsGroup header = CreateHeader(listView.transform, "Incompatible settings", Color.white);
+                header.HeaderBackground.color = Color.red;
+                CreateText(header.HeaderListView.transform, $"<color=aqua>Incompatible settings format! Settings below may not load correctly.</color>");
             }
             if (Settings.Get(mod)[0].SettingType != SettingsType.Header)
             {

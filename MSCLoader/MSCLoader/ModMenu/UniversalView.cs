@@ -10,6 +10,8 @@ namespace MSCLoader
         public GameObject listView;
         public GameObject GoBackBtn;
         public Text Title;
+        public GameObject SearchBtn;
+        public GameObject SearchField;
         private Mod mod;
         private bool set = false;
         private string previousText = "INSTALLED MODS";
@@ -20,6 +22,9 @@ namespace MSCLoader
             gameObject.SetActive(true);
             mmv.MetadataInfoList(listView, mod);
             GoBackBtn.SetActive(true);
+            SearchBtn.SetActive(false);
+            SearchField.SetActive(false);
+            Title.gameObject.SetActive(true);
             Title.text = $"{mod.Name} - Details".ToUpper();
 
         }
@@ -38,6 +43,9 @@ namespace MSCLoader
                 System.Console.WriteLine(e);
             }
             GoBackBtn.SetActive(true);
+            SearchBtn.SetActive(false);
+            SearchField.SetActive(false);
+            Title.gameObject.SetActive(true);
             Title.text = $"{mod.Name} - Settings".ToUpper();
         }
         public void FillKeybinds(Mod m)
@@ -47,6 +55,9 @@ namespace MSCLoader
             gameObject.SetActive(true);
             mmv.KeyBindsList(listView, mod);
             GoBackBtn.SetActive(true);
+            SearchBtn.SetActive(false);
+            SearchField.SetActive(false);
+            Title.gameObject.SetActive(true);
             Title.text = $"{mod.Name} - Keybinds".ToUpper();
         }
         public void FillUpdate(Mod m)
@@ -56,13 +67,18 @@ namespace MSCLoader
             gameObject.SetActive(true);
             mmv.MetadataUploadForm(listView, mod);
             GoBackBtn.SetActive(true);
+            SearchBtn.SetActive(false);
+            SearchField.SetActive(false);
+            Title.gameObject.SetActive(true);
             Title.text = $"{mod.Name} - Update File".ToUpper();                
         }
         public void CloseView()
         {
+            if (!gameObject.activeSelf) return;
             GoBackBtn.SetActive(false);
             Title.text = previousText;
             gameObject.SetActive(false);
+            SearchBtn.SetActive(true);
         }
         void OnEnable()
         {

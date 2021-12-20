@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 namespace MSCLoader
 {
@@ -17,6 +18,7 @@ namespace MSCLoader
         public ModMenuView mmv;
         public ListType type;
         public GameObject listView;
+        public InputField searchField;
 
         public static bool settingsOpened = false;
 
@@ -27,7 +29,9 @@ namespace MSCLoader
                 case ListType.Mods:
                     mmv.modList = true;
                     mmv.modListView = listView;
-                    mmv.ModList(listView);
+                    mmv.ModList(listView, string.Empty);
+                    searchField.onValueChange.RemoveAllListeners();
+                    searchField.onValueChange.AddListener((string text) => mmv.ModList(listView, text));
                     break;
                 case ListType.References:
                     mmv.modList = false;
