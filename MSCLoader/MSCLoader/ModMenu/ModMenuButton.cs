@@ -11,6 +11,7 @@ namespace MSCLoader
         public Animation btnAnim;
         Animation anim;
         internal bool opened = false;
+        public GameObject TitleText, SearchField;
 
         void Start()
         {
@@ -25,6 +26,8 @@ namespace MSCLoader
         }
         public void ButtonClicked()
         {
+            TitleText.SetActive(true);
+            SearchField.SetActive(false);
             if (!opened)
             {
                 gameObject.GetComponent<ModMenuView>().ModMenuOpened();
