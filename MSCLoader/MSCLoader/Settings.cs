@@ -444,8 +444,23 @@ namespace MSCLoader
             };
             mod.modSettingsList.Add(setting);
         }
-        
 
+        /// <summary>
+        /// Add dynamic text (it is not saved)
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="text">Just a text (supports unity rich text)</param>
+        /// <returns>SettingsDynamicText</returns>
+        public static SettingsDynamicText AddDynamicText(Mod mod, string text)
+        {
+            Settings setting = new Settings(null, text, null)
+            {
+                Mod = mod,
+                SettingType = SettingsType.Text
+            };
+            mod.modSettingsList.Add(setting);
+            return new SettingsDynamicText(setting);
+        }
         /// <summary>
         /// Get value of setting.
         /// </summary>
@@ -958,6 +973,40 @@ namespace MSCLoader
         }
 
         internal SettingsDynamicHeader(Settings s)
+        {
+            Instance = s;
+        }
+    }
+
+    /// <summary>
+    /// Settings Dynamic Text
+    /// </summary>
+    public class SettingsDynamicText
+    {    
+        /// <summary>
+        /// Settings Instance
+        /// </summary>
+        public Settings Instance;
+
+        /// <summary>
+        /// Get TextBox value
+        /// </summary>
+        /// <returns>TextBox string value</returns>
+        public string GetValue()
+        {
+            return Instance.Name;
+        }
+
+        /// <summary>
+        /// Set value for textbox
+        /// </summary>
+        /// <param name="value">value</param>
+        public void SetValue(string value)
+        {
+            Instance.Name = value;
+        }
+
+        internal SettingsDynamicText(Settings s)
         {
             Instance = s;
         }
