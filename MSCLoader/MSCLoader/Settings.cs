@@ -76,7 +76,7 @@ namespace MSCLoader
         internal Text NameText;
         internal Text ValueText;
         internal GameObject button, checkbox, label, slider, textbox;
-
+        internal SettingsGroup header;
         void UpdateName()
         {
             if (NameText != null)
@@ -348,7 +348,111 @@ namespace MSCLoader
             }
         }
 
-        #region Pre-1.2 settings
+        /// <summary>
+        /// Add Header, header groups settings together
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="HeaderTitle">Title of your header</param>
+        public static void AddHeader(Mod mod, string HeaderTitle) => AddHeader(mod, HeaderTitle, false);
+     
+        /// <summary>
+        /// Add Header, header groups settings together
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="HeaderTitle">Title of your header</param>
+        /// <param name="collapsedByDefault">Header collapsed by default (optional default=false)</param>
+        public static void AddHeader(Mod mod, string HeaderTitle, bool collapsedByDefault = false) => AddHeader(mod, HeaderTitle, new Color32(95, 34, 18, 255), new Color32(236, 229, 2, 255),collapsedByDefault);
+
+        /// <summary>
+        /// Add Header, header groups settings together
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="HeaderTitle">Title of your header</param>
+        /// <param name="backgroundColor">Background color of header</param>
+        public static void AddHeader(Mod mod, string HeaderTitle, Color backgroundColor) => AddHeader(mod, HeaderTitle, backgroundColor, false);
+     
+        /// <summary>
+        /// Add Header, header groups settings together
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="HeaderTitle">Title of your header</param>
+        /// <param name="backgroundColor">Background color of header</param>
+        /// <param name="collapsedByDefault">Header collapsed by default (optional default=false)</param>
+        public static void AddHeader(Mod mod, string HeaderTitle, Color backgroundColor, bool collapsedByDefault = false) => AddHeader(mod, HeaderTitle, backgroundColor, new Color32(236, 229, 2, 255), collapsedByDefault);
+
+        /// <summary>
+        /// Add Header, header groups settings together
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="HeaderTitle">Title of your header</param>
+        /// <param name="backgroundColor">Background color of header</param>
+        /// <param name="textColor">Text Color of header</param>
+        public static void AddHeader(Mod mod, string HeaderTitle, Color backgroundColor, Color textColor) => AddHeader(mod, HeaderTitle, backgroundColor, textColor, false);
+
+        /// <summary>
+        /// Add Header, header groups settings together
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="HeaderTitle">Title of your header</param>
+        /// <param name="backgroundColor">Background color of header</param>
+        /// <param name="textColor">Text Color of header</param>      
+        /// <param name="collapsedByDefault">Header collapsed by default (optional default=false)</param>
+        public static void AddHeader(Mod mod, string HeaderTitle, Color backgroundColor, Color textColor, bool collapsedByDefault = false)
+        {
+            Settings setting = new Settings(null, HeaderTitle, null)
+            {
+                Mod = mod,
+                Vals = new object[4] { HeaderTitle, backgroundColor, textColor, collapsedByDefault },
+                SettingType = SettingsType.Header
+            };
+            mod.modSettingsList.Add(setting);
+        }
+
+        /// <summary>
+        /// Add dynamic Header, same as AddHeader but returns value, you can collapse/expand/change color of it from other settings.
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="HeaderTitle">Title of your header</param>
+        /// <param name="collapsedByDefault">Header collapsed by default (optional default=false)</param>
+        /// <returns>SettingsDynamicHeader</returns>
+        public static SettingsDynamicHeader AddDynamicHeader(Mod mod, string HeaderTitle, bool collapsedByDefault = false)
+        {
+            Color backgroundColor = new Color32(95, 34, 18, 255);
+            Color textColor = new Color32(236, 229, 2, 255);
+
+            Settings setting = new Settings(null, HeaderTitle, null)
+            {
+                Mod = mod,
+                Vals = new object[4] { HeaderTitle, backgroundColor, textColor, collapsedByDefault },
+                SettingType = SettingsType.Header
+            };
+            mod.modSettingsList.Add(setting);
+            return new SettingsDynamicHeader(setting); 
+        }
+
+        /// <summary>
+        /// Add just a text
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="text">Just a text (supports unity rich text)</param>
+        public static void AddText(Mod mod, string text)
+        {
+            Settings setting = new Settings(null, text, null)
+            {
+                Mod = mod,
+                SettingType = SettingsType.Text
+            };
+            mod.modSettingsList.Add(setting);
+        }
+        
+
+        /// <summary>
+        /// Get value of setting.
+        /// </summary>
+        /// <returns>Raw value of setting</returns>
+        public object GetValue() => Value; //Return whatever is there
+
+        #region Pre-1.2 settings (Compatibility only)
         /// <summary>
         /// Add checkbox to settings menu (only bool Value accepted)
         /// Can execute action when its value is changed.
@@ -541,7 +645,7 @@ namespace MSCLoader
             {
                 ModConsole.Error($"[<b>{mod.ID}</b>] AddSlider: only float allowed here");
             }
-            if(decimalPoints < 0)
+            if (decimalPoints < 0)
             {
                 ModConsole.Error($"[<b>{mod.ID}</b>] AddSlider: decimalPoints cannot be negative.");
             }
@@ -579,7 +683,7 @@ namespace MSCLoader
         {
             setting.Mod = mod;
             mod.modSettingsDefault.Add(new Settings(setting.ID, setting.Name, setting.Value) { Mod = mod });
-            
+
             setting.Vals = new object[3];
             setting.SettingType = SettingsType.TextBox;
             setting.Vals[0] = placeholderText;
@@ -588,62 +692,6 @@ namespace MSCLoader
             mod.modSettingsList.Add(setting);
         }
         #endregion
-      
-        //Static settings types
-
-        /// <summary>
-        /// Add Header, blue title bar that can be used to separate settings.
-        /// </summary>
-        /// <param name="mod">Your mod instance</param>
-        /// <param name="HeaderTitle">Title of your header</param>
-        public static void AddHeader(Mod mod, string HeaderTitle) => AddHeader(mod, HeaderTitle, new UnityEngine.Color32(95, 34, 18, 255), new Color32(236, 229, 2, 255));
-
-        /// <summary>
-        /// Add Header, blue title bar that can be used to separate settings.
-        /// </summary>
-        /// <param name="mod">Your mod instance</param>
-        /// <param name="HeaderTitle">Title of your header</param>
-        /// <param name="backgroundColor">Background color of header</param>
-        public static void AddHeader(Mod mod, string HeaderTitle, UnityEngine.Color backgroundColor) => AddHeader(mod, HeaderTitle, backgroundColor, new Color32(236, 229, 2, 255));
-
-        /// <summary>
-        /// Add Header, blue title bar that can be used to separate settings.
-        /// </summary>
-        /// <param name="mod">Your mod instance</param>
-        /// <param name="HeaderTitle">Title of your header</param>
-        /// <param name="backgroundColor">Background color of header</param>
-        /// <param name="textColor">Text Color of header</param>
-        public static void AddHeader(Mod mod, string HeaderTitle, UnityEngine.Color backgroundColor, UnityEngine.Color textColor)
-        {
-            Settings setting = new Settings(null, HeaderTitle, null)
-            {
-                Mod = mod,
-                Vals = new object[3] { HeaderTitle, backgroundColor, textColor },
-                SettingType = SettingsType.Header
-            };
-            mod.modSettingsList.Add(setting);
-        }
-
-        /// <summary>
-        /// Add just a text
-        /// </summary>
-        /// <param name="mod">Your mod instance</param>
-        /// <param name="text">Just a text (supports unity rich text)</param>
-        public static void AddText(Mod mod, string text)
-        {
-            Settings setting = new Settings(null, text, null)
-            {
-                Mod = mod,
-                SettingType = SettingsType.Text
-            };
-            mod.modSettingsList.Add(setting);
-        }
-
-        /// <summary>
-        /// Get value of setting.
-        /// </summary>
-        /// <returns>Raw value of setting</returns>
-        public object GetValue() => Value; //Return whatever is there
 
         //Unused shit for pro compatibility
         internal static void AddHeader(Mod mod, string HeaderTitle, UnityEngine.Color backgroundColor, UnityEngine.Color textColor, Settings set)
@@ -835,6 +883,81 @@ namespace MSCLoader
         }
 
         internal SettingsTextBox(Settings s)
+        {
+            Instance = s;
+        }
+    }
+
+    /// <summary>
+    /// Settings Dynamic Header
+    /// </summary>
+    public class SettingsDynamicHeader
+    {
+        /// <summary>
+        /// Settings Instance
+        /// </summary>
+        public Settings Instance;
+
+        /// <summary>
+        /// Collapse this header
+        /// </summary>
+        public void Collapse() => Collapse(false);
+
+        /// <summary>
+        /// Collapse this header without animation
+        /// </summary>
+        /// <param name="skipAnimation">true = skip collapsing animation</param>
+        public void Collapse(bool skipAnimation)
+        {
+            if (Instance.header == null) return;
+            if (skipAnimation)
+            {
+                Instance.header.SetHeaderNoAnim(false);
+                return;
+            }
+            Instance.header.SetHeader(false);
+        }
+
+        /// <summary>
+        /// Expand this Header
+        /// </summary>
+        public void Expand() => Expand(false);
+
+        /// <summary>
+        /// Expand this Header without animation
+        /// </summary>
+        /// <param name="skipAnimation">true = skip expanding animation</param>
+        public void Expand(bool skipAnimation)
+        {
+            if (Instance.header == null) return;
+            if (skipAnimation)
+            {
+                Instance.header.SetHeaderNoAnim(true);
+                return;
+            }
+            Instance.header.SetHeader(true);
+
+        }
+
+        /// <summary>
+        /// Change title background color
+        /// </summary>
+        public void SetBackgroundColor(Color color)
+        {
+            if (Instance.header == null) return;
+            Instance.header.HeaderBackground.color = color;
+        }
+
+        /// <summary>
+        /// Change title text.
+        /// </summary>
+        public void SetTextColor(Color color)
+        {
+            if (Instance.header == null) return;
+            Instance.header.HeaderTitle.color = color;
+        }
+
+        internal SettingsDynamicHeader(Settings s)
         {
             Instance = s;
         }
