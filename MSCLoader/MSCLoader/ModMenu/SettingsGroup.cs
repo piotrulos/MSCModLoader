@@ -22,13 +22,55 @@ namespace MSCLoader
             if (anim) return;
             if (collapsed)
             {
-                StartCoroutine(Anim(true));
-                headerButtonImg.texture = upArrow;
+                SetHeader(true);
             }
             else
             {
-                StartCoroutine(Anim(false));
-                headerButtonImg.texture = downArrow;
+                SetHeader(false);
+            }
+        }
+
+        public void SetHeader(bool expand)
+        {
+            if (collapsed)
+            {
+                if (expand)
+                {
+                    StartCoroutine(Anim(true));
+                    headerButtonImg.texture = upArrow;
+                }
+            }
+            else
+            {
+                if (!expand)
+                {
+                    StartCoroutine(Anim(false));
+                    headerButtonImg.texture = downArrow;
+                }
+            }
+        }
+
+        public void SetHeaderNoAnim(bool expand)
+        {
+            if (collapsed)
+            {
+                if (expand)
+                {
+                    headerButtonImg.texture = upArrow;
+                    conentsElement.ignoreLayout = false;
+                    contents.localScale = new Vector3(1, 1, 1);
+                    collapsed = false;
+                }
+            }
+            else
+            {
+                if (!expand)
+                {
+                    headerButtonImg.texture = downArrow;
+                    contents.localScale = new Vector3(1, 0, 1);
+                    conentsElement.ignoreLayout = true;
+                    collapsed = true;
+                }
             }
         }
         IEnumerator Anim(bool expand)

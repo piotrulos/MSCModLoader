@@ -418,6 +418,8 @@ namespace MSCLoader
         {
             SettingsGroup header = CreateHeader(listView.transform, setting.Name, (Color)setting.Vals[2]);
             header.HeaderBackground.color = (Color)setting.Vals[1];
+            setting.header = header;
+            if ((bool)setting.Vals[3]) header.SetHeaderNoAnim(false);
             return header.HeaderListView.transform;
         }
 
