@@ -621,7 +621,6 @@ public partial class ModLoader : MonoBehaviour
         ReferencesList.Add(reference);
 
     }
-    GameObject loading_bc;
     private void LoadCoreAssets()
     {
         ModConsole.Print("Loading core assets...");
@@ -634,14 +633,6 @@ public partial class ModLoader : MonoBehaviour
         mainMenuInfo = ab.LoadAsset<GameObject>("MSCLoader Info.prefab");
         GameObject loadingP = ab.LoadAsset<GameObject>("LoadingMods.prefab");
         GameObject loadingMetaP = ab.LoadAsset<GameObject>("MSCLoader pbar.prefab");
-        #region Loading BC
-        GameObject loadingP_old = ab.LoadAsset<GameObject>("LoadingMods_old.prefab"); //BC for MOP
-        loading_bc = GameObject.Instantiate(loadingP_old);
-        loading_bc.SetActive(false);
-        loading_bc.name = "MSCLoader loading screen";
-        loading_bc.transform.SetParent(ModUI.GetCanvas(0).transform, false);
-        loading_bc.transform.GetChild(2).GetComponent<Text>().text = $"MSCLoader <color=green>{MSCLoader_Ver}</color> (BC Mode)";
-        #endregion
         loading = GameObject.Instantiate(loadingP);
         loading.SetActive(false);
         loading.name = "MSCLoader loading dialog";
@@ -878,7 +869,6 @@ public partial class ModLoader : MonoBehaviour
         loadingMod.text = "Waiting for game to finish load...";
         while (GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera") == null)
             yield return null;
-        loading_bc.SetActive(true);
         loadingTitle.text = "Loading mods - Phase 2".ToUpper();
         loadingMod.text = "Loading mods. Please wait...";
         ModConsole.Print("</color><color=aqua>==== Loading mods (Phase 2) ====</color><color=#505050ff>");
@@ -945,7 +935,6 @@ public partial class ModLoader : MonoBehaviour
         ModConsole.Print("</color>");
         allModsLoaded = true;
         loading.SetActive(false);
-        loading_bc.SetActive(false);
     }
 
     IEnumerator LoadModsAsync()
@@ -993,8 +982,6 @@ public partial class ModLoader : MonoBehaviour
         loadingMod.text = "Waiting for game to finish load...";
         while (GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera") == null)
             yield return null;
-
-        loading_bc.SetActive(true);
         loadingTitle.text = "Loading mods - Phase 2".ToUpper();
         loadingMod.text = "Loading mods. Please wait...";
         ModConsole.Print("</color><color=aqua>==== Loading mods (Phase 2) ====</color><color=#505050ff>");
@@ -1071,7 +1058,6 @@ public partial class ModLoader : MonoBehaviour
         ModConsole.Print("</color>");
         allModsLoaded = true;
         loading.SetActive(false);
-        loading_bc.SetActive(false);
     }
 
     private static bool wasSaving = false;
