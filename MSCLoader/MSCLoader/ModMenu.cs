@@ -125,10 +125,15 @@ namespace MSCLoader
         {
             AssetBundle ab = LoadAssets.LoadBundle(this, "settingsui.unity3d");
             GameObject UIp = ab.LoadAsset<GameObject>("Mod Menu.prefab");
+           // GameObject UIp2 = ab.LoadAsset<GameObject>("Mod Download.prefab");
             UI = GameObject.Instantiate(UIp);
             UI.name = "MSCLoader Mod Menu";
             UI.transform.SetParent(ModUI.GetCanvas(1).transform, false);
             GameObject.Destroy(UIp);
+           // GameObject UI2 = GameObject.Instantiate(UIp2);
+           // UI2.name = "MSCLoader Mod Download Menu";
+          //  UI2.transform.SetParent(ModUI.GetCanvas(5).transform, false);
+           // GameObject.Destroy(UIp2);
             ab.Unload(false);
         }
 

@@ -132,6 +132,7 @@
     <Compile Include="ModMenu\ListStuff.cs" />
     <Compile Include="ModMenu\MenuElementList.cs" />
     <Compile Include="ModMenu\ModMenuButton.cs" />
+    <Compile Include="ModMenu\DownloadMenuView.cs" />
     <Compile Include="ModMenu\ModMenuView.cs" />
     <Compile Include="ModMenu\ScrollRectCulling.cs" />
     <Compile Include="ModMenu\SettingsElement.cs" />

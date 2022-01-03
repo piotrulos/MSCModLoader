@@ -12,10 +12,13 @@ namespace MSCLoader
             Mods,
             References,
             Updates,
-            MainSettings
+            MainSettings,
+            ModsDownload,
+            ModsDownloadAll
         }
 
         public ModMenuView mmv;
+        public DownloadMenuView dmv;
         public ListType type;
         public GameObject listView;
         public InputField searchField;
@@ -46,6 +49,13 @@ namespace MSCLoader
                     mmv.modList = false;
                     settingsOpened = true;
                     mmv.MainSettingsList(listView);
+                    break;
+                case ListType.ModsDownload:
+                    dmv.modList = true;
+                    dmv.modListView = listView;
+                    dmv.ModList(listView, string.Empty);
+                    break;
+                case ListType.ModsDownloadAll:
                     break;
             }
         }
