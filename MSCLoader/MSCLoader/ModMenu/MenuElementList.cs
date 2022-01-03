@@ -297,6 +297,21 @@ namespace MSCLoader
 
             }
         }
+
+        public void DownloadItemFill(DownloadableModList dml)
+        {
+            if (dml != null)
+            {
+                Title.text = $"<color=lime>{dml.mod_id}</color>";
+                    Author.text = $"by <color=orange>Placeholder</color> (<color=aqua>{dml.mod_version}</color>)";
+                Description.text = dml.mod_description;
+                DownloadInfoTxt.text = "Test";
+                DownloadUpdateBtn.gameObject.SetActive(true);
+                OpenDownloadWebsiteBtn.gameObject.SetActive(false);
+            }
+   
+            
+        }
         public void DisableThisMod(bool ischecked)
         {
             if (mod.isDisabled != ischecked)

@@ -14,12 +14,13 @@ namespace MSCLoader
         internal static GameObject messageBox;
         internal static GameObject messageBoxBtn;
         internal static GameObject canvasPrefab;
-        private static GameObject msclCanv, msgboxCanv, lodadingCanv, modMenuCanv, consoleCanv;
+        private static GameObject msclCanv, msgboxCanv, lodadingCanv, modMenuCanv, dwnlMenuCanv, consoleCanv;
 
         internal static void CreateCanvases()
         {
             msclCanv = CreateCanvas("MSCLoader Canvas", true);
             modMenuCanv = CreateCanvas("MSCLoader Canvas menu", true);
+            dwnlMenuCanv = CreateCanvas("MSCLoader Canvas Download Menu", false);
             consoleCanv = CreateCanvas("MSCLoader Canvas console", true);
             msgboxCanv = CreateCanvas("MSCLoader Canvas msgbox", true);
             msgboxCanv.GetComponent<Canvas>().sortingOrder = 1;
@@ -63,6 +64,8 @@ namespace MSCLoader
                     return lodadingCanv;
                 case 4:
                     return msgboxCanv;
+                case 5:
+                    return dwnlMenuCanv;
                 default:
                     return msclCanv;
             }

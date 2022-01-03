@@ -6,6 +6,7 @@ namespace MSCLoader
 {
     internal class ModMenuButton : MonoBehaviour
     {
+        public bool menu2 = false;
         public Texture2D arrowLeft, arrowRight;
         public RawImage image;
         public Animation btnAnim;
@@ -30,6 +31,9 @@ namespace MSCLoader
             SearchField.SetActive(false);
             if (!opened)
             {
+                if(menu2)
+                gameObject.GetComponent<DownloadMenuView>().DownloadMenuOpened();
+                else
                 gameObject.GetComponent<ModMenuView>().ModMenuOpened();
                 opened = true;
                 btnAnim.Play("hover_over_end");

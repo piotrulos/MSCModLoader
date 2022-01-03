@@ -408,7 +408,6 @@ namespace MSCLoader
         }
         public static void UploadUpdate(Mod mod, bool assets, bool references, bool plus12, References[] referencesList = null)
         {
-            string steamID;
             string key;
             string auth = ModLoader.GetMetadataFolder("auth.bin");
             if (!File.Exists(auth))
@@ -436,7 +435,6 @@ namespace MSCLoader
                     }
                 }
                 ModConsole.Print("Preparing Files...");
-                steamID = Steamworks.SteamUser.GetSteamID().ToString();
                 if (!Directory.Exists(Path.Combine("Updates", "Meta_temp")))
                     Directory.CreateDirectory(Path.Combine("Updates", "Meta_temp"));
                 string dir = Path.Combine("Updates", "Meta_temp");
