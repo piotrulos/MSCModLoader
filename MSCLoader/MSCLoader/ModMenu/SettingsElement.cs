@@ -20,5 +20,9 @@ namespace MSCLoader
 
         public Texture2D[] iconPack;
 
+        //Extensions
+        public DropDownList dropDownList;
+
+
     }
 }

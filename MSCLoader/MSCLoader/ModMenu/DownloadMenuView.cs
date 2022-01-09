@@ -106,7 +106,7 @@ namespace MSCLoader
             if (ModLoader.Instance.actualModList.Length == 0 && search == string.Empty)
             {
                 SettingsElement tx = CreateText(listView.transform, $"<color=aqua>A little empty here, seems like there is no mods installed.{Environment.NewLine}If you think that you installed mods, check if you put mods in correct folder.{Environment.NewLine}Current Mod folder is: <color=yellow>{ModLoader.ModsFolder}</color></color>");
-                tx.value.alignment = TextAnchor.MiddleCenter;
+                tx.settingName.alignment = TextAnchor.MiddleCenter;
             }
             StartCoroutine(ModListAsync(listView, search));
             return;

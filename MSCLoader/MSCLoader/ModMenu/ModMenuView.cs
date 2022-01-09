@@ -14,6 +14,7 @@ namespace MSCLoader
         public GameObject ModElementPrefab, ReferenceElementPrefab, UpdateElementPrefab;
         public GameObject HeaderGroupPrefab;
         public GameObject ButtonPrefab, CheckBoxPrefab, KeyBindPrefab, LabelPrefab, SliderPrefab, TextBoxPrefab;
+        public GameObject DropDownListPrefab;
         public UniversalView universalView;
 
         public bool modList = false;
@@ -68,7 +69,7 @@ namespace MSCLoader
             if (filteredList.Length == 0 && filteredInvalidList.Length == 0)
             {
                 SettingsElement tx = CreateText(listView.transform, $"<color=aqua>Nothing found</color>");
-                tx.value.alignment = TextAnchor.MiddleCenter;
+                tx.settingName.alignment = TextAnchor.MiddleCenter;
             }
         }
 
@@ -79,7 +80,7 @@ namespace MSCLoader
             if(ModLoader.Instance.actualModList.Length == 0 && search == string.Empty)
             {
                SettingsElement tx = CreateText(listView.transform, $"<color=aqua>A little empty here, seems like there is no mods installed.{Environment.NewLine}If you think that you installed mods, check if you put mods in correct folder.{Environment.NewLine}Current Mod folder is: <color=yellow>{ModLoader.ModsFolder}</color></color>");
-               tx.value.alignment = TextAnchor.MiddleCenter;
+               tx.settingName.alignment = TextAnchor.MiddleCenter;
             }
             StartCoroutine(ModListAsync(listView, search));
             return;
@@ -91,7 +92,7 @@ namespace MSCLoader
             if (ModLoader.HasUpdateModList.Count == 0 && ModLoader.HasUpdateRefList.Count == 0)
             {
                 SettingsElement tx = CreateText(listView.transform, $"<color=aqua>Everything seems to be up to date!</color>");
-                tx.value.alignment = TextAnchor.MiddleCenter;
+                tx.settingName.alignment = TextAnchor.MiddleCenter;
             }
             for (int i = 0; i < ModLoader.HasUpdateModList.Count; i++)
             {
@@ -116,7 +117,7 @@ namespace MSCLoader
             if (ModLoader.Instance.ReferencesList.Count == 0)
             {
                 SettingsElement tx = CreateText(listView.transform, $"<color=aqua>No additional references are installed.</color>");
-                tx.value.alignment = TextAnchor.MiddleCenter;
+                tx.settingName.alignment = TextAnchor.MiddleCenter;
             }
             for (int i = 0; i < ModLoader.Instance.ReferencesList.Count; i++)
             {
@@ -159,9 +160,9 @@ namespace MSCLoader
                 $"<color=yellow>Author:</color> <color=aqua>{mod.Author}</color>{Environment.NewLine}" +
                 $"<color=yellow>Additional references used by this Mod:</color>{Environment.NewLine}");
              if (mod.AdditionalReferences != null)
-                tx.value.text += $"<color=aqua>{string.Join(", ",mod.AdditionalReferences)}</color>";
+                tx.settingName.text += $"<color=aqua>{string.Join(", ",mod.AdditionalReferences)}</color>";
             else
-                tx.value.text += $"<color=aqua>[None]</color>";
+                tx.settingName.text += $"<color=aqua>[None]</color>";
             if (mod.metadata == null)
             {
                 SettingsGroup header2 = CreateHeader(listView.transform, "No metadata", Color.yellow);
@@ -216,9 +217,9 @@ namespace MSCLoader
                 $"<color=yellow>Author:</color> <color=aqua>{mod.Author}</color>{Environment.NewLine}" +
                 $"<color=yellow>Additional references used by this Mod:</color>{Environment.NewLine}");
             if (mod.AdditionalReferences != null)
-                tx.value.text += $"<color=aqua>{string.Join(", ", mod.AdditionalReferences)}</color>";
+                tx.settingName.text += $"<color=aqua>{string.Join(", ", mod.AdditionalReferences)}</color>";
             else
-                tx.value.text += $"<color=aqua>[None]</color>";
+                tx.settingName.text += $"<color=aqua>[None]</color>";
             //----------------------------------
             bool assets = false, references = false, plus12 = false;
             List<References> refList = new List<References>();
@@ -226,10 +227,10 @@ namespace MSCLoader
             SettingsGroup header2 = CreateHeader(listView.transform, "Bundle Assets", Color.yellow);
             SettingsElement tx2 = CreateText(header2.HeaderListView.transform, "");
             if (!System.IO.Directory.Exists(System.IO.Path.Combine(ModLoader.AssetsFolder, mod.ID)))
-                tx2.value.text = $"<color=yellow>Looks like this mod doesn't have assets folder.</color>";
+                tx2.settingName.text = $"<color=yellow>Looks like this mod doesn't have assets folder.</color>";
             else
             {
-                tx2.value.text = $"<color=yellow>Select below option if you want to include Assets folder (in most cases you should do it)</color>";
+                tx2.settingName.text = $"<color=yellow>Select below option if you want to include Assets folder (in most cases you should do it)</color>";
                 GameObject checkboxP = Instantiate(CheckBoxPrefab);
                 SettingsElement checkbox = checkboxP.GetComponent<SettingsElement>();
                 checkbox.settingName.text = "Include Assets Folder";
@@ -244,21 +245,21 @@ namespace MSCLoader
             SettingsGroup header3 = CreateHeader(listView.transform, "Bundle References", Color.yellow);
             SettingsElement tx3 = CreateText(header3.HeaderListView.transform, "");
             if (mod.AdditionalReferences == null)
-                tx3.value.text = $"<color=yellow>Looks like this mod doesn't use additional references.</color>";
+                tx3.settingName.text = $"<color=yellow>Looks like this mod doesn't use additional references.</color>";
             else
             {
-                tx3.value.text = $"<color=yellow>You can bundle references{Environment.NewLine}Do it only if reference is exclusive to your mod, otherwise you should create Reference update separately.</color>";
+                tx3.settingName.text = $"<color=yellow>You can bundle references{Environment.NewLine}Do it only if reference is exclusive to your mod, otherwise you should create Reference update separately.</color>";
                 foreach (string rf in mod.AdditionalReferences)
                 {
                     if (rf.StartsWith("MSCLoader"))
                     {
-                        tx3.value.text += $"{Environment.NewLine}<color=red><b>{rf}</b></color> - Cannot be bundled (blacklisted)";
+                        tx3.settingName.text += $"{Environment.NewLine}<color=red><b>{rf}</b></color> - Cannot be bundled (blacklisted)";
                         continue;
                     }
                     References refe = ModLoader.Instance.ReferencesList.Where(x => x.AssemblyID == rf).FirstOrDefault();
                     if(refe == null)
                     {
-                        tx3.value.text += $"{Environment.NewLine}<color=aqua><b>{rf}</b></color> - Looks like mod, cannot be bundled.";
+                        tx3.settingName.text += $"{Environment.NewLine}<color=aqua><b>{rf}</b></color> - Looks like mod, cannot be bundled.";
                         continue;
                     }
                     else
@@ -267,12 +268,12 @@ namespace MSCLoader
                         {
                             if (refe.UpdateInfo.ref_type == 1)
                             {
-                                tx3.value.text += $"{Environment.NewLine}<color=lime><b>{rf}</b></color> - Reference is updated separately";
+                                tx3.settingName.text += $"{Environment.NewLine}<color=lime><b>{rf}</b></color> - Reference is updated separately";
                                 continue;
                             }
                             else
                             {
-                                tx3.value.text += $"{Environment.NewLine}<color=orange><b>{rf}</b></color> - Registered Reference, update it first";
+                                tx3.settingName.text += $"{Environment.NewLine}<color=orange><b>{rf}</b></color> - Registered Reference, update it first";
                                 continue;
                             }
                         }
@@ -430,9 +431,8 @@ namespace MSCLoader
                 case SettingsType.CheckBox:
                     GameObject checkboxP = Instantiate(CheckBoxPrefab);
                     SettingsElement checkbox = checkboxP.GetComponent<SettingsElement>();
-                    setting.NameText = checkbox.settingName;
-                    setting.NameText.text = setting.Name;
-                    setting.ValueText = checkbox.value;
+                    setting.SettingsElement = checkbox;
+                    checkbox.settingName.text = setting.Name;
                     try
                     {
                         checkbox.checkBox.isOn = bool.Parse(setting.Value.ToString());
@@ -464,10 +464,8 @@ namespace MSCLoader
                         group = listView.FindChild(setting.Vals[0].ToString()).gameObject;
                     GameObject checkboxGP = Instantiate(CheckBoxPrefab);
                     SettingsElement checkboxG = checkboxGP.GetComponent<SettingsElement>();
-                    setting.NameText = checkboxG.settingName;
-                    setting.NameText.text = setting.Name;
-                    setting.ValueText = checkboxG.value;
-
+                    setting.SettingsElement = checkboxG;
+                    checkboxG.settingName.text = setting.Name;
                     checkboxG.checkBox.group = group.GetComponent<ToggleGroup>();
                     try
                     {
@@ -495,28 +493,22 @@ namespace MSCLoader
                 case SettingsType.Button:
                     GameObject btnP = Instantiate(ButtonPrefab);
                     SettingsElement btn = btnP.GetComponent<SettingsElement>();
-                    setting.NameText = btn.settingName;
-                    setting.NameText.text = setting.Name.ToUpper();                    
-                    setting.NameText.color = (Color)setting.Vals[1];
-                    setting.ValueText = btn.value;
-
+                    setting.SettingsElement = btn;
+                    btn.settingName.text = setting.Name.ToUpper();
+                    btn.settingName.color = (Color)setting.Vals[1];
                     btn.button.GetComponent<Image>().color = (Color)setting.Vals[0];
                     if(setting.Value.ToString() == "DoUnityAction")
                         btn.button.onClick.AddListener(setting.DoUnityAction.Invoke);
                     else
                         btn.button.onClick.AddListener(setting.DoAction.Invoke);
                     btn.transform.SetParent(listView, false);
-                    setting.button = btn.button.gameObject;
                     break;
                 case SettingsType.RButton:
                     GameObject rbtnP = Instantiate(ButtonPrefab);
                     SettingsElement rbtn = rbtnP.GetComponent<SettingsElement>();
-
-                    setting.NameText = rbtn.settingName;
-                    setting.NameText.text = setting.Name.ToUpper(); 
-                    setting.NameText.color = Color.white;
-                    setting.ValueText = rbtn.value;
-
+                    setting.SettingsElement = rbtn;
+                    rbtn.settingName.text = setting.Name.ToUpper();
+                    rbtn.settingName.color = Color.white;
                     rbtn.button.GetComponent<Image>().color = Color.black;
                     rbtn.button.onClick.AddListener(delegate
                     {
@@ -529,10 +521,8 @@ namespace MSCLoader
                 case SettingsType.Slider:
                     GameObject slidrP = Instantiate(SliderPrefab);
                     SettingsElement slidr = slidrP.GetComponent<SettingsElement>();
-                    setting.NameText = slidr.settingName;
-                    setting.NameText.text = setting.Name;
-                    setting.ValueText = slidr.value;
-
+                    setting.SettingsElement = slidr;
+                    slidr.settingName.text = setting.Name;
                     slidr.value.text = setting.Value.ToString();
                     slidr.slider.minValue = float.Parse(setting.Vals[0].ToString());
                     slidr.slider.maxValue = float.Parse(setting.Vals[1].ToString());
@@ -573,12 +563,9 @@ namespace MSCLoader
                 case SettingsType.TextBox:
                     GameObject txtP = Instantiate(TextBoxPrefab);
                     SettingsElement txt = txtP.GetComponent<SettingsElement>();
-
-                    setting.NameText = txt.settingName;
-                    setting.NameText.text = setting.Name;
-                    setting.NameText.color = (Color)setting.Vals[1];
-                    setting.ValueText = txt.value;
-
+                    setting.SettingsElement = txt;
+                    txt.settingName.text = setting.Name;
+                    txt.settingName.color = (Color)setting.Vals[1];
                     txt.placeholder.text = setting.Vals[0].ToString();
                     txt.textBox.contentType = (InputField.ContentType)setting.Vals[2];
                     txt.textBox.text = setting.Value.ToString();
@@ -588,14 +575,34 @@ namespace MSCLoader
                     });
                     txt.transform.SetParent(listView, false);
                     break;
-                case SettingsType.Header:
+                case SettingsType.DropDown:
+                    GameObject ddlP = Instantiate(DropDownListPrefab);
+                    SettingsElement ddl = ddlP.GetComponent<SettingsElement>();
+                    setting.SettingsElement= ddl;
+                    ddl.settingName.text = setting.Name;
+                    ddl.dropDownList.Items = new List<DropDownListItem>();
+                    int i = 0;
+                    foreach (string s in (string[])setting.Vals[0])
+                    {
+                        DropDownListItem ddli = new DropDownListItem(s, i.ToString());
+                        ddl.dropDownList.Items.Add(ddli);
+                        i++;
+                    }
+                    ddl.dropDownList.SelectedIndex = int.Parse(setting.Value.ToString());
+                    ddl.dropDownList.OnSelectionChanged = delegate {
+                        setting.Value = ddl.dropDownList.SelectedIndex;
+                        if (setting.DoAction != null)
+                            setting.DoAction.Invoke();
+                    };
+                    ddl.transform.SetParent(listView, false);
                     break;
                 case SettingsType.Text:
                     GameObject tx = Instantiate(LabelPrefab);
-                    setting.NameText = tx.GetComponent<Text>();
-                    setting.NameText.text = setting.Name;
-
+                    SettingsElement label = tx.GetComponent<SettingsElement>();
+                    label.settingName.text = setting.Name;
                     tx.transform.SetParent(listView, false);
+                    break;
+                case SettingsType.Header:
                     break;
             }
         }
@@ -631,7 +638,7 @@ namespace MSCLoader
         {
             GameObject tx = Instantiate(LabelPrefab);
             SettingsElement txt = tx.GetComponent<SettingsElement>();
-            txt.value.text = text;
+            txt.settingName.text = text;
             tx.transform.SetParent(listView.transform, false);
             return txt;
         }

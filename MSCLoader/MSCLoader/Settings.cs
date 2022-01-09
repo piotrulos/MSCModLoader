@@ -26,7 +26,8 @@ namespace MSCLoader
         Slider,
         TextBox,
         Header,
-        Text
+        Text,
+        DropDown
     }
 #pragma warning restore CS1591
 
@@ -73,25 +74,35 @@ namespace MSCLoader
         /// </summary>
         public object[] Vals;
 
-        internal Text NameText;
-        internal Text ValueText;
-        internal GameObject button, checkbox, label, slider, textbox;
+        //internal Text NameText;
+        //internal Text ValueText;        
+        internal SettingsElement SettingsElement;
         internal SettingsGroup header;
         void UpdateName()
         {
-            if (NameText != null)
+            if (SettingsElement == null) return;
+            if (SettingsElement.settingName != null)
             {
-                NameText.text = Name;
+                SettingsElement.settingName.text = Name;
             }
         }
         void UpdateValue()
         {
-            if (ValueText != null)
+            if (SettingsElement == null) return;
+            if (SettingsElement.value != null)
             {
-                if (SettingType==SettingsType.TextBox)
-                    ValueText.GetComponentInParent<InputField>().text = Value.ToString();
-                else
-                    ValueText.text = Value.ToString();
+                switch (SettingType)
+                {
+                    case SettingsType.TextBox:
+                        SettingsElement.textBox.text = Value.ToString();
+                        break;
+                    case SettingsType.DropDown:
+                        SettingsElement.dropDownList.SelectedIndex = int.Parse(Value.ToString());
+                        break;
+                    default:
+                        SettingsElement.value.text = Value.ToString();
+                        break;
+                }
             }
         }
         /// <summary>
@@ -299,6 +310,16 @@ namespace MSCLoader
             set.Vals = new object[3] { placeholderText, Color.white, contentType };
             mod.modSettingsList.Add(set);
             return new SettingsTextBox(set);
+        }
+
+        public static SettingsDropDownList AddDropDownList(Mod mod, string settingID, string name, string[] arrayOfItems, int defaultSelected = 0, Action OnSelectionChanged = null)
+        {
+            Settings set = new Settings(mod, settingID, name, defaultSelected, OnSelectionChanged, SettingsType.DropDown);
+            mod.modSettingsDefault.Add(new Settings(mod, settingID, name, defaultSelected, OnSelectionChanged, SettingsType.DropDown));
+
+            set.Vals = new object[1] { arrayOfItems };
+            mod.modSettingsList.Add(set);
+            return new SettingsDropDownList(set);
         }
 
         /// <summary>
@@ -898,6 +919,48 @@ namespace MSCLoader
         }
 
         internal SettingsTextBox(Settings s)
+        {
+            Instance = s;
+        }
+    }
+    /// <summary>
+    /// Settings DropDown List
+    /// </summary>
+    public class SettingsDropDownList
+    {
+        /// <summary>
+        /// Settings Instance (used for custom reset button)
+        /// </summary>
+        public Settings Instance;
+
+        /// <summary>
+        /// Get DropDownList selected Item Index
+        /// </summary>
+        /// <returns>DropDownList selectedIndex</returns>
+        public int GetSelectedItemIndex()
+        {
+            return int.Parse(Instance.GetValue().ToString());
+        }
+
+        /// <summary>
+        /// Get DropDownList selected Item Name
+        /// </summary>
+        /// <returns>DropDownList selected item name</returns>
+        public string GetSelectedItemName()
+        {
+            return Instance.SettingsElement.value.text;
+        }
+
+        /// <summary>
+        /// Set DropDownList selected Item Index
+        /// </summary>
+        /// <param name="value">index</param>
+        public void SetSelectedItemIndex(int value)
+        {
+            Instance.Value = value;
+        }
+
+        internal SettingsDropDownList(Settings s)
         {
             Instance = s;
         }

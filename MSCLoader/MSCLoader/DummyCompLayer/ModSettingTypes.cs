@@ -28,7 +28,8 @@ public class SettingButton : MonoBehaviour
     public void SettingButtonC(Settings set)
     {
         setting = set;
-        nameText = set.NameText;
+        if(set.SettingsElement != null)
+        nameText = set.SettingsElement.settingName;
     }
     public bool suspendActions = false;
     public Button.ButtonClickedEvent OnClick { get => button.onClick; set => button.onClick = value; }
