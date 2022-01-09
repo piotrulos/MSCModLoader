@@ -39,7 +39,6 @@ namespace MSCLoader
                 case ListType.References:
                     mmv.modList = false;
                     mmv.ReferencesList(listView);
-
                     break;
                 case ListType.Updates:
                     mmv.modList = false;

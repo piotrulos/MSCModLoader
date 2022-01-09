@@ -137,6 +137,9 @@
     <Compile Include="ModMenu\ScrollRectCulling.cs" />
     <Compile Include="ModMenu\SettingsElement.cs" />
     <Compile Include="ModMenu\SettingsGroup.cs" />
+    <Compile Include="ModMenu\UIExtensions\DropDownList.cs" />
+    <Compile Include="ModMenu\UIExtensions\DropDownListButton.cs" />
+    <Compile Include="ModMenu\UIExtensions\DropDownListItem.cs" />
     <Compile Include="ModMenu\UniversalView.cs" />
     <Compile Include="DummyCompLayer\ModSave.cs" />
     <Compile Include="ModMenu.cs" />
