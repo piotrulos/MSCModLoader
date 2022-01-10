@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 namespace MSCLoader
 {
-    public class DownloadableModList
+    internal class DownloadableModList
     {
         public string mod_id;
         public string mod_version;
@@ -17,7 +17,7 @@ namespace MSCLoader
         public int mod_type;
     }
 
-    public class DwnlModList
+    internal class DwnlModList
     {
         public List<DownloadableModList> DownloadableModList;
     }

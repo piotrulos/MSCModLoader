@@ -14,7 +14,7 @@ namespace MSCLoader
         public GameObject ModElementPrefab, ReferenceElementPrefab, UpdateElementPrefab;
         public GameObject HeaderGroupPrefab;
         public GameObject ButtonPrefab, CheckBoxPrefab, KeyBindPrefab, LabelPrefab, SliderPrefab, TextBoxPrefab;
-        public GameObject DropDownListPrefab;
+        public GameObject DropDownListPrefab, ColorPickerPrefab;
         public UniversalView universalView;
 
         public bool modList = false;
@@ -595,6 +595,26 @@ namespace MSCLoader
                             setting.DoAction.Invoke();
                     };
                     ddl.transform.SetParent(listView, false);
+                    break;
+                case SettingsType.ColorPicker:
+                    GameObject colpp = Instantiate(ColorPickerPrefab);
+                    SettingsElement colp = colpp.GetComponent<SettingsElement>();
+                    setting.SettingsElement = colp;
+                    colp.settingName.text = setting.Name;
+                    ModConsole.Print(setting.Value.GetType());
+                    string[] colb = setting.Value.ToString().Split(',');
+                    colp.colorPicker.CurrentColor = new Color32(byte.Parse(colb[0]), byte.Parse(colb[1]), byte.Parse(colb[2]), byte.Parse(colb[3]));
+                    if ((bool)setting.Vals[0])
+                    {
+                        colp.colorPicker.AlphaSlider.SetActive(true);
+                    }
+                    colp.colorPicker.onValueChanged.AddListener((Color32 col)=>
+                    {
+                        setting.Value = $"{col.r},{col.g},{col.b},{col.a}";
+                        if (setting.DoAction != null)
+                            setting.DoAction.Invoke();
+                    });
+                    colp.transform.SetParent(listView, false);
                     break;
                 case SettingsType.Text:
                     GameObject tx = Instantiate(LabelPrefab);

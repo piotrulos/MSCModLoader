@@ -1,4 +1,4 @@
-﻿///Heavily modified Unity UI extensions (old ass version) (BSD3 license)
+﻿//Heavily modified Unity UI extensions (old ass version) (BSD3 license)
 using UnityEngine.UI;
 
 namespace MSCLoader

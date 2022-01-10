@@ -22,7 +22,6 @@ namespace MSCLoader
 
         //Extensions
         public DropDownList dropDownList;
-
-
+        public ColorPicker colorPicker;
     }
 }
