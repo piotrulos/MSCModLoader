@@ -77,7 +77,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="System">
-      <Aliases>global</Aliases>
+      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\System.dll</HintPath>
     </Reference>
     <Reference Include="System.Core">
       <Aliases>global</Aliases>
@@ -137,6 +137,10 @@
     <Compile Include="ModMenu\ScrollRectCulling.cs" />
     <Compile Include="ModMenu\SettingsElement.cs" />
     <Compile Include="ModMenu\SettingsGroup.cs" />
+    <Compile Include="ModMenu\UIExtensions\ColorImage.cs" />
+    <Compile Include="ModMenu\UIExtensions\ColorPicker.cs" />
+    <Compile Include="ModMenu\UIExtensions\ColorSlider.cs" />
+    <Compile Include="ModMenu\UIExtensions\ColorSliderImage.cs" />
     <Compile Include="ModMenu\UIExtensions\DropDownList.cs" />
     <Compile Include="ModMenu\UIExtensions\DropDownListButton.cs" />
     <Compile Include="ModMenu\UIExtensions\DropDownListItem.cs" />

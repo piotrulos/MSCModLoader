@@ -27,7 +27,8 @@ namespace MSCLoader
         TextBox,
         Header,
         Text,
-        DropDown
+        DropDown,
+        ColorPicker
     }
 #pragma warning restore CS1591
 
@@ -42,7 +43,7 @@ namespace MSCLoader
         /// The ID of the settings (Should only be used once in your mod).
         /// </summary>
         public string ID;
-     
+
         /// <summary>
         /// Visible name for your setting.
         /// </summary>
@@ -304,7 +305,7 @@ namespace MSCLoader
         /// <param name="contentType">InputField content type</param>
         public static SettingsTextBox AddTextBox(Mod mod, string settingID, string name, string value, string placeholderText, InputField.ContentType contentType)
         {
-            Settings set = new Settings(mod, settingID, name, value, null, SettingsType.TextBox); 
+            Settings set = new Settings(mod, settingID, name, value, null, SettingsType.TextBox);
             mod.modSettingsDefault.Add(new Settings(mod, settingID, name, value, null, SettingsType.TextBox));
 
             set.Vals = new object[3] { placeholderText, Color.white, contentType };
@@ -312,6 +313,16 @@ namespace MSCLoader
             return new SettingsTextBox(set);
         }
 
+        /// <summary>
+        /// Add DropDown List
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        /// <param name="settingID">unique settings ID</param>
+        /// <param name="name">Name of the dropdown list</param>
+        /// <param name="arrayOfItems">array of items that will be displayed in list</param>
+        /// <param name="defaultSelected">default selected Index ID (default 0)</param>
+        /// <param name="OnSelectionChanged">Action when item is selected</param>
+        /// <returns>SettingsDropDownList</returns>
         public static SettingsDropDownList AddDropDownList(Mod mod, string settingID, string name, string[] arrayOfItems, int defaultSelected = 0, Action OnSelectionChanged = null)
         {
             Settings set = new Settings(mod, settingID, name, defaultSelected, OnSelectionChanged, SettingsType.DropDown);
@@ -321,7 +332,68 @@ namespace MSCLoader
             mod.modSettingsList.Add(set);
             return new SettingsDropDownList(set);
         }
+        /// <summary>
+        /// Add Color Picker with RGB sliders
+        /// </summary>
+        /// <param name="mod">Your mod ID</param>
+        /// <param name="settingID">unique settings ID</param>
+        /// <param name="name">Title of color picker</param>
+        /// <param name="OnColorChanged">Action on color changed</param>
+        /// <returns>SettingsColorPicker</returns>
+        public static SettingsColorPicker AddColorPickerRGB(Mod mod, string settingID, string name, Action OnColorChanged = null) => AddColorPickerRGB(mod, settingID, name, new Color32(0, 0, 0, 255), OnColorChanged, false);
+        /// <summary>
+        /// Add Color Picker with RGBA sliders
+        /// </summary>
+        /// <param name="mod">Your mod ID</param>
+        /// <param name="settingID">unique settings ID</param>
+        /// <param name="name">Title of color picker</param>
+        /// <param name="OnColorChanged">Action on color changed</param>
+        /// <returns>SettingsColorPicker</returns>  
+        public static SettingsColorPicker AddColorPickerRGBA(Mod mod, string settingID, string name, Action OnColorChanged = null) => AddColorPickerRGB(mod, settingID, name, new Color32(0, 0, 0, 255), OnColorChanged, true);
+        /// <summary>
+        /// Add Color Picker with RGB sliders
+        /// </summary>
+        /// <param name="mod">Your mod ID</param>
+        /// <param name="settingID">unique settings ID</param>
+        /// <param name="name">Title of color picker</param>
+        /// <param name="defaultColor">Default selected color</param>
+        /// <param name="OnColorChanged">Action on color changed</param>
+        /// <returns>SettingsColorPicker</returns>        
+        public static SettingsColorPicker AddColorPickerRGB(Mod mod, string settingID, string name, Color32 defaultColor, Action OnColorChanged = null) => AddColorPickerRGB(mod, settingID, name, defaultColor, OnColorChanged, false);
+        /// <summary>
+        /// Add Color Picker with RGBA sliders
+        /// </summary>
+        /// <param name="mod">Your mod ID</param>
+        /// <param name="settingID">unique settings ID</param>
+        /// <param name="name">Title of color picker</param>
+        /// <param name="defaultColor">Default selected color</param>
+        /// <param name="OnColorChanged">Action on color changed</param>
+        /// <returns>SettingsColorPicker</returns>    
+        public static SettingsColorPicker AddColorPickerRGBA(Mod mod, string settingID, string name, Color32 defaultColor, Action OnColorChanged = null) => AddColorPickerRGB(mod, settingID, name, defaultColor, OnColorChanged, true);
 
+
+        /// <summary>
+        /// AddColorPickerRGB main
+        /// </summary>
+        /// <param name="mod">your mod ID</param>
+        /// <param name="settingID">unique settings ID</param>
+        /// <param name="name">Title of color picker</param>
+        /// <param name="defaultColor">Default selected color</param>
+        /// <param name="OnColorChanged">Action on color changed</param>
+        /// <param name="showAlphaSlider">Include alpha slider (or use AddColorPickerRGBA)</param>
+        /// <returns>SettingsColorPicker</returns>
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public static SettingsColorPicker AddColorPickerRGB(Mod mod, string settingID, string name, Color32 defaultColor, Action OnColorChanged, bool showAlphaSlider)
+        {
+            byte[] defaultColorb = new byte[4] { defaultColor.r, defaultColor.g, defaultColor.b, defaultColor.a };
+            Settings set = new Settings(mod, settingID, name, defaultColorb, OnColorChanged, SettingsType.ColorPicker);
+            mod.modSettingsDefault.Add(new Settings(mod, settingID, name, defaultColorb, OnColorChanged, SettingsType.ColorPicker));
+
+            set.Vals = new object[1] { showAlphaSlider };
+            mod.modSettingsList.Add(set);
+            return new SettingsColorPicker(set);
+
+        }
         /// <summary>
         /// Add button that can execute function.
         /// </summary>
@@ -934,21 +1006,29 @@ namespace MSCLoader
         public Settings Instance;
 
         /// <summary>
-        /// Get DropDownList selected Item Index
+        /// Get DropDownList selected Item Index (can be accessed from anywhere)
         /// </summary>
-        /// <returns>DropDownList selectedIndex</returns>
+        /// <returns>DropDownList selectedIndex as int</returns>
         public int GetSelectedItemIndex()
         {
             return int.Parse(Instance.GetValue().ToString());
         }
 
         /// <summary>
-        /// Get DropDownList selected Item Name
+        /// Get DropDownList selected Item Name (Only possible if settings are open).
         /// </summary>
-        /// <returns>DropDownList selected item name</returns>
+        /// <returns>DropDownList selected item name as string</returns>
         public string GetSelectedItemName()
         {
-            return Instance.SettingsElement.value.text;
+            if (Instance.SettingsElement != null)
+            {
+                return Instance.SettingsElement.value.text;
+            }
+            else
+            {
+                ModConsole.Error("[SettingsDropDownList] ItemName can only be obtained when settings are open.");
+                return null;
+            }
         }
 
         /// <summary>
@@ -961,6 +1041,41 @@ namespace MSCLoader
         }
 
         internal SettingsDropDownList(Settings s)
+        {
+            Instance = s;
+        }
+    }
+    /// <summary>
+    /// Settings Color Picker
+    /// </summary>
+    public class SettingsColorPicker
+    {
+        /// <summary>
+        /// Settings Instance (used for custom reset button)
+        /// </summary>
+        public Settings Instance;
+
+        /// <summary>
+        /// Get Color32 value
+        /// </summary>
+        /// <returns>TextBox string value</returns>
+        public Color32 GetValue()
+        {
+            string[] colb = Instance.GetValue().ToString().Split(',');
+            new Color32(byte.Parse(colb[0]), byte.Parse(colb[1]), byte.Parse(colb[2]), byte.Parse(colb[3]));
+            return new Color32(byte.Parse(colb[0]), byte.Parse(colb[1]), byte.Parse(colb[2]), byte.Parse(colb[3]));
+        }
+
+        /// <summary>
+        /// Set Color32 value
+        /// </summary>
+        /// <param name="col">value</param>
+        public void SetValue(Color32 col)
+        {
+            Instance.Value = $"{col.r},{col.g},{col.b},{col.a}";
+        }
+
+        internal SettingsColorPicker(Settings s)
         {
             Instance = s;
         }
