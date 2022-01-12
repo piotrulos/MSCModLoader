@@ -31,12 +31,16 @@ namespace MSCLoader
             SearchField.SetActive(false);
             if (!opened)
             {
-                if(menu2)
-                gameObject.GetComponent<DownloadMenuView>().DownloadMenuOpened();
+                if (menu2)
+                    gameObject.GetComponent<DownloadMenuView>().DownloadMenuOpened();
                 else
-                gameObject.GetComponent<ModMenuView>().ModMenuOpened();
+                    gameObject.GetComponent<ModMenuView>().ModMenuOpened();
                 opened = true;
-                btnAnim.Play("hover_over_end");
+                if (menu2)
+                    btnAnim.Play("hover_over_end 1");
+                else
+                    btnAnim.Play("hover_over_end");
+
                 anim.Play("menu_open");
                 image.texture = arrowRight;
             }
