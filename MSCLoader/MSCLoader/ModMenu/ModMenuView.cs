@@ -357,7 +357,7 @@ namespace MSCLoader
             {
                 SettingsGroup header = CreateHeader(listView.transform, "Incompatible settings", Color.white);
                 header.HeaderBackground.color = Color.red;
-                CreateText(header.HeaderListView.transform, $"<color=aqua>Incompatible settings format! Settings below may not load correctly.</color>");
+                CreateText(header.HeaderListView.transform, $"<color=aqua>Incompatible settings format! Settings below may not load or work correctly.</color>{Environment.NewLine}Report that to mod author to use proper settings format.");
             }
             if (Settings.Get(mod)[0].SettingType != SettingsType.Header)
             {
