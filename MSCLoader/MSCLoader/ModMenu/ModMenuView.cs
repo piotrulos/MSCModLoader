@@ -601,7 +601,6 @@ namespace MSCLoader
                     SettingsElement colp = colpp.GetComponent<SettingsElement>();
                     setting.SettingsElement = colp;
                     colp.settingName.text = setting.Name;
-                    ModConsole.Print(setting.Value.GetType());
                     string[] colb = setting.Value.ToString().Split(',');
                     colp.colorPicker.CurrentColor = new Color32(byte.Parse(colb[0]), byte.Parse(colb[1]), byte.Parse(colb[2]), byte.Parse(colb[3]));
                     if ((bool)setting.Vals[0])

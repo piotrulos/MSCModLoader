@@ -385,9 +385,8 @@ namespace MSCLoader
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public static SettingsColorPicker AddColorPickerRGB(Mod mod, string settingID, string name, Color32 defaultColor, Action OnColorChanged, bool showAlphaSlider)
         {
-            byte[] defaultColorb = new byte[4] { defaultColor.r, defaultColor.g, defaultColor.b, defaultColor.a };
-            Settings set = new Settings(mod, settingID, name, defaultColorb, OnColorChanged, SettingsType.ColorPicker);
-            mod.modSettingsDefault.Add(new Settings(mod, settingID, name, defaultColorb, OnColorChanged, SettingsType.ColorPicker));
+            Settings set = new Settings(mod, settingID, name, $"{defaultColor.r},{defaultColor.g},{defaultColor.b},{defaultColor.a}", OnColorChanged, SettingsType.ColorPicker);
+            mod.modSettingsDefault.Add(new Settings(mod, settingID, name, $"{defaultColor.r},{defaultColor.g},{defaultColor.b},{defaultColor.a}", OnColorChanged, SettingsType.ColorPicker));
 
             set.Vals = new object[1] { showAlphaSlider };
             mod.modSettingsList.Add(set);
