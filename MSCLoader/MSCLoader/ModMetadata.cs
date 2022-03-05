@@ -727,6 +727,8 @@ namespace MSCLoader
             ModLoader.ModSelfUpdateList = new List<string>();
             ModLoader.Instance.MetadataUpdateList = new List<string>();
             ModLoader.HasUpdateModList = new List<Mod>();
+            if (mv is null) return;
+
             for (int i = 0; i < mv.versions.Count; i++)
             {
                 try

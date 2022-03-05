@@ -61,7 +61,7 @@ namespace MSCLoader
             Settings.AddHeader(this, "MSCLoader Credits",Color.black);
             Settings.AddText(this, "All source code contributors and used libraries are listed on Github");
             Settings.AddText(this, "Outside Github contributions:");
-            Settings.AddText(this, "<color=aqua>Horsey4</color> - Backend for mod Early Access feature.");
+            Settings.AddText(this, "<color=aqua>Horsey4</color> - Early Access feature backend code.");
             Settings.AddText(this, "<color=aqua>BrennFuchS</color> - New default mod icon and expanded Playmaker extensions.");
 
         }
