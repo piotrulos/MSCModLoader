@@ -66,7 +66,7 @@ namespace MSCLoader
 
         internal static readonly string serverURL = "http://my-summer-car.ml";
         internal static readonly string metadataURL = "http://my-summer-car.ml:4000";
-        internal static readonly string earlyAccessURL = "http://ec2-3-23-131-103.us-east-2.compute.amazonaws.com:8080"; //Hosted by Horsey4
+        internal static readonly string earlyAccessURL = "http://my-summer-car.ml:8080";
        // internal static readonly string serverURL = "http://localhost/msc2"; //localhost for testing only
        // internal static readonly string metadataURL = "http://localhost:4000";
 

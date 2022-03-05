@@ -494,7 +494,7 @@ public partial class ModLoader : MonoBehaviour
             bool ret = Steamworks.SteamApps.GetCurrentBetaName(out string Name, 128);
             if (ret && ModMenu.expWarning.GetValue())
             {
-                if (Name != "default_32bit") //32bit is NOT experimental branch
+                if (!Name.StartsWith("default_")) //default is NOT experimental branch
                     ModUI.ShowMessage($"<color=orange><b>Warning:</b></color>{Environment.NewLine}You are using beta build: <color=orange><b>{Name}</b></color>{Environment.NewLine}{Environment.NewLine}Remember that some mods may not work correctly on beta branches.", "Experimental build warning");
             }
             System.Console.WriteLine($"MSC buildID: <b>{Steamworks.SteamApps.GetAppBuildId()}</b>");
