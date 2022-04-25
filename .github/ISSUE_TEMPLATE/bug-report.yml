@@ -1,0 +1,41 @@
+name: Bug Report
+description: Create bug report for MSCLoader
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        [Please read FAQ before posting bug report](https://github.com/piotrulos/MSCModLoader/wiki/FAQ-Frequently-Asked-Questions)
+  - type: input
+    id: osVer
+    attributes:
+      label: OS version/build
+      description: What is your OS version
+      placeholder: ex. Windows 10 1709 (16299.248)
+    validations:
+      required: true
+  - type: input
+    id: mscloaderVer
+    attributes:
+      label: MSCLoader version
+      description: What is your MSCLoader version
+      placeholder: ex. 1.2.3
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: Description
+      description: Describe bug, what happened and what supposed to happen.
+      placeholder: Describe bug here...
+    validations:
+      required: true      
+  - type: textarea
+    id: attachments
+    attributes:
+      label: Attachments
+      description: To make your bug report valid please attach "output_log.txt" and "MSCLoader_Preloader.txt" from game folder. Also you can attach screenshots here.
+      placeholder: Drag and drop output_log.txt and MSCLoader_Preloader.txt here
+    validations:
+      required: true          
