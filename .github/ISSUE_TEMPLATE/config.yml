@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Discussion page
+    url: https://github.com/piotrulos/MSCModLoader/discussions
+    about: Please ask and answer questions here.
+  - name: Proton issues/discussion
+    url: https://github.com/piotrulos/MSCModLoader/discussions/135
+    about: Please ask and answer Proton related questions here.    

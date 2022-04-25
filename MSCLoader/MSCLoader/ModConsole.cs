@@ -35,15 +35,13 @@ namespace MSCLoader
         {
             consoleKey = Keybind.Add(this, "Open", "<color=lime>Open console key combination</color>", KeyCode.BackQuote);
             Settings.AddHeader(this, "MSCLoader info", Color.black);
-            Settings.AddText(this, $"<color=lime>MSCLoader {ModLoader.MSCLoader_Ver} build {ModLoader.Instance.currentBuild}</color>");
             if (ModLoader.Instance.newBuild > ModLoader.Instance.currentBuild)
             {
-                Settings.AddText(this, $"New update available:");
-                Settings.AddText(this, $"<color=aqua>MSCLoader {ModLoader.Instance.newVersion} build {ModLoader.Instance.newBuild}</color>");
+                Settings.AddText(this, $"<color=orange>MSCLoader {ModLoader.MSCLoader_Ver} build {ModLoader.Instance.currentBuild}</color> -> <color=lime>MSCLoader {ModLoader.Instance.newVersion} build {ModLoader.Instance.newBuild}</color>");
             }
             else
             {
-                Settings.AddText(this, $"No new MSCLoader update available");
+                Settings.AddText(this, $"<color=lime>MSCLoader {ModLoader.MSCLoader_Ver} build {ModLoader.Instance.currentBuild}</color>");
             }
             string sp = System.IO.Path.Combine(ModLoader.SettingsFolder, @"MSCLoader_Settings\lastCheck");
             if (System.IO.File.Exists(sp))
