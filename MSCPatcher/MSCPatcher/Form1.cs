@@ -714,16 +714,30 @@ namespace MSCPatcher
             {
                 if (MD5HashFile(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.dll")) == MD5HashFile(Path.GetFullPath(Path.Combine("MSCLoader.dll", ""))))
                 {
-                    statusLabelText.Text = "Installed, MSCLoader.dll is up to date.";
-                    Log.Write("MSCLoader is up to date.");
-                    button1.Enabled = false;
-                    button3.Enabled = true;
-                    statusLabelText.ForeColor = Color.Green;
-                    mscloaderUpdate = false;
+                    FileVersionInfo coreVer = FileVersionInfo.GetVersionInfo(Path.Combine(mscPath, @"mysummercar_Data\Managed\MSCLoader.Preloader.dll"));
+                    if (coreVer.FilePrivatePart < 263)
+                    {
+                        statusLabelText.Text = "Installed, but MSCLoader.Preloader.dll update available, Update?";
+                        Log.Write("MSCLoader.Preloader.dll version mismatch, update available.");
+                        button1.Enabled = true;
+                        button1.Text = "Update MSCLoader";
+                        button3.Enabled = true;
+                        statusLabelText.ForeColor = Color.Blue;
+                        mscloaderUpdate = true;
+                    }
+                    else
+                    {
+                        statusLabelText.Text = "Installed, MSCLoader is up to date.";
+                        Log.Write("MSCLoader is up to date.");
+                        button1.Enabled = false;
+                        button3.Enabled = true;
+                        statusLabelText.ForeColor = Color.Green;
+                        mscloaderUpdate = false;
+                    }
                 }
                 else
                 {
-                    statusLabelText.Text = "Installed, but MSCLoader update available, Update?";
+                    statusLabelText.Text = "Installed, but MSCLoader.dll update available, Update?";
                     Log.Write("MSCLoader.dll version mismatch, update available.");
                     button1.Enabled = true;
                     button1.Text = "Update MSCLoader";

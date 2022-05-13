@@ -4,9 +4,8 @@ using System.Reflection;
 using Harmony;
 using IniParser.Model;
 using IniParser;
-using System.Runtime.InteropServices;
-using System.Diagnostics;
 using Ionic.Zip;
+using System.Linq;
 
 namespace MSCLoader.Preloader
 {
@@ -18,9 +17,18 @@ namespace MSCLoader.Preloader
         //Entry point for doorstop
         public static void Main(string[] args)
         {
+            string[] launchArgs = System.Environment.GetCommandLineArgs(); //Environment CommandLine Arguments (in Main there are doorstop args only)
+
             if (File.Exists("MSCLoader_Preloader.txt")) File.Delete("MSCLoader_Preloader.txt");
             MDebug.Init();
+            MDebug.Log($"Launch parameters");
+            MDebug.Log($"{string.Join(" ", launchArgs)}",true);
             ReadSettings();
+            if (launchArgs.Contains("-mscloader-disable"))
+            { 
+                MDebug.Log($"Detected -mscloader-disable flag, exiting...");
+                return;
+            }
             UnpackUpdate();
             OutputLogChecker(); //Enable output_log after possible game update  
             MDebug.Log("Waiting for engine...");
@@ -94,7 +102,17 @@ namespace MSCLoader.Preloader
                 if (!bool.TryParse(skipIntro, out introSkip))
                 {
                     introSkip = false;
-                    MDebug.Log($"[FAIL] Parse failed, readed value: {skipIntro}");
+                    MDebug.Log($"[FAIL] skipIntro - Parse failed, readed value: {skipIntro}, restoring default...");
+                    ini["MSCLoader"]["skipIntro"] = "false";
+                    new FileIniDataParser().WriteFile("doorstop_config.ini", ini, System.Text.Encoding.ASCII);
+                }
+                string skipCfg = ini["MSCLoader"]["skipConfigScreen"];
+                if (!bool.TryParse(skipCfg, out cfgScreenSkip))
+                {
+                    cfgScreenSkip = false;
+                    MDebug.Log($"[FAIL] skipConfigScreen - Parse failed, readed value: {skipCfg}, restoring default...");
+                    ini["MSCLoader"]["skipConfigScreen"] = "false";
+                    new FileIniDataParser().WriteFile("doorstop_config.ini", ini, System.Text.Encoding.ASCII);
                 }
             }
             catch (Exception e)
@@ -108,6 +126,7 @@ namespace MSCLoader.Preloader
             try
             {
                 bool enLog = false;
+                bool skipCfg = false;
                 offset = FindBytes(Path.Combine("", @"mysummercar_Data\mainData"), data);
 
                 using (FileStream stream = File.OpenRead(Path.Combine("", @"mysummercar_Data\mainData")))
@@ -123,9 +142,18 @@ namespace MSCLoader.Preloader
                         enLog = true;
 
                     }
+                    stream.Position = offset + 96;
+                    if (stream.ReadByte() == 1)
+                    {
+                        skipCfg = false;
+                    }
+                    else
+                    {
+                        skipCfg = true;
+
+                    }
                     stream.Close();
                 }
-
                 if (enLog)
                 {
                     using (FileStream stream = new FileStream(Path.Combine("", @"mysummercar_Data\mainData"), FileMode.Open, FileAccess.ReadWrite))
@@ -134,6 +162,19 @@ namespace MSCLoader.Preloader
                         MDebug.Log("Enabling output_log...");
                         stream.Position = offset + 115;
                         stream.WriteByte(0x01);
+                        stream.Close();
+                    }
+                }
+                if (cfgScreenSkip != skipCfg)
+                {
+                    using (FileStream stream = new FileStream(Path.Combine("", @"mysummercar_Data\mainData"), FileMode.Open, FileAccess.ReadWrite))
+                    {
+                        MDebug.Log("Changing config screen skip...");
+                        stream.Position = offset + 96;
+                        if (cfgScreenSkip)
+                            stream.WriteByte(0x00);
+                        else
+                            stream.WriteByte(0x01);
                         stream.Close();
                     }
                 }
@@ -164,6 +205,7 @@ namespace MSCLoader.Preloader
         }
 
         public static bool introSkip = false;
+        public static bool cfgScreenSkip = false;
         public static bool introSkipped = false;
         [HarmonyPatch(typeof(PlayMakerFSM))]
         [HarmonyPatch("Awake")]

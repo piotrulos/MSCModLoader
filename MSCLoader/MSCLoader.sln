@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29411.108
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSCLoader", "MSCLoader\MSCLoader.csproj", "{3323FE4A-D360-4692-9309-F20B57BBB745}"
 EndProject
@@ -10,20 +10,15 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		DevMode|Any CPU = DevMode|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{3323FE4A-D360-4692-9309-F20B57BBB745}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3323FE4A-D360-4692-9309-F20B57BBB745}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3323FE4A-D360-4692-9309-F20B57BBB745}.DevMode|Any CPU.ActiveCfg = DevMode|Any CPU
-		{3323FE4A-D360-4692-9309-F20B57BBB745}.DevMode|Any CPU.Build.0 = DevMode|Any CPU
 		{3323FE4A-D360-4692-9309-F20B57BBB745}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3323FE4A-D360-4692-9309-F20B57BBB745}.Release|Any CPU.Build.0 = Release|Any CPU
 		{807B36C0-F066-4736-8980-E7B18E3CB1F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{807B36C0-F066-4736-8980-E7B18E3CB1F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{807B36C0-F066-4736-8980-E7B18E3CB1F9}.DevMode|Any CPU.ActiveCfg = Debug|Any CPU
-		{807B36C0-F066-4736-8980-E7B18E3CB1F9}.DevMode|Any CPU.Build.0 = Debug|Any CPU
 		{807B36C0-F066-4736-8980-E7B18E3CB1F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{807B36C0-F066-4736-8980-E7B18E3CB1F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection

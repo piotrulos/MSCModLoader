@@ -37,15 +37,7 @@ public partial class ModLoader : MonoBehaviour
     public static readonly bool experimental = false;
 #endif
 
-    /// <summary>
-    /// Is DevMode active
-    /// </summary>
-#if DevMode
-        public static readonly bool devMode = true;
-#else
-    public static readonly bool devMode = false;
-#endif
-
+    internal static bool devMode = false;
     internal static string GetMetadataFolder(string fn) => Path.Combine(MetadataFolder, fn);
 
     //Constructor version number
@@ -181,6 +173,11 @@ public partial class ModLoader : MonoBehaviour
 
     private void Init()
     {
+        Console.WriteLine($"{Environment.NewLine}[MSCLoader Init]");
+        string[] launchArgs = Environment.GetCommandLineArgs();
+        Console.WriteLine("Launch arguments:");
+        Console.WriteLine(string.Join(" ", launchArgs));
+        if (launchArgs.Contains("-mscloader-devmode")) devMode = true;
         //Set config and Assets folder in selected mods folder
         ConfigFolder = Path.Combine(ModsFolder, "Config");
         SettingsFolder = Path.Combine(ConfigFolder, "Mod Settings");
@@ -200,7 +197,7 @@ public partial class ModLoader : MonoBehaviour
                     }
                     catch (Exception ex)
                     {
-                        System.Console.WriteLine($"{ex.Message} (Failed to update folder structure)");
+                        Console.WriteLine($"{ex.Message} (Failed to update folder structure)");
                     }
                 }
             }
@@ -269,6 +266,7 @@ public partial class ModLoader : MonoBehaviour
         {
             UnpackUpdates();
         }
+        if (launchArgs.Contains("-mscloader-disable")) ModUI.ShowMessage("To use <color=yellow>-mscloader-disable</color> launch option, you need to update core module of MSCLoader, download latest version and launch <color=aqua>MSCPatcher.exe</color> to update","Outdated module");
     }
     void ContinueInit()
     {
@@ -343,6 +341,7 @@ public partial class ModLoader : MonoBehaviour
         if (devMode)
             ModConsole.Warning("You are running ModLoader in <color=red><b>DevMode</b></color>, this mode is <b>only for modders</b> and shouldn't be use in normal gameplay.");
         System.Console.WriteLine(SystemInfoFix()); //operating system version to output_log.txt
+
         if (saveErrors != null)
         {
             if (saveErrors.Count > 0 && wasSaving)
@@ -1339,7 +1338,7 @@ public partial class ModLoader : MonoBehaviour
                 ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - crashed during load.<b>Details:</b> {e.GetFullMessage()}{Environment.NewLine}");
                 if (addRef.Count > 0)
                 {
-                    if ((addRef.Contains("MSCLoader.Features") && !ReferencesList.Select(x => x.AssemblyID).Contains("MSCLoader.Features")) || (addRef.Contains("MSCLoader.Features") && !ReferencesList.Select(x => x.AssemblyID).Contains("MSCLoader.Features")))
+                    if ((addRef.Contains("MSCLoader.Features") && !ReferencesList.Select(x => x.AssemblyID).Contains("MSCLoader.Features")) || (addRef.Contains("MSCLoader.Helpers") && !ReferencesList.Select(x => x.AssemblyID).Contains("MSCLoader.Helpers")))
                         ModUI.ShowYesNoMessage($"<color=yellow>{Path.GetFileName(file)}</color> - looks like a mod, but It crashed trying to load.{Environment.NewLine}{Environment.NewLine}Detected additional references used by this mod: {Environment.NewLine}<color=aqua>{string.Join(", ", addRef.ToArray())}</color> {Environment.NewLine}{Environment.NewLine} Looks like missing compatibility pack.{Environment.NewLine} Open download page?", "Crashed", delegate
                          {
                              Application.OpenURL("https://www.nexusmods.com/mysummercar/mods/732");

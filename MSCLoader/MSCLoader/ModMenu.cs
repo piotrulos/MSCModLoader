@@ -12,15 +12,15 @@ namespace MSCLoader
     internal class ModMenu : Mod
     {
         public override string ID => "MSCLoader_Settings";
-        public override string Name => "Settings (Main)";
+        public override string Name => "[INTERNAL] Mod Menu";
         public override string Version => ModLoader.MSCLoader_Ver;
         public override string Author => "piotrulos";
 
         internal static SettingsCheckBox dm_disabler, dm_logST, dm_operr, dm_warn, dm_pcon;
-        internal static SettingsCheckBox expWarning, modPath, forceMenuVsync, openLinksOverlay, skipGameIntro, syncLoad;
+        internal static SettingsCheckBox expWarning, modPath, forceMenuVsync, openLinksOverlay, skipGameIntro, skipConfigScreen, syncLoad;
 
         private static SettingsCheckBoxGroup checkLaunch, checkDaily, checkWeekly;
-
+        System.Diagnostics.FileVersionInfo coreVer;
 
         public GameObject UI;
         internal static byte cfmu_set = 0;
@@ -49,7 +49,9 @@ namespace MSCLoader
             modPath = Settings.AddCheckBox(this, "MSCLoader_modPath", "Show mods folder (top left corner)", true, ModLoader.MainMenuPath);
             forceMenuVsync = Settings.AddCheckBox(this, "MSCLoader_forceMenuVsync", "60 FPS limit in Main Menu", true, VSyncSwitchCheckbox);
             openLinksOverlay = Settings.AddCheckBox(this, "MSCLoader_openLinksOverlay", "Open URLs in steam overlay", true);
+            Settings.AddText(this, "Skip stuff:");
             skipGameIntro = Settings.AddCheckBox(this, "MSCLoader_skipGameIntro", "Skip game Splash Screen", false, SkipIntroSet);
+            skipConfigScreen = Settings.AddCheckBox(this, "MSCLoader_skipConfigScreen", "Skip Configuration Screen", false, SkipConfigScreen);
 
             Settings.AddText(this, $"If for whatever reason you want to save half a second of mods loading time, enable below option.{Environment.NewLine}(Loading progress <color=yellow>cannot</color> be displayed in synchronous mode, and game may look frozen during loading)");
             syncLoad = Settings.AddCheckBox(this, "MSCLoader_syncLoad", "Load mods synchronously", false);
@@ -66,8 +68,8 @@ namespace MSCLoader
             Settings.AddText(this, "<color=aqua>BrennFuchS</color> - New default mod icon and expanded Playmaker extensions.");
 
             Settings.AddHeader(this, "Detailed Version Information", new Color32(0, 128, 0, 255));
-            System.Diagnostics.FileVersionInfo v = System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "MSCLoader.Preloader.dll"));
-            Settings.AddText(this, $"MSCLoader modules:{Environment.NewLine}<color=yellow>MSCLoader.Preloader</color>: <color=aqua>v{v.FileMajorPart}.{v.FileMinorPart}.{v.FileBuildPart} build {v.FilePrivatePart}</color>{Environment.NewLine}<color=yellow>MSCLoader</color>: <color=aqua>v{ModLoader.MSCLoader_Ver} build {ModLoader.Instance.currentBuild}</color>");
+            coreVer = System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "MSCLoader.Preloader.dll"));
+            Settings.AddText(this, $"MSCLoader modules:{Environment.NewLine}<color=yellow>MSCLoader.Preloader</color>: <color=aqua>v{coreVer.FileMajorPart}.{coreVer.FileMinorPart}.{coreVer.FileBuildPart} build {coreVer.FilePrivatePart}</color>{Environment.NewLine}<color=yellow>MSCLoader</color>: <color=aqua>v{ModLoader.MSCLoader_Ver} build {ModLoader.Instance.currentBuild}</color>");
             Settings.AddText(this, $"Build-in libraries:{Environment.NewLine}<color=yellow>Harmony</color>: <color=aqua>v{System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "0Harmony.dll")).FileVersion}</color>{Environment.NewLine}" +
                 $"<color=yellow>Ionic.Zip</color>: <color=aqua>v{System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "Ionic.Zip.dll")).FileVersion}</color>{Environment.NewLine}" +
                 $"<color=yellow>NAudio</color>: <color=aqua>v{System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "NAudio.dll")).FileVersion}</color>{Environment.NewLine}" +
@@ -83,15 +85,25 @@ namespace MSCLoader
             IniData ini = new FileIniDataParser().ReadFile("doorstop_config.ini");
             ini.Configuration.AssigmentSpacer = "";
             string skipIntro = ini["MSCLoader"]["skipIntro"];
-            bool introSkip;
+            string skipCfg = ini["MSCLoader"]["skipConfigScreen"];
+            bool introSkip, configSkip;
             if (!bool.TryParse(skipIntro, out introSkip))
             {
                 skipGameIntro.SetValue(false);
-                ModConsole.Error($"Excepted boolean, received '{skipIntro ?? "<null>"}'.");
+                Console.WriteLine($"skipIntro - Excepted boolean, received '{skipIntro ?? "<null>"}'.");
             }
             else
             {
                 skipGameIntro.SetValue(introSkip);
+            }
+            if (!bool.TryParse(skipCfg, out configSkip))
+            {
+                skipConfigScreen.SetValue(false);
+                Console.WriteLine($"skipConfigScreen - Excepted boolean, received '{skipCfg ?? "<null>"}'.");
+            }
+            else
+            {
+                skipConfigScreen.SetValue(configSkip);
             }
             if (checkLaunch.GetValue())
                 cfmu_set = 0;
@@ -102,7 +114,7 @@ namespace MSCLoader
 
         }
 
-        private static void SkipIntroSet()
+        private void SkipIntroSet()
         {
             FileIniDataParser parser = new FileIniDataParser();
             IniData ini = parser.ReadFile("doorstop_config.ini");
@@ -111,6 +123,19 @@ namespace MSCLoader
             parser.WriteFile("doorstop_config.ini", ini, System.Text.Encoding.ASCII);           
         }
 
+        private void SkipConfigScreen()
+        {
+            if (coreVer.FilePrivatePart < 263)
+            {
+                ModUI.ShowMessage("To use <color=yellow>Skip Configuration Screen</color> you need to update core module of MSCLoader, download latest version and launch <color=aqua>MSCPatcher.exe</color> to update", "Outdated module");
+                return;
+            }
+            FileIniDataParser parser = new FileIniDataParser();
+            IniData ini = parser.ReadFile("doorstop_config.ini");
+            ini.Configuration.AssigmentSpacer = "";
+            ini["MSCLoader"]["skipConfigScreen"] = skipConfigScreen.GetValue().ToString().ToLower();
+            parser.WriteFile("doorstop_config.ini", ini, System.Text.Encoding.ASCII);
+        }
         private static void VSyncSwitchCheckbox()
         {
             if (ModLoader.GetCurrentScene() == CurrentScene.MainMenu)
@@ -143,14 +168,15 @@ namespace MSCLoader
             UI.name = "MSCLoader Mod Menu";
             UI.transform.SetParent(ModUI.GetCanvas(1).transform, false);
             GameObject.Destroy(UIp);
-            if (ModLoader.devMode)
+
+           /* if (ModLoader.devMode) //Move this into new module
             {
                 GameObject UI2 = GameObject.Instantiate(UIp2);
                 UI2.name = "MSCLoader Mod Download Menu";
                 UI2.transform.SetParent(ModUI.GetCanvas(5).transform, false);
                 GameObject.Destroy(UIp2);
                 UI2.SetActive(true);
-            }
+            }*/
             ab.Unload(false);
         }
 
