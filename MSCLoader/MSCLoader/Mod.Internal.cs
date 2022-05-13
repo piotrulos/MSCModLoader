@@ -56,6 +56,7 @@ public partial class Mod
     internal bool newFormat = false;
     internal bool menuCallbacks = false;
     internal bool hideResetAllSettings = false;
+    internal bool disableWarn = false;
     internal int modErrors = 0;
     internal string compiledVersion;
     internal string fileName;

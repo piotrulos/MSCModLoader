@@ -351,29 +351,34 @@ namespace MSCLoader
                 //Load and deserialize 
                 SettingsList settings = JsonConvert.DeserializeObject<SettingsList>(File.ReadAllText(path));
                 ModLoader.LoadedMods[i].isDisabled = settings.isDisabled;
-                try
+                if (!ModLoader.LoadedMods[i].isDisabled)
                 {
-                    if (ModLoader.LoadedMods[i].newFormat && ModLoader.LoadedMods[i].fileName != null)
+                    try
                     {
-                        ModLoader.LoadedMods[i].A_OnMenuLoad?.Invoke();
+                        if (ModLoader.LoadedMods[i].newFormat && ModLoader.LoadedMods[i].fileName != null)
+                        {
+                            ModLoader.LoadedMods[i].A_OnMenuLoad?.Invoke();
+                            ModLoader.LoadedMods[i].disableWarn = true;
+                        }
+                        else
+                        {
+                            if (ModLoader.LoadedMods[i].LoadInMenu && ModLoader.LoadedMods[i].fileName != null)
+                            {
+                                ModLoader.LoadedMods[i].OnMenuLoad();
+                                ModLoader.LoadedMods[i].disableWarn = true;
+                            }
+                            if (ModLoader.CheckEmptyMethod(ModLoader.LoadedMods[i], "MenuOnLoad"))
+                            {
+                                ModLoader.LoadedMods[i].MenuOnLoad();
+                                ModLoader.LoadedMods[i].disableWarn = true;
+                            }
+                        }
                     }
-                    else
+                    catch (Exception e)
                     {
-                        if (ModLoader.LoadedMods[i].LoadInMenu && !ModLoader.LoadedMods[i].isDisabled && ModLoader.LoadedMods[i].fileName != null)
-                        {
-                            ModLoader.LoadedMods[i].OnMenuLoad();
-                        }
-                        if (ModLoader.CheckEmptyMethod(ModLoader.LoadedMods[i], "MenuOnLoad"))
-                        {
-                            ModLoader.LoadedMods[i].MenuOnLoad();
-                        }
+                        ModLoader.ModException(e, ModLoader.LoadedMods[i]);
                     }
                 }
-                catch (Exception e)
-                {
-                    ModLoader.ModException(e, ModLoader.LoadedMods[i]);
-                }
-
                 if (Settings.Get(ModLoader.LoadedMods[i]).Count == 0)
                     continue;
 
@@ -386,7 +391,8 @@ namespace MSCLoader
                 }
                 try
                 {
-                    ModLoader.LoadedMods[i].ModSettingsLoaded();
+                    if (!ModLoader.LoadedMods[i].isDisabled)
+                        ModLoader.LoadedMods[i].ModSettingsLoaded();
                 }
                 catch (Exception e)
                 {

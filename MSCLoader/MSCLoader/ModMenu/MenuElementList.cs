@@ -324,19 +324,40 @@ namespace MSCLoader
                 mod.isDisabled = ischecked;
                 if (ischecked)
                 {
-                    mod.OnModDisabled();
+                    try
+                    {
+                        mod.OnModDisabled();
+                    }
+                    catch (Exception e)
+                    {
+                        ModLoader.ModException(e, mod);
+                    }
                     Title.text = $"<color=red>{mod.Name}</color>";
                     WarningText.gameObject.SetActive(true);
                     WarningText.text = "Mod is disabled";
-                    ModConsole.Print($"Mod <b><color=orange>{mod.Name}</color></b> has been <color=red><b>Disabled</b></color>");
+                    if (mod.disableWarn)
+                    {
+                        ModUI.ShowMessage("This mod was loaded in Main Menu, to fully disable this mod you need to restart the game.");
+                        ModConsole.Print($"Mod <b><color=orange>{mod.Name}</color></b> marked to be disabled <color=red><b>Disabled</b></color> on next restart");
+                    }
+                    else
+                        ModConsole.Print($"Mod <b><color=orange>{mod.Name}</color></b> has been <color=red><b>Disabled</b></color>");
+
                 }
                 else
                 {
-                    mod.OnModEnabled();
+                    try
+                    {
+                        mod.OnModEnabled();
+                    }
+                    catch (Exception e)
+                    {
+                        ModLoader.ModException(e, mod);
+                    }
                     Title.text = mod.Name;
                     WarningText.text = string.Empty;
                     WarningText.gameObject.SetActive(false);
-                    ModConsole.Print($"Mod <b><color=orange>{mod.Name}</color></b> has been <color=green><b>Enabled</b></color>");
+                    ModConsole.Print($"Mod <b><color=orange>{mod.Name}</color></b> has been <color=green><b>Enabled</b></color>, restart may be required.");
                 }
                 ModMenu.SaveSettings(mod);
             }

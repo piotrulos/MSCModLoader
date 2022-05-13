@@ -736,7 +736,10 @@ namespace MSCLoader
                     Mod mod = ModLoader.GetMod(mv.versions[i].mod_id, true);
                     mod.UpdateInfo = mv.versions[i];
                     if (mv.versions[i].mod_type == 2 || mv.versions[i].mod_type == 9)
+                    {
                         mod.isDisabled = true;
+                        ModMenu.SaveSettings(mod);
+                    }
                     Version v1 = new Version(mv.versions[i].mod_version);
                     Version v2 = new Version(mod.Version);
                     switch (v1.CompareTo(v2))
@@ -850,6 +853,7 @@ namespace MSCLoader
             {
                 //Disabled by reason
                 mod.isDisabled = true;
+                ModMenu.SaveSettings(mod);
                 if (!string.IsNullOrEmpty(mod.metadata.msg))
                     ModConsole.Error($"Mod <b>{mod.ID}</b> has been disabled, Reason: <b>{mod.metadata.msg}</b>");
                 else
@@ -860,6 +864,7 @@ namespace MSCLoader
             {
                 //Disabled by user
                 mod.isDisabled = true;
+                ModMenu.SaveSettings(mod);
                 if (!string.IsNullOrEmpty(mod.metadata.msg))
                     ModConsole.Error($"Mod <b>{mod.ID}</b> has been disabled by author, Reason: <b>{mod.metadata.msg}</b>");
                 else
@@ -871,6 +876,7 @@ namespace MSCLoader
                 if (mod.metadata.sign != CalculateFileChecksum(mod.fileName))
                 {
                     mod.isDisabled = true;
+                    ModMenu.SaveSettings(mod);
                     return;
                 }
             }
