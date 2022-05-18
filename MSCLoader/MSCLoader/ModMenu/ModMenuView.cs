@@ -374,13 +374,16 @@ namespace MSCLoader
                     SettingsList(Settings.Get(mod)[i], currentTransform);
                 }
             }
-            SettingsElement rbtn = CreateButton(listView.transform, "Reset all settings to default", Color.white, Color.black);
-            rbtn.button.onClick.AddListener(delegate
+            if (!mod.hideResetAllSettings)
             {
-                ModMenu.ResetSettings(mod);
-                universalView.FillSettings(mod);
-                mod.ModSettingsLoaded();
-            });
+                SettingsElement rbtn = CreateButton(listView.transform, "Reset all settings to default", Color.white, Color.black);
+                rbtn.button.onClick.AddListener(delegate
+                {
+                    ModMenu.ResetSettings(mod);
+                    universalView.FillSettings(mod);
+                    mod.ModSettingsLoaded();
+                });
+            }
         }
         public void KeyBindsList(GameObject listView, Mod mod)
         {
