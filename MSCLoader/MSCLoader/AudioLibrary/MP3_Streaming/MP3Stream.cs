@@ -73,6 +73,7 @@ namespace AudioLibrary.MP3_Streaming
                 using (Stream responseStream = resp.GetResponseStream())
                 {
                     ReadFullyStream readFullyStream = new ReadFullyStream(responseStream);
+                    subbedToEvent = false;
                     readFullyStream.MetaInt = metaInt;
                     do
                     {
@@ -131,6 +132,8 @@ namespace AudioLibrary.MP3_Streaming
                     // we are hanging on response stream .Dispose so never get there
                     decompressor.Dispose();
                     readFullyStream.Close();
+                    readFullyStream.StreamTitleChanged -= ReadFullyStream_StreamTitleChanged; //Unsubscribe title event.
+                    readFullyStream.Dispose(); 
                 }
             }
             finally
@@ -199,14 +202,13 @@ namespace AudioLibrary.MP3_Streaming
                 song_info = null;
                 subbedToEvent = false;
                 playbackState = StreamingPlaybackState.Stopped;
-                Thread.Sleep(500);
                 ShowBufferState(0, 0);
             }
         }
 
         private void ShowBufferState(double buffered, double total)
         {
-            buffer_info = string.Format("{0:0.0}s/{1:0.0}s", buffered, total);
+            buffer_info = $"{buffered:0.0}s/{total:0.0}s";
         }
 
         public void UpdateLoop()
