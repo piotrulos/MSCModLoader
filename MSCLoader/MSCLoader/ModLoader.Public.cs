@@ -55,6 +55,7 @@ namespace MSCLoader
         /// <returns>Experimental detected.</returns>
         public static bool CheckIfExperimental()
         {
+#if !Mini
             if (!CheckSteam())
             {
                 System.Console.WriteLine("Cannot check if it is experimental branch or not, because not valid steam installation detected");
@@ -63,9 +64,10 @@ namespace MSCLoader
             bool ret = Steamworks.SteamApps.GetCurrentBetaName(out string Name, 128);
             if (ret)
             {
-                if (Name != "default_32bit") //32bit is NOT experimental branch
+                if (!Name.StartsWith("default_")) //default is NOT experimental branch
                     return true;
             }
+#endif
             return false;
         }
 

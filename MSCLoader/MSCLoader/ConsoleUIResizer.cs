@@ -1,7 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿#if !Mini
+using Newtonsoft.Json;
+#endif
 using System;
 using System.IO;
-using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace MSCLoader
@@ -76,6 +77,7 @@ namespace MSCLoader
         }
         public void LoadConsoleSize()
         {
+#if !Mini
             if (!Xresizer) return;
             Start();
             string path = ModLoader.GetModSettingsFolder(new ModConsole());
@@ -98,9 +100,11 @@ namespace MSCLoader
                     File.Delete(Path.Combine(path, "consoleSize.data"));
                 }
             }
+#endif
         }
         public void SaveConsoleSize()
         {
+            #if !Mini
             string path = ModLoader.GetModSettingsFolder(new ModConsole());
             if (Xresizer)
             {
@@ -112,6 +116,7 @@ namespace MSCLoader
                 string serializedData = JsonConvert.SerializeObject(css, Formatting.Indented);
                 File.WriteAllText(Path.Combine(path, "consoleSize.data"), serializedData);
             }
+#endif
         }
         private void ClampToBorder()
         {

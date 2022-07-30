@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+#if !Mini
 using HutongGames.PlayMaker;
-using UnityEngine;
-
+#endif
 namespace MSCLoader
 {
     /// <summary>
@@ -11,6 +11,7 @@ namespace MSCLoader
     /// </summary>
     public class FsmHook
     {
+        #if !Mini
         private class FsmHookAction : FsmStateAction
         {
             public Action hook;
@@ -20,7 +21,7 @@ namespace MSCLoader
                 Finish();
             }
         }
-
+#endif
         /// <summary>
         /// Hook to playmaker state
         /// </summary>
@@ -29,6 +30,7 @@ namespace MSCLoader
         /// <param name="hook">Your function to hook</param>
         public static void FsmInject(GameObject gameObject, string stateName, Action hook)
         {
+            #if !Mini
             FsmState state = gameObject.GetPlayMakerState(stateName);
             
             if (state != null)
@@ -46,8 +48,7 @@ namespace MSCLoader
             {
                 ModConsole.Error(string.Format("FsmInject: Cannot find state <b>{0}</b> in GameObject <b>{1}</b>", stateName, gameObject.name));
             }
+#endif
         }
-
-
     }
 }

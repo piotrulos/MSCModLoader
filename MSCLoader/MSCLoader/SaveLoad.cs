@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿#if !Mini
+using Newtonsoft.Json;
+#endif
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -33,6 +35,7 @@ namespace MSCLoader
         /// <param name="fileName">Name of the save file</param>
         public static void SaveGameObject(Mod mod, GameObject g, string fileName)
         {
+            #if !Mini
             string path = Path.Combine(ModLoader.GetModSettingsFolder(mod), fileName);
             SaveData save = new SaveData();
             SaveDataList s = new SaveDataList
@@ -46,7 +49,7 @@ namespace MSCLoader
             save.save.Add(s);
             string serializedData = JsonConvert.SerializeObject(save, Formatting.Indented);
             File.WriteAllText(path, serializedData);
-           
+#endif          
         }
 
         /// <summary>
@@ -73,12 +76,14 @@ namespace MSCLoader
         /// <param name="fileName">Name of the save file</param>
         public static void SerializeSaveFile<T>(Mod mod, T saveDataClass, string fileName)
         {
+            #if !Mini
             var config = new JsonSerializerSettings();
             config.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             config.Formatting = Formatting.Indented;
             string path = Path.Combine(ModLoader.GetModSettingsFolder(mod), fileName);
             string serializedData = JsonConvert.SerializeObject(saveDataClass, config);
             File.WriteAllText(path, serializedData);
+#endif
         }
 
         /// <summary>
@@ -90,12 +95,14 @@ namespace MSCLoader
         /// <returns>Deserialized class</returns>
         public static T DeserializeSaveFile<T>(Mod mod, string fileName) where T : new()
         {
+            #if !Mini
             string path = Path.Combine(ModLoader.GetModSettingsFolder(mod), fileName);
             if (File.Exists(path))
             {
                 string serializedData = File.ReadAllText(path);
                 return JsonConvert.DeserializeObject<T>(serializedData);
             }
+#endif
             return default(T);
         }
     }

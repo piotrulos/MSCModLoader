@@ -1,7 +1,8 @@
-﻿using HutongGames.PlayMaker;
+﻿#if !Mini
+using HutongGames.PlayMaker;
+#endif
 using System;
 using System.Linq;
-using UnityEngine;
 
 namespace MSCLoader
 {
@@ -29,6 +30,7 @@ namespace MSCLoader
     /// </summary>
     public static class MSCExtensions 
     {
+
         /// <summary>
         /// Make this GameObject pickable in game (as long as it has Rigidbody attached)
         /// </summary>
@@ -47,6 +49,7 @@ namespace MSCLoader
     /// </summary>
     public static class PlayMakerExtensions
     {
+#if !Mini
         /// <summary>
         /// Get PlayMaker from this object by Name
         /// </summary>
@@ -603,5 +606,6 @@ namespace MSCLoader
             }
             catch (Exception ex) { ModConsole.Error(ex.ToString()); }
         }
+#endif
     }
 }

@@ -1,3 +1,4 @@
+#if !Mini
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using NAudio.Vorbis;
@@ -137,3 +138,4 @@ namespace AudioLibrary
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
 }
+#endif

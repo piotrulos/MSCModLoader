@@ -1,6 +1,8 @@
 ﻿global using UnityEngine;
 using System;
+#if !Mini
 using Newtonsoft.Json;
+#endif
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -270,6 +272,7 @@ public partial class ModLoader : MonoBehaviour
     }
     void ContinueInit()
     {
+#if !Mini
         LoadReferences();
         try
         {
@@ -288,6 +291,7 @@ public partial class ModLoader : MonoBehaviour
                 ModConsole.Print($"<b><color=orange>Hello <color=lime>{"Emulator!"}</color>!</color></b>");
                 throw new Exception("[EMULATOR] Do What You Want, Cause A Pirate Is Free... You Are A Pirate!");
             }
+
             Steamworks.SteamAPI.Init();
             steamID = Steamworks.SteamUser.GetSteamID().ToString();
             ModConsole.Print($"<b><color=orange>Hello <color=lime>{Steamworks.SteamFriends.GetPersonaName()}</color>!</color></b>");
@@ -301,6 +305,7 @@ public partial class ModLoader : MonoBehaviour
                 Steamworks.SteamFriends.SetRichPresence("status", $"Playing with {actualModList.Length} mods. Crazy!");
             else
                 Steamworks.SteamFriends.SetRichPresence("status", $"Playing with {actualModList.Length} mods.");
+
 
         }
         catch (Exception e)
@@ -354,9 +359,11 @@ public partial class ModLoader : MonoBehaviour
             }
             wasSaving = false;
         }
+#endif
     }
     internal void CheckForModsUpd(bool force = false)
     {
+        #if !Mini
         string sp = Path.Combine(SettingsFolder, @"MSCLoader_Settings\lastCheck");
         if (force)
         {
@@ -413,6 +420,7 @@ public partial class ModLoader : MonoBehaviour
             DownloadUpdateData();
             File.WriteAllText(sp, DateTime.Now.ToString());
         }
+#endif
     }
 
     private void DownloadUpdateData()
@@ -449,6 +457,7 @@ public partial class ModLoader : MonoBehaviour
 
     private void SAuthCheckCompleted(object sender, DownloadStringCompletedEventArgs e)
     {
+#if !Mini
         try
         {
             if (e.Error != null)
@@ -555,6 +564,7 @@ public partial class ModLoader : MonoBehaviour
             }
             System.Console.WriteLine(ex);
         }
+#endif
     }
 
     private void LoadReferences()
@@ -930,7 +940,9 @@ public partial class ModLoader : MonoBehaviour
         loadingProgress.value = 100;
         loadingMod.text = "Finishing touches...";
         yield return null;
+        #if !Mini
         GameObject.Find("ITEMS").FsmInject("Save game", SaveMods);
+#endif
         ModConsole.Print("</color>");
         allModsLoaded = true;
         loading.SetActive(false);
@@ -1053,7 +1065,9 @@ public partial class ModLoader : MonoBehaviour
         loadingProgress.value = loadingProgress.maxValue;
         loadingMod.text = "Finishing touches...";
         yield return null;
+        #if !Mini
         GameObject.Find("ITEMS").FsmInject("Save game", SaveMods);
+#endif
         ModConsole.Print("</color>");
         allModsLoaded = true;
         loading.SetActive(false);

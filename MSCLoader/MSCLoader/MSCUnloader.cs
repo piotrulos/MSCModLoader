@@ -47,7 +47,9 @@ namespace MSCLoader
                         Destroy(gosAll[i]);
                     }
                 }
+                #if !Mini
                 PlayMakerGlobals.Instance.Variables.FindFsmBool("SongImported").Value = false; //stupid variable name.
+#endif
                 ModLoader.unloader = false;
                 ModLoader.rtmm = true;
                 Application.LoadLevel(Application.loadedLevelName);

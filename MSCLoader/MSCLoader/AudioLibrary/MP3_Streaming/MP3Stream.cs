@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !Mini
+using System;
 using System.IO;
 using System.Net;
 using System.Threading;
@@ -262,3 +263,4 @@ namespace AudioLibrary.MP3_Streaming
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
 }
+#endif

@@ -1,3 +1,4 @@
+#if !Mini
 using System;
 using NAudio.Wave;
 using NVorbis;
@@ -159,3 +160,4 @@ namespace NAudio.Vorbis
     }
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }
+#endif

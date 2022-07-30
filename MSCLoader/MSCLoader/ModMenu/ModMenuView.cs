@@ -331,7 +331,9 @@ namespace MSCLoader
                 //try opening in steam overlay
                 try
                 {
+#if !Mini
                     Steamworks.SteamFriends.ActivateGameOverlayToWebPage(url);
+#endif
                 }
                 catch (Exception e)
                 {
