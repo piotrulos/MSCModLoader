@@ -8,6 +8,7 @@ namespace MSCLoader
     /// </summary>
     public class ModAudioStream : MonoBehaviour
     {
+#if !Mini
         /// <summary>
         /// Your AudioSource goes here
         /// </summary>
@@ -27,6 +28,7 @@ namespace MSCLoader
         private MP3Stream mp3s = new MP3Stream();
         private bool done = false;
         private string bufferInfo;
+
 
         /// <summary>
         /// Plays the stream
@@ -87,5 +89,6 @@ namespace MSCLoader
         {
             mp3s.Dispose();
         }
+        #endif
     }
 }

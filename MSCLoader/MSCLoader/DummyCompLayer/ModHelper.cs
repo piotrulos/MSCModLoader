@@ -1,4 +1,5 @@
-﻿using HutongGames.PlayMaker;
+﻿#if !Mini
+using HutongGames.PlayMaker;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -202,3 +203,4 @@ public static class PlayMakerProxyHelper
     public static void ClearPrefill(this PlayMakerHashTableProxy proxy) => MSCLoaderHelpers.PlayMakerProxyHelper.ClearPrefill(proxy);
 }
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#endif

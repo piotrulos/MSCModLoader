@@ -1,5 +1,6 @@
-﻿using MSCLoader;
+﻿#if !Mini
 using Newtonsoft.Json;
+#endif
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,14 +35,17 @@ namespace MSCLoader
         DwnlModList dml;
         public void RefreshTabs()
         {
+
             if (dml != null) return;
             string dwl = string.Empty;
             WebClient getdwl = new WebClient();
             getdwl.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
             try
             {
+#if !Mini
                 dwl = getdwl.DownloadString($"{ModLoader.serverURL}/mods_list.php?mods={0}");
                 dml = JsonConvert.DeserializeObject<DwnlModList>(dwl);
+#endif
             }
             catch (Exception e)
             {
@@ -53,6 +57,7 @@ namespace MSCLoader
              ReferenceTab.text = $"References (<color=aqua>{ModLoader.Instance.ReferencesList.Count}</color>)";
              UpdateTab.text = $"Updates (<color=yellow>{ModLoader.HasUpdateModList.Count + ModLoader.HasUpdateRefList.Count}</color>)";
         */
+
         }
         public void DownloadMenuOpened()
         {
@@ -64,38 +69,38 @@ namespace MSCLoader
             DownloadableModList[] filteredList = new DownloadableModList[0];
             filteredList = dml.DownloadableModList.ToArray();
 
-          /*  if (search == string.Empty)
-            {
-                filteredList = dml.DownloadableModList.ToArray();
-            }
-            else
-            {
-                filteredList = ModLoader.Instance.actualModList.Where(x => x.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 || x.ID.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0).ToArray();
-            }*/
+            /*  if (search == string.Empty)
+              {
+                  filteredList = dml.DownloadableModList.ToArray();
+              }
+              else
+              {
+                  filteredList = ModLoader.Instance.actualModList.Where(x => x.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 || x.ID.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0).ToArray();
+              }*/
             //  ModConsole.Warning(filteredList.Length.ToString());
             for (int i = 0; i < filteredList.Length; i++)
             {
                 GameObject mod = GameObject.Instantiate(DownloadElementPrefab);
-               // mod.GetComponent<MenuElementList>().mod = filteredList[i];
+                // mod.GetComponent<MenuElementList>().mod = filteredList[i];
                 mod.GetComponent<MenuElementList>().DownloadItemFill(filteredList[i]);
                 //    mod.GetComponent<MenuElementList>().ModButtonsPrep(universalView);
                 mod.transform.SetParent(listView.transform, false);
                 mod.SetActive(true);
                 yield return null;
             }
-         /*   for (int i = 0; i < filteredInvalidList.Length; i++)
-            {
-                GameObject mod = GameObject.Instantiate(DownloadElementPrefab);
-                mod.GetComponent<MenuElementList>().InvalidMod(filteredInvalidList[i]);
-                mod.transform.SetParent(listView.transform, false);
-                mod.SetActive(true);
-                yield return null;
-            }
-            if (filteredList.Length == 0 && filteredInvalidList.Length == 0)
-            {
-                SettingsElement tx = CreateText(listView.transform, $"<color=aqua>Nothing found</color>");
-                tx.value.alignment = TextAnchor.MiddleCenter;
-            }*/
+            /*   for (int i = 0; i < filteredInvalidList.Length; i++)
+               {
+                   GameObject mod = GameObject.Instantiate(DownloadElementPrefab);
+                   mod.GetComponent<MenuElementList>().InvalidMod(filteredInvalidList[i]);
+                   mod.transform.SetParent(listView.transform, false);
+                   mod.SetActive(true);
+                   yield return null;
+               }
+               if (filteredList.Length == 0 && filteredInvalidList.Length == 0)
+               {
+                   SettingsElement tx = CreateText(listView.transform, $"<color=aqua>Nothing found</color>");
+                   tx.value.alignment = TextAnchor.MiddleCenter;
+               }*/
         }
 
         public void ModList(GameObject listView, string search)
@@ -118,7 +123,9 @@ namespace MSCLoader
                 //try opening in steam overlay
                 try
                 {
+#if !Mini
                     Steamworks.SteamFriends.ActivateGameOverlayToWebPage(url);
+#endif
                 }
                 catch (Exception e)
                 {

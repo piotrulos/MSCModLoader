@@ -12,6 +12,7 @@ internal class CommandVersion : ConsoleCommand
 
     public override void Run(string[] args)
     {
+        #if !Mini
         ModConsole.Print($"Unity: <b>{Application.unityVersion}</b>");
         try
         {
@@ -23,5 +24,6 @@ internal class CommandVersion : ConsoleCommand
         }
         ModConsole.Print($"MSCLoader: <b>{ModLoader.MSCLoader_Ver}</b> build <b>{ModLoader.Instance.currentBuild}</b>");
         ModConsole.Print($"Runtime: <b>{System.Reflection.Assembly.GetExecutingAssembly().ImageRuntimeVersion}</b>");
+#endif
     }
 }

@@ -1,12 +1,13 @@
-﻿using Ionic.Zip;
+﻿#if !Mini
+using Ionic.Zip;
 using Newtonsoft.Json;
+#endif
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using UnityEngine;
 using UnityEngine.UI;
 
 namespace MSCLoader
@@ -15,6 +16,7 @@ namespace MSCLoader
     {
         void UnpackUpdates()
         {
+            #if !Mini
             ModConsole.Print("Unpacking mod updates...");
             for (int i = 0; i < ModsUpdateDir.Length; i++)
             {
@@ -72,6 +74,7 @@ namespace MSCLoader
             }
             ModUI.ShowMessage("Updating mods finished.", "Update mods");
             ContinueInit();
+#endif
         }
 
         private bool cfmuErrored = false;
@@ -83,6 +86,7 @@ namespace MSCLoader
         internal bool checkForUpdatesProgress = false;
         IEnumerator CheckForRefModUpdates()
         {
+
             checkForUpdatesProgress = true;
             updateTitle.text = "Checking for mod updates...".ToUpper();
             updateProgress.maxValue = 3;
@@ -105,7 +109,8 @@ namespace MSCLoader
             updateStatus.text = "Downloading mods update info...";
             while (cfmuInProgress)
                 yield return null;
-            if (!cfmuErrored)
+#if !Mini   
+if (!cfmuErrored)
             {
                 if (cfmuResult.StartsWith("error"))
                 {
@@ -214,6 +219,7 @@ namespace MSCLoader
                     ModMetadata.ReadRefUpdateInfo(v2);
                 }
             }
+            
             updateProgress.value = 3;
             if (failed)
                 updateStatus.text = string.Format("<color=red>Failed getting update info</color>");
@@ -231,6 +237,7 @@ namespace MSCLoader
                 if (!dnsaf)
                     loadingMeta.SetActive(false);
             }
+#endif
         }
 
         IEnumerator DownloadMetadataFiles()
@@ -427,6 +434,7 @@ namespace MSCLoader
                 }
                 else
                 {
+                    #if !Mini
                     steamID = Steamworks.SteamUser.GetSteamID().ToString();
                     WebClient Client = new WebClient();
                     Client.Headers.Add("Content-Type", "binary/octet-stream");
@@ -459,6 +467,7 @@ namespace MSCLoader
                         else
                             ModMetadata.UpdateVersionNumber(GetMod(ID, true), plus12);
                     }
+#endif
                 }
             }
             else

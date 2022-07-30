@@ -1,3 +1,4 @@
+#if !Mini
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -320,3 +321,4 @@ namespace AudioLibrary
     }
 }
 #pragma warning restore CS1591
+#endif
