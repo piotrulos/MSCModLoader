@@ -248,6 +248,11 @@ public partial class ModLoader : MonoBehaviour
             Directory.CreateDirectory(AssetsFolder);
 
         LoadCoreAssets();
+        if (CheckVortexBS())
+        {
+            ModUI.ShowMessage($"<b><color=orange>DON'T use Vortex</color></b> to update MSCLoader, or to install tools or mods.{Environment.NewLine}<b><color=orange>Vortex isn't supported by MSCLoader</color></b>, because it's implementation is broken that breaks Mods folder by putting wrong files into it.{Environment.NewLine}{Environment.NewLine}MSCLoader will try to fix your mods folder now, <b><color=orange>please restart your game.</color></b>{Environment.NewLine}If this message shows again after restart, rebuild your Mods folder from scratch.", "Fatal Error");
+            return;
+        }
         LoadMod(new ModConsole(), MSCLoader_Ver);
         LoadedMods[0].ModSettings();
         LoadMod(new ModMenu(), MSCLoader_Ver);
@@ -661,6 +666,39 @@ public partial class ModLoader : MonoBehaviour
         GameObject.Destroy(loadingMetaP);
         ModConsole.Print("Loading core assets completed!");
         ab.Unload(false);
+    }
+
+    private bool CheckVortexBS()
+    {
+        //Clean vortex BS when some idiot try to use it to update modloader.
+        bool hardFail = false;
+        if (File.Exists(Path.Combine(ModsFolder, "INIFileParser.dll")))
+            File.Delete(Path.Combine(ModsFolder, "INIFileParser.dll"));
+        if (File.Exists(Path.Combine(ModsFolder, "Ionic.Zip.dll")))
+            File.Delete(Path.Combine(ModsFolder, "Ionic.Zip.dll"));
+        if (File.Exists(Path.Combine(ModsFolder, "Mono.Cecil.dll")))
+            File.Delete(Path.Combine(ModsFolder, "Mono.Cecil.dll"));
+        if (File.Exists(Path.Combine(ModsFolder, "Mono.Cecil.Rocks.dll")))
+            File.Delete(Path.Combine(ModsFolder, "Mono.Cecil.Rocks.dll"));
+        if (File.Exists(Path.Combine(ModsFolder, "MSCPatcher.exe")))
+            File.Delete(Path.Combine(ModsFolder, "MSCPatcher.exe"));
+        if (File.Exists(Path.Combine(ModsFolder, "w32.dll")))
+            File.Delete(Path.Combine(ModsFolder, "w32.dll"));
+        if (File.Exists(Path.Combine(ModsFolder, "w64.dll")))
+            File.Delete(Path.Combine(ModsFolder, "w64.dll"));
+        if (File.Exists(Path.Combine(ModsFolder, "winhttp.dll")))
+        {
+            File.Delete(Path.Combine(ModsFolder, "winhttp.dll"));
+            hardFail = true;
+        }
+
+        if (File.Exists(Path.Combine(ModsFolder, "MSCLoader.dll")))
+        {
+            File.Delete(Path.Combine(ModsFolder, "MSCLoader.dll"));
+            hardFail = true;
+        }
+
+        return hardFail;
     }
 
     /// <summary>
