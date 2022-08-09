@@ -1154,16 +1154,16 @@ public partial class ModLoader : MonoBehaviour
             switch (result[1])
             {
                 case "0":
-                    ModConsole.Error($"[{Path.GetFileNameWithoutExtension(file)}] Failed to check early access info: Invalid request");
+                    ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - Failed to check early access info: Invalid request{Environment.NewLine}");
                     break;
                 case "1":
-                    ModConsole.Error($"[{Path.GetFileNameWithoutExtension(file)}] You are not whitelisted for this mod");
+                    ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - You are not whitelisted to use this mod{Environment.NewLine}");
                     break;
                 case "2":
-                    ModConsole.Error($"[{Path.GetFileNameWithoutExtension(file)}] File not registered or Early Access ended");
+                    ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - File not registered/Early Access ended{Environment.NewLine}");
                     break;
                 default:
-                    ModConsole.Error($"[{Path.GetFileNameWithoutExtension(file)}] Failed to check early access info: Unknown error");
+                    ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - Failed to check early access info: Unknown error{Environment.NewLine}");
                     break;
             }
         }
@@ -1186,7 +1186,14 @@ public partial class ModLoader : MonoBehaviour
             }
             if (files[i].EndsWith(".dII"))
             {
-                LoadEADll(files[i]);
+                if (files.Contains(files[i].Replace(".dII", ".dll")))
+                {
+                    ModConsole.Error($"<b>{Path.GetFileName(files[i])}</b> - normal .dll version of this .dii file already exists in Mods folder, please delete one to avoid issues. <b>(skipping loading .dii version)</b>{Environment.NewLine}");
+                }
+                else
+                {
+                    LoadEADll(files[i]);
+                }
             }
         }
         actualModList = LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")).ToArray();
@@ -1389,7 +1396,17 @@ public partial class ModLoader : MonoBehaviour
             }
             else
             {
-                ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - doesn't look like a mod, remove this file from mods folder!{Environment.NewLine}<b>Details:</b> {e.GetFullMessage()}{Environment.NewLine}");
+                if (byteFile != null)
+                {
+                    ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - failed to load this as valid early access file. Most likely there is new updated file available!{Environment.NewLine}<b>Details:</b> {e.GetType().Name}{Environment.NewLine}");
+                }
+                else
+                {
+                    if (string.IsNullOrEmpty(e.Message))
+                        ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - doesn't look like a mod, remove this file from mods folder!{Environment.NewLine}<b>Details:</b> {e.GetType().Name}{Environment.NewLine}");
+                    else
+                        ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - doesn't look like a mod, remove this file from mods folder!{Environment.NewLine}<b>Details:</b> {e.GetFullMessage()}{Environment.NewLine}");
+                }
             }
             if (devMode)
                 ModConsole.Error(e.ToString());
