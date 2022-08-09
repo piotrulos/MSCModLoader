@@ -114,6 +114,7 @@
     <Compile Include="ConsoleController.cs" />
     <Compile Include="ConsoleUIResizer.cs" />
     <Compile Include="ConsoleView.cs" />
+    <Compile Include="CoreAssets\MSCLoaderCanvasLoading.cs" />
     <Compile Include="DummyCompLayer\ModAssets.cs" />
     <Compile Include="DummyCompLayer\ModHelper.cs" />
     <Compile Include="DummyCompLayer\ModPrompt.cs" />
@@ -172,7 +173,7 @@
     <Compile Include="Settings.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="CoreAssets\core.unity3d" />
+    <EmbeddedResource Include="CoreAssets\core.unity3d" Condition="!$(DefineConstants.Contains('Mini'))" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -59,8 +59,6 @@ namespace MSCLoader
 
         internal List<string> MetadataUpdateList = new List<string>();
         internal GameObject mainMenuInfo;
-        internal GameObject loading;
-        internal GameObject loadingMeta;
         internal Animation menuInfoAnim;
         internal GUISkin guiskin;
 
