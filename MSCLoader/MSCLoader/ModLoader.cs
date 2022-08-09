@@ -645,25 +645,13 @@ public partial class ModLoader : MonoBehaviour
         ModUI.canvasPrefab = ab.LoadAsset<GameObject>("CanvasPrefab.prefab");
         ModUI.CreateCanvases();
         mainMenuInfo = ab.LoadAsset<GameObject>("MSCLoader Info.prefab");
-        GameObject loadingP = ab.LoadAsset<GameObject>("LoadingMods.prefab");
-        GameObject loadingMetaP = ab.LoadAsset<GameObject>("MSCLoader pbar.prefab");
-        loading = GameObject.Instantiate(loadingP);
-        loading.SetActive(false);
-        loading.name = "MSCLoader loading dialog";
-        loading.transform.SetParent(ModUI.GetCanvas(3).transform, false);
-        loading.transform.GetChild(0).GetComponent<Text>().text = $"MSCLOADER <color=green>{MSCLoader_Ver}</color>";
-        loadingTitle = loading.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(0).GetComponent<Text>();
-        loadingMod = loading.transform.GetChild(1).GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>();
-        loadingProgress = loading.transform.GetChild(1).GetChild(0).GetChild(2).GetComponent<Slider>();
-        loadingMeta = GameObject.Instantiate(loadingMetaP);
-        loadingMeta.SetActive(false);
-        loadingMeta.name = "MSCLoader update dialog";
-        loadingMeta.transform.SetParent(ModUI.GetCanvas(3).transform, false);
-        updateTitle = loadingMeta.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Text>();
-        updateStatus = loadingMeta.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>();
-        updateProgress = loadingMeta.transform.GetChild(0).GetChild(2).GetComponent<Slider>();
+        GameObject loadingP = ab.LoadAsset<GameObject>("LoadingCanvas.prefab");
+        GameObject loading = GameObject.Instantiate(loadingP);
+        loading.name = "MSCLoader Canvas loading";
+        canvLoading = loading.GetComponent<MSCLoaderCanvasLoading>();
+        canvLoading.lHeader.text = $"MSCLOADER <color=green>{MSCLoader_Ver}</color>";
+        DontDestroyOnLoad(loading);
         GameObject.Destroy(loadingP);
-        GameObject.Destroy(loadingMetaP);
         ModConsole.Print("Loading core assets completed!");
         ab.Unload(false);
     }
@@ -829,21 +817,18 @@ public partial class ModLoader : MonoBehaviour
         }
         System.Console.WriteLine(e);
     }
-
-    Text loadingTitle;
-    Text loadingMod;
-    Slider loadingProgress;
+    MSCLoaderCanvasLoading canvLoading;
     IEnumerator NewGameMods()
     {
         ModConsole.Print("<color=aqua>==== Resetting mods ====</color>");
-        loading.transform.SetAsLastSibling(); //Always on top
-        loading.SetActive(true);
-        loadingTitle.text = "Resetting mods".ToUpper();
-        loadingProgress.maxValue = BC_ModList.Length + Mod_OnNewGame.Length;
+        canvLoading.modLoadingUI.transform.SetAsLastSibling(); //Always on top
+        canvLoading.modLoadingUI.SetActive(true);
+        canvLoading.lTitle.text = "Resetting mods".ToUpper();
+        canvLoading.lProgress.maxValue = BC_ModList.Length + Mod_OnNewGame.Length;
         for (int i = 0; i < Mod_OnNewGame.Length; i++)
         {
-            loadingProgress.value++;
-            loadingMod.text = Mod_OnNewGame[i].Name;
+            canvLoading.lProgress.value++;
+            canvLoading.lMod.text = Mod_OnNewGame[i].Name;
             yield return null;
             try
             {
@@ -857,8 +842,8 @@ public partial class ModLoader : MonoBehaviour
         }
         for (int i = 0; i < BC_ModList.Length; i++)
         {
-            loadingProgress.value++;
-            loadingMod.text = BC_ModList[i].Name;
+            canvLoading.lProgress.value++;
+            canvLoading.lMod.text = BC_ModList[i].Name;
             yield return null;
             try
             {
@@ -870,9 +855,9 @@ public partial class ModLoader : MonoBehaviour
             }
 
         }
-        loadingMod.text = "Resetting Done! You can skip intro now!";
+        canvLoading.lMod.text = "Resetting Done! You can skip intro now!";
         yield return new WaitForSeconds(1f);
-        loading.SetActive(false);
+        canvLoading.modLoadingUI.SetActive(false);
         IsModsDoneResetting = true;
         ModConsole.Print("<color=aqua>==== Resetting mods finished ====</color>");
         IsModsResetting = false;
@@ -881,11 +866,11 @@ public partial class ModLoader : MonoBehaviour
     IEnumerator LoadMods()
     {
         ModConsole.Print("<color=aqua>==== Loading mods (Phase 1) ====</color><color=#505050ff>");
-        loadingTitle.text = "Loading mods - Phase 1".ToUpper();
-        loadingMod.text = "Loading mods. Please wait...";
-        loadingProgress.maxValue = 100;
-        loading.transform.SetAsLastSibling(); //Always on top
-        loading.SetActive(true);
+        canvLoading.lTitle.text = "Loading mods - Phase 1".ToUpper();
+        canvLoading.lMod.text = "Loading mods. Please wait...";
+        canvLoading.lProgress.maxValue = 100;
+        canvLoading.modLoadingUI.transform.SetAsLastSibling(); //Always on top
+        canvLoading.modLoadingUI.SetActive(true);
         yield return null;
         for (int i = 0; i < Mod_PreLoad.Length; i++)
         {
@@ -911,13 +896,13 @@ public partial class ModLoader : MonoBehaviour
                 ModException(e, PLoadMods[i]);
             }
         }
-        loadingProgress.value = 33;
-        loadingTitle.text = "Waiting...".ToUpper();
-        loadingMod.text = "Waiting for game to finish load...";
+        canvLoading.lProgress.value = 33;
+        canvLoading.lTitle.text = "Waiting...".ToUpper();
+        canvLoading.lMod.text = "Waiting for game to finish load...";
         while (GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera") == null)
             yield return null;
-        loadingTitle.text = "Loading mods - Phase 2".ToUpper();
-        loadingMod.text = "Loading mods. Please wait...";
+        canvLoading.lTitle.text = "Loading mods - Phase 2".ToUpper();
+        canvLoading.lMod.text = "Loading mods. Please wait...";
         ModConsole.Print("</color><color=aqua>==== Loading mods (Phase 2) ====</color><color=#505050ff>");
         yield return null;
         for (int i = 0; i < Mod_OnLoad.Length; i++)
@@ -944,10 +929,10 @@ public partial class ModLoader : MonoBehaviour
                 ModException(e, BC_ModList[i]);
             }
         }
-        loadingProgress.value = 66;
+        canvLoading.lProgress.value = 66;
         ModMenu.LoadBinds();
-        loadingTitle.text = "Loading mods - Phase 3".ToUpper();
-        loadingMod.text = "Loading mods. Please wait...";
+        canvLoading.lTitle.text = "Loading mods - Phase 3".ToUpper();
+        canvLoading.lMod.text = "Loading mods. Please wait...";
         ModConsole.Print("</color><color=aqua>==== Loading mods (Phase 3) ====</color><color=#505050ff>");
         yield return null;
         for (int i = 0; i < Mod_PostLoad.Length; i++)
@@ -975,32 +960,32 @@ public partial class ModLoader : MonoBehaviour
             }
         }
 
-        loadingProgress.value = 100;
-        loadingMod.text = "Finishing touches...";
+        canvLoading.lProgress.value = 100;
+        canvLoading.lMod.text = "Finishing touches...";
         yield return null;
         #if !Mini
         GameObject.Find("ITEMS").FsmInject("Save game", SaveMods);
 #endif
         ModConsole.Print("</color>");
         allModsLoaded = true;
-        loading.SetActive(false);
+        canvLoading.modLoadingUI.SetActive(false);
     }
 
     IEnumerator LoadModsAsync()
     {
         ModConsole.Print("<color=aqua>==== Loading mods (Phase 1) ====</color><color=#505050ff>");
-        loadingTitle.text = "Loading mods - Phase 1".ToUpper();
-        loadingMod.text = "Loading mods. Please wait...";
-        loadingProgress.maxValue = PLoadMods.Length + BC_ModList.Length + SecondPassMods.Length;
-        loadingProgress.maxValue += Mod_PreLoad.Length + Mod_OnLoad.Length + Mod_PostLoad.Length;
+        canvLoading.lTitle.text = "Loading mods - Phase 1".ToUpper();
+        canvLoading.lMod.text = "Loading mods. Please wait...";
+        canvLoading.lProgress.maxValue = PLoadMods.Length + BC_ModList.Length + SecondPassMods.Length;
+        canvLoading.lProgress.maxValue += Mod_PreLoad.Length + Mod_OnLoad.Length + Mod_PostLoad.Length;
 
-        loading.transform.SetAsLastSibling(); //Always on top
-        loading.SetActive(true);
+        canvLoading.modLoadingUI.transform.SetAsLastSibling(); //Always on top
+        canvLoading.modLoadingUI.SetActive(true);
         yield return null;
         for (int i = 0; i < Mod_PreLoad.Length; i++)
         {
-            loadingProgress.value++;
-            loadingMod.text = Mod_PreLoad[i].ID;
+            canvLoading.lProgress.value++;
+            canvLoading.lMod.text = Mod_PreLoad[i].ID;
             if (Mod_PreLoad[i].isDisabled) continue;
             yield return null;
             try
@@ -1014,8 +999,8 @@ public partial class ModLoader : MonoBehaviour
         }
         for (int i = 0; i < PLoadMods.Length; i++)
         {
-            loadingProgress.value++;
-            loadingMod.text = PLoadMods[i].ID;
+            canvLoading.lProgress.value++;
+            canvLoading.lMod.text = PLoadMods[i].ID;
             if (PLoadMods[i].isDisabled) continue;
             yield return null;
             try
@@ -1027,18 +1012,18 @@ public partial class ModLoader : MonoBehaviour
                 ModException(e, PLoadMods[i]);
             }
         }
-        loadingTitle.text = "Waiting...".ToUpper();
-        loadingMod.text = "Waiting for game to finish load...";
+        canvLoading.lTitle.text = "Waiting...".ToUpper();
+        canvLoading.lMod.text = "Waiting for game to finish load...";
         while (GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera") == null)
             yield return null;
-        loadingTitle.text = "Loading mods - Phase 2".ToUpper();
-        loadingMod.text = "Loading mods. Please wait...";
+        canvLoading.lTitle.text = "Loading mods - Phase 2".ToUpper();
+        canvLoading.lMod.text = "Loading mods. Please wait...";
         ModConsole.Print("</color><color=aqua>==== Loading mods (Phase 2) ====</color><color=#505050ff>");
         yield return null;
         for (int i = 0; i < Mod_OnLoad.Length; i++)
         {
-            loadingProgress.value++;
-            loadingMod.text = Mod_OnLoad[i].ID;
+            canvLoading.lProgress.value++;
+            canvLoading.lMod.text = Mod_OnLoad[i].ID;
             if (Mod_OnLoad[i].isDisabled) continue;
             yield return null;
             try
@@ -1052,8 +1037,8 @@ public partial class ModLoader : MonoBehaviour
         }
         for (int i = 0; i < BC_ModList.Length; i++)
         {
-            loadingProgress.value++;
-            loadingMod.text = BC_ModList[i].ID;
+            canvLoading.lProgress.value++;
+            canvLoading.lMod.text = BC_ModList[i].ID;
             if (BC_ModList[i].isDisabled) continue;
             yield return null;
             try
@@ -1066,14 +1051,14 @@ public partial class ModLoader : MonoBehaviour
             }
         }
         ModMenu.LoadBinds();
-        loadingTitle.text = "Loading mods - Phase 3".ToUpper();
-        loadingMod.text = "Loading mods. Please wait...";
+        canvLoading.lTitle.text = "Loading mods - Phase 3".ToUpper();
+        canvLoading.lMod.text = "Loading mods. Please wait...";
         ModConsole.Print("</color><color=aqua>==== Loading mods (Phase 3) ====</color><color=#505050ff>");
         yield return null;
         for (int i = 0; i < Mod_PostLoad.Length; i++)
         {
-            loadingProgress.value++;
-            loadingMod.text = Mod_PostLoad[i].ID;
+            canvLoading.lProgress.value++;
+            canvLoading.lMod.text = Mod_PostLoad[i].ID;
             if (Mod_PostLoad[i].isDisabled) continue;
             yield return null;
             try
@@ -1087,8 +1072,8 @@ public partial class ModLoader : MonoBehaviour
         }
         for (int i = 0; i < SecondPassMods.Length; i++)
         {
-            loadingProgress.value++;
-            loadingMod.text = SecondPassMods[i].ID;
+            canvLoading.lProgress.value++;
+            canvLoading.lMod.text = SecondPassMods[i].ID;
             if (SecondPassMods[i].isDisabled) continue;
             yield return null;
             try
@@ -1100,15 +1085,15 @@ public partial class ModLoader : MonoBehaviour
                 ModException(e, SecondPassMods[i]);
             }
         }
-        loadingProgress.value = loadingProgress.maxValue;
-        loadingMod.text = "Finishing touches...";
+        canvLoading.lProgress.value = canvLoading.lProgress.maxValue;
+        canvLoading.lMod.text = "Finishing touches...";
         yield return null;
         #if !Mini
         GameObject.Find("ITEMS").FsmInject("Save game", SaveMods);
 #endif
         ModConsole.Print("</color>");
         allModsLoaded = true;
-        loading.SetActive(false);
+        canvLoading.modLoadingUI.SetActive(false);
     }
 
     private static bool wasSaving = false;
