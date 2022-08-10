@@ -2,6 +2,7 @@
 using MSCLoader.Commands;
 using System.Text.RegularExpressions;
 using System.Collections;
+using System.IO;
 
 namespace MSCLoader
 {
@@ -43,11 +44,11 @@ namespace MSCLoader
             {
                 Settings.AddText(this, $"<color=lime>MSCLoader {ModLoader.MSCLoader_Ver} build {ModLoader.Instance.currentBuild}</color>");
             }
-            string sp = System.IO.Path.Combine(ModLoader.SettingsFolder, @"MSCLoader_Settings\lastCheck");
-            if (System.IO.File.Exists(sp))
+            string sp = Path.Combine(ModLoader.SettingsFolder, Path.Combine("MSCLoader_Settings", "lastCheck"));
+            if (File.Exists(sp))
             {
                 DateTime lastCheck;
-                string lastCheckS = System.IO.File.ReadAllText(sp);
+                string lastCheckS = File.ReadAllText(sp);
                 DateTime.TryParse(lastCheckS, out lastCheck);
                 Settings.AddText(this, $"Last checked for mod updates: <color=aqua>{lastCheck.ToString("dd.MM.yyyy HH:mm:ss")}</color>");
 

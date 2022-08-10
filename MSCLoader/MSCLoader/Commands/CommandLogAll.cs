@@ -22,7 +22,7 @@ internal class CommandLogAll : ConsoleCommand
         try
         {
             string savedata = $"{ModLoader.LogAllErrors},{errors},{warnings},{messages}";
-            File.WriteAllText(Path.Combine(ModLoader.SettingsFolder, @"MSCLoader_Settings\logall.save"), savedata);
+            File.WriteAllText(Path.Combine(ModLoader.SettingsFolder, Path.Combine("MSCLoader_Settings","logall.save")), savedata);
             ModConsole.Print($"<color=lime>Log All settings has been saved</color>");
         }
         catch (Exception e)
@@ -35,9 +35,9 @@ internal class CommandLogAll : ConsoleCommand
     {
         try
         {
-            if (File.Exists(Path.Combine(ModLoader.SettingsFolder, @"MSCLoader_Settings\logall.save")))
+            if (File.Exists(Path.Combine(ModLoader.SettingsFolder, Path.Combine("MSCLoader_Settings","logall.save"))))
             {
-                string savedata = File.ReadAllText(Path.Combine(ModLoader.SettingsFolder, @"MSCLoader_Settings\logall.save"));
+                string savedata = File.ReadAllText(Path.Combine(ModLoader.SettingsFolder, Path.Combine("MSCLoader_Settings","logall.save")));
                 string[] data = savedata.Split(',');
                 ModLoader.LogAllErrors = bool.Parse(data[0]);
                 errors = bool.Parse(data[1]);
@@ -57,7 +57,7 @@ internal class CommandLogAll : ConsoleCommand
         {
             ModConsole.Error($"Error: {e.Message}");
             Console.WriteLine(e);
-            File.Delete(Path.Combine(ModLoader.SettingsFolder, @"MSCLoader_Settings\logall.save"));
+            File.Delete(Path.Combine(ModLoader.SettingsFolder, Path.Combine("MSCLoader_Settings","logall.save")));
         }
     }
     public override void Run(string[] args)

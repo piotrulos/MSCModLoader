@@ -65,12 +65,12 @@ namespace MSCLoader
                     }
                     if (!string.IsNullOrEmpty(mod.metadata.icon.iconFileName))
                     {
-                        if (File.Exists(Path.Combine(ModLoader.MetadataFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName)))
+                        if (File.Exists(Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", mod.metadata.icon.iconFileName))))
                         {
                             try
                             {
                                 Texture2D t2d = new Texture2D(1, 1);
-                                t2d.LoadImage(File.ReadAllBytes(Path.Combine(ModLoader.MetadataFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName)));
+                                t2d.LoadImage(File.ReadAllBytes(Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", mod.metadata.icon.iconFileName))));
                                 icon.texture = t2d;
                             }
                             catch (Exception e)
@@ -261,12 +261,12 @@ namespace MSCLoader
                 }
                 if (!string.IsNullOrEmpty(mod.metadata.icon.iconFileName))
                 {
-                    if (File.Exists(Path.Combine(ModLoader.MetadataFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName)))
+                    if (File.Exists(Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", mod.metadata.icon.iconFileName))))
                     {
                         try
                         {
                             Texture2D t2d = new Texture2D(1, 1);
-                            t2d.LoadImage(File.ReadAllBytes(Path.Combine(ModLoader.MetadataFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName)));
+                            t2d.LoadImage(File.ReadAllBytes(Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", mod.metadata.icon.iconFileName))));
                             icon.texture = t2d;
                         }
                         catch (Exception e)
