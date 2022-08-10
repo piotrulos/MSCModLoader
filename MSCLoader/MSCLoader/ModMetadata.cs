@@ -910,12 +910,12 @@ namespace MSCLoader
                 {
                     if (mod.metadata.icon.isIconRemote)
                     {
-                        if (!File.Exists(Path.Combine(ModLoader.MetadataFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName)))
+                        if (!File.Exists(Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", mod.metadata.icon.iconFileName))))
                         {
                             WebClient webClient = new WebClient();
                             webClient.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
                             webClient.DownloadFileCompleted += ModIcon_DownloadCompleted;
-                            webClient.DownloadFileAsync(new Uri($"{ModLoader.serverURL}/images/modicons/{mod.metadata.icon.iconFileName}"), Path.Combine(ModLoader.MetadataFolder, @"Mod Icons\" + mod.metadata.icon.iconFileName));
+                            webClient.DownloadFileAsync(new Uri($"{ModLoader.serverURL}/images/modicons/{mod.metadata.icon.iconFileName}"), Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", mod.metadata.icon.iconFileName)));
                         }
                     }
                 }
