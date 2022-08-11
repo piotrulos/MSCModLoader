@@ -63,7 +63,7 @@ namespace MSCLoader
         internal GUISkin guiskin;
 
         internal static readonly string serverURL = "http://my-summer-car.ml";
-        internal static readonly string metadataURL = "http://my-summer-car.ml:4000";
+        internal static readonly string metadataURL = "http://my-summer-car.ml";
         internal static readonly string earlyAccessURL = "http://my-summer-car.ml:8080";
        // internal static readonly string serverURL = "http://localhost/msc2"; //localhost for testing only
        // internal static readonly string metadataURL = "http://localhost:4000";

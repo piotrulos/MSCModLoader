@@ -221,7 +221,7 @@ namespace MSCLoader
             else
                 tx.settingName.text += $"<color=aqua>[None]</color>";
             //----------------------------------
-            bool assets = false, references = false, plus12 = false;
+            bool assets = false, references = false;
             List<References> refList = new List<References>();
             //----------------------------------
             SettingsGroup header2 = CreateHeader(listView.transform, "Bundle Assets", Color.yellow);
@@ -230,7 +230,7 @@ namespace MSCLoader
                 tx2.settingName.text = $"<color=yellow>Looks like this mod doesn't have assets folder.</color>";
             else
             {
-                tx2.settingName.text = $"<color=yellow>Select below option if you want to include Assets folder (in most cases you should do it)</color>";
+                tx2.settingName.text = $"Select below option if you want to include Assets folder (in most cases you should do it)";
                 GameObject checkboxP = Instantiate(CheckBoxPrefab);
                 SettingsElement checkbox = checkboxP.GetComponent<SettingsElement>();
                 checkbox.settingName.text = "Include Assets Folder";
@@ -248,7 +248,7 @@ namespace MSCLoader
                 tx3.settingName.text = $"<color=yellow>Looks like this mod doesn't use additional references.</color>";
             else
             {
-                tx3.settingName.text = $"<color=yellow>You can bundle references{Environment.NewLine}Do it only if reference is exclusive to your mod, otherwise you should create Reference update separately.</color>";
+                tx3.settingName.text = $"<color=yellow>You can bundle references{Environment.NewLine}Do it only if reference is exclusive to your mod, otherwise you should create Reference update separately.</color>{Environment.NewLine}";
                 foreach (string rf in mod.AdditionalReferences)
                 {
                     if (rf.StartsWith("MSCLoader"))
@@ -300,28 +300,20 @@ namespace MSCLoader
                     }
                 }
             }
-            SettingsGroup header4 = CreateHeader(listView.transform, "Update Settigns", Color.yellow);
-            GameObject checkboxP2 = Instantiate(CheckBoxPrefab);
-            SettingsElement checkbox2 = checkboxP2.GetComponent<SettingsElement>();
-            checkbox2.settingName.text = "Offer this file to MSCLoader 1.2+ only";
-            checkbox2.checkBox.isOn = false;
-            plus12 = false;
-            checkbox2.checkBox.onValueChanged.AddListener(delegate
-            {
-                plus12 = checkbox2.checkBox.isOn;
-            });
-            checkbox2.transform.SetParent(header4.HeaderListView.transform, false);
+            SettingsGroup header4 = CreateHeader(listView.transform, "Upload", Color.yellow);
+            CreateText(header4.HeaderListView.transform, "<b><color=aqua>Recomended option!</color></b> Updates mod information to latest version and Uploads it, so it's available as in-game update.");
 
-            SettingsElement uploadBtn = CreateButton(listView.transform, "Upload Updated Mod", Color.white, Color.black);
+            SettingsElement uploadBtn = CreateButton(header4.HeaderListView.transform, "Upload and Update Mod", Color.white, Color.black);
             uploadBtn.button.onClick.AddListener(delegate
             {
-                ModMetadata.UploadUpdate(mod, assets, references, plus12, refList.ToArray());
+                ModMetadata.UploadUpdate(mod, assets, references, refList.ToArray());
             });
+            CreateText(header4.HeaderListView.transform, $"{Environment.NewLine}This button below updates mod's version only. Use this if you want to update version number only, without uploading update file. (mod will not be available as in-game update)");
 
-            SettingsElement uploadBtn2 = CreateButton(listView.transform, "Update Mod version only", Color.white, Color.black);
+            SettingsElement uploadBtn2 = CreateButton(header4.HeaderListView.transform, "Update Mod version only", Color.white, Color.black);
             uploadBtn2.button.onClick.AddListener(delegate
             {
-                ModMetadata.UpdateVersionNumber(mod, plus12);
+                ModMetadata.UpdateVersionNumber(mod);
             });
         }
         internal static void OpenModLink(string url)

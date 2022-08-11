@@ -421,7 +421,7 @@ namespace MSCLoader
             muv.universalView.FillUpdate(mod);
 #endif
         }
-        public static void UploadUpdate(Mod mod, bool assets, bool references, bool plus12, References[] referencesList = null)
+        public static void UploadUpdate(Mod mod, bool assets, bool references, References[] referencesList = null)
         {
             #if !Mini
             string key;
@@ -503,7 +503,7 @@ namespace MSCLoader
                     return;
                 }
 
-                ModLoader.Instance.UploadFileUpdate(mod.ID, key, false, plus12);
+                ModLoader.Instance.UploadFileUpdate(mod.ID, key, false);
             }
             else
             {
@@ -560,7 +560,7 @@ namespace MSCLoader
                     return;
                 }
 
-                ModLoader.Instance.UploadFileUpdate(refs.AssemblyID, key, true, false);
+                ModLoader.Instance.UploadFileUpdate(refs.AssemblyID, key, true);
             }
             else
             {
@@ -568,7 +568,7 @@ namespace MSCLoader
             }
 #endif
         }
-        public static void UpdateVersionNumber(Mod mod, bool plus12)
+        public static void UpdateVersionNumber(Mod mod)
         {
             #if !Mini
             ModConsole.Print("Updating metadata version...");
@@ -608,10 +608,7 @@ namespace MSCLoader
                             return;
                     }
                 }
-                if (plus12)
-                    umm.type = 5;
-                else
-                    umm.type = 4;
+                umm.type = 4;
 
                 steamID = Steamworks.SteamUser.GetSteamID().ToString();
                 string dwl = string.Empty;

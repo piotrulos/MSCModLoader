@@ -1,9 +1,9 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine.UI;
 using System;
 using System.IO;
 using System.Linq;
+using System.Net;
 
 namespace MSCLoader
 {
@@ -202,6 +202,22 @@ namespace MSCLoader
           //  QuickInfo.text += $"<color=yellow>Guid test:</color> <color=aqua>{rf.Guid}</color>{Environment.NewLine}";
 
         }
+        internal void ShowChangelog(string id, string ver, string name)
+        {
+            string dwl = string.Empty;
+            WebClient getdwl = new WebClient();
+            getdwl.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
+            try
+            {
+                dwl = getdwl.DownloadString($"{ModLoader.serverURL}/changelog.php?mods={id}&vers={ver}&names={name}");
+            }
+            catch (Exception e)
+            {
+                dwl = "<color=red>Failed to download changelog...</color>";
+                Console.WriteLine(e);
+            }
+            ModUI.ShowChangelogWindow(dwl);
+        }
         public void UpdateInfoFill()
         {
             if(refs != null)
@@ -224,13 +240,15 @@ namespace MSCLoader
                 else
                     DownloadUpdateBtn.gameObject.SetActive(false);
                 OpenDownloadWebsiteBtn.gameObject.SetActive(false);
+                MoreInfoBtn.onClick.AddListener(() => ShowChangelog(refs.AssemblyID, refs.UpdateInfo.ref_version, refs.AssemblyTitle));
+
                 icon.texture = ReferenceIcon;
             }
             if (mod != null)
             {
                 Title.text = $"<color=lime>{mod.Name}</color>";
                 Author.text = $"by <color=orange>{mod.Author}</color> (<color=aqua>{mod.Version}</color>)";
-                DownloadInfoTxt.text = $"Update available ({mod.UpdateInfo.mod_version})";
+                DownloadInfoTxt.text = $"New Version ({mod.UpdateInfo.mod_version})";
                 if (ModLoader.ModSelfUpdateList.Contains(mod.ID))
                     DownloadUpdateBtn.onClick.AddListener(delegate
                     {
@@ -246,18 +264,22 @@ namespace MSCLoader
                 if (!string.IsNullOrEmpty(mod.metadata.links.nexusLink))
                 {
                     OpenDownloadWebsiteBtn.onClick.AddListener(() => Application.OpenURL(mod.metadata.links.nexusLink));
+                    MoreInfoBtn.onClick.AddListener(() => ShowChangelog(mod.ID, mod.UpdateInfo.mod_version, mod.Name));
                 }
                 else if (!string.IsNullOrEmpty(mod.metadata.links.githubLink))
                 {
                     OpenDownloadWebsiteBtn.onClick.AddListener(() => Application.OpenURL(mod.metadata.links.githubLink));
+                    MoreInfoBtn.gameObject.SetActive(false);
                 }
                 else if (!string.IsNullOrEmpty(mod.metadata.links.rdLink))
                 {
                     OpenDownloadWebsiteBtn.onClick.AddListener(() => Application.OpenURL(mod.metadata.links.rdLink));
+                    MoreInfoBtn.gameObject.SetActive(false);
                 }
                 else
                 {
                     OpenDownloadWebsiteBtn.gameObject.SetActive(false);
+                    MoreInfoBtn.gameObject.SetActive(false);
                 }
                 if (!string.IsNullOrEmpty(mod.metadata.icon.iconFileName))
                 {
