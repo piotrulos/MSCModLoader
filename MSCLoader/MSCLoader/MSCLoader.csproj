@@ -114,6 +114,7 @@
     <Compile Include="ConsoleController.cs" />
     <Compile Include="ConsoleUIResizer.cs" />
     <Compile Include="ConsoleView.cs" />
+    <Compile Include="CoreAssets\MessageBoxesCanvas.cs" />
     <Compile Include="CoreAssets\MSCLoaderCanvasLoading.cs" />
     <Compile Include="DummyCompLayer\ModAssets.cs" />
     <Compile Include="DummyCompLayer\ModHelper.cs" />

@@ -639,18 +639,25 @@ public partial class ModLoader : MonoBehaviour
         ModConsole.Print("Loading core assets...");
         AssetBundle ab = LoadAssets.LoadBundle("MSCLoader.CoreAssets.core.unity3d");
         guiskin = ab.LoadAsset<GUISkin>("MSCLoader.guiskin");
-        ModUI.messageBox = ab.LoadAsset<GameObject>("MSCLoader MB.prefab");
-        ModUI.messageBoxBtn = ab.LoadAsset<GameObject>("MB_Button.prefab");
         ModUI.canvasPrefab = ab.LoadAsset<GameObject>("CanvasPrefab.prefab");
-        ModUI.CreateCanvases();
         mainMenuInfo = ab.LoadAsset<GameObject>("MSCLoader Info.prefab");
         GameObject loadingP = ab.LoadAsset<GameObject>("LoadingCanvas.prefab");
+        GameObject mbP = ab.LoadAsset<GameObject>("PopupsCanvas.prefab");
+
+        ModUI.CreateCanvases();
+        GameObject mb = GameObject.Instantiate(mbP);
+        mb.name = "MSCLoader Canvas msgbox";
+        ModUI.messageBoxCv = mb.GetComponent<MessageBoxesCanvas>();
+        DontDestroyOnLoad(mb);
+ 
         GameObject loading = GameObject.Instantiate(loadingP);
         loading.name = "MSCLoader Canvas loading";
         canvLoading = loading.GetComponent<MSCLoaderCanvasLoading>();
         canvLoading.lHeader.text = $"MSCLOADER <color=green>{MSCLoader_Ver}</color>";
         DontDestroyOnLoad(loading);
+
         GameObject.Destroy(loadingP);
+        GameObject.Destroy(mbP);
         ModConsole.Print("Loading core assets completed!");
         ab.Unload(false);
     }
@@ -768,7 +775,9 @@ public partial class ModLoader : MonoBehaviour
                     else
                         info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready! (<color=aqua>Update is available</color>)";
                     ModloaderUpdateMessage = true;
-                    ModUI.ShowYesNoMessage($"New ModLoader version is available{Environment.NewLine}<color=lime>{newVersion} build {newBuild}</color>{Environment.NewLine}{Environment.NewLine}Do you want to download it now?", "MSCLoader update", DownloadModloaderUpdate);
+                    MsgBoxBtn[] btn1 = { ModUI.CreateMessageBoxBtn("YES", DownloadModloaderUpdate), ModUI.CreateMessageBoxBtn("NO") };
+                    MsgBoxBtn[] btn2 = { ModUI.CreateMessageBoxBtn("Show Changelog", ShowChangelog, new Color32(0, 0, 80, 255), Color.white, true) };
+                    ModUI.ShowCustomMessage($"New ModLoader version is available{Environment.NewLine}<color=yellow>{MSCLoader_Ver} build {currentBuild}</color> => <color=lime>{newVersion} build {newBuild}</color>{Environment.NewLine}{Environment.NewLine}Do you want to download it now?", "MSCLoader update", btn1, btn2);
                 }
                 else
                 {
@@ -799,7 +808,22 @@ public partial class ModLoader : MonoBehaviour
         if (devMode)
             info.text += " [<color=red><b>Dev Mode!</b></color>]";
     }
-
+    internal void ShowChangelog()
+    {
+        string dwl = string.Empty;
+        WebClient getdwl = new WebClient();
+        getdwl.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
+        try
+        {
+            dwl = getdwl.DownloadString($"{serverURL}/changelog.php?mods=MSCLoader&vers={newVersion}&names=MSCLoader");
+        }
+        catch (Exception e)
+        {
+            dwl = "<color=red>Failed to download changelog...</color>";
+            Console.WriteLine(e);
+        }
+        ModUI.ShowChangelogWindow(dwl);
+    }
     internal static void ModException(Exception e, Mod mod, bool save = false)
     {
         string errorDetails = $"{Environment.NewLine}<b>Details: </b>{e.Message} in <b>{new StackTrace(e, true).GetFrame(0).GetMethod()}</b>";

@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -7,14 +6,31 @@ using UnityEngine.UI;
 namespace MSCLoader
 {
     /// <summary>
+    /// MsgBoxBtn class
+    /// </summary>
+    public class MsgBoxBtn
+    {
+        internal Action IfClicked = null;
+        internal Button button;
+        internal Transform transform;
+        internal bool noDestroy;
+
+        internal MsgBoxBtn(Action ifClicked, Button btn, bool noClosing)
+        {
+            IfClicked = ifClicked;
+            button = btn;
+            transform = btn.transform;
+            noDestroy = noClosing;
+        }
+    }
+    /// <summary>
     /// UI elements like creating Message Boxes
     /// </summary>
     public class ModUI
     {
-        internal static GameObject messageBox;
-        internal static GameObject messageBoxBtn;
+        internal static MessageBoxesCanvas messageBoxCv;
         internal static GameObject canvasPrefab;
-        private static GameObject msclCanv, msgboxCanv, modMenuCanv, dwnlMenuCanv, consoleCanv;
+        private static GameObject msclCanv, modMenuCanv, dwnlMenuCanv, consoleCanv;
 
         internal static void CreateCanvases()
         {
@@ -22,8 +38,6 @@ namespace MSCLoader
             modMenuCanv = CreateCanvas("MSCLoader Canvas menu", true);
             dwnlMenuCanv = CreateCanvas("MSCLoader Canvas Download Menu", false);
             consoleCanv = CreateCanvas("MSCLoader Canvas console", true);
-            msgboxCanv = CreateCanvas("MSCLoader Canvas msgbox", true);
-            msgboxCanv.GetComponent<Canvas>().sortingOrder = 1;
 
             //create EventSystem
             GameObject evSys = new GameObject();
@@ -58,8 +72,6 @@ namespace MSCLoader
                     return modMenuCanv;
                 case 2:
                     return consoleCanv;
-                case 4:
-                    return msgboxCanv;
                 case 5:
                     return dwnlMenuCanv;
                 default:
@@ -72,7 +84,48 @@ namespace MSCLoader
         /// <returns>Canvas GameObject</returns>
         [Obsolete("It is recommended to create your own canvas using CreateCanvas() instead.")]
         public static GameObject GetCanvas() => msclCanv;
-    
+
+        /// <summary>
+        /// Create Message Box Button for ShowCustomMessage(...);
+        /// </summary>
+        /// <param name="ButtonText">Text on the Button</param>
+        /// <param name="ifClicked">Action if button was clicked (leave null for just closing meesage box)</param>
+        /// <param name="noClosing">Don't close MessageBox when action is triggered</param>
+        /// <returns>MsgBoxBtn</returns>
+        public static MsgBoxBtn CreateMessageBoxBtn(string ButtonText, Action ifClicked = null, bool noClosing = false)
+        {
+            GameObject btn = GameObject.Instantiate(messageBoxCv.messageBoxBtnPrefab);
+            MsgBoxBtn msgBoxBtn = new MsgBoxBtn(ifClicked, btn.GetComponent<Button>(), noClosing);
+            if (noClosing && ifClicked == null)
+                ModConsole.Error("<b>CreateMessageBoxBtn()</b> - <b>ifClicked</b> cannot be null when <b>noClosing</b> is set to true");
+            if(noClosing && ifClicked != null)
+                msgBoxBtn.button.onClick.AddListener(() => { ifClicked(); });
+            btn.GetComponentInChildren<Text>().text = ButtonText.ToUpper();
+            return msgBoxBtn;
+        }
+
+        /// <summary>
+        /// Create Message Box Button for ShowCustomMessage(...);
+        /// </summary>
+        /// <param name="ButtonText">Text on the Button</param>
+        /// <param name="ifClicked">Action if button was clicked (leave null for just closing meesage box)</param>
+        /// <param name="BackgroundColor">Button background color</param>
+        /// <param name="TextColor">Text color</param>
+        /// <param name="noClosing">Don't close MessageBox when action is triggered</param>
+        /// <returns>MsgBoxBtn</returns>
+        public static MsgBoxBtn CreateMessageBoxBtn(string ButtonText, Action ifClicked, Color32 BackgroundColor, Color32 TextColor, bool noClosing = false)
+        {
+            GameObject btn = GameObject.Instantiate(messageBoxCv.messageBoxBtnPrefab);
+            MsgBoxBtn msgBoxBtn = new MsgBoxBtn(ifClicked, btn.GetComponent<Button>(), noClosing);
+            if (noClosing && ifClicked == null)
+                ModConsole.Error("<b>CreateMessageBoxBtn()</b> - <b>ifClicked</b> cannot be null when <b>noClosing</b> is set to true");
+            if (noClosing && ifClicked != null)
+                msgBoxBtn.button.onClick.AddListener(() => { ifClicked(); });
+            btn.GetComponentInChildren<Text>().text = ButtonText.ToUpper();
+            btn.GetComponentInChildren<Text>().color = TextColor;
+            btn.GetComponent<Image>().color = BackgroundColor;
+            return msgBoxBtn;
+        }
         /// <summary>
         /// Show Message Box with simple message
         /// </summary>
@@ -86,13 +139,14 @@ namespace MSCLoader
         /// <param name="title">Title of message</param>
         public static void ShowMessage(string message, string title)
         {
-            GameObject mb = GameObject.Instantiate(messageBox);
-            GameObject.Instantiate(messageBoxBtn).transform.SetParent(mb.transform.GetChild(0).GetChild(2), false);
-            mb.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Text>().text = title.ToUpper();
-            mb.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>().text = message;            
-            mb.transform.GetChild(0).GetChild(2).GetChild(0).GetComponent<Button>().onClick.AddListener(() => GameObject.Destroy(mb));
-            mb.transform.GetChild(0).GetChild(2).GetChild(0).GetChild(0).GetComponent<Text>().text = "OK";
-            mb.transform.SetParent(GetCanvas(4).transform, false);
+            GameObject mb = GameObject.Instantiate(messageBoxCv.messageBoxPrefab);
+            MessageBoxHelper mbh = mb.GetComponent<MessageBoxHelper>();
+            MsgBoxBtn btn = CreateMessageBoxBtn("OK");
+            btn.transform.SetParent(mbh.btnRow1.transform, false);
+            btn.button.onClick.AddListener(() => GameObject.Destroy(mb));
+            mbh.messageBoxTitle.text = title.ToUpper();
+            mbh.messageBoxContent.text = message;            
+            mb.transform.SetParent(messageBoxCv.transform, false);
             mb.SetActive(true);
         }
 
@@ -113,20 +167,20 @@ namespace MSCLoader
 
         internal static void ShowYesNoMessage(string message, string title, Action ifYes, UnityAction ifYesUA = null)
         {
-            GameObject mb = GameObject.Instantiate(messageBox);
-            GameObject.Instantiate(messageBoxBtn).transform.SetParent(mb.transform.GetChild(0).GetChild(2), false);
-            GameObject.Instantiate(messageBoxBtn).transform.SetParent(mb.transform.GetChild(0).GetChild(2), false);
-            mb.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Text>().text = title.ToUpper();
-            mb.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>().text = message;
-        //    mb.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>().alignment = TextAnchor.MiddleLeft;
+            GameObject mb = GameObject.Instantiate(messageBoxCv.messageBoxPrefab);
+            MessageBoxHelper mbh = mb.GetComponent<MessageBoxHelper>();
+            MsgBoxBtn btnYes = CreateMessageBoxBtn("YES");
+            MsgBoxBtn btnNo = CreateMessageBoxBtn("NO");
+            btnYes.transform.SetParent(mbh.btnRow1.transform, false);
+            btnNo.transform.SetParent(mbh.btnRow1.transform, false);
+            mbh.messageBoxTitle.text = title.ToUpper();
+            mbh.messageBoxContent.text = message;
             if (ifYesUA != null)
-                mb.transform.GetChild(0).GetChild(2).GetChild(0).GetComponent<Button>().onClick.AddListener(() => { ifYesUA?.Invoke(); GameObject.Destroy(mb); });
+                btnYes.button.onClick.AddListener(() => { ifYesUA?.Invoke(); GameObject.Destroy(mb); });
             else
-                mb.transform.GetChild(0).GetChild(2).GetChild(0).GetComponent<Button>().onClick.AddListener(() => { ifYes.Invoke(); GameObject.Destroy(mb); });
-            mb.transform.GetChild(0).GetChild(2).GetChild(0).GetChild(0).GetComponent<Text>().text = "YES";
-            mb.transform.GetChild(0).GetChild(2).GetChild(1).GetComponent<Button>().onClick.AddListener(() => GameObject.Destroy(mb));
-            mb.transform.GetChild(0).GetChild(2).GetChild(1).GetChild(0).GetComponent<Text>().text = "NO";
-            mb.transform.SetParent(GetCanvas(4).transform, false);
+                btnYes.button.onClick.AddListener(() => { ifYes.Invoke(); GameObject.Destroy(mb); });
+            btnNo.button.onClick.AddListener(() => GameObject.Destroy(mb));
+            mb.transform.SetParent(messageBoxCv.transform, false);
             mb.SetActive(true);
         }
         /// <summary>
@@ -139,19 +193,20 @@ namespace MSCLoader
 
         internal static void ShowRetryCancelMessage(string message, string title, Action ifRetry, UnityAction ifRetryUA = null)
         {
-            GameObject mb = GameObject.Instantiate(messageBox);
-            GameObject.Instantiate(messageBoxBtn).transform.SetParent(mb.transform.GetChild(0).GetChild(2), false);
-            GameObject.Instantiate(messageBoxBtn).transform.SetParent(mb.transform.GetChild(0).GetChild(2), false);
-            mb.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Text>().text = title.ToUpper();
-            mb.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>().text = message;
+            GameObject mb = GameObject.Instantiate(messageBoxCv.messageBoxPrefab);
+            MessageBoxHelper mbh = mb.GetComponent<MessageBoxHelper>();
+            MsgBoxBtn btnRt = CreateMessageBoxBtn("RETRY");
+            MsgBoxBtn btnCn = CreateMessageBoxBtn("CANCEL");
+            btnRt.transform.SetParent(mbh.btnRow1.transform, false);
+            btnCn.transform.SetParent(mbh.btnRow1.transform, false);
+            mbh.messageBoxTitle.text = title.ToUpper();
+            mbh.messageBoxContent.text = message;
             if (ifRetryUA != null)
-                mb.transform.GetChild(0).GetChild(2).GetChild(0).GetComponent<Button>().onClick.AddListener(() => { ifRetryUA?.Invoke(); GameObject.Destroy(mb); });
+                btnRt.button.onClick.AddListener(() => { ifRetryUA?.Invoke(); GameObject.Destroy(mb); });
             else
-                mb.transform.GetChild(0).GetChild(2).GetChild(0).GetComponent<Button>().onClick.AddListener(() => { ifRetry.Invoke(); GameObject.Destroy(mb); });
-            mb.transform.GetChild(0).GetChild(2).GetChild(0).GetChild(0).GetComponent<Text>().text = "RETRY";
-            mb.transform.GetChild(0).GetChild(2).GetChild(1).GetComponent<Button>().onClick.AddListener(() => GameObject.Destroy(mb));
-            mb.transform.GetChild(0).GetChild(2).GetChild(1).GetChild(0).GetComponent<Text>().text = "CANCEL";
-            mb.transform.SetParent(GetCanvas(4).transform, false);
+                btnRt.button.onClick.AddListener(() => { ifRetry.Invoke(); GameObject.Destroy(mb); });
+            btnCn.button.onClick.AddListener(() => GameObject.Destroy(mb));
+            mb.transform.SetParent(messageBoxCv.transform, false);
             mb.SetActive(true);
         }
         /// <summary>
@@ -164,20 +219,95 @@ namespace MSCLoader
 
         internal static void ShowContinueAbortMessage(string message, string title, Action ifContinue, UnityAction ifContinueUA = null)
         {
-            GameObject mb = GameObject.Instantiate(messageBox);
-            GameObject.Instantiate(messageBoxBtn).transform.SetParent(mb.transform.GetChild(0).GetChild(2), false);
-            GameObject.Instantiate(messageBoxBtn).transform.SetParent(mb.transform.GetChild(0).GetChild(2), false);
-            mb.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Text>().text = title.ToUpper();
-            mb.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>().text = message;
+            GameObject mb = GameObject.Instantiate(messageBoxCv.messageBoxPrefab);
+            MessageBoxHelper mbh = mb.GetComponent<MessageBoxHelper>();
+            MsgBoxBtn btnCont = CreateMessageBoxBtn("CONTINUE");
+            MsgBoxBtn btnAb = CreateMessageBoxBtn("ABORT");
+            btnCont.transform.SetParent(mbh.btnRow1.transform, false);
+            btnAb.transform.SetParent(mbh.btnRow1.transform, false);
+            mbh.messageBoxTitle.text = title.ToUpper();
+            mbh.messageBoxContent.text = message;
             if (ifContinueUA != null)
-                mb.transform.GetChild(0).GetChild(2).GetChild(0).GetComponent<Button>().onClick.AddListener(() => { ifContinueUA?.Invoke(); GameObject.Destroy(mb); });
+                btnCont.button.onClick.AddListener(() => { ifContinueUA?.Invoke(); GameObject.Destroy(mb); });
             else
-                mb.transform.GetChild(0).GetChild(2).GetChild(0).GetComponent<Button>().onClick.AddListener(() => { ifContinue.Invoke(); GameObject.Destroy(mb); });
-            mb.transform.GetChild(0).GetChild(2).GetChild(0).GetChild(0).GetComponent<Text>().text = "CONTINUE";
-            mb.transform.GetChild(0).GetChild(2).GetChild(1).GetComponent<Button>().onClick.AddListener(() => GameObject.Destroy(mb));
-            mb.transform.GetChild(0).GetChild(2).GetChild(1).GetChild(0).GetComponent<Text>().text = "ABORT";
-            mb.transform.SetParent(GetCanvas(4).transform, false);
+                btnCont.button.onClick.AddListener(() => { ifContinue.Invoke(); GameObject.Destroy(mb); });
+            btnAb.button.onClick.AddListener(() => GameObject.Destroy(mb));
+            mb.transform.SetParent(messageBoxCv.transform, false);
             mb.SetActive(true);
+        }
+
+        public static void ShowCustomMessage(string message, string title, MsgBoxBtn[] buttons)
+        {
+            if(buttons == null)
+            {
+                ModConsole.Error("<b>ShowCustomMessage()</b> - MessageBox requires at least one button.");
+                return;
+            }
+            GameObject mb = GameObject.Instantiate(messageBoxCv.messageBoxPrefab);
+            MessageBoxHelper mbh = mb.GetComponent<MessageBoxHelper>();
+            mbh.messageBoxTitle.text = title.ToUpper();
+            mbh.messageBoxContent.text = message;
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                buttons[i].button.onClick.AddListener(() => { buttons[i].IfClicked(); GameObject.Destroy(mb); });
+                buttons[i].transform.SetParent(mbh.btnRow1.transform, false);
+            }
+            mb.transform.SetParent(messageBoxCv.transform, false);
+            mb.SetActive(true);
+        }
+
+        public static void ShowCustomMessage(string message, string title, MsgBoxBtn[] buttons, MsgBoxBtn[] buttons2)
+        {
+            if (buttons == null || buttons.Length == 0)
+            {
+                ModConsole.Error("<b>ShowCustomMessage()</b> - MessageBox requires at least one button.");
+                return;
+            }
+            GameObject mb = GameObject.Instantiate(messageBoxCv.messageBoxPrefab);
+            MessageBoxHelper mbh = mb.GetComponent<MessageBoxHelper>();
+            mbh.messageBoxTitle.text = title.ToUpper();
+            mbh.messageBoxContent.text = message;
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                
+                if (buttons[i].IfClicked != null)
+                {
+                    if (!buttons[i].noDestroy)
+                    {
+                        Action act = buttons[i].IfClicked;
+                        buttons[i].button.onClick.AddListener(() => { act(); GameObject.Destroy(mb); });
+                    }
+                }
+                else
+                    buttons[i].button.onClick.AddListener(() => { GameObject.Destroy(mb); });
+                buttons[i].transform.SetParent(mbh.btnRow1.transform, false);
+            }
+            if (buttons2.Length > 0)
+            {
+                for (int i = 0; i < buttons2.Length; i++)
+                {
+                    if (buttons2[i].IfClicked != null)
+                    {
+                        if (!buttons2[i].noDestroy)
+                        {
+                            Action act = buttons2[i].IfClicked;
+                            buttons2[i].button.onClick.AddListener(() => { act(); GameObject.Destroy(mb); });
+                        }
+                    }
+                    else
+                        buttons2[i].button.onClick.AddListener(() => { GameObject.Destroy(mb); });
+                    buttons2[i].transform.SetParent(mbh.btnRow2.transform, false);
+                }
+                mbh.btnRow2.SetActive(true);
+            }
+            mb.transform.SetParent(messageBoxCv.transform, false);
+            mb.SetActive(true);
+        }
+        internal static void ShowChangelogWindow(string content)
+        {
+            messageBoxCv.changelogText.text = content;
+            messageBoxCv.changelogWindow.SetActive(true);
+            messageBoxCv.changelogWindow.transform.SetAsLastSibling();
         }
     }
 
