@@ -235,7 +235,12 @@ namespace MSCLoader
             mb.transform.SetParent(messageBoxCv.transform, false);
             mb.SetActive(true);
         }
-
+        /// <summary>
+        /// Show Custom message, you can create MessageBox with custom buttons using CreateMessageBoxBtn() first
+        /// </summary>
+        /// <param name="message">>Message content</param>
+        /// <param name="title">Title of message</param>
+        /// <param name="buttons">Buttons created using CreateMessageBoxBtn()</param>
         public static void ShowCustomMessage(string message, string title, MsgBoxBtn[] buttons)
         {
             if(buttons == null)
@@ -255,7 +260,13 @@ namespace MSCLoader
             mb.transform.SetParent(messageBoxCv.transform, false);
             mb.SetActive(true);
         }
-
+        /// <summary>
+        /// Show Custom message, you can create MessageBox with custom buttons using CreateMessageBoxBtn() first
+        /// </summary>
+        /// <param name="message">>Message content</param>
+        /// <param name="title">Title of message</param>
+        /// <param name="buttons">Buttons created using CreateMessageBoxBtn()</param>
+        /// <param name="buttons2">A place to add "second row" of buttons.</param>
         public static void ShowCustomMessage(string message, string title, MsgBoxBtn[] buttons, MsgBoxBtn[] buttons2)
         {
             if (buttons == null || buttons.Length == 0)

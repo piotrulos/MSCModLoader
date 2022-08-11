@@ -4,11 +4,9 @@ using Newtonsoft.Json;
 #endif
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using UnityEngine.UI;
 
 namespace MSCLoader
 {
@@ -405,7 +403,7 @@ if (!cfmuErrored)
             }
         }
 
-        internal void UploadFileUpdate(string ID, string key, bool isRef, bool plus12)
+        internal void UploadFileUpdate(string ID, string key, bool isRef)
         {
             if (downloadInProgress)
             {
@@ -414,13 +412,13 @@ if (!cfmuErrored)
             }
             else
             {
-                StartCoroutine(UploadModFile(ID, plus12, key, isRef));
+                StartCoroutine(UploadModFile(ID, key, isRef));
             }
         }
         internal bool downloadInProgress = false;
         private bool downloadErrored = false;
 
-        IEnumerator UploadModFile(string ID, bool plus12, string key, bool isRef)
+        IEnumerator UploadModFile(string ID, string key, bool isRef)
         {
             dnsaf = true;
             if (CheckSteam())
@@ -462,7 +460,7 @@ if (!cfmuErrored)
                         if (isRef)
                             ModMetadata.UpdateVersionNumberRef(ID);
                         else
-                            ModMetadata.UpdateVersionNumber(GetMod(ID, true), plus12);
+                            ModMetadata.UpdateVersionNumber(GetMod(ID, true));
                     }
 #endif
                 }
