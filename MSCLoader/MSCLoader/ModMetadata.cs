@@ -865,8 +865,47 @@ namespace MSCLoader
             }
 
             if (!ModLoader.Instance.ModloaderUpdateMessage && upd)
-                ModUI.ShowYesNoMessage($"There are updates to mods that can be updated automatically{Environment.NewLine}{Environment.NewLine}{Upd_list}Do you want to install updates now?", "Updates Available", ModLoader.Instance.DownloadModsUpdates);
+            {
+                //ModUI.ShowYesNoMessage($"There are updates available that can be updated automatically{Environment.NewLine}{Environment.NewLine}{Upd_list}Do you want to install updates now?", "Updates Available", ModLoader.Instance.DownloadModsUpdates);
+                MsgBoxBtn[] btn1 = { ModUI.CreateMessageBoxBtn("YES", ModLoader.Instance.DownloadModsUpdates), ModUI.CreateMessageBoxBtn("NO") };
+                MsgBoxBtn[] btn2 = { ModUI.CreateMessageBoxBtn("Show Changelog", ShowChangelogs, new Color32(0, 0, 80, 255), Color.white, true) };
+                ModUI.ShowCustomMessage($"There are updates available that can be updated automatically{Environment.NewLine}{Environment.NewLine}{Upd_list}Do you want to install updates now?", "Updates Available", btn1, btn2);
 
+            }
+        }
+        internal static void ShowChangelogs()
+        {
+            string dwl = string.Empty;
+            WebClient getdwl = new WebClient();
+            getdwl.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
+            List<string> idLists = new List<string>();
+            List<string> verLists = new List<string>();
+            List<string> nameLists = new List<string>();
+
+            for (int i = 0; i < ModLoader.ModSelfUpdateList.Count; i++)
+            {
+                Mod m = ModLoader.GetMod(ModLoader.ModSelfUpdateList[i], true);
+                idLists.Add(ModLoader.ModSelfUpdateList[i]);
+                verLists.Add(m.UpdateInfo.mod_version);
+                nameLists.Add(m.Name);
+            }
+            for (int i = 0; i < ModLoader.RefSelfUpdateList.Count; i++)
+            {
+                References r = ModLoader.Instance.ReferencesList.Where(x => x.AssemblyID.Equals(ModLoader.RefSelfUpdateList[i])).FirstOrDefault();
+                idLists.Add(ModLoader.RefSelfUpdateList[i]);
+                verLists.Add(r.UpdateInfo.ref_version);
+                nameLists.Add(r.AssemblyTitle);
+            }
+            try
+            {
+                dwl = getdwl.DownloadString($"{ModLoader.serverURL}/changelog.php?mods={string.Join(",",idLists.ToArray())}&vers={string.Join(",", verLists.ToArray())}&names={string.Join("|,|", nameLists.ToArray())}");
+            }
+            catch (Exception e)
+            {
+                dwl = "<color=red>Failed to download changelog...</color>";
+                Console.WriteLine(e);
+            }
+            ModUI.ShowChangelogWindow(dwl);
         }
         internal static void ReadMetadata(Mod mod)
         {
