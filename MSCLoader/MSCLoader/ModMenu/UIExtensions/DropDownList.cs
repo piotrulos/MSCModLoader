@@ -208,8 +208,8 @@ namespace MSCLoader
             if (indx != _selectedIndex && OnSelectionChanged != null)
             {
                 _selectedIndex = indx;
-                OnSelectionChanged(indx);
                 UpdateSelected();
+                OnSelectionChanged(indx);
             }
 
             ToggleDropdownPanel(true);
