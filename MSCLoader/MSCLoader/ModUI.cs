@@ -243,22 +243,7 @@ namespace MSCLoader
         /// <param name="buttons">Buttons created using CreateMessageBoxBtn()</param>
         public static void ShowCustomMessage(string message, string title, MsgBoxBtn[] buttons)
         {
-            if(buttons == null)
-            {
-                ModConsole.Error("<b>ShowCustomMessage()</b> - MessageBox requires at least one button.");
-                return;
-            }
-            GameObject mb = GameObject.Instantiate(messageBoxCv.messageBoxPrefab);
-            MessageBoxHelper mbh = mb.GetComponent<MessageBoxHelper>();
-            mbh.messageBoxTitle.text = title.ToUpper();
-            mbh.messageBoxContent.text = message;
-            for (int i = 0; i < buttons.Length; i++)
-            {
-                buttons[i].button.onClick.AddListener(() => { buttons[i].IfClicked(); GameObject.Destroy(mb); });
-                buttons[i].transform.SetParent(mbh.btnRow1.transform, false);
-            }
-            mb.transform.SetParent(messageBoxCv.transform, false);
-            mb.SetActive(true);
+            ShowCustomMessage(message, title, buttons, null);
         }
         /// <summary>
         /// Show Custom message, you can create MessageBox with custom buttons using CreateMessageBoxBtn() first
@@ -280,7 +265,6 @@ namespace MSCLoader
             mbh.messageBoxContent.text = message;
             for (int i = 0; i < buttons.Length; i++)
             {
-                
                 if (buttons[i].IfClicked != null)
                 {
                     if (!buttons[i].noDestroy)
@@ -293,27 +277,34 @@ namespace MSCLoader
                     buttons[i].button.onClick.AddListener(() => { GameObject.Destroy(mb); });
                 buttons[i].transform.SetParent(mbh.btnRow1.transform, false);
             }
-            if (buttons2.Length > 0)
+
+            if (buttons2 != null)
             {
-                for (int i = 0; i < buttons2.Length; i++)
+                if (buttons2.Length > 0)
                 {
-                    if (buttons2[i].IfClicked != null)
+                    for (int i = 0; i < buttons2.Length; i++)
                     {
-                        if (!buttons2[i].noDestroy)
+                        if (buttons2[i].IfClicked != null)
                         {
-                            Action act = buttons2[i].IfClicked;
-                            buttons2[i].button.onClick.AddListener(() => { act(); GameObject.Destroy(mb); });
+                            if (!buttons2[i].noDestroy)
+                            {
+                                Action act = buttons2[i].IfClicked;
+                                buttons2[i].button.onClick.AddListener(() => { act(); GameObject.Destroy(mb); });
+                            }
                         }
+                        else
+                            buttons2[i].button.onClick.AddListener(() => { GameObject.Destroy(mb); });
+                        buttons2[i].transform.SetParent(mbh.btnRow2.transform, false);
                     }
-                    else
-                        buttons2[i].button.onClick.AddListener(() => { GameObject.Destroy(mb); });
-                    buttons2[i].transform.SetParent(mbh.btnRow2.transform, false);
+                    mbh.btnRow2.SetActive(true);
                 }
-                mbh.btnRow2.SetActive(true);
             }
+
             mb.transform.SetParent(messageBoxCv.transform, false);
             mb.SetActive(true);
         }
+
+
         internal static void ShowChangelogWindow(string content)
         {
             messageBoxCv.changelogText.text = content;
