@@ -35,8 +35,8 @@ namespace MSCPatcher
 
         public static void EnableDebugging(bool is64, string modpath)
         {
-            Patcher.DeleteIfExists(string.Format("{0}.normal", monoPath));
-            File.Move(monoPath, string.Format("{0}.normal", monoPath));
+            Patcher.DeleteIfExists($"{monoPath}.normal");
+            File.Move(monoPath, $"{monoPath}.normal");
             if(is64)
                 File.Copy(Path.GetFullPath(Path.Combine(@"Debug\64", "mono.dll")), monoPath, true);
             else
@@ -68,7 +68,7 @@ namespace MSCPatcher
         public static void DisableDebugging()
         {
             Patcher.DeleteIfExists(monoPath);
-            File.Move(string.Format("{0}.normal", monoPath), monoPath);
+            File.Move($"{monoPath}.normal", monoPath);
             Log.Write("Recovering backup.....mono.dll");
             MessageBox.Show("Debugging Disabled successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
