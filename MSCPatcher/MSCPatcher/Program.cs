@@ -19,7 +19,7 @@ namespace MSCPatcher
         static void ExHandler(object sender, UnhandledExceptionEventArgs args)
         {
             Exception e = (Exception)args.ExceptionObject;
-            MessageBox.Show(string.Format("MSCPatcher initialization failed!{1}Make sure you unpacked all files from archive.{1}{1}Error Details:{1}{0}", e.GetFullMessage(), Environment.NewLine), "MSCPatcher Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show($"MSCPatcher initialization failed!{Environment.NewLine}Make sure you unpacked all files from archive.{Environment.NewLine}{Environment.NewLine}Error Details:{Environment.NewLine}{e.GetFullMessage()}", "MSCPatcher Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
         }
     }

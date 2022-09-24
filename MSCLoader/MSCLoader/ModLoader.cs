@@ -844,6 +844,7 @@ public partial class ModLoader : MonoBehaviour
     IEnumerator NewGameMods()
     {
         ModConsole.Print("<color=aqua>==== Resetting mods ====</color>");
+        ES2.Delete("Mods.txt");
         canvLoading.modLoadingUI.transform.SetAsLastSibling(); //Always on top
         canvLoading.modLoadingUI.SetActive(true);
         canvLoading.lTitle.text = "Resetting mods".ToUpper();

@@ -12,7 +12,7 @@ namespace MSCPatcher
             if (File.Exists(filename))
             {
                 File.Delete(filename);
-                Log.Write(string.Format("Removing file.....{0}", Path.GetFileName(filename)));
+                Log.Write($"Removing file.....{Path.GetFileName(filename)}");
             }
         }
  

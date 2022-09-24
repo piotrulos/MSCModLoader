@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Kosmo Software")]
 [assembly: AssemblyProduct("MSCPatcher")]
-[assembly: AssemblyCopyright("Copyright © 2018 by Kosmo Software")]
+[assembly: AssemblyCopyright("Copyright © 2022 by Kosmo Software")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -33,7 +33,7 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.2.6.263")]
-[assembly: AssemblyFileVersion("1.2.6.263")]
+[assembly: AssemblyVersion("1.2.8.276")]
+[assembly: AssemblyFileVersion("1.2.8.276")]
 [assembly: NeutralResourcesLanguage("en")]
 

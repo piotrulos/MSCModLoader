@@ -1,7 +1,5 @@
 ﻿using IniParser;
 using IniParser.Model;
-using Mono.Cecil;
-using Mono.Cecil.Cil;
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -61,7 +59,7 @@ namespace MSCPatcher
                 mscPath = File.ReadAllText("MSCFolder.txt");
                 if (!Directory.Exists(mscPath))
                 {
-                    Log.Write(string.Format("Saved MSC Folder, doesn't exists: {0}", mscPath));
+                    Log.Write($"Saved MSC Folder, doesn't exists: {mscPath}");
                     mscPath = "(unknown)";
                     try
                     {
@@ -76,14 +74,14 @@ namespace MSCPatcher
                 }
                 else
                 {
-                    Log.Write(string.Format("Loaded saved MSC Folder: {0}", mscPath));
+                    Log.Write($"Loaded saved MSC Folder: {mscPath}");
                 }
             }
             mscPathLabel.Text = mscPath;
             MDlabel.Text = mdPath;
             if (Directory.Exists(mdPath))
             {
-                Log.Write(string.Format("Found mods folder in: {0}", mdPath));
+                Log.Write($"Found mods folder in: {mdPath}");
                 MDlabel.ForeColor = Color.Green;
                 MDradio.Checked = true;
                 modPath = mdPath;
@@ -91,21 +89,21 @@ namespace MSCPatcher
             ADlabel.Text = adPath;
             if (Directory.Exists(adPath))
             {
-                Log.Write(string.Format("Found mods folder in: {0}", adPath));
+                Log.Write($"Found mods folder in: {adPath}");
                 ADlabel.ForeColor = Color.Green;
                 ADradio.Checked = true;
                 modPath = adPath;
             }
-            Log.Write(string.Format("Current folder: {0}", Path.GetFullPath(".")));
+            Log.Write($"Current folder: {Path.GetFullPath(".")}");
 
             try
             {
                 mscLoaderVersion = FileVersionInfo.GetVersionInfo("MSCLoader.dll");
                 string currentVersion;
                 if (mscLoaderVersion.FileBuildPart != 0)
-                    currentVersion = string.Format("{0}.{1}.{2}", mscLoaderVersion.FileMajorPart, mscLoaderVersion.FileMinorPart, mscLoaderVersion.FileBuildPart);
+                    currentVersion = $"{mscLoaderVersion.FileMajorPart}.{mscLoaderVersion.FileMinorPart}.{mscLoaderVersion.FileBuildPart}";
                 else
-                    currentVersion = string.Format("{0}.{1}", mscLoaderVersion.FileMajorPart, mscLoaderVersion.FileMinorPart);
+                    currentVersion = $"{mscLoaderVersion.FileMajorPart}.{mscLoaderVersion.FileMinorPart}";
  
                 string version;
                 string res;
@@ -140,8 +138,8 @@ namespace MSCPatcher
                 int i = currentVersion.CompareTo(version.Trim());
                 if (i != 0)
                 {
-                    Log.Write(string.Format("{2}MCSLoader v{0}, New version available: v{1}", currentVersion, version.Trim(), Environment.NewLine));
-                    if (MessageBox.Show(string.Format("New version is available: v{0}, wanna check it out?", version.Trim()), "MCSLoader v" + currentVersion, MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                    Log.Write($"{Environment.NewLine}MCSLoader v{currentVersion}, New version available: v{version.Trim()}");
+                    if (MessageBox.Show($"New version is available: v{version.Trim()}, wanna check it out?", "MCSLoader v" + currentVersion, MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
                     {
                         try
                         {
@@ -153,17 +151,17 @@ namespace MSCPatcher
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show(string.Format("Failed to open update info!{1}{1}Error details:{1}{0}", ex.Message, Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show($"Failed to open update info!{Environment.NewLine}{Environment.NewLine}Error details:{Environment.NewLine}{ex.Message}", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             Log.Write("Error", true, true);
                             Log.Write(ex.Message);
                             Log.Write(ex.ToString());
                         }
                     }
-                    statusBarLabel.Text = string.Format("New version available: v{0}", version.Trim());
+                    statusBarLabel.Text = $"New version available: v{version.Trim()}";
                 }
                 else if (i == 0)
                 {
-                    Log.Write(string.Format("{1}MCSLoader v{0} is up to date, no new version found.", currentVersion, Environment.NewLine));
+                    Log.Write($"{Environment.NewLine}MCSLoader v{currentVersion} is up to date, no new version found.");
                     statusBarLabel.Text = "MSCPatcher Ready!";
                 }
             }
@@ -623,15 +621,15 @@ namespace MSCPatcher
             bool proxypatchfound = false;
             try
             {
-                bool isInjected = false;
+                bool isPatched = false;
                 if (MDradio.Checked)
-                    isInjected = IsPatched(Path.Combine(mscPath, @"mysummercar_Data\Managed\Assembly-CSharp.dll"), "PlayMakerArrayListProxy", "Awake", "MSCLoader.dll", "MSCLoader.ModLoader", "Init_MD");
+                    isPatched = IsPatched(Path.Combine(mscPath, @"mysummercar_Data\Managed\Assembly-CSharp.dll"), "PlayMakerArrayListProxy", "Awake", "MSCLoader.dll", "MSCLoader.ModLoader", "Init_MD");
                 else if (GFradio.Checked)
-                    isInjected = IsPatched(Path.Combine(mscPath, @"mysummercar_Data\Managed\Assembly-CSharp.dll"), "PlayMakerArrayListProxy", "Awake", "MSCLoader.dll", "MSCLoader.ModLoader", "Init_GF");
+                    isPatched = IsPatched(Path.Combine(mscPath, @"mysummercar_Data\Managed\Assembly-CSharp.dll"), "PlayMakerArrayListProxy", "Awake", "MSCLoader.dll", "MSCLoader.ModLoader", "Init_GF");
                 else if (ADradio.Checked)
-                    isInjected = IsPatched(Path.Combine(mscPath, @"mysummercar_Data\Managed\Assembly-CSharp.dll"), "PlayMakerArrayListProxy", "Awake", "MSCLoader.dll", "MSCLoader.ModLoader", "Init_AD");
+                    isPatched = IsPatched(Path.Combine(mscPath, @"mysummercar_Data\Managed\Assembly-CSharp.dll"), "PlayMakerArrayListProxy", "Awake", "MSCLoader.dll", "MSCLoader.ModLoader", "Init_AD");
 
-                if (isInjected)
+                if (isPatched)
                     newpatchfound = true;
                 else
                     newpatchfound = false;
@@ -647,8 +645,8 @@ namespace MSCPatcher
             {
                 try
                 {
-                    bool isInjected = IsPatched(Path.Combine(mscPath, @"mysummercar_Data\Managed\Assembly-CSharp.dll"), "StartGame", ".ctor", "MSCLoader.dll", "MSCLoader.ModLoader", "Init");
-                    if (isInjected)
+                    bool isPatched = IsPatched(Path.Combine(mscPath, @"mysummercar_Data\Managed\Assembly-CSharp.dll"), "StartGame", ".ctor", "MSCLoader.dll", "MSCLoader.ModLoader", "Init");
+                    if (isPatched)
                         oldpatchfound = true;
                     else
                         oldpatchfound = false;
@@ -840,41 +838,23 @@ namespace MSCPatcher
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("Failed to open url!{1}{1}Error details:{1}{0}", ex.Message, Environment.NewLine), "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Failed to open url!{Environment.NewLine}{Environment.NewLine}Error details:{Environment.NewLine}{ex.Message}", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Log.Write("Error", true, true);
                 Log.Write(ex.Message);
                 Log.Write(ex.ToString());
             }
         }
 
-        private void PatchThis(string mainPath, string assemblyToPatch, string assemblyType, string assemblyMethod, string loaderAssembly, string loaderType, string loaderMethod)
-        {
-            DefaultAssemblyResolver resolver = new DefaultAssemblyResolver();
-            resolver.AddSearchDirectory(mainPath);
-
-            ModuleDefinition assembly = ModuleDefinition.ReadModule(mainPath + "/" + assemblyToPatch, new ReaderParameters { ReadWrite = true, AssemblyResolver = resolver });
-            ModuleDefinition loader = ModuleDefinition.ReadModule(mainPath + "/" + loaderAssembly);
-            MethodDefinition methodToInject = loader.GetType(loaderType).Methods.Single(x => x.Name == loaderMethod);
-            MethodDefinition methodToHook = assembly.GetType(assemblyType).Methods.First(x => x.Name == assemblyMethod);
-
-            Instruction loaderInit = Instruction.Create(OpCodes.Call, assembly.ImportReference(methodToInject));
-            ILProcessor processor = methodToHook.Body.GetILProcessor();
-            processor.InsertBefore(methodToHook.Body.Instructions[0], loaderInit);
-            assembly.Write();
-            assembly.Dispose();
-            loader.Dispose();
-        }
         private bool IsPatched(string assemblyToPatch, string assemblyType, string assemblyMethod, string loaderAssembly, string loaderType, string loaderMethod)
         {
 
-            ModuleDefinition assembly = ModuleDefinition.ReadModule(assemblyToPatch);
-            ModuleDefinition loader = ModuleDefinition.ReadModule(loaderAssembly);
-            MethodDefinition methodToInject = loader.GetType(loaderType).Methods.Single(x => x.Name == loaderMethod);
-            MethodDefinition methodToHook = assembly.GetType(assemblyType).Methods.First(x => x.Name == assemblyMethod);
+            Mono.Cecil.ModuleDefinition assembly = Mono.Cecil.ModuleDefinition.ReadModule(assemblyToPatch);
+            Mono.Cecil.ModuleDefinition loader = Mono.Cecil.ModuleDefinition.ReadModule(loaderAssembly);
+            Mono.Cecil.MethodDefinition methodToAdd = assembly.GetType(assemblyType).Methods.First(x => x.Name == assemblyMethod);
 
-            foreach (Instruction instruction in methodToHook.Body.Instructions)
+            foreach (Mono.Cecil.Cil.Instruction instruction in methodToAdd.Body.Instructions)
             {
-                if (instruction.OpCode.Equals(OpCodes.Call) && instruction.Operand.ToString().Equals($"System.Void {loaderType}::{loaderMethod}()"))
+                if (instruction.OpCode.Equals(Mono.Cecil.Cil.OpCodes.Call) && instruction.Operand.ToString().Equals($"System.Void {loaderType}::{loaderMethod}()"))
                 {
                     assembly.Dispose();
                     loader.Dispose();

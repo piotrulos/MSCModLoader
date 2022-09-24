@@ -1,9 +1,13 @@
 ﻿#if !Mini
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 #endif
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using UnityEngine;
+using static ES2Keys;
 
 namespace MSCLoader
 {
@@ -33,9 +37,10 @@ namespace MSCLoader
         /// <param name="mod">Mod instance</param>
         /// <param name="g">Your GameObject to save</param>
         /// <param name="fileName">Name of the save file</param>
+        [Obsolete("Consider switching to SaveLoad.WriteValue or serializing custom class.")]
         public static void SaveGameObject(Mod mod, GameObject g, string fileName)
         {
-            #if !Mini
+#if !Mini
             string path = Path.Combine(ModLoader.GetModSettingsFolder(mod), fileName);
             SaveData save = new SaveData();
             SaveDataList s = new SaveDataList
@@ -47,7 +52,10 @@ namespace MSCLoader
                 rotZ = g.transform.localEulerAngles.z
             };
             save.save.Add(s);
-            string serializedData = JsonConvert.SerializeObject(save, Formatting.Indented);
+            JsonSerializerSettings config = new JsonSerializerSettings();
+            config.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            config.Formatting = Formatting.Indented;
+            string serializedData = JsonConvert.SerializeObject(save, config);
             File.WriteAllText(path, serializedData);
 #endif          
         }
@@ -58,12 +66,13 @@ namespace MSCLoader
         /// </summary>
         /// <param name="mod">Mod instance</param>
         /// <param name="fileName">Name of the save file</param>
+        [Obsolete("Consider switching to SaveLoad.ReadValue or deserializing custom class.")]
         public static void LoadGameObject(Mod mod, string fileName)
         {
             SaveData data = DeserializeSaveFile<SaveData>(mod, fileName);
             GameObject go = GameObject.Find(data.save[0].name);
             go.transform.position = data.save[0].pos;
-            go.transform.rotation = Quaternion.Euler(data.save[0].rotX, data.save[0].rotY, data.save[0].rotZ);
+            go.transform.eulerAngles = new Vector3(data.save[0].rotX, data.save[0].rotY, data.save[0].rotZ);
         }
 
         /// <summary>
@@ -76,8 +85,8 @@ namespace MSCLoader
         /// <param name="fileName">Name of the save file</param>
         public static void SerializeSaveFile<T>(Mod mod, T saveDataClass, string fileName)
         {
-            #if !Mini
-            var config = new JsonSerializerSettings();
+#if !Mini
+            JsonSerializerSettings config = new JsonSerializerSettings();
             config.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             config.Formatting = Formatting.Indented;
             string path = Path.Combine(ModLoader.GetModSettingsFolder(mod), fileName);
@@ -95,7 +104,7 @@ namespace MSCLoader
         /// <returns>Deserialized class</returns>
         public static T DeserializeSaveFile<T>(Mod mod, string fileName) where T : new()
         {
-            #if !Mini
+#if !Mini
             string path = Path.Combine(ModLoader.GetModSettingsFolder(mod), fileName);
             if (File.Exists(path))
             {
@@ -104,6 +113,279 @@ namespace MSCLoader
             }
 #endif
             return default(T);
+        }
+
+        /// <summary>
+        /// Serialize custom class under custom ID
+        /// </summary>
+        /// <typeparam name="T">Your class</typeparam>
+        /// <param name="mod">Mod Instance</param>
+        /// <param name="saveDataClass">Your class</param>
+        /// <param name="valueID">ID of saved class</param>
+        /// <param name="encrypt">encrypt data</param>
+        public static void SerializeClass<T>(Mod mod, T saveDataClass, string valueID, bool encrypt = false)
+        {
+            JsonSerializerSettings config = new JsonSerializerSettings();
+            config.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            config.Formatting = Formatting.None;
+            string serializedData = JsonConvert.SerializeObject(saveDataClass, config);
+            if (encrypt)
+            {
+                byte[] bytes = Encoding.ASCII.GetBytes(serializedData);
+                WriteValue(mod, valueID, bytes);
+                return;
+            }
+            WriteValue(mod, valueID, serializedData);
+        }
+
+        /// <summary>
+        /// Deserialize custom class
+        /// </summary>
+        /// <typeparam name="T">Your class</typeparam>
+        /// <param name="mod">Mod Instance</param>
+        /// <param name="valueID">ID of saved class</param>
+        /// <param name="encrypted">Was the data encrypted [Important!]</param>
+        /// <returns>Your class</returns>
+        public static T DeserializeClass<T>(Mod mod, string valueID, bool encrypted = false) where T : new()
+        {
+            string serializedData;
+            if (encrypted)
+            {
+                byte[] bytes = ReadValueAsArray<byte>(mod, valueID);
+                serializedData = Encoding.ASCII.GetString(bytes);
+            }
+            else
+            {
+                serializedData = ReadValue<string>(mod, valueID);
+            }
+            if(serializedData != null)
+                return JsonConvert.DeserializeObject<T>(serializedData);
+            return default(T);
+        }
+
+        /// <summary>
+        /// Read saved value
+        /// </summary>
+        /// <typeparam name="T">Type of the saved value</typeparam>
+        /// <param name="mod">Mod Instance</param>
+        /// <param name="valueID">ID of saved value</param>
+        /// <returns>Your saved value</returns>
+        public static T ReadValue<T>(Mod mod, string valueID)
+        {
+            if (ES2.Exists($"Mods.txt?tag={mod.ID}_{valueID}"))
+                return ES2.Load<T>($"Mods.txt?tag={mod.ID}_{valueID}");
+            else
+                return default(T);
+        }
+
+        /// <summary>
+        /// Read saved value as Array
+        /// </summary>
+        /// <typeparam name="T">Type of the saved array</typeparam>
+        /// <param name="mod">Mod Instance</param>
+        /// <param name="valueID">ID of saved value</param>
+        /// <returns>Your saved value</returns>
+        public static T[] ReadValueAsArray<T>(Mod mod, string valueID)
+        {
+            if (ES2.Exists($"Mods.txt?tag={mod.ID}_{valueID}"))
+                return ES2.LoadArray<T>($"Mods.txt?tag={mod.ID}_{valueID}");
+            else
+                return null;
+        }
+
+        /// <summary>
+        /// Read saved value as 2D Array
+        /// </summary>
+        /// <typeparam name="T">Type of the saved 2darray</typeparam>
+        /// <param name="mod">Mod Instance</param>
+        /// <param name="valueID">ID of saved value</param>
+        /// <returns>Your saved value</returns>
+        public static T[,] ReadValueAs2DArray<T>(Mod mod, string valueID)
+        {
+            if (ES2.Exists($"Mods.txt?tag={mod.ID}_{valueID}"))
+                return ES2.Load2DArray<T>($"Mods.txt?tag={mod.ID}_{valueID}");
+            else
+                return null;
+        }
+
+        /// <summary>
+        /// Read saved value as List
+        /// </summary>
+        /// <typeparam name="T">Type of the saved list</typeparam>
+        /// <param name="mod">Mod Instance</param>
+        /// <param name="valueID">ID of saved value</param>
+        /// <returns>Your saved value</returns>
+        public static List<T> ReadValueAsList<T>(Mod mod, string valueID)
+        {
+            if (ES2.Exists($"Mods.txt?tag={mod.ID}_{valueID}"))
+                return ES2.LoadList<T>($"Mods.txt?tag={mod.ID}_{valueID}");
+            else
+                return null;
+        }
+
+        /// <summary>
+        /// Read saved value as HashSet
+        /// </summary>
+        /// <typeparam name="T">Type of the saved hashset</typeparam>
+        /// <param name="mod">Mod Instance</param>
+        /// <param name="valueID">ID of saved value</param>
+        /// <returns>Your saved value</returns>
+        public static HashSet<T> ReadValueAsHashSet<T>(Mod mod, string valueID)
+        {
+            if (ES2.Exists($"Mods.txt?tag={mod.ID}_{valueID}"))
+                return ES2.LoadHashSet<T>($"Mods.txt?tag={mod.ID}_{valueID}");
+            else
+                return null;
+        }
+
+        /// <summary>
+        /// Read saved value as Queue
+        /// </summary>
+        /// <typeparam name="T">Type of the saved Queue</typeparam>
+        /// <param name="mod">Mod Instance</param>
+        /// <param name="valueID">ID of saved value</param>
+        /// <returns>Your saved value</returns>
+        public static Queue<T> ReadValueAsQueue<T>(Mod mod, string valueID)
+        {
+            if (ES2.Exists($"Mods.txt?tag={mod.ID}_{valueID}"))
+                return ES2.LoadQueue<T>($"Mods.txt?tag={mod.ID}_{valueID}");
+            else
+                return null;
+        }
+
+        /// <summary>
+        /// Read saved value as Stack
+        /// </summary>
+        /// <typeparam name="T">Type of the saved stack</typeparam>
+        /// <param name="mod">Mod Instance</param>
+        /// <param name="valueID">ID of saved value</param>
+        /// <returns>Your saved value</returns>
+        public static Stack<T> ReadValueAsStack<T>(Mod mod, string valueID)
+        {
+            if (ES2.Exists($"Mods.txt?tag={mod.ID}_{valueID}"))
+                return ES2.LoadStack<T>($"Mods.txt?tag={mod.ID}_{valueID}");
+            else
+                return null;
+        }
+
+        /// <summary>
+        /// Read saved value as Dictionary
+        /// </summary>
+        /// <typeparam name="TKey">dictionary key</typeparam>
+        /// <typeparam name="TValue">dictionary value</typeparam>
+        /// <param name="mod">Mod Instance</param>
+        /// <param name="valueID">ID of saved value</param>
+        /// <returns>Your saved value</returns>
+        public static Dictionary<TKey, TValue> ReadValueAsDictionary<TKey, TValue>(Mod mod, string valueID)
+        {
+            if (ES2.Exists($"Mods.txt?tag={mod.ID}_{valueID}"))
+                return ES2.LoadDictionary<TKey, TValue>($"Mods.txt?tag={mod.ID}_{valueID}");
+            else
+                return null;
+        }
+
+        /// <summary>
+        /// Write value to save file
+        /// </summary>
+        /// <typeparam name="T">value type</typeparam>
+        /// <param name="mod">Mod Instance</param>
+        /// <param name="valueID">unique ID under this value will be saved</param>
+        /// <param name="value">Value to save</param>
+        public static void WriteValue<T>(Mod mod, string valueID, T value)
+        {
+            string sf = $"Mods.txt?tag={mod.ID}_{valueID}";
+            ES2.Save(value, sf);
+        }
+        /// <summary>
+        /// Write array to save file
+        /// </summary>
+        /// <typeparam name="T">value type</typeparam>
+        /// <param name="mod">Mod Instance</param>
+        /// <param name="valueID">unique ID under this value will be saved</param>
+        /// <param name="value">Array to save</param>
+        public static void WriteValue<T>(Mod mod, string valueID, T[] value)
+        {
+            string sf = $"Mods.txt?tag={mod.ID}_{valueID}";
+            ES2.Save(value, sf);
+        }
+
+        /// <summary>
+        /// Write 2D array to save file
+        /// </summary>
+        /// <typeparam name="T">value type</typeparam>
+        /// <param name="mod">Mod Instance</param>
+        /// <param name="valueID">unique ID under this value will be saved</param>
+        /// <param name="value">2D array to save</param>
+        public static void WriteValue<T>(Mod mod, string valueID, T[,] value)
+        {
+            string sf = $"Mods.txt?tag={mod.ID}_{valueID}";
+            ES2.Save(value, sf);
+        }
+
+        /// <summary>
+        /// Write List to save file
+        /// </summary>
+        /// <typeparam name="T">List type</typeparam>
+        /// <param name="mod">Mod Instance</param>
+        /// <param name="valueID">unique ID under this value will be saved</param>
+        /// <param name="value">List to save</param>
+        public static void WriteValue<T>(Mod mod, string valueID, List<T> value)
+        {
+            string sf = $"Mods.txt?tag={mod.ID}_{valueID}";
+            ES2.Save(value, sf);
+        }
+
+        /// <summary>
+        /// Write HashSet to save file
+        /// </summary>
+        /// <typeparam name="T">value type</typeparam>
+        /// <param name="mod">Mod Instance</param>
+        /// <param name="valueID">unique ID under this value will be saved</param>
+        /// <param name="value">HashSet to save</param>
+        public static void WriteValue<T>(Mod mod, string valueID, HashSet<T> value)
+        {
+            string sf = $"Mods.txt?tag={mod.ID}_{valueID}";
+            ES2.Save(value, sf);
+        }
+
+        /// <summary>
+        /// Write Queue to save file
+        /// </summary>
+        /// <typeparam name="T">value type</typeparam>
+        /// <param name="mod">Mod Instance</param>
+        /// <param name="valueID">unique ID under this value will be saved</param>
+        /// <param name="value">Queue to save</param>
+        public static void WriteValue<T>(Mod mod, string valueID, Queue<T> value)
+        {
+            string sf = $"Mods.txt?tag={mod.ID}_{valueID}";
+            ES2.Save(value, sf);
+        }
+
+        /// <summary>
+        /// Write Stack to save file
+        /// </summary>
+        /// <typeparam name="T">value type</typeparam>
+        /// <param name="mod">Mod Instance</param>
+        /// <param name="valueID">unique ID under this value will be saved</param>
+        /// <param name="value">Stack to save</param>
+        public static void WriteValue<T>(Mod mod, string valueID, Stack<T> value)
+        {
+            string sf = $"Mods.txt?tag={mod.ID}_{valueID}";
+            ES2.Save(value, sf);
+        }
+
+        /// <summary>
+        /// Write Dictionary to save file
+        /// </summary>
+        /// <typeparam name="TKey">Dictionary key</typeparam>
+        /// <typeparam name="TValue">Dictionary value</typeparam>
+        /// <param name="mod">Mod Instance</param>
+        /// <param name="valueID">unique ID under this value will be saved</param>
+        /// <param name="value">Dictionary to save</param>
+        public static void WriteValue<TKey, TValue>(Mod mod, string valueID, Dictionary<TKey, TValue> value)
+        {
+            string sf = $"Mods.txt?tag={mod.ID}_{valueID}";
+            ES2.Save(value, sf);
         }
     }
 }
