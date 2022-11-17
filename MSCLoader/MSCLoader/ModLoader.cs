@@ -325,6 +325,7 @@ public partial class ModLoader : MonoBehaviour
                 Environment.Exit(0);
             }
         }
+        SaveLoad.LoadModsSaveData();
         PreLoadMods();
         if (InvalidMods.Count > 0)
             ModConsole.Print($"<b><color=orange>Loaded <color=aqua>{actualModList.Length}</color> mods (<color=magenta>{InvalidMods.Count}</color> failed to load)!</color></b>{Environment.NewLine}");
@@ -844,7 +845,7 @@ public partial class ModLoader : MonoBehaviour
     IEnumerator NewGameMods()
     {
         ModConsole.Print("<color=aqua>==== Resetting mods ====</color>");
-        ES2.Delete("Mods.txt");
+        SaveLoad.ResetSaveFile();
         canvLoading.modLoadingUI.transform.SetAsLastSibling(); //Always on top
         canvLoading.modLoadingUI.SetActive(true);
         canvLoading.lTitle.text = "Resetting mods".ToUpper();

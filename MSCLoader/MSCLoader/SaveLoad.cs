@@ -1,21 +1,23 @@
 ﻿#if !Mini
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 #endif
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
-using UnityEngine;
-using static ES2Keys;
+using System.Text.RegularExpressions;
 
 namespace MSCLoader
 {
-#pragma warning disable CS1591 
+#pragma warning disable CS1591
+    [Obsolete("Consider switching to serializing custom class.")]
     public class SaveData
     {
         public List<SaveDataList> save = new List<SaveDataList>();
     }
+
+    [Obsolete("Consider switching to serializing custom class.")]
     public class SaveDataList
     {
         public string name;
@@ -29,6 +31,97 @@ namespace MSCLoader
     /// </summary>
     public class SaveLoad
     {
+        static ES2Data saveFileData;
+
+        internal static void ResetSaveFile()
+        {
+            saveFileData = null;
+            ES2.Delete("Mods.txt");
+            ES2.Save(new byte[1] { 0x02 }, "Mods.txt?tag=MSCLoaderInternalStuff");
+        }
+
+        internal static void LoadModsSaveData()
+        {
+            saveFileData = null;
+            if (ES2.Exists("Mods.txt"))
+            {
+                saveFileData = ES2.LoadAll("Mods.txt");
+                if (!saveFileData.TagExists("MSCLoaderInternalStuff")) ConvertSeparators();
+            }
+            else
+            {
+                ES2.Save(new byte[1] { 0x02 }, "Mods.txt?tag=MSCLoaderInternalStuff");
+            }
+        }
+
+
+        //Convert separator from _ to ||
+        //One time, safe to delete this in next update, since it's ea
+        internal static void ConvertSeparators()
+        {
+            if (saveFileData == null) return;
+            try
+            {
+                string[] oldTags = saveFileData.GetTags();
+                Regex regex = new Regex(Regex.Escape("_"));
+
+                ES2Settings settings = new ES2Settings($"Mods.txt");
+                ES2Settings settings2 = new ES2Settings($"Mods2.txt");
+                ES2Reader es2r = new ES2Reader(settings);
+                Dictionary<string, ES2Header> hdr = es2r.ReadAllHeaders();
+                ModConsole.Print("One time save format conversion...");
+                foreach (string tag in oldTags)
+                {
+                    ES2Header header = new ES2Header();
+                    if (hdr.ContainsKey(tag))
+                        hdr.TryGetValue(tag, out header);
+
+                    ModConsole.Print($"{tag} -> {regex.Replace(tag, "||", 1)}");
+                    ES2Writer w = new ES2Writer(settings2);
+                    switch (header.collectionType)
+                    {
+                        case ES2Keys.Key._NativeArray:
+                            saveFileData.loadedData.TryGetValue(tag, out var value2);
+                            object[] stuff3 = value2 as object[];
+                            w.WriteHeader(regex.Replace(tag, "||", 1), ES2Keys.Key._NativeArray, ES2TypeManager.GetES2Type(header.valueType), null);
+                            w.Write(stuff3, ES2TypeManager.GetES2Type(header.valueType));
+                            w.WriteTerminator();
+                            w.WriteLength();
+                            w.Save();
+                            break;
+                        case ES2Keys.Key._List:
+                            saveFileData.loadedData.TryGetValue(tag, out var value);
+                            List<object> stuff2 = value as List<object>;
+                            w.WriteHeader(regex.Replace(tag, "||", 1), ES2Keys.Key._List, ES2TypeManager.GetES2Type(header.valueType), null);
+                            w.Write(stuff2, ES2TypeManager.GetES2Type(header.valueType));
+                            w.WriteTerminator();
+                            w.WriteLength();
+                            w.Save();
+                            break;
+                        case ES2Keys.Key._Null:
+                            saveFileData.loadedData.TryGetValue(tag, out object stuff);
+                            w.WriteHeader(regex.Replace(tag, "||", 1), ES2Keys.Key._Null, ES2TypeManager.GetES2Type(header.valueType), null);
+                            w.Write(stuff, ES2TypeManager.GetES2Type(header.valueType));
+                            w.WriteTerminator();
+                            w.WriteLength();
+                            w.Save();
+                            break;
+                    }
+                }
+                ES2.Save(new byte[1] { 0x02 }, "Mods2.txt?tag=MSCLoaderInternalStuff");
+                ES2.Delete("Mods.txt");
+                ES2.Rename("Mods2.txt", "Mods.txt");
+                ModConsole.Print("Conversion done!");
+                LoadModsSaveData();
+            }
+            catch (Exception e)
+            {
+                ModConsole.Error(e.Message);
+                Console.WriteLine(e);
+            }
+        }
+
+
 
         /// <summary>
         /// Save position and rotation of single gameobject to file (DO NOT loop this for multiple gameobjects)
@@ -172,8 +265,8 @@ namespace MSCLoader
         /// <returns>Your saved value</returns>
         public static T ReadValue<T>(Mod mod, string valueID)
         {
-            if (ES2.Exists($"Mods.txt?tag={mod.ID}_{valueID}"))
-                return ES2.Load<T>($"Mods.txt?tag={mod.ID}_{valueID}");
+            if (ES2.Exists($"Mods.txt?tag={mod.ID}||{valueID}"))
+                return ES2.Load<T>($"Mods.txt?tag={mod.ID}||{valueID}");
             else
                 return default(T);
         }
@@ -187,8 +280,8 @@ namespace MSCLoader
         /// <returns>Your saved value</returns>
         public static T[] ReadValueAsArray<T>(Mod mod, string valueID)
         {
-            if (ES2.Exists($"Mods.txt?tag={mod.ID}_{valueID}"))
-                return ES2.LoadArray<T>($"Mods.txt?tag={mod.ID}_{valueID}");
+            if (ES2.Exists($"Mods.txt?tag={mod.ID}||{valueID}"))
+                return ES2.LoadArray<T>($"Mods.txt?tag={mod.ID}||{valueID}");
             else
                 return null;
         }
@@ -202,8 +295,8 @@ namespace MSCLoader
         /// <returns>Your saved value</returns>
         public static T[,] ReadValueAs2DArray<T>(Mod mod, string valueID)
         {
-            if (ES2.Exists($"Mods.txt?tag={mod.ID}_{valueID}"))
-                return ES2.Load2DArray<T>($"Mods.txt?tag={mod.ID}_{valueID}");
+            if (ES2.Exists($"Mods.txt?tag={mod.ID}||{valueID}"))
+                return ES2.Load2DArray<T>($"Mods.txt?tag={mod.ID}||{valueID}");
             else
                 return null;
         }
@@ -217,8 +310,8 @@ namespace MSCLoader
         /// <returns>Your saved value</returns>
         public static List<T> ReadValueAsList<T>(Mod mod, string valueID)
         {
-            if (ES2.Exists($"Mods.txt?tag={mod.ID}_{valueID}"))
-                return ES2.LoadList<T>($"Mods.txt?tag={mod.ID}_{valueID}");
+            if (ES2.Exists($"Mods.txt?tag={mod.ID}||{valueID}"))
+                return ES2.LoadList<T>($"Mods.txt?tag={mod.ID}||{valueID}");
             else
                 return null;
         }
@@ -232,8 +325,8 @@ namespace MSCLoader
         /// <returns>Your saved value</returns>
         public static HashSet<T> ReadValueAsHashSet<T>(Mod mod, string valueID)
         {
-            if (ES2.Exists($"Mods.txt?tag={mod.ID}_{valueID}"))
-                return ES2.LoadHashSet<T>($"Mods.txt?tag={mod.ID}_{valueID}");
+            if (ES2.Exists($"Mods.txt?tag={mod.ID}||{valueID}"))
+                return ES2.LoadHashSet<T>($"Mods.txt?tag={mod.ID}||{valueID}");
             else
                 return null;
         }
@@ -247,8 +340,8 @@ namespace MSCLoader
         /// <returns>Your saved value</returns>
         public static Queue<T> ReadValueAsQueue<T>(Mod mod, string valueID)
         {
-            if (ES2.Exists($"Mods.txt?tag={mod.ID}_{valueID}"))
-                return ES2.LoadQueue<T>($"Mods.txt?tag={mod.ID}_{valueID}");
+            if (ES2.Exists($"Mods.txt?tag={mod.ID}||{valueID}"))
+                return ES2.LoadQueue<T>($"Mods.txt?tag={mod.ID}||{valueID}");
             else
                 return null;
         }
@@ -262,8 +355,8 @@ namespace MSCLoader
         /// <returns>Your saved value</returns>
         public static Stack<T> ReadValueAsStack<T>(Mod mod, string valueID)
         {
-            if (ES2.Exists($"Mods.txt?tag={mod.ID}_{valueID}"))
-                return ES2.LoadStack<T>($"Mods.txt?tag={mod.ID}_{valueID}");
+            if (ES2.Exists($"Mods.txt?tag={mod.ID}||{valueID}"))
+                return ES2.LoadStack<T>($"Mods.txt?tag={mod.ID}||{valueID}");
             else
                 return null;
         }
@@ -278,8 +371,8 @@ namespace MSCLoader
         /// <returns>Your saved value</returns>
         public static Dictionary<TKey, TValue> ReadValueAsDictionary<TKey, TValue>(Mod mod, string valueID)
         {
-            if (ES2.Exists($"Mods.txt?tag={mod.ID}_{valueID}"))
-                return ES2.LoadDictionary<TKey, TValue>($"Mods.txt?tag={mod.ID}_{valueID}");
+            if (ES2.Exists($"Mods.txt?tag={mod.ID}||{valueID}"))
+                return ES2.LoadDictionary<TKey, TValue>($"Mods.txt?tag={mod.ID}||{valueID}");
             else
                 return null;
         }
@@ -293,7 +386,7 @@ namespace MSCLoader
         /// <param name="value">Value to save</param>
         public static void WriteValue<T>(Mod mod, string valueID, T value)
         {
-            string sf = $"Mods.txt?tag={mod.ID}_{valueID}";
+            string sf = $"Mods.txt?tag={mod.ID}||{valueID}";
             ES2.Save(value, sf);
         }
         /// <summary>
@@ -305,7 +398,7 @@ namespace MSCLoader
         /// <param name="value">Array to save</param>
         public static void WriteValue<T>(Mod mod, string valueID, T[] value)
         {
-            string sf = $"Mods.txt?tag={mod.ID}_{valueID}";
+            string sf = $"Mods.txt?tag={mod.ID}||{valueID}";
             ES2.Save(value, sf);
         }
 
@@ -318,7 +411,7 @@ namespace MSCLoader
         /// <param name="value">2D array to save</param>
         public static void WriteValue<T>(Mod mod, string valueID, T[,] value)
         {
-            string sf = $"Mods.txt?tag={mod.ID}_{valueID}";
+            string sf = $"Mods.txt?tag={mod.ID}||{valueID}";
             ES2.Save(value, sf);
         }
 
@@ -331,7 +424,7 @@ namespace MSCLoader
         /// <param name="value">List to save</param>
         public static void WriteValue<T>(Mod mod, string valueID, List<T> value)
         {
-            string sf = $"Mods.txt?tag={mod.ID}_{valueID}";
+            string sf = $"Mods.txt?tag={mod.ID}||{valueID}";
             ES2.Save(value, sf);
         }
 
@@ -344,7 +437,7 @@ namespace MSCLoader
         /// <param name="value">HashSet to save</param>
         public static void WriteValue<T>(Mod mod, string valueID, HashSet<T> value)
         {
-            string sf = $"Mods.txt?tag={mod.ID}_{valueID}";
+            string sf = $"Mods.txt?tag={mod.ID}||{valueID}";
             ES2.Save(value, sf);
         }
 
@@ -357,7 +450,7 @@ namespace MSCLoader
         /// <param name="value">Queue to save</param>
         public static void WriteValue<T>(Mod mod, string valueID, Queue<T> value)
         {
-            string sf = $"Mods.txt?tag={mod.ID}_{valueID}";
+            string sf = $"Mods.txt?tag={mod.ID}||{valueID}";
             ES2.Save(value, sf);
         }
 
@@ -370,7 +463,7 @@ namespace MSCLoader
         /// <param name="value">Stack to save</param>
         public static void WriteValue<T>(Mod mod, string valueID, Stack<T> value)
         {
-            string sf = $"Mods.txt?tag={mod.ID}_{valueID}";
+            string sf = $"Mods.txt?tag={mod.ID}||{valueID}";
             ES2.Save(value, sf);
         }
 
@@ -384,7 +477,7 @@ namespace MSCLoader
         /// <param name="value">Dictionary to save</param>
         public static void WriteValue<TKey, TValue>(Mod mod, string valueID, Dictionary<TKey, TValue> value)
         {
-            string sf = $"Mods.txt?tag={mod.ID}_{valueID}";
+            string sf = $"Mods.txt?tag={mod.ID}||{valueID}";
             ES2.Save(value, sf);
         }
     }
