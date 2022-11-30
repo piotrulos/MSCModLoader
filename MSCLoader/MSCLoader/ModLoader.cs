@@ -1382,6 +1382,12 @@ public partial class ModLoader : MonoBehaviour
                 {
                     Mod m = (Mod)Activator.CreateInstance(asmTypes[j]);
                     if (m.ID.StartsWith("MSCLoader_")) continue;
+                    if (string.IsNullOrEmpty(m.ID.Trim()))
+                    {
+                        //Do not allow null/empty/whitespace modID.
+                        Console.Write("Empty mod ID");
+                        continue;
+                    }                    
                     isMod = true;
                     if (addRef.Count > 0)
                         LoadMod(m, msVer, file, addRef.ToArray());
@@ -1396,7 +1402,7 @@ public partial class ModLoader : MonoBehaviour
             }
             if (!isMod)
             {
-                ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - doesn't look like a mod or missing Mod subclass!{Environment.NewLine}<b>Details:</b> File loaded correctly, but failed to find Mod methods.{Environment.NewLine}If this is a reference put this file into \"<b>References</b>\" folder.");
+                ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - doesn't look like a mod or missing Mod subclass!{Environment.NewLine}<b>Details:</b> File loaded correctly, but failed to find Mod methods.{Environment.NewLine}If this is a reference put this file into \"<b>References</b>\" folder.{Environment.NewLine}");
                 InvalidMods.Add(Path.GetFileName(file));
             }
         }
@@ -1443,6 +1449,7 @@ public partial class ModLoader : MonoBehaviour
 
     private void LoadMod(Mod mod, string msver, string fname = null, string[] additionalRef = null)
     {
+
         // Check if mod already exists
         if (!LoadedMods.Contains(mod) && !LoadedMods.Select(x => x.ID).Contains(mod.ID))
         {

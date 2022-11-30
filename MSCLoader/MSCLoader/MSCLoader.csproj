@@ -115,6 +115,7 @@
     <Compile Include="Commands\CommandLogAll.cs" />
     <Compile Include="Commands\EarlyAccessCommand.cs" />
     <Compile Include="Commands\MetadataCommand.cs" />
+    <Compile Include="Commands\SaveDbgCommand.cs" />
     <Compile Include="ConsoleCommand.cs" />
     <Compile Include="ConsoleController.cs" />
     <Compile Include="ConsoleUIResizer.cs" />

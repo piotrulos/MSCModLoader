@@ -25,7 +25,6 @@ namespace MSCLoader
         private Keybind consoleKey;
         public static SettingsCheckBox typing;
         static SettingsSliderInt ConsoleFontSize;
-        static CommandLogAll cla;
         public override void ModSetup()
         {
             SetupFunction(Setup.OnMenuLoad, Mod_OnMenuLoad);
@@ -105,16 +104,16 @@ namespace MSCLoader
             {
                 ModUI.ShowMessage($"Fatal error:{System.Environment.NewLine}<color=orange>{e.Message}</color>{System.Environment.NewLine}Please install modloader correctly.", "Fatal Error");
             }
-            console.controller = new ConsoleController();
             ConsoleCommand.cc = console.controller;
             console.SetVisibility(false);
             console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().LoadConsoleSize();
+
+            //Add Console Commands
             ConsoleCommand.Add(new CommandVersion());
-            cla = new CommandLogAll();
-            ConsoleCommand.Add(cla);
+            ConsoleCommand.Add(new CommandLogAll());
             ConsoleCommand.Add(new MetadataCommand());
             ConsoleCommand.Add(new EarlyAccessCommand());
-            cla.Load();
+            ConsoleCommand.Add(new SaveDbgCommand());
         }
         /// <summary>
         /// Print a message to console.

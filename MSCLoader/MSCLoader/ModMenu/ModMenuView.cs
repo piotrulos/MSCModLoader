@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -152,6 +153,8 @@ namespace MSCLoader
         public void MetadataInfoList(GameObject listView, Mod mod)
         {
             RemoveChildren(listView.transform);
+            SaveLoad.LoadModsSaveData();
+            int savedDataCount = SaveLoad.saveFileData.GetTags().Where(x => x.StartsWith($"{mod.ID}||")).Count();
             listView.GetComponentInParent<ScrollRect>().verticalNormalizedPosition = 0;
             //Info Header
             SettingsGroup header = CreateHeader(listView.transform, "Mod Information", Color.cyan);
@@ -159,10 +162,27 @@ namespace MSCLoader
                 $"<color=yellow>Version:</color> <color=aqua>{mod.Version}</color>{Environment.NewLine}" +
                 $"<color=yellow>Author:</color> <color=aqua>{mod.Author}</color>{Environment.NewLine}" +
                 $"<color=yellow>Additional references used by this Mod:</color>{Environment.NewLine}");
-             if (mod.AdditionalReferences != null)
-                tx.settingName.text += $"<color=aqua>{string.Join(", ",mod.AdditionalReferences)}</color>";
+            if (mod.AdditionalReferences != null)
+                tx.settingName.text += $"<color=aqua>{string.Join(", ", mod.AdditionalReferences)}</color>";
             else
                 tx.settingName.text += $"<color=aqua>[None]</color>";
+            if (savedDataCount > 0)
+            {
+                tx.settingName.text += $"{Environment.NewLine}{Environment.NewLine}<color=yellow>Unified save system: </color><color=aqua>{savedDataCount}</color><color=lime> saved values</color>";
+                SettingsElement rbtn = CreateButton(header.HeaderListView.transform, "Reset save file", Color.white, Color.black);
+                rbtn.button.onClick.AddListener(delegate
+                {
+                    if(ModLoader.GetCurrentScene() != CurrentScene.MainMenu)
+                    {
+                        ModUI.ShowMessage("You can only use this option in main menu.");
+                    }
+                    ModUI.ShowYesNoMessage($"Resetting this mod's save file will reset this mod to default state. {Environment.NewLine}This cannot be undone.{Environment.NewLine}{Environment.NewLine}Are you sure you want to continue?", "Warning", delegate
+                    {
+                        SaveLoad.ResetSaveForMod(mod);
+                        MetadataInfoList(listView, mod);
+                    });
+                });
+            }
             if (mod.metadata == null)
             {
                 SettingsGroup header2 = CreateHeader(listView.transform, "No metadata", Color.yellow);
@@ -188,7 +208,7 @@ namespace MSCLoader
                     if (!string.IsNullOrEmpty(mod.metadata.links.rdLink))
                     {
                         SettingsElement rdBtn = CreateButton(header2.HeaderListView.transform, "SHOW ON <color=orange>RACEDEPARTMENT.COM</color>", Color.white, new Color32(2, 35, 49, 255));
-                        rdBtn.settingName.alignment = TextAnchor.MiddleLeft; 
+                        rdBtn.settingName.alignment = TextAnchor.MiddleLeft;
                         rdBtn.iconElement.texture = rdBtn.iconPack[0];
                         rdBtn.iconElement.gameObject.SetActive(true);
                         rdBtn.button.onClick.AddListener(() => OpenModLink(mod.metadata.links.rdLink));

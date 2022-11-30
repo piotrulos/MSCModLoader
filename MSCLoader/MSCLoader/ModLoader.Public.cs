@@ -84,7 +84,7 @@ namespace MSCLoader
         /// Get Mod class of modID
         /// </summary>
         /// <param name="modID">Mod ID of other mod to check (Case sensitive)</param>
-        /// <param name="ignoreEnabled">Include disabled mods</param>
+        /// <param name="ignoreEnabled">Include disabled mods [yes it's DUMB proloader variable name]</param>
         /// <returns>Mod class</returns>
         public static Mod GetMod(string modID, bool ignoreEnabled = false)
         {
@@ -110,6 +110,23 @@ namespace MSCLoader
             if (m != null)
                 return true;
             return false;
+        }
+
+        /// <summary>
+        /// Check if other ModID is present
+        /// </summary>
+        /// <param name="ModID">Mod ID of other mod to check (Case sensitive)</param>
+        /// <param name="includeDisabled">Include disabled mods</param>
+        /// <returns>true if mod ID is present</returns>
+        public static bool IsModPresent(string ModID, bool includeDisabled)
+        {
+            if (includeDisabled)
+            {
+                Mod m = LoadedMods.Where(x => x.ID.Equals(ModID)).FirstOrDefault();
+                if (m != null)
+                    return true;
+            }
+            return IsModPresent(ModID);
         }
         /// <summary>
         /// [compatibility only]

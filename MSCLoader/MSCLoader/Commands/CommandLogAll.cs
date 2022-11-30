@@ -17,6 +17,11 @@ internal class CommandLogAll : ConsoleCommand
     private bool messages = false;
     private bool setup = false;
 
+    public CommandLogAll()
+    {
+        Load();
+    }
+
     public void Save()
     {
         try
