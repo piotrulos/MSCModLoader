@@ -16,16 +16,14 @@ namespace MSCLoader
         private bool wasFocused;
         private int commands, pos;
 
-        void Start()
+        void Awake()
         {
-            if (controller != null)
-            {
-                controller.logChanged += OnLogChanged;
-            }
+            controller = new ConsoleController();
+            controller.logChanged += OnLogChanged;
             UpdateLogStr(controller.log);
         }
 
-        ~ConsoleView()
+        void OnDestroy()
         {
             controller.logChanged -= OnLogChanged;
         }

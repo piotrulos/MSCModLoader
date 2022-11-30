@@ -4,7 +4,9 @@ using System;
 #endif
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -31,8 +33,8 @@ namespace MSCLoader
     /// </summary>
     public class SaveLoad
     {
-        static ES2Data saveFileData;
-
+        internal static ES2Data saveFileData;
+        internal static Dictionary<string, ES2Header> headers;
         internal static void ResetSaveFile()
         {
             saveFileData = null;
@@ -46,6 +48,9 @@ namespace MSCLoader
             if (ES2.Exists("Mods.txt"))
             {
                 saveFileData = ES2.LoadAll("Mods.txt");
+                ES2Settings settings = new ES2Settings($"Mods.txt");
+                ES2Reader es2r = new ES2Reader(settings);
+                headers = es2r.ReadAllHeaders();
                 if (!saveFileData.TagExists("MSCLoaderInternalStuff")) ConvertSeparators();
             }
             else
@@ -54,6 +59,17 @@ namespace MSCLoader
             }
         }
 
+        internal static void ResetSaveForMod(Mod mod)
+        {
+            string[] saveTags = saveFileData.GetTags().Where(x => x.StartsWith($"{mod.ID}||")).ToArray();
+            foreach (string tag in saveTags)
+            {
+                if (ES2.Exists($"Mods.txt?tag={tag}"))
+                {                    
+                    ES2.Delete($"Mods.txt?tag={tag}");
+                }
+            }
+        }
 
         //Convert separator from _ to ||
         //One time, safe to delete this in next update, since it's ea
@@ -255,6 +271,14 @@ namespace MSCLoader
                 return JsonConvert.DeserializeObject<T>(serializedData);
             return default(T);
         }
+
+        /// <summary>
+        /// Check if saved value exists in save file.
+        /// </summary>
+        /// <param name="mod">Mod Instance</param>
+        /// <param name="valueID">ID of saved value</param>
+        /// <returns>true if value exists in save file</returns>
+        public static bool ValueExists(Mod mod, string valueID) => ES2.Exists($"Mods.txt?tag={mod.ID}||{valueID}");
 
         /// <summary>
         /// Read saved value
@@ -479,6 +503,17 @@ namespace MSCLoader
         {
             string sf = $"Mods.txt?tag={mod.ID}||{valueID}";
             ES2.Save(value, sf);
+        }
+
+        /// <summary>
+        /// Delete value from Mods.txt (if exists)
+        /// </summary>
+        /// <param name="mod">Mod Instance</param>
+        /// <param name="valueID">unique ID of saved value</param>
+        public static void DeleteValue(Mod mod, string valueID)
+        {
+            if (!ES2.Exists($"Mods.txt?tag={mod.ID}||{valueID}")) return;
+            ES2.Delete($"Mods.txt?tag={mod.ID}||{valueID}");
         }
     }
 }
