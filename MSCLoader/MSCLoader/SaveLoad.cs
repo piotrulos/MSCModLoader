@@ -44,18 +44,25 @@ namespace MSCLoader
 
         internal static void LoadModsSaveData()
         {
-            saveFileData = null;
-            if (ES2.Exists("Mods.txt"))
+            try
             {
-                saveFileData = ES2.LoadAll("Mods.txt");
-                ES2Settings settings = new ES2Settings($"Mods.txt");
-                ES2Reader es2r = new ES2Reader(settings);
-                headers = es2r.ReadAllHeaders();
-                if (!saveFileData.TagExists("MSCLoaderInternalStuff")) ConvertSeparators();
+                saveFileData = null;
+                if (ES2.Exists("Mods.txt"))
+                {
+                    saveFileData = ES2.LoadAll("Mods.txt");
+                    ES2Settings settings = new ES2Settings($"Mods.txt");
+                    ES2Reader es2r = new ES2Reader(settings);
+                    headers = es2r.ReadAllHeaders();
+                    if (!saveFileData.TagExists("MSCLoaderInternalStuff")) ConvertSeparators();
+                }
+                else
+                {
+                    ES2.Save(new byte[1] { 0x02 }, "Mods.txt?tag=MSCLoaderInternalStuff");
+                }
             }
-            else
+            catch(Exception e)
             {
-                ES2.Save(new byte[1] { 0x02 }, "Mods.txt?tag=MSCLoaderInternalStuff");
+                ModUI.ShowMessage($"Fatal error:{Environment.NewLine}<color=orange>{e.Message}</color>{Environment.NewLine}{Environment.NewLine}Make sure your save folder is not read-only or is open in another application.", "Fatal Error");
             }
         }
 
