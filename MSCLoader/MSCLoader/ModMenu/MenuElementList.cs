@@ -343,10 +343,13 @@ namespace MSCLoader
         {
             if (mod.isDisabled != ischecked)
             {
-                if (mod.metadata.type == 9)
+                if (mod.metadata != null)
                 {
-                    ModUI.ShowMessage($"This mod cannot be enabled. {Environment.NewLine}Reason: <color=yellow>{mod.metadata.msg}</color>");
-                    return;
+                    if (mod.metadata.type == 9)
+                    {
+                        ModUI.ShowMessage($"This mod cannot be enabled. {Environment.NewLine}Reason: <color=yellow>{mod.metadata.msg}</color>");
+                        return;
+                    }
                 }
                 mod.isDisabled = ischecked;
                 if (ischecked)
