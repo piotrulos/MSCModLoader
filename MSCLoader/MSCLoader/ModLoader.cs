@@ -1336,7 +1336,7 @@ public partial class ModLoader : MonoBehaviour
     private void LoadDLL(string file, byte[] byteFile = null)
     {
         bool mscl = false;
-        List<string> addRef = new List<string>();
+        HashSet<string> addRef = new HashSet<string>();
         try
         {
             Assembly asm = null;
@@ -1378,7 +1378,7 @@ public partial class ModLoader : MonoBehaviour
             Type[] asmTypes = asm.GetTypes();
             for (int j = 0; j < asmTypes.Length; j++)
             {
-                if (typeof(Mod).IsAssignableFrom(asmTypes[j]))
+                if (asmTypes[j].IsSubclassOf(typeof(Mod)))
                 {
                     Mod m = (Mod)Activator.CreateInstance(asmTypes[j]);
                     if (m.ID.StartsWith("MSCLoader_")) continue;
