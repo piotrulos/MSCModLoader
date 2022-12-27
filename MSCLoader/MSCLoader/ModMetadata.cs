@@ -754,6 +754,7 @@ namespace MSCLoader
                 try
                 {
                     Mod mod = ModLoader.GetMod(mv.versions[i].mod_id, true);
+                    if (mod == null) continue;
                     mod.UpdateInfo = mv.versions[i];
                     if (mv.versions[i].mod_type == 2 || mv.versions[i].mod_type == 9)
                     {
@@ -813,6 +814,7 @@ namespace MSCLoader
                 try
                 {
                     References refs = ModLoader.Instance.ReferencesList.Where(x => x.AssemblyID.Equals(mv.versions[i].ref_id)).FirstOrDefault();
+                    if (refs == null) continue;
                     refs.UpdateInfo = mv.versions[i];
                     Version v1 = new Version(mv.versions[i].ref_version);
                     Version v2 = new Version(refs.AssemblyFileVersion);
