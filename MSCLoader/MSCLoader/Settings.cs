@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Steamworks;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -340,7 +341,7 @@ namespace MSCLoader
         /// <param name="name">Title of color picker</param>
         /// <param name="OnColorChanged">Action on color changed</param>
         /// <returns>SettingsColorPicker</returns>
-        public static SettingsColorPicker AddColorPickerRGB(Mod mod, string settingID, string name, Action OnColorChanged = null) => AddColorPickerRGB(mod, settingID, name, new Color32(0, 0, 0, 255), OnColorChanged, false);
+        public static SettingsColorPicker AddColorPickerRGB(Mod mod, string settingID, string name, Action OnColorChanged = null) => AddColorPickerRGBInternal(mod, settingID, name, new Color32(0, 0, 0, 255), OnColorChanged, false);
         /// <summary>
         /// Add Color Picker with RGBA sliders
         /// </summary>
@@ -349,7 +350,7 @@ namespace MSCLoader
         /// <param name="name">Title of color picker</param>
         /// <param name="OnColorChanged">Action on color changed</param>
         /// <returns>SettingsColorPicker</returns>  
-        public static SettingsColorPicker AddColorPickerRGBA(Mod mod, string settingID, string name, Action OnColorChanged = null) => AddColorPickerRGB(mod, settingID, name, new Color32(0, 0, 0, 255), OnColorChanged, true);
+        public static SettingsColorPicker AddColorPickerRGBA(Mod mod, string settingID, string name, Action OnColorChanged = null) => AddColorPickerRGBInternal(mod, settingID, name, new Color32(0, 0, 0, 255), OnColorChanged, true);
         /// <summary>
         /// Add Color Picker with RGB sliders
         /// </summary>
@@ -359,7 +360,7 @@ namespace MSCLoader
         /// <param name="defaultColor">Default selected color</param>
         /// <param name="OnColorChanged">Action on color changed</param>
         /// <returns>SettingsColorPicker</returns>        
-        public static SettingsColorPicker AddColorPickerRGB(Mod mod, string settingID, string name, Color32 defaultColor, Action OnColorChanged = null) => AddColorPickerRGB(mod, settingID, name, defaultColor, OnColorChanged, false);
+        public static SettingsColorPicker AddColorPickerRGB(Mod mod, string settingID, string name, Color32 defaultColor, Action OnColorChanged = null) => AddColorPickerRGBInternal(mod, settingID, name, defaultColor, OnColorChanged, false);
         /// <summary>
         /// Add Color Picker with RGBA sliders
         /// </summary>
@@ -369,21 +370,9 @@ namespace MSCLoader
         /// <param name="defaultColor">Default selected color</param>
         /// <param name="OnColorChanged">Action on color changed</param>
         /// <returns>SettingsColorPicker</returns>    
-        public static SettingsColorPicker AddColorPickerRGBA(Mod mod, string settingID, string name, Color32 defaultColor, Action OnColorChanged = null) => AddColorPickerRGB(mod, settingID, name, defaultColor, OnColorChanged, true);
+        public static SettingsColorPicker AddColorPickerRGBA(Mod mod, string settingID, string name, Color32 defaultColor, Action OnColorChanged = null) => AddColorPickerRGBInternal(mod, settingID, name, defaultColor, OnColorChanged, true);
 
-
-        /// <summary>
-        /// AddColorPickerRGB main
-        /// </summary>
-        /// <param name="mod">your mod ID</param>
-        /// <param name="settingID">unique settings ID</param>
-        /// <param name="name">Title of color picker</param>
-        /// <param name="defaultColor">Default selected color</param>
-        /// <param name="OnColorChanged">Action on color changed</param>
-        /// <param name="showAlphaSlider">Include alpha slider (or use AddColorPickerRGBA)</param>
-        /// <returns>SettingsColorPicker</returns>
-        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public static SettingsColorPicker AddColorPickerRGB(Mod mod, string settingID, string name, Color32 defaultColor, Action OnColorChanged, bool showAlphaSlider)
+        internal static SettingsColorPicker AddColorPickerRGBInternal(Mod mod, string settingID, string name, Color32 defaultColor, Action OnColorChanged, bool showAlphaSlider)
         {
             Settings set = new Settings(mod, settingID, name, $"{defaultColor.r},{defaultColor.g},{defaultColor.b},{defaultColor.a}", OnColorChanged, SettingsType.ColorPicker);
             mod.modSettingsDefault.Add(new Settings(mod, settingID, name, $"{defaultColor.r},{defaultColor.g},{defaultColor.b},{defaultColor.a}", OnColorChanged, SettingsType.ColorPicker));
@@ -397,10 +386,30 @@ namespace MSCLoader
         /// Add button that can execute function.
         /// </summary>
         /// <param name="mod">your mod</param>
+        /// <param name="name">Text on the button</param>
+        /// <param name="onClick">What to do when button is clicked</param>
+        public static void AddButton(Mod mod, string name, Action onClick) => AddButton(mod, $"{mod.ID}_btn", name, onClick, new Color32(85, 38, 0, 255), Color.white);
+
+        /// <summary>
+        /// Add button that can execute function.
+        /// </summary>
+        /// <param name="mod">your mod</param>
+        /// <param name="name">Text on the button</param>
+        /// <param name="onClick">What to do when button is clicked</param>
+        /// <param name="btnColor">Button background color</param>
+        /// <param name="buttonTextColor">Button text color</param>
+        public static void AddButton(Mod mod, string name, Action onClick, Color btnColor, Color buttonTextColor) => AddButton(mod, $"{mod.ID}_btn", name, onClick, btnColor, buttonTextColor);
+
+        /// <summary>
+        /// Add button that can execute function.
+        /// </summary>
+        /// <param name="mod">your mod</param>
         /// <param name="settingID">unique settings ID</param>
         /// <param name="name">Text on the button</param>
         /// <param name="onClick">What to do when button is clicked</param>
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public static void AddButton(Mod mod, string settingID, string name, Action onClick) => AddButton(mod, settingID, name, onClick, new Color32(85, 38, 0, 255), Color.white);
+
         /// <summary>
         /// Add button that can execute function.
         /// </summary>
@@ -410,7 +419,8 @@ namespace MSCLoader
         /// <param name="onClick">What to do when button is clicked</param>
         /// <param name="btnColor">Button background color</param>
         /// <param name="buttonTextColor">Button text color</param>
-        public static void AddButton(Mod mod, string settingID, string name, Action onClick, UnityEngine.Color btnColor, UnityEngine.Color buttonTextColor)
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public static void AddButton(Mod mod, string settingID, string name, Action onClick, Color btnColor, Color buttonTextColor)
         {
             Settings set = new Settings(mod, settingID, name, "DoAction", onClick, SettingsType.Button);
             set.Vals = new object[2] { btnColor, buttonTextColor };
@@ -427,12 +437,9 @@ namespace MSCLoader
         {
             if (sets != null)
             {
-                Settings setting = new Settings("MSCL_ResetSpecificMod", name, null);
-                setting.Mod = mod;
-                setting.Vals = new object[5];
-                setting.SettingType = SettingsType.RButton;
-                setting.Vals[0] = sets;
-                mod.modSettingsList.Add(setting);
+                Settings set = new Settings(mod, "MSCL_ResetSpecificMod", name, "DoAction", null, SettingsType.RButton);
+                set.Vals = new object[1] { sets };
+                mod.modSettingsList.Add(set);
             }
             else
             {
@@ -440,6 +447,26 @@ namespace MSCLoader
             }
         }
 
+        /// <summary>
+        /// Add Reset button to reset your mod's save file (only works when using unified save system)
+        /// </summary>
+        /// <param name="mod">Your mod instance</param>
+        public static void AddSaveResetButton(Mod mod)
+        {
+            AddButton(mod, "Reset Save File", delegate
+            {
+                if(ModLoader.CurrentScene != CurrentScene.MainMenu)
+                {
+                    ModUI.ShowMessage("You can only use this in Main Menu");
+                    return;
+                }
+                ModUI.ShowYesNoMessage("Are you sure you want to reset this mod save file?", delegate
+                {
+                    SaveLoad.ResetSaveForMod(mod);
+                    ModUI.ShowMessage("Save file for this mod has been reset");
+                });
+            });
+        }
         /// <summary>
         /// Add Header, header groups settings together
         /// </summary>

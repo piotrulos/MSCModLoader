@@ -192,7 +192,7 @@ namespace MSCLoader
         }
 
         /// <summary>
-        /// Serialize custom save class (see example)
+        /// Serialize custom save class to custom file (see example)
         /// Call Only in <see cref="Mod.OnSave"/>
         /// </summary>
         /// <typeparam name="T">Your class</typeparam>
@@ -212,7 +212,7 @@ namespace MSCLoader
         }
 
         /// <summary>
-        /// Deserialize custom save class (see example)
+        /// Deserialize custom save class to custom file (see example)
         /// </summary>
         /// <typeparam name="T">Your save class</typeparam>
         /// <param name="mod">Mod Instance</param>
@@ -232,7 +232,7 @@ namespace MSCLoader
         }
 
         /// <summary>
-        /// Serialize custom class under custom ID
+        /// Serialize custom class under custom ID in Unified save system
         /// </summary>
         /// <typeparam name="T">Your class</typeparam>
         /// <param name="mod">Mod Instance</param>
@@ -247,7 +247,7 @@ namespace MSCLoader
             string serializedData = JsonConvert.SerializeObject(saveDataClass, config);
             if (encrypt)
             {
-                byte[] bytes = Encoding.ASCII.GetBytes(serializedData);
+                byte[] bytes = Encoding.UTF8.GetBytes(serializedData);
                 WriteValue(mod, valueID, bytes);
                 return;
             }
@@ -255,7 +255,7 @@ namespace MSCLoader
         }
 
         /// <summary>
-        /// Deserialize custom class
+        /// Deserialize custom class from Unified save system
         /// </summary>
         /// <typeparam name="T">Your class</typeparam>
         /// <param name="mod">Mod Instance</param>
@@ -268,7 +268,7 @@ namespace MSCLoader
             if (encrypted)
             {
                 byte[] bytes = ReadValueAsArray<byte>(mod, valueID);
-                serializedData = Encoding.ASCII.GetString(bytes);
+                serializedData = Encoding.UTF8.GetString(bytes);
             }
             else
             {
