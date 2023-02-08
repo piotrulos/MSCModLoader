@@ -364,8 +364,11 @@ namespace MSCLoader
                     {
                         if (ModLoader.LoadedMods[i].newFormat && ModLoader.LoadedMods[i].fileName != null)
                         {
-                            ModLoader.LoadedMods[i].A_OnMenuLoad?.Invoke();
-                            ModLoader.LoadedMods[i].disableWarn = true;
+                            if (ModLoader.LoadedMods[i].A_OnMenuLoad != null)
+                            {
+                                ModLoader.LoadedMods[i].A_OnMenuLoad.Invoke();
+                                ModLoader.LoadedMods[i].disableWarn = true;
+                            }
                         }
                         else
                         {
