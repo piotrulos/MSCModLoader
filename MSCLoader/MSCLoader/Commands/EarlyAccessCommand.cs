@@ -30,7 +30,7 @@ internal class EarlyAccessCommand : ConsoleCommand
                         byte[] modFile = File.ReadAllBytes(Path.Combine(ModLoader.ModsFolder, args[1]));
                         byte[] modoutput = modFile.Cry_ScrambleByteRightEnc(System.Text.Encoding.ASCII.GetBytes(s));
                         File.WriteAllBytes(Path.Combine(output, $"{Path.GetFileNameWithoutExtension(Path.Combine(ModLoader.ModsFolder, args[1]))}.dII"), modoutput);
-                        string txt = $"Use this command to register your mod:{Environment.NewLine}{Environment.NewLine}.ea registerfile {Path.GetFileNameWithoutExtension(Path.Combine(ModLoader.ModsFolder, args[1]))} {s}{Environment.NewLine}{Environment.NewLine}If you already registered that file before and want to update key use this:{Environment.NewLine}{Environment.NewLine}.ea setkey {Path.GetFileNameWithoutExtension(Path.Combine(ModLoader.ModsFolder, args[1]))} {s}";
+                        string txt = $"Use this command to register your mod:{Environment.NewLine}{Environment.NewLine}!ea registerfile {Path.GetFileNameWithoutExtension(Path.Combine(ModLoader.ModsFolder, args[1]))} {s}{Environment.NewLine}{Environment.NewLine}If you already registered that file before and want to update key use this:{Environment.NewLine}{Environment.NewLine}!ea setkey {Path.GetFileNameWithoutExtension(Path.Combine(ModLoader.ModsFolder, args[1]))} {s}";
                         File.WriteAllText(Path.Combine(output, $"{Path.GetFileNameWithoutExtension(Path.Combine(ModLoader.ModsFolder, args[1]))}.txt"), txt);
                         ModConsole.Print($"Go to: {Path.GetFullPath(output)}");
                     }
