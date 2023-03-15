@@ -156,6 +156,10 @@ namespace VSIXProject1
         private LinkLabel linkLabel1;
         private Label label7;
         private string[] saveData =null;
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
         private void InitializeComponent()
         {
             this.doneButton = new System.Windows.Forms.Button();
@@ -202,7 +206,7 @@ namespace VSIXProject1
             // doneButton
             // 
             this.doneButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.doneButton.Location = new System.Drawing.Point(237, 391);
+            this.doneButton.Location = new System.Drawing.Point(278, 400);
             this.doneButton.Name = "doneButton";
             this.doneButton.Size = new System.Drawing.Size(75, 21);
             this.doneButton.TabIndex = 0;
@@ -214,7 +218,7 @@ namespace VSIXProject1
             this.managedPathBox.Location = new System.Drawing.Point(12, 64);
             this.managedPathBox.Name = "managedPathBox";
             this.managedPathBox.ReadOnly = true;
-            this.managedPathBox.Size = new System.Drawing.Size(219, 20);
+            this.managedPathBox.Size = new System.Drawing.Size(249, 20);
             this.managedPathBox.TabIndex = 1;
             // 
             // label1
@@ -230,9 +234,11 @@ namespace VSIXProject1
             // 
             // browseManaged
             // 
-            this.browseManaged.Location = new System.Drawing.Point(238, 64);
+            this.browseManaged.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.browseManaged.Location = new System.Drawing.Point(267, 64);
             this.browseManaged.Name = "browseManaged";
-            this.browseManaged.Size = new System.Drawing.Size(75, 20);
+            this.browseManaged.Size = new System.Drawing.Size(87, 20);
             this.browseManaged.TabIndex = 3;
             this.browseManaged.Text = "Browse...";
             this.browseManaged.Click += new System.EventHandler(this.browseManaged_Click);
@@ -269,16 +275,18 @@ namespace VSIXProject1
             // 
             // versionBox
             // 
-            this.versionBox.Location = new System.Drawing.Point(237, 113);
+            this.versionBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.versionBox.Location = new System.Drawing.Point(267, 113);
             this.versionBox.Name = "versionBox";
-            this.versionBox.Size = new System.Drawing.Size(75, 20);
+            this.versionBox.Size = new System.Drawing.Size(86, 20);
             this.versionBox.TabIndex = 7;
             this.versionBox.Text = "1.0";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(234, 97);
+            this.label4.Location = new System.Drawing.Point(264, 97);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(45, 13);
             this.label4.TabIndex = 8;
@@ -287,7 +295,7 @@ namespace VSIXProject1
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(12, 368);
+            this.label5.Location = new System.Drawing.Point(9, 368);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(201, 13);
             this.label5.TabIndex = 9;
@@ -297,7 +305,7 @@ namespace VSIXProject1
             // 
             this.authorNameBox.Location = new System.Drawing.Point(145, 113);
             this.authorNameBox.Name = "authorNameBox";
-            this.authorNameBox.Size = new System.Drawing.Size(86, 20);
+            this.authorNameBox.Size = new System.Drawing.Size(116, 20);
             this.authorNameBox.TabIndex = 10;
             this.authorNameBox.Text = "Your name";
             // 
@@ -312,21 +320,24 @@ namespace VSIXProject1
             // 
             // groupBox1
             // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.addAssCSfDll);
             this.groupBox1.Controls.Add(this.addHarmonyDll);
             this.groupBox1.Controls.Add(this.addcInputDll);
             this.groupBox1.Controls.Add(this.addUIDll);
             this.groupBox1.Controls.Add(this.addAssCSDll);
             this.groupBox1.Controls.Add(this.addPlaymakerDll);
-            this.groupBox1.Location = new System.Drawing.Point(145, 139);
+            this.groupBox1.Location = new System.Drawing.Point(166, 139);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(167, 155);
+            this.groupBox1.Size = new System.Drawing.Size(187, 155);
             this.groupBox1.TabIndex = 12;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Add additional references";
             // 
             // addAssCSfDll
             // 
+            this.addAssCSfDll.AutoEllipsis = true;
             this.addAssCSfDll.AutoSize = true;
             this.addAssCSfDll.Location = new System.Drawing.Point(6, 134);
             this.addAssCSfDll.Name = "addAssCSfDll";
@@ -337,6 +348,7 @@ namespace VSIXProject1
             // 
             // addHarmonyDll
             // 
+            this.addHarmonyDll.AutoEllipsis = true;
             this.addHarmonyDll.AutoSize = true;
             this.addHarmonyDll.Location = new System.Drawing.Point(6, 111);
             this.addHarmonyDll.Name = "addHarmonyDll";
@@ -347,6 +359,7 @@ namespace VSIXProject1
             // 
             // addcInputDll
             // 
+            this.addcInputDll.AutoEllipsis = true;
             this.addcInputDll.AutoSize = true;
             this.addcInputDll.Location = new System.Drawing.Point(6, 65);
             this.addcInputDll.Name = "addcInputDll";
@@ -357,6 +370,7 @@ namespace VSIXProject1
             // 
             // addUIDll
             // 
+            this.addUIDll.AutoEllipsis = true;
             this.addUIDll.AutoSize = true;
             this.addUIDll.Location = new System.Drawing.Point(6, 88);
             this.addUIDll.Name = "addUIDll";
@@ -367,6 +381,7 @@ namespace VSIXProject1
             // 
             // addAssCSDll
             // 
+            this.addAssCSDll.AutoEllipsis = true;
             this.addAssCSDll.AutoSize = true;
             this.addAssCSDll.Location = new System.Drawing.Point(6, 42);
             this.addAssCSDll.Name = "addAssCSDll";
@@ -377,6 +392,7 @@ namespace VSIXProject1
             // 
             // addPlaymakerDll
             // 
+            this.addPlaymakerDll.AutoEllipsis = true;
             this.addPlaymakerDll.AutoSize = true;
             this.addPlaymakerDll.Location = new System.Drawing.Point(6, 19);
             this.addPlaymakerDll.Name = "addPlaymakerDll";
@@ -398,13 +414,14 @@ namespace VSIXProject1
             this.groupBox2.Controls.Add(this.setupOnLoad);
             this.groupBox2.Location = new System.Drawing.Point(12, 139);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(127, 226);
+            this.groupBox2.Size = new System.Drawing.Size(148, 226);
             this.groupBox2.TabIndex = 13;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Setup for me";
             // 
             // setupOnGUI
             // 
+            this.setupOnGUI.AutoEllipsis = true;
             this.setupOnGUI.AutoSize = true;
             this.setupOnGUI.Location = new System.Drawing.Point(6, 157);
             this.setupOnGUI.Name = "setupOnGUI";
@@ -415,6 +432,7 @@ namespace VSIXProject1
             // 
             // setupOnPreLoad
             // 
+            this.setupOnPreLoad.AutoEllipsis = true;
             this.setupOnPreLoad.AutoSize = true;
             this.setupOnPreLoad.Location = new System.Drawing.Point(6, 65);
             this.setupOnPreLoad.Name = "setupOnPreLoad";
@@ -425,6 +443,7 @@ namespace VSIXProject1
             // 
             // setupPostLoad
             // 
+            this.setupPostLoad.AutoEllipsis = true;
             this.setupPostLoad.AutoSize = true;
             this.setupPostLoad.Location = new System.Drawing.Point(6, 111);
             this.setupPostLoad.Name = "setupPostLoad";
@@ -435,6 +454,7 @@ namespace VSIXProject1
             // 
             // setupFixedUpdate
             // 
+            this.setupFixedUpdate.AutoEllipsis = true;
             this.setupFixedUpdate.AutoSize = true;
             this.setupFixedUpdate.Location = new System.Drawing.Point(6, 203);
             this.setupFixedUpdate.Name = "setupFixedUpdate";
@@ -445,6 +465,7 @@ namespace VSIXProject1
             // 
             // setupUpdate
             // 
+            this.setupUpdate.AutoEllipsis = true;
             this.setupUpdate.AutoSize = true;
             this.setupUpdate.Location = new System.Drawing.Point(6, 180);
             this.setupUpdate.Name = "setupUpdate";
@@ -455,6 +476,7 @@ namespace VSIXProject1
             // 
             // setupOnNewGame
             // 
+            this.setupOnNewGame.AutoEllipsis = true;
             this.setupOnNewGame.AutoSize = true;
             this.setupOnNewGame.Location = new System.Drawing.Point(6, 42);
             this.setupOnNewGame.Name = "setupOnNewGame";
@@ -465,6 +487,7 @@ namespace VSIXProject1
             // 
             // setupOnSave
             // 
+            this.setupOnSave.AutoEllipsis = true;
             this.setupOnSave.AutoSize = true;
             this.setupOnSave.Location = new System.Drawing.Point(6, 134);
             this.setupOnSave.Name = "setupOnSave";
@@ -475,6 +498,7 @@ namespace VSIXProject1
             // 
             // setupOnMenuLoad
             // 
+            this.setupOnMenuLoad.AutoEllipsis = true;
             this.setupOnMenuLoad.AutoSize = true;
             this.setupOnMenuLoad.Location = new System.Drawing.Point(6, 19);
             this.setupOnMenuLoad.Name = "setupOnMenuLoad";
@@ -485,6 +509,7 @@ namespace VSIXProject1
             // 
             // setupOnLoad
             // 
+            this.setupOnLoad.AutoEllipsis = true;
             this.setupOnLoad.AutoSize = true;
             this.setupOnLoad.Checked = true;
             this.setupOnLoad.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -497,12 +522,14 @@ namespace VSIXProject1
             // 
             // groupBox3
             // 
+            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox3.Controls.Add(this.linkLabel3);
             this.groupBox3.Controls.Add(this.linkLabel2);
             this.groupBox3.Controls.Add(this.linkLabel1);
-            this.groupBox3.Location = new System.Drawing.Point(145, 296);
+            this.groupBox3.Location = new System.Drawing.Point(166, 296);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(167, 69);
+            this.groupBox3.Size = new System.Drawing.Size(187, 69);
             this.groupBox3.TabIndex = 14;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Help + Documentation";
@@ -516,7 +543,6 @@ namespace VSIXProject1
             this.linkLabel3.TabIndex = 2;
             this.linkLabel3.TabStop = true;
             this.linkLabel3.Text = "Order of Execution";
-            this.linkLabel3.LinkClicked += LinkLabel3_LinkClicked;
             // 
             // linkLabel2
             // 
@@ -527,7 +553,6 @@ namespace VSIXProject1
             this.linkLabel2.TabIndex = 1;
             this.linkLabel2.TabStop = true;
             this.linkLabel2.Text = "MSCLoader documentation";
-            this.linkLabel2.LinkClicked += LinkLabel2_LinkClicked;
             // 
             // linkLabel1
             // 
@@ -538,10 +563,10 @@ namespace VSIXProject1
             this.linkLabel1.TabIndex = 0;
             this.linkLabel1.TabStop = true;
             this.linkLabel1.Text = "Template explained";
-            this.linkLabel1.LinkClicked += LinkLabel1_LinkClicked;
             // 
             // comboBox1
             // 
+            this.comboBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.Enabled = false;
             this.comboBox1.FormattingEnabled = true;
@@ -549,15 +574,16 @@ namespace VSIXProject1
             "My Summer Car",
             "My Winter Car",
             "Both (Universal)"});
-            this.comboBox1.Location = new System.Drawing.Point(65, 391);
+            this.comboBox1.Location = new System.Drawing.Point(62, 401);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(128, 21);
             this.comboBox1.TabIndex = 0;
             // 
             // label7
             // 
+            this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(15, 395);
+            this.label7.Location = new System.Drawing.Point(12, 404);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(44, 13);
             this.label7.TabIndex = 15;
@@ -567,7 +593,9 @@ namespace VSIXProject1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(324, 424);
+            this.AutoSize = true;
+            this.AutoSizeMode = AutoSizeMode.GrowOnly;
+            this.ClientSize = new System.Drawing.Size(365, 433);
             this.ControlBox = false;
             this.Controls.Add(this.label7);
             this.Controls.Add(this.comboBox1);

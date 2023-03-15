@@ -127,4 +127,30 @@ public partial class Mod
     /// </summary>
     public virtual void SecondPassOnLoad() { PostLoad(); }
 
+    /// <summary>
+    /// Called once when mod has been enabled
+    /// </summary>
+    public virtual void OnModEnabled() { }
+
+    /// <summary>
+    /// Called once when mod has been disabled
+    /// </summary>
+    public virtual void OnModDisabled() { }
+
+    /// <summary>
+    /// All settings should be created here.
+    /// </summary>
+    public virtual void ModSettings() { }
+
+    /// <summary>
+    /// Called after saved settings habe been loaded from file.
+    /// </summary>
+    public virtual void ModSettingsLoaded() { }
+
+    /// <summary>
+    /// pro BS
+    /// </summary>
+#pragma warning disable CS0618 // Type or member is obsolete
+    public Mod() => modSettings = new ModSettings(this);
+#pragma warning restore CS0618 // Type or member is obsolete
 }

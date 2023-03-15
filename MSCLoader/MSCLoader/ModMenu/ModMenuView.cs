@@ -395,7 +395,15 @@ namespace MSCLoader
                 {
                     ModMenu.ResetSettings(mod);
                     universalView.FillSettings(mod);
-                    mod.ModSettingsLoaded();
+                    if(mod.newSettingsFormat)
+                    {
+                        if(mod.A_ModSettingsLoaded != null)
+                        {
+                            mod.A_ModSettingsLoaded.Invoke();
+                        }
+                    }
+                    else
+                        mod.ModSettingsLoaded();
                 });
             }
         }
@@ -531,7 +539,15 @@ namespace MSCLoader
                     {
                         ModMenu.ResetSpecificSettings(setting.Mod, (Settings[])setting.Vals[0]);
                         universalView.FillSettings(setting.Mod);
-                        setting.Mod.ModSettingsLoaded();
+                        if (setting.Mod.newSettingsFormat)
+                        {
+                            if (setting.Mod.A_ModSettingsLoaded != null)
+                            {
+                                setting.Mod.A_ModSettingsLoaded.Invoke();
+                            }
+                        }
+                        else
+                            setting.Mod.ModSettingsLoaded();
                     });
                     rbtn.transform.SetParent(listView, false);
                     break;

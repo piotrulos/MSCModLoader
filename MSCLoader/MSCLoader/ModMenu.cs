@@ -7,7 +7,6 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Linq;
-using UnityEngine;
 
 namespace MSCLoader
 {
@@ -18,23 +17,24 @@ namespace MSCLoader
         public override string Version => ModLoader.MSCLoader_Ver;
         public override string Author => "piotrulos";
 
+        internal GameObject UI;
+        internal static byte cfmu_set = 0;
+        internal static ModMenu instance;
         internal static SettingsCheckBox dm_disabler, dm_logST, dm_operr, dm_warn, dm_pcon;
-        internal static SettingsCheckBox expWarning, modPath, forceMenuVsync, openLinksOverlay, skipGameIntro, skipConfigScreen, syncLoad;
+        internal static SettingsCheckBox expWarning, modPath, forceMenuVsync, openLinksOverlay, skipGameIntro, skipConfigScreen;
 
         private static SettingsCheckBoxGroup checkLaunch, checkDaily, checkWeekly;
-        System.Diagnostics.FileVersionInfo coreVer;
+        private System.Diagnostics.FileVersionInfo coreVer;
 
-        public GameObject UI;
-        internal static byte cfmu_set = 0;
-
-        internal static ModMenu instance;
-   #if !Mini
+#if !Mini
         public override void ModSetup()
         {
             SetupFunction(Setup.OnMenuLoad, Mod_OnMenuLoad);
+            SetupFunction(Setup.ModSettings, Mod_Settings);
+            SetupFunction(Setup.ModSettingsLoaded, Mod_SettingsLoaded);
         }
 
-        public override void ModSettings()
+        private void Mod_Settings()
         {
             instance = this;
             if (ModLoader.devMode)
@@ -55,8 +55,6 @@ namespace MSCLoader
             skipGameIntro = Settings.AddCheckBox(this, "MSCLoader_skipGameIntro", "Skip game Splash Screen", false, SkipIntroSet);
             skipConfigScreen = Settings.AddCheckBox(this, "MSCLoader_skipConfigScreen", "Skip Configuration Screen", false, SkipConfigScreen);
 
-            Settings.AddText(this, $"If for whatever reason you want to save half a second of mods loading time, enable below option.{Environment.NewLine}(Loading progress <color=yellow>cannot</color> be displayed in synchronous mode, and game may look frozen during loading)");
-            syncLoad = Settings.AddCheckBox(this, "MSCLoader_syncLoad", "Load mods synchronously", false);
             Settings.AddHeader(this, "Update Settings");
             Settings.AddText(this, "How often MSCLoader should check for Mod/References updates.");
             checkLaunch = Settings.AddCheckBoxGroup(this, "MSCLoader_checkOnLaunch", "Every launch", true, "cfmu_set");
@@ -83,7 +81,7 @@ namespace MSCLoader
 
         }
      
-        public override void ModSettingsLoaded()
+        private void Mod_SettingsLoaded()
         {
 
             IniData ini = new FileIniDataParser().ReadFile("doorstop_config.ini");
@@ -402,7 +400,17 @@ namespace MSCLoader
                 try
                 {
                     if (!ModLoader.LoadedMods[i].isDisabled)
-                        ModLoader.LoadedMods[i].ModSettingsLoaded();
+                    {
+                        if (ModLoader.LoadedMods[i].newSettingsFormat)
+                        {
+                            if (ModLoader.LoadedMods[i].A_ModSettingsLoaded != null)
+                            {
+                                ModLoader.LoadedMods[i].A_ModSettingsLoaded.Invoke();
+                            }
+                        }
+                        else
+                            ModLoader.LoadedMods[i].ModSettingsLoaded();
+                    }
                 }
                 catch (Exception e)
                 {

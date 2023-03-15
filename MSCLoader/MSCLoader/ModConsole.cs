@@ -17,21 +17,23 @@ namespace MSCLoader
         public override string Name => "[INTERNAL] Console";
         public override string Version => ModLoader.MSCLoader_Ver;
         public override string Author => "piotrulos";
-        public static bool IsOpen { get; private set; }
-        
-        public static ConsoleView console;
-        private GameObject UI;
+       
+        internal static bool IsOpen;
+        internal static ConsoleView console;
+        internal static SettingsCheckBox typing;
+        internal static SettingsSliderInt ConsoleFontSize;
 
+        private GameObject UI;
         private Keybind consoleKey;
-        public static SettingsCheckBox typing;
-        static SettingsSliderInt ConsoleFontSize;
         public override void ModSetup()
         {
             SetupFunction(Setup.OnMenuLoad, Mod_OnMenuLoad);
             SetupFunction(Setup.Update, Mod_Update);
+            SetupFunction(Setup.ModSettings, Mod_Settings);
+            SetupFunction(Setup.ModSettingsLoaded, Mod_SettingsLoaded);
         }
 
-        public override void ModSettings()
+        private void Mod_Settings()
         {
             consoleKey = Keybind.Add(this, "Open", "<color=lime>Open console key combination</color>", KeyCode.BackQuote);
             Settings.AddHeader(this, "MSCLoader info", Color.black);
@@ -63,7 +65,7 @@ namespace MSCLoader
             ConsoleFontSize = Settings.AddSlider(this, "MSCLoader_ConsoleFontSize", "Change console font size", 10, 20, 12, ChangeFontSize);
         }
 
-        public override void ModSettingsLoaded()
+        private void Mod_SettingsLoaded()
         {
             ChangeFontSize();
         }

@@ -41,6 +41,8 @@ public partial class ModLoader : MonoBehaviour
 
     internal static bool devMode = false;
     internal static string GetMetadataFolder(string fn) => Path.Combine(MetadataFolder, fn);
+   
+    private bool syncLoad = false;
 
     //Constructor version number
     static ModLoader()
@@ -150,7 +152,7 @@ public partial class ModLoader : MonoBehaviour
                     QualitySettings.vSyncCount = 0;
 
                 menuInfoAnim.Play("fade_out");
-                StartLoadingMods(!ModMenu.syncLoad.GetValue());
+                StartLoadingMods(!syncLoad);
                 ModMenu.ModMenuHandle();
                 break;
             case "Ending":
@@ -179,6 +181,7 @@ public partial class ModLoader : MonoBehaviour
         Console.WriteLine("Launch arguments:");
         Console.WriteLine(string.Join(" ", launchArgs));
         if (launchArgs.Contains("-mscloader-devmode")) devMode = true;
+        if (launchArgs.Contains("-mscloader-oldload")) syncLoad = true;
         //Set config and Assets folder in selected mods folder
         ConfigFolder = Path.Combine(ModsFolder, "Config");
         SettingsFolder = Path.Combine(ConfigFolder, "Mod Settings");
@@ -253,9 +256,9 @@ public partial class ModLoader : MonoBehaviour
             return;
         }
         LoadMod(new ModConsole(), MSCLoader_Ver);
-        LoadedMods[0].ModSettings();
+        LoadedMods[0].A_ModSettings.Invoke();
         LoadMod(new ModMenu(), MSCLoader_Ver);
-        LoadedMods[1].ModSettings();
+        LoadedMods[1].A_ModSettings.Invoke();
         ModMenu.LoadSettings();
         if (experimental)
             ModConsole.Print($"<color=lime>ModLoader <b><color=aqua>v{MSCLoader_Ver}</color></b> ready</color> [<color=magenta>Experimental</color> <color=lime>build {currentBuild}</color>]");
@@ -1316,7 +1319,15 @@ public partial class ModLoader : MonoBehaviour
                 continue;
             try
             {
-                LoadedMods[i].ModSettings();
+                if (LoadedMods[i].newSettingsFormat)
+                {
+                    if (LoadedMods[i].A_ModSettings != null)
+                    {
+                        LoadedMods[i].A_ModSettings.Invoke();
+                    }
+                }
+                else
+                    LoadedMods[i].ModSettings();
             }
             catch (Exception e)
             {

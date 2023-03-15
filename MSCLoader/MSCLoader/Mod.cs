@@ -43,30 +43,6 @@ public abstract partial class Mod
     /// </summary>
     public virtual void ModSetup() { }
 
-    /// <summary>
-    /// All settings should be created here.
-    /// </summary>
-    public virtual void ModSettings() { }
 
-    /// <summary>
-    /// Called after saved settings is loaded from file.
-    /// </summary>
-    public virtual void ModSettingsLoaded() { }
 
-    /// <summary>
-    /// Called once when mod has been enabled
-    /// </summary>
-    public virtual void OnModEnabled() { }
-
-    /// <summary>
-    /// Called once when mod has been disabled
-    /// </summary>
-    public virtual void OnModDisabled() { }
-
-    /// <summary>
-    /// 
-    /// </summary>
-#pragma warning disable CS0618 // Type or member is obsolete
-    public Mod() => modSettings = new ModSettings(this);
-#pragma warning restore CS0618 // Type or member is obsolete
 }
