@@ -39,38 +39,46 @@
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
       <HintPath>$managedPath$\UnityEngine.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="MSCLoader">
       <HintPath>$managedPath$\MSCLoader.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     $if$ ($assCS$ == true)
     <Reference Include="Assembly-CSharp">
       <HintPath>$managedPath$\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     $endif$ 
     $if$ ($assCSf$ == true)
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>$managedPath$\Assembly-CSharp-firstpass.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     $endif$
     $if$ ($asscInput$ == true)
     <Reference Include="cInput">
       <HintPath>$managedPath$\cInput.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     $endif$ 
     $if$ ($assPM$ == true)
     <Reference Include="PlayMaker">
       <HintPath>$managedPath$\PlayMaker.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     $endif$ 
     $if$ ($assUI$ == true)
     <Reference Include="UnityEngine.UI">
       <HintPath>$managedPath$\UnityEngine.UI.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     $endif$ 
     $if$ ($assHarmony$ == true)
     <Reference Include="0Harmony">
       <HintPath>$managedPath$\0Harmony.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     $endif$
   </ItemGroup>

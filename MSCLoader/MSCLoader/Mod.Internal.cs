@@ -45,7 +45,23 @@ public partial class Mod
         /// <summary>
         /// FixedUpdate - Works same way as unity FixedUpdate
         /// </summary>
-        FixedUpdate
+        FixedUpdate,
+        /// <summary>
+        /// OnModEnabled - Called once when mod has been enabled
+        /// </summary>
+        OnModEnabled,
+        /// <summary>
+        /// OnModDisabled - Called once when mod has been disabled
+        /// </summary>
+        OnModDisabled,
+        /// <summary>
+        /// ModSettingsLoaded - Called after saved settings habe been loaded from file.
+        /// </summary>
+        ModSettingsLoaded,
+        /// <summary>
+        /// ModSettings - All settings and Keybinds should be created here.
+        /// </summary>
+        ModSettings
     }
 
     /// <summary>
@@ -54,26 +70,31 @@ public partial class Mod
     public bool isDisabled { get; internal set; }
     internal bool hasUpdate = false;
     internal bool newFormat = false;
+    internal bool newEnDisFormat = false;
+    internal bool newSettingsFormat = false;
     internal bool menuCallbacks = false;
     internal bool hideResetAllSettings = false;
     internal bool disableWarn = false;
     internal int modErrors = 0;
     internal string compiledVersion;
     internal string fileName;
-    internal ModsManifest metadata;    //Local metadata
-                                       //     internal ModsManifest RemMetadata; //Remote metadata
-    internal MetaVersion UpdateInfo; //Remote metadata
+    internal ModsManifest metadata;         //Local metadata
+    internal MetaVersion UpdateInfo;        //Update info
 
     //Action list
-    internal Action A_OnMenuLoad;  //Load in main menu
-    internal Action A_OnNewGame;   //When New Game is started
-    internal Action A_PreLoad;     //Phase 1 (mod loading)
-    internal Action A_OnLoad;      //Phase 2 (mod loading)  
-    internal Action A_PostLoad;    //Phase 3 (mod loading)
-    internal Action A_OnSave;      //When game saves
-    internal Action A_OnGUI;       //Calls unity OnGUI
-    internal Action A_Update;      //Calls unity Update
-    internal Action A_FixedUpdate; //Calls unity FixedUpdate
+    internal Action A_OnMenuLoad;           //Load in main menu
+    internal Action A_OnNewGame;            //When New Game is started
+    internal Action A_PreLoad;              //Phase 1 (mod loading)
+    internal Action A_OnLoad;               //Phase 2 (mod loading)  
+    internal Action A_PostLoad;             //Phase 3 (mod loading)
+    internal Action A_OnSave;               //When game saves
+    internal Action A_OnGUI;                //Calls unity OnGUI
+    internal Action A_Update;               //Calls unity Update
+    internal Action A_FixedUpdate;          //Calls unity FixedUpdate
+    internal Action A_OnModEnabled;         //When mod has been enabled
+    internal Action A_OnModDisabled;        //When mod has been disabled
+    internal Action A_ModSettings;          //Create mod settings from here.
+    internal Action A_ModSettingsLoaded;    //When mod settings have been loaded from file
 
     internal List<Settings> modSettingsList = new List<Settings>();
     internal List<Settings> modSettingsDefault = new List<Settings>();
@@ -146,8 +167,36 @@ public partial class Mod
                 else
                     ModConsole.Error($"SetupMod() error for <b>{ID}</b>. You already created <b>FixedUpdate</b> function type.");
                 break;
+            case Setup.OnModEnabled:
+                newEnDisFormat = true;
+                if (A_OnModEnabled == null)
+                    A_OnModEnabled = function;
+                else
+                    ModConsole.Error($"SetupMod() error for <b>{ID}</b>. You already created <b>OnModEnabled</b> function type.");
+                break;
+            case Setup.OnModDisabled:
+                newEnDisFormat = true;
+                if (A_OnModDisabled == null)
+                    A_OnModDisabled = function;
+                else
+                    ModConsole.Error($"SetupMod() error for <b>{ID}</b>. You already created <b>OnModDisabled</b> function type.");
+                break;
+            case Setup.ModSettingsLoaded:
+                newSettingsFormat = true;
+                if (A_ModSettingsLoaded == null)
+                    A_ModSettingsLoaded = function;
+                else
+                    ModConsole.Error($"SetupMod() error for <b>{ID}</b>. You already created <b>ModSettingsLoaded</b> function type.");
+                break;
+            case Setup.ModSettings:
+                newSettingsFormat = true;
+                if (A_ModSettings == null)
+                    A_ModSettings = function;
+                else
+                    ModConsole.Error($"SetupMod() error for <b>{ID}</b>. You already created <b>ModSettings</b> function type.");
+                break;
             default:
-                ModConsole.Print("The hell happened here? That's impossible.");
+                ModConsole.Print("The hell happened here? That's impossible. (Don't bitwise Setup enum)");
                 break;
         }
 

@@ -351,12 +351,24 @@ namespace MSCLoader
                         return;
                     }
                 }
+                bool onEnableExist = false;
                 mod.isDisabled = ischecked;
                 if (ischecked)
                 {
                     try
                     {
-                        mod.OnModDisabled();
+                        if (mod.newEnDisFormat)
+                        {
+                            if (mod.A_OnModDisabled != null)
+                            {
+                                mod.A_OnModDisabled.Invoke();
+                                mod.disableWarn = false;
+                            }
+                        }
+                        else
+                        {
+                            mod.OnModDisabled();
+                        }
                     }
                     catch (Exception e)
                     {
@@ -378,7 +390,18 @@ namespace MSCLoader
                 {
                     try
                     {
-                        mod.OnModEnabled();
+                        if (mod.newEnDisFormat)
+                        {
+                            if (mod.A_OnModEnabled != null)
+                            {
+                                mod.A_OnModEnabled.Invoke();
+                                onEnableExist = true;
+                            }
+                        }
+                        else
+                        {
+                            mod.OnModEnabled();
+                        }
                     }
                     catch (Exception e)
                     {
@@ -387,7 +410,10 @@ namespace MSCLoader
                     Title.text = mod.Name;
                     WarningText.text = string.Empty;
                     WarningText.gameObject.SetActive(false);
-                    ModConsole.Print($"Mod <b><color=orange>{mod.Name}</color></b> has been <color=green><b>Enabled</b></color>, restart may be required.");
+                    if (onEnableExist)
+                        ModConsole.Print($"Mod <b><color=orange>{mod.Name}</color></b> has been <color=green><b>Enabled</b></color>");
+                    else
+                        ModConsole.Print($"Mod <b><color=orange>{mod.Name}</color></b> has been <color=green><b>Enabled</b></color>, restart may be required.");
                 }
                 ModMenu.SaveSettings(mod);
             }

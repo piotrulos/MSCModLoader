@@ -1,13 +1,16 @@
 ﻿<?xml version="1.0" ?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="MSCLoaderTemplates.Piotrulos.40e0e374-6a16-47ae-87f8-009138faa324" Version="1.2" Language="en-US" Publisher="Piotrulos" />
+        <Identity Id="MSCLoaderTemplates.Piotrulos.40e0e374-6a16-47ae-87f8-009138faa324" Version="1.2.10" Language="en-US" Publisher="Piotrulos" />
         <DisplayName>MSCLoader Templates</DisplayName>
-        <Description xml:space="preserve">MSCLoader Template for VS 2019</Description>
+        <Description xml:space="preserve">MSCLoader Template for VS 2022</Description>
         <MoreInfo>https://github.com/piotrulos/MSCModLoader/wiki/How-to-use-templates</MoreInfo>
+        <Icon>mscpatchericon.ico</Icon>
     </Metadata>
     <Installation>
-        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[16.0,17.0)" />
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0,18.0)">
+            <ProductArchitecture>amd64</ProductArchitecture>
+        </InstallationTarget>
     </Installation>
     <Dependencies>
     </Dependencies>
@@ -18,6 +21,7 @@
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" AssemblyName="|%CurrentProject%;AssemblyName|" />
     </Assets>
     <Prerequisites>
-        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[16.0,17.0)" DisplayName="Visual Studio core editor" />
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,18.0)" DisplayName="Visual Studio core editor" />
+        <Prerequisite Id="Microsoft.Net.Component.3.5.DeveloperTools" Version="[17.0,18.0)" DisplayName=".NET Framework 3.5 development tools" />
     </Prerequisites>
 </PackageManifest>

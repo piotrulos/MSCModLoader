@@ -22,9 +22,10 @@ namespace $safeprojectname$
             SetupFunction(Setup.OnGUI, Mod_OnGUI);$endif$ $if$ ($setUpdate$ == true)
             SetupFunction(Setup.Update, Mod_Update);$endif$ $if$ ($setFixedUpdate$ == true)
             SetupFunction(Setup.FixedUpdate, Mod_FixedUpdate);$endif$
+            SetupFunction(Setup.ModSettings, Mod_Settings);
         }
 
-        public override void ModSettings()
+        private void Mod_Settings()
         {
             // All settings should be created here. 
             // DO NOT put anything else here that settings or keybinds
