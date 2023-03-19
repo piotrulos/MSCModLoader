@@ -47,25 +47,25 @@ namespace MSCLoader
                 dm_pcon = Settings.AddCheckBox(this, "MSCLoader_dm_pcon", "Persistent console (sometimes may break font)", false);
             }
             Settings.AddHeader(this, "Basic Settings");
-            expWarning = Settings.AddCheckBox(this, "MSCLoader_expWarning", "Show experimental warning (experimental on steam)", true);
+            expWarning = Settings.AddCheckBox(this, "MSCLoader_expWarning", "Show experimental warning (experimental branch on Steam)", true);
             modPath = Settings.AddCheckBox(this, "MSCLoader_modPath", "Show mods folder (top left corner)", true, ModLoader.MainMenuPath);
             forceMenuVsync = Settings.AddCheckBox(this, "MSCLoader_forceMenuVsync", "60 FPS limit in Main Menu", true, VSyncSwitchCheckbox);
-            openLinksOverlay = Settings.AddCheckBox(this, "MSCLoader_openLinksOverlay", "Open URLs in steam overlay", true);
+            openLinksOverlay = Settings.AddCheckBox(this, "MSCLoader_openLinksOverlay", "Open URLs in Steam overlay", true);
             Settings.AddText(this, "Skip stuff:");
-            skipGameIntro = Settings.AddCheckBox(this, "MSCLoader_skipGameIntro", "Skip game Splash Screen", false, SkipIntroSet);
-            skipConfigScreen = Settings.AddCheckBox(this, "MSCLoader_skipConfigScreen", "Skip Configuration Screen", false, SkipConfigScreen);
+            skipGameIntro = Settings.AddCheckBox(this, "MSCLoader_skipGameIntro", "Skip game splash screen", false, SkipIntroSet);
+            skipConfigScreen = Settings.AddCheckBox(this, "MSCLoader_skipConfigScreen", "Skip configuration screen", false, SkipConfigScreen);
 
             Settings.AddHeader(this, "Update Settings");
-            Settings.AddText(this, "How often MSCLoader should check for Mod/References updates.");
+            Settings.AddText(this, "How often MSCLoader checks for Mod/References updates.");
             checkLaunch = Settings.AddCheckBoxGroup(this, "MSCLoader_checkOnLaunch", "Every launch", true, "cfmu_set");
             checkDaily = Settings.AddCheckBoxGroup(this, "MSCLoader_checkEveryDay", "Daily", false, "cfmu_set");
             checkWeekly = Settings.AddCheckBoxGroup(this, "MSCLoader_checkEveryWeek", "Weekly", false, "cfmu_set");
 
             Settings.AddHeader(this, "MSCLoader Credits",Color.black);
-            Settings.AddText(this, "All source code contributors and used libraries are listed on Github");
-            Settings.AddText(this, "Outside Github contributions:");
+            Settings.AddText(this, "All source code contributors and used libraries are listed on GitHub");
+            Settings.AddText(this, "Non-GitHub contributions:");
             Settings.AddText(this, "<color=aqua>Horsey4</color> - Early Access feature backend code.");
-            Settings.AddText(this, "<color=aqua>BrennFuchS</color> - New default mod icon and expanded Playmaker extensions.");
+            Settings.AddText(this, "<color=aqua>BrennFuchS</color> - New default mod icon and expanded PlayMaker extensions.");
 
             Settings.AddHeader(this, "Detailed Version Information", new Color32(0, 128, 0, 255));
             coreVer = System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "MSCLoader.Preloader.dll"));
@@ -128,7 +128,7 @@ namespace MSCLoader
         {
             if (coreVer.FilePrivatePart < 263)
             {
-                ModUI.ShowMessage("To use <color=yellow>Skip Configuration Screen</color> you need to update core module of MSCLoader, download latest version and launch <color=aqua>MSCPatcher.exe</color> to update", "Outdated module");
+                ModUI.ShowMessage("To use <color=yellow>Skip Configuration Screen</color> you need to update the core module of MSCLoader, download the latest version and launch <color=aqua>MSCPatcher.exe</color> to update", "Outdated module");
                 return;
             }
             FileIniDataParser parser = new FileIniDataParser();
@@ -156,7 +156,7 @@ namespace MSCLoader
             }
             catch(Exception e)
             {
-                ModUI.ShowMessage($"Fatal error:{Environment.NewLine}<color=orange>{e.Message}</color>{Environment.NewLine}Please install modloader correctly.", "Fatal Error");
+                ModUI.ShowMessage($"Fatal error:{Environment.NewLine}<color=orange>{e.Message}</color>{Environment.NewLine}Please install MSCLoader correctly.", "Fatal Error");
             }
         }
 #endif
