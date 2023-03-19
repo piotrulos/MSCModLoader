@@ -1,3 +1,3 @@
 # Visual studio templates
 
-Here are visual studio templates for MSCLoader, for manual copy and VSIX installer.
+Here are the Visual Studio templates for MSCLoader, in case you want to copy them manually.
