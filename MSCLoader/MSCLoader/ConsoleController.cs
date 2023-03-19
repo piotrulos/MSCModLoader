@@ -54,7 +54,7 @@ namespace MSCLoader
                 scrollback = new Queue<string>(scrollbackSize);
             }
             RegisterCommand("help", HelpCommand, "This screen", "?");
-            RegisterCommand("clear", ClearConsole, "Clears console screen", "cls");
+            RegisterCommand("clear", ClearConsole, "Clears the console screen", "cls");
         }
 
         public void RegisterCommand(string command, CommandHandler handler, string help, bool inHelp = true)
@@ -117,7 +117,7 @@ namespace MSCLoader
             {
                 if (!commands.TryGetValue(command, out CommandRegistration reg))
                 {
-                    AppendLogLine(string.Format("Unknown command <b><color=red>{0}</color></b>, type <color=lime><b>help</b></color> for list.", command));
+                    AppendLogLine(string.Format("Unknown command <b><color=red>{0}</color></b> please, type <color=lime><b>help</b></color> for list of all commands.", command));
                 }
                 else
                 {

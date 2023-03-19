@@ -24,7 +24,7 @@ namespace MSCLoader
                 {
                     if (!ZipFile.IsZipFile(zip))
                     {
-                        ModConsole.Error($"Failed read zip file {ModsUpdateDir[i]}");
+                        ModConsole.Error($"Failed to read zip file {ModsUpdateDir[i]}");
                     }
                     else
                     {
@@ -51,7 +51,7 @@ namespace MSCLoader
                 {
                     if (!ZipFile.IsZipFile(zip))
                     {
-                        ModConsole.Error($"Failed read zip file {RefsUpdateDir[i]}");
+                        ModConsole.Error($"Failed to read zip file {RefsUpdateDir[i]}");
                     }
                     else
                     {
@@ -116,12 +116,12 @@ if (!cfmuErrored)
                         {
                             case "0":
                                 failed = true;
-                                ModConsole.Error("Failed to check for mods updates");
+                                ModConsole.Error("Failed to check for mod updates");
                                 ModConsole.Error("Invalid request");
                                 break;
                             case "1":
                                 failed = true;
-                                ModConsole.Error("Failed to check for mods updates");
+                                ModConsole.Error("Failed to check for mod updates");
                                 ModConsole.Error("Database connection problem");
                                 break;
                             case "2":
@@ -131,7 +131,7 @@ if (!cfmuErrored)
                                 break;
                             default:
                                 failed = true;
-                                ModConsole.Error("Failed to check for mods updates");
+                                ModConsole.Error("Failed to check for mod updates");
                                 ModConsole.Error("Unknown error.");
                                 break;
                         }
@@ -154,7 +154,7 @@ if (!cfmuErrored)
                     ModMetadata.ReadUpdateInfo(v);
                 }
             }
-            canvLoading.uTitle.text = "Checking for References updates...".ToUpper();
+            canvLoading.uTitle.text = "Checking for references updates...".ToUpper();
             canvLoading.uProgress.value = 2;
             yield return null;
             cfmuInProgress = true;
@@ -345,7 +345,7 @@ if (!cfmuErrored)
         {
             if (downloadInProgress)
             {
-                ModUI.ShowMessage("Another download is in progress.", "Mod Updates");
+                ModUI.ShowMessage("Another download is already in progress!", "Mod Updates");
                 return;
             }
             else
@@ -357,7 +357,7 @@ if (!cfmuErrored)
         {
             if (downloadInProgress)
             {
-                ModUI.ShowMessage("Another download is in progress.", "Mod Updates");
+                ModUI.ShowMessage("Another download is already in progress!", "Mod Updates");
                 return;
             }
             else
@@ -369,7 +369,7 @@ if (!cfmuErrored)
         {
             if (downloadInProgress)
             {
-                ModUI.ShowMessage("Another download is in progress.", "Mod Updates");
+                ModUI.ShowMessage("Another download is already in progress!", "Mod Updates");
                 return;
             }
             else
@@ -381,7 +381,7 @@ if (!cfmuErrored)
         {
             if (downloadInProgress)
             {
-                ModUI.ShowMessage("Another download is in progress.", "Mod Updates");
+                ModUI.ShowMessage("Another download is already in progress!", "Mod Updates");
                 return;
             }
             else
@@ -394,7 +394,7 @@ if (!cfmuErrored)
         {
             if (downloadInProgress)
             {
-                ModUI.ShowMessage("Another download is in progress.", "Mod Updates");
+                ModUI.ShowMessage("Another download is already in progress!", "Mod Updates");
                 return;
             }
             else
@@ -407,7 +407,7 @@ if (!cfmuErrored)
         {
             if (downloadInProgress)
             {
-                ModUI.ShowMessage("Another download/upload is in progress.", "Mod Updates");
+                ModUI.ShowMessage("Another download/upload is already in progress!", "Mod Updates");
                 return;
             }
             else
@@ -443,7 +443,7 @@ if (!cfmuErrored)
                     else
                         Client.UploadFileAsync(new Uri($"{serverURL}/meta_f.php?steam={steamID}&key={key}&modid={ID}"), "POST", Path.Combine("Updates", $"Meta_temp\\{ID}.zip"));
                     ModConsole.Print("Uploading File...");
-                    canvLoading.uTitle.text = string.Format("Uploading Update File...").ToUpper();
+                    canvLoading.uTitle.text = string.Format("Uploading update file...").ToUpper();
                     canvLoading.uStatus.text = string.Format("Connecting...");
                     canvLoading.modUpdateUI.SetActive(true);
                     while (downloadInProgress)
@@ -467,7 +467,7 @@ if (!cfmuErrored)
             }
             else
             {
-                ModConsole.Error("Steam auth failed");
+                ModConsole.Error("Steam auth failed!");
                 yield return null;
             }
             dnsaf = false;
@@ -490,7 +490,7 @@ if (!cfmuErrored)
             if (e.Error != null)
             {
                 downloadErrored = true;
-                ModConsole.Error("Failed to upload Mod Update");
+                ModConsole.Error("Failed to upload mod update");
                 ModConsole.Error(e.Error.Message);
                 return;
             }
@@ -500,29 +500,29 @@ if (!cfmuErrored)
                 string[] result = s.Split('|');
                 if (result[0] == "error")
                 {
-                    ModConsole.Error("Failed to upload Mod Update");
+                    ModConsole.Error("Failed to upload mod update");
                     switch (result[1])
                     {
                         case "0":
-                            ModConsole.Error($"Invalid or non existent key");
+                            ModConsole.Error($"Invalid or non-existent key!");
                             break;
                         case "1":
-                            ModConsole.Error($"Database error");
+                            ModConsole.Error($"Database error!");
                             break;
                         case "2":
-                            ModConsole.Error($"User not found");
+                            ModConsole.Error($"User not found!");
                             break;
                         case "3":
-                            ModConsole.Error($"This Mod ID doesn't exist in database");
+                            ModConsole.Error($"This mod ID doesn't exist in the database!");
                             break;
                         case "4":
-                            ModConsole.Error($"This is not your mod");
+                            ModConsole.Error($"This is not your mod!");
                             break;
                         case "5":
-                            ModConsole.Error($"File rejected by server");
+                            ModConsole.Error($"File rejected by server!");
                             break;
                         default:
-                            ModConsole.Error($"Unknown error");
+                            ModConsole.Error($"Unknown error!");
                             break;
                     }
                 }
@@ -551,7 +551,7 @@ if (!cfmuErrored)
             }
             catch (Exception e)
             {
-                ModConsole.Error("Downloading update info Failed");
+                ModConsole.Error("Downloading update info failed!");
                 Console.WriteLine(e);
                 return "error|0";
             }
@@ -565,7 +565,7 @@ if (!cfmuErrored)
             switch (type)
             {
                 case 0:
-                    canvLoading.uTitle.text = "Downloading Modloader Update...".ToUpper();
+                    canvLoading.uTitle.text = "Downloading MSCLoader Updates...".ToUpper();
                     canvLoading.uProgress.maxValue = 100;
                     canvLoading.uStatus.text = "Connecting...";
                     canvLoading.modUpdateUI.SetActive(true);
@@ -585,17 +585,17 @@ if (!cfmuErrored)
                     yield return new WaitForSeconds(1f);
                     canvLoading.uProgress.value = 100;
                     canvLoading.uStatus.text = $"<color=lime>Download Complete</color>";
-                    ModUI.ShowMessage("To apply updates, please restart game.", "download completed");
+                    ModUI.ShowMessage("You have to restart the Game for the updates to take effect!", "download completed");
                     break;
                 case 1:
                 case 2:
                 case 3:
                     if (type == 2)
-                        canvLoading.uTitle.text = "Downloading required mod...".ToUpper();
+                        canvLoading.uTitle.text = "Downloading required mods...".ToUpper();
                     else if (type == 3)
-                        canvLoading.uTitle.text = "Downloading reference update...".ToUpper();
+                        canvLoading.uTitle.text = "Downloading reference updates...".ToUpper();
                     else
-                        canvLoading.uTitle.text = "Downloading mod update...".ToUpper();
+                        canvLoading.uTitle.text = "Downloading mod updates...".ToUpper();
                     canvLoading.uProgress.maxValue = 100;
                     canvLoading.uStatus.text = "Connecting...";
                     canvLoading.modUpdateUI.SetActive(true);
@@ -657,9 +657,9 @@ if (!cfmuErrored)
                         canvLoading.uProgress.value = 100;
                         canvLoading.uStatus.text = $"<color=lime>Download Complete</color>";
                         if (type == 2)
-                            ModUI.ShowMessage("To install this mod, please restart game.", "download completed");
+                            ModUI.ShowMessage("You need to restart the game if you want to install this mod.", "download completed");
                         else
-                            ModUI.ShowMessage("To apply updates, please restart game.", "download completed");
+                            ModUI.ShowMessage("You need to restart the game to apply updates.", "download completed");
                     }
                     else
                     {
@@ -735,7 +735,7 @@ if (!cfmuErrored)
                 }
 
             }
-            canvLoading.uTitle.text = "Downloading References updates...".ToUpper();
+            canvLoading.uTitle.text = "Downloading references updates...".ToUpper();
             for (int i = 0; i < RefSelfUpdateList.Count; i++)
             {
                 string[] result = DownloadInfo(RefSelfUpdateList[i], true).Split('|');
@@ -787,11 +787,11 @@ if (!cfmuErrored)
             {
                 canvLoading.uProgress.value = 100;
                 canvLoading.uStatus.text = $"<color=lime>Download Complete</color>";
-                ModUI.ShowMessage("To apply updates, please restart game.", "download completed");
+                ModUI.ShowMessage("You need to restart the game for the updates to take effect!", "download completed");
             }
             else
             {
-                canvLoading.uStatus.text = $"<color=red>Download Failed</color>";
+                canvLoading.uStatus.text = $"<color=red>Download Failed!</color>";
             }
             dnsaf = false;
             yield return new WaitForSeconds(3f);
