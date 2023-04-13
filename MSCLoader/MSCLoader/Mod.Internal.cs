@@ -47,11 +47,11 @@ public partial class Mod
         /// </summary>
         FixedUpdate,
         /// <summary>
-        /// OnModEnabled - Called once when mod has been enabled
+        /// OnModEnabled - Called once when mod has been enabled in settings
         /// </summary>
         OnModEnabled,
         /// <summary>
-        /// OnModDisabled - Called once when mod has been disabled
+        /// OnModDisabled - Called once when mod has been disabled in settings
         /// </summary>
         OnModDisabled,
         /// <summary>

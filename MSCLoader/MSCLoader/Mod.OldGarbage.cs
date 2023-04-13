@@ -128,12 +128,12 @@ public partial class Mod
     public virtual void SecondPassOnLoad() { PostLoad(); }
 
     /// <summary>
-    /// Called once when mod has been enabled
+    /// Called once when mod has been enabled in settings
     /// </summary>
     public virtual void OnModEnabled() { }
 
     /// <summary>
-    /// Called once when mod has been disabled
+    /// Called once when mod has been disabled in settings
     /// </summary>
     public virtual void OnModDisabled() { }
 

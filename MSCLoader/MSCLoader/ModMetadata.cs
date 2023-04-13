@@ -1115,7 +1115,7 @@ namespace MSCLoader
         {
             if (showedMissingModMessage) return;
             showedMissingModMessage = true;
-            ModUI.ShowYesNoMessage($"Some of the mods requires mod <color=aqua>{m}</color> to be installed.{Environment.NewLine}{Environment.NewLine}Do you want to open download this mod now?", "Missing mods", delegate {
+            ModUI.ShowYesNoMessage($"Some of the mods requires mod <color=aqua>{m}</color> to be installed.{Environment.NewLine}{Environment.NewLine}Do you want to download this mod now?", "Missing mods", delegate {
                 ModLoader.Instance.DownloadRequiredMod(m);
             });
         }
