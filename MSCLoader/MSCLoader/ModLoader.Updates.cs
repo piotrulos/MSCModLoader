@@ -353,7 +353,7 @@ if (!cfmuErrored)
                 StartCoroutine(DownloadSingleUpdateC(1, mod.ID));
             }
         }
-        internal void DownloadRefUpdate(References mod)
+        internal void DownloadRefUpdate(References refer)
         {
             if (downloadInProgress)
             {
@@ -362,7 +362,19 @@ if (!cfmuErrored)
             }
             else
             {
-                StartCoroutine(DownloadSingleUpdateC(3, mod.AssemblyID));
+                StartCoroutine(DownloadSingleUpdateC(3, refer.AssemblyID));
+            }
+        }
+        internal void DownloadRequiredRef(string refer)
+        {
+            if (downloadInProgress)
+            {
+                ModUI.ShowMessage("Another download is already in progress!", "Mod Updates");
+                return;
+            }
+            else
+            {
+                StartCoroutine(DownloadSingleUpdateC(4, refer));
             }
         }
         internal void DownloadRequiredMod(string mod)
@@ -590,10 +602,13 @@ if (!cfmuErrored)
                 case 1:
                 case 2:
                 case 3:
+                case 4:
                     if (type == 2)
                         canvLoading.uTitle.text = "Downloading required mods...".ToUpper();
                     else if (type == 3)
                         canvLoading.uTitle.text = "Downloading reference updates...".ToUpper();
+                    else if (type == 4)
+                        canvLoading.uTitle.text = "Downloading required reference...".ToUpper();
                     else
                         canvLoading.uTitle.text = "Downloading mod updates...".ToUpper();
                     canvLoading.uProgress.maxValue = 100;
@@ -602,7 +617,7 @@ if (!cfmuErrored)
                     yield return null;
                     bool failed = false;
                     string[] result;
-                    if (type == 3)
+                    if (type == 3 || type == 4)
                         result = DownloadInfo(mod, true).Split('|');
                     else
                         result = DownloadInfo(mod, false).Split('|');
@@ -617,7 +632,7 @@ if (!cfmuErrored)
                                 ModConsole.Error($"Failed to download updates: Database connection error");
                                 break;
                             case "2":
-                                if (type != 2)
+                                if (type != 2 && type != 4)
                                     ModConsole.Error($"Failed to download updates: File not found");
                                 break;
                             default:
@@ -633,9 +648,9 @@ if (!cfmuErrored)
                         webClient2.DownloadFileCompleted += DownloadModCompleted;
                         webClient2.DownloadProgressChanged += DownlaodModProgress;
                         downloadInProgress = true;
-                        if (type == 3)
+                        if (type == 3 || type == 4)
                             webClient2.DownloadFileAsync(new Uri($"{serverURL}/{result[1]}"), Path.Combine(Path.Combine("Updates", "References"), $"{mod}.zip"));
-                          else
+                        else
                             webClient2.DownloadFileAsync(new Uri($"{serverURL}/{result[1]}"), Path.Combine(Path.Combine("Updates", "Mods"), $"{mod}.zip"));
                         ModConsole.Print($"Downloading: <color=aqua>{mod}.zip</color>");
                         while (downloadInProgress)
@@ -658,14 +673,21 @@ if (!cfmuErrored)
                         canvLoading.uStatus.text = $"<color=lime>Download Complete</color>";
                         if (type == 2)
                             ModUI.ShowMessage("You need to restart the game if you want to install this mod.", "download completed");
+                        else if (type == 4)
+                            ModUI.ShowMessage("You need to restart the game if you want to install this reference.", "download completed");
                         else
+
                             ModUI.ShowMessage("You need to restart the game to apply updates.", "download completed");
                     }
                     else
                     {
+                        //fallback if no file present
                         if (type == 2)
                             Application.OpenURL($"{serverURL}/redir.php?mod={mod}");
-                        canvLoading.uStatus.text = $"<color=red>Download Failed</color>";
+                        else if (type == 4)
+                            Application.OpenURL($"{serverURL}/refredir.php?ref={mod}");
+                        else
+                            canvLoading.uStatus.text = $"<color=red>Download Failed</color>";
                     }
                     break;
                 default:
