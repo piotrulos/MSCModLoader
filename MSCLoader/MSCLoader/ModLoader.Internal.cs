@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !Mini
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -217,3 +218,4 @@ namespace MSCLoader
         }
     }
 }
+#endif

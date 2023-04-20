@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿#if !Mini
+using System.IO;
 using UnityEngine;
 
 namespace MSCLoader;
@@ -78,3 +79,4 @@ public static class ModAssets
 
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
+#endif

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !Mini
+using System;
 using System.Collections.Generic;
 
 namespace MSCLoader;
@@ -202,3 +203,4 @@ public partial class Mod
 
     }
 }
+#endif

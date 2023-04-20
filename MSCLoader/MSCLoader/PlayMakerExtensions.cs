@@ -1,6 +1,5 @@
 ﻿#if !Mini
 using HutongGames.PlayMaker;
-#endif
 using System;
 using System.Linq;
 
@@ -49,7 +48,7 @@ namespace MSCLoader
     /// </summary>
     public static class PlayMakerExtensions
     {
-#if !Mini
+
         /// <summary>
         /// Get PlayMaker from this object by Name
         /// </summary>
@@ -606,6 +605,6 @@ namespace MSCLoader
             }
             catch (Exception ex) { ModConsole.Error(ex.ToString()); }
         }
-#endif
     }
 }
+#endif

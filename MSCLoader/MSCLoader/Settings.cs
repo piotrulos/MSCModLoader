@@ -1,4 +1,6 @@
-﻿using Steamworks;
+﻿#if !Mini
+using Steamworks;
+
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -1216,3 +1218,4 @@ namespace MSCLoader
         }
     }
 }
+#endif

@@ -220,7 +220,9 @@ namespace MSCLoader
             SelectedItem = (_selectedIndex > -1 && _selectedIndex < Items.Count) ? Items[_selectedIndex] : null;
             if (SelectedItem == null)
             {
+#if !Mini
                 ModConsole.Error("[DropDownList] SelectedIndex value out of bounds.");
+#endif
                 return;
             }
 

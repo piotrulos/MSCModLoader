@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if !Mini
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -297,3 +298,4 @@ public class SettingString : MonoBehaviour
     }
 }
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#endif

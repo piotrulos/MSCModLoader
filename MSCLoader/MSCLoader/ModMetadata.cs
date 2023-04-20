@@ -1,7 +1,6 @@
 ﻿#if !Mini
 using Ionic.Zip;
 using Newtonsoft.Json;
-#endif
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -81,7 +80,6 @@ namespace MSCLoader
     }
     internal class ModMetadata
     {
-        #if !Mini
         public static bool VerifyOwnership(string ID, bool reference)
         {
             string steamID;
@@ -165,10 +163,8 @@ namespace MSCLoader
             }
 
         }
-#endif
         public static void AuthMe(string key)
         {
-#if !Mini
             string steamID;
             if (ModLoader.CheckSteam())
             {
@@ -216,11 +212,9 @@ namespace MSCLoader
             {
                 ModConsole.Error("No valid steam detected");
             }
-#endif
         }
         public static void CreateMetadata(Mod mod)
         {
-#if !Mini
             string steamID;
             string key;
             string auth = ModLoader.GetMetadataFolder("auth.bin");
@@ -315,11 +309,9 @@ namespace MSCLoader
             {
                 ModConsole.Error("No valid steam detected");
             }
-#endif
         }
         public static void CreateReference(References refs)
         {
-            #if !Mini
             string steamID;
             string key;
             string auth = ModLoader.GetMetadataFolder("auth.bin");
@@ -392,12 +384,10 @@ namespace MSCLoader
             {
                 ModConsole.Error("No valid steam detected");
             }
-#endif
         }
  
         public static void UploadUpdateMenu(Mod mod)
         {
-            #if !Mini
             if (!File.Exists(ModLoader.GetMetadataFolder($"{mod.ID}.json")))
             {
                 ModConsole.Error("Metadata file doesn't exists, to create use create command");
@@ -419,11 +409,9 @@ namespace MSCLoader
             if (!mmb.opened)
                 mmb.ButtonClicked();
             muv.universalView.FillUpdate(mod);
-#endif
         }
         public static void UploadUpdate(Mod mod, bool assets, bool references, References[] referencesList = null)
         {
-            #if !Mini
             string key;
             string auth = ModLoader.GetMetadataFolder("auth.bin");
             if (!File.Exists(auth))
@@ -509,12 +497,10 @@ namespace MSCLoader
             {
                 ModConsole.Error("Steam auth failed");
             }
-#endif
         }
 
         public static void UploadUpdateRef(References refs)
         {
-            #if !Mini
             string steamID;
             string key;
             string auth = ModLoader.GetMetadataFolder("auth.bin");
@@ -566,11 +552,9 @@ namespace MSCLoader
             {
                 ModConsole.Error("Steam auth failed");
             }
-#endif
         }
         public static void UpdateVersionNumber(Mod mod)
         {
-            #if !Mini
             ModConsole.Print("Updating metadata version...");
             string steamID;
             string key;
@@ -667,11 +651,9 @@ namespace MSCLoader
             {
                 ModConsole.Error("Steam auth failed");
             }
-#endif
         }
         public static void UpdateVersionNumberRef(string ID)
         {
-            #if !Mini
             References refs = ModLoader.Instance.ReferencesList.Where(w => w.AssemblyID == ID).FirstOrDefault();
             ModConsole.Print("Updating version...");
             string steamID;
@@ -740,7 +722,6 @@ namespace MSCLoader
             {
                 ModConsole.Error("Steam auth failed");
             }
-#endif
         }
         internal static void ReadUpdateInfo(ModVersions mv)
         {
@@ -908,7 +889,6 @@ namespace MSCLoader
         }
         internal static void ReadMetadata(Mod mod)
         {
-            #if !Mini
             if (mod.metadata == null)
                 return;
             if (mod.metadata.type == 9)
@@ -1060,19 +1040,16 @@ namespace MSCLoader
                     }
                 }
             }
-#endif
         }
 
         internal static ModsManifest LoadMetadata(Mod mod)
         {
-#if !Mini
             string metadataFile = ModLoader.GetMetadataFolder($"{mod.ID}.json");
             if (File.Exists(metadataFile))
             {
                 string s = File.ReadAllText(metadataFile);
                 return JsonConvert.DeserializeObject<ModsManifest>(s);
             }
-#endif
             return null;
         }
 
@@ -1127,3 +1104,4 @@ namespace MSCLoader
     }
 
 }
+#endif

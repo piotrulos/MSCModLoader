@@ -24,7 +24,7 @@ namespace MSCLoader
         public InputField searchField;
 
         public static bool settingsOpened = false;
-
+#if !Mini
         void OnEnable()
         {
             switch (type)
@@ -74,6 +74,6 @@ namespace MSCLoader
                     break;
             }
         }
-
+#endif
     }
 }

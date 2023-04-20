@@ -1,4 +1,5 @@
-﻿using UnityEngine.Events;
+﻿#if !Mini
+using UnityEngine.Events;
 using UnityEngine.UI;
 #pragma warning disable CS1591
 
@@ -219,4 +220,5 @@ public class ModSettings
     [System.Obsolete("Useless", true)]
     public SettingString AddString(string id, string value) => new SettingString();
 }
-#pragma warning restore CS1591 
+#pragma warning restore CS1591
+#endif

@@ -1,7 +1,6 @@
 ﻿#if !Mini
 using Newtonsoft.Json;
 using System;
-#endif
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -156,7 +155,6 @@ namespace MSCLoader
         [Obsolete("Consider switching to SaveLoad.WriteValue or serializing custom class.")]
         public static void SaveGameObject(Mod mod, GameObject g, string fileName)
         {
-#if !Mini
             string path = Path.Combine(ModLoader.GetModSettingsFolder(mod), fileName);
             SaveData save = new SaveData();
             SaveDataList s = new SaveDataList
@@ -173,7 +171,7 @@ namespace MSCLoader
             config.Formatting = Formatting.Indented;
             string serializedData = JsonConvert.SerializeObject(save, config);
             File.WriteAllText(path, serializedData);
-#endif          
+          
         }
 
         /// <summary>
@@ -201,14 +199,13 @@ namespace MSCLoader
         /// <param name="fileName">Name of the save file</param>
         public static void SerializeSaveFile<T>(Mod mod, T saveDataClass, string fileName)
         {
-#if !Mini
             JsonSerializerSettings config = new JsonSerializerSettings();
             config.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             config.Formatting = Formatting.Indented;
             string path = Path.Combine(ModLoader.GetModSettingsFolder(mod), fileName);
             string serializedData = JsonConvert.SerializeObject(saveDataClass, config);
             File.WriteAllText(path, serializedData);
-#endif
+
         }
 
         /// <summary>
@@ -220,14 +217,13 @@ namespace MSCLoader
         /// <returns>Deserialized class</returns>
         public static T DeserializeSaveFile<T>(Mod mod, string fileName) where T : new()
         {
-#if !Mini
             string path = Path.Combine(ModLoader.GetModSettingsFolder(mod), fileName);
             if (File.Exists(path))
             {
                 string serializedData = File.ReadAllText(path);
                 return JsonConvert.DeserializeObject<T>(serializedData);
             }
-#endif
+
             return default(T);
         }
 
@@ -276,6 +272,7 @@ namespace MSCLoader
             }
             if(serializedData != null)
                 return JsonConvert.DeserializeObject<T>(serializedData);
+
             return default(T);
         }
 
@@ -524,3 +521,4 @@ namespace MSCLoader
         }
     }
 }
+#endif

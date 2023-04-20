@@ -9,10 +9,11 @@ namespace MSCLoader
         public bool menu2 = false;
         public Texture2D arrowLeft, arrowRight;
         public RawImage image;
-        public Animation btnAnim;
+        public Animation btnAnim; 
+        public GameObject TitleText, SearchField;
         Animation anim;
         internal bool opened = false;
-        public GameObject TitleText, SearchField;
+
 
         void Start()
         {
@@ -27,6 +28,7 @@ namespace MSCLoader
         }
         public void ButtonClicked()
         {
+#if !Mini
             TitleText.SetActive(true);
             SearchField.SetActive(false);
             if (!opened)
@@ -55,7 +57,7 @@ namespace MSCLoader
                     ModMenu.SaveSettings(ModLoader.LoadedMods[1]);
                 }
             }
-
+#endif
         }
     }
 }

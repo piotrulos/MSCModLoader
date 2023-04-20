@@ -42,7 +42,7 @@ namespace MSCLoader
         internal Dictionary<string, CommandRegistration> commands = new Dictionary<string, CommandRegistration>();
 
         public string[] log { get; private set; } //Copy of scrollback as an array for easier use by ConsoleView
-
+#if !Mini
         public ConsoleController()
         {
             if (ModLoader.devMode && MSCUnloader.dm_pcon != null)
@@ -171,6 +171,7 @@ namespace MSCLoader
                 AppendLogLine("<b><color=red>More commands may appear after you load a save...</color></b>");
             }
         }
+#endif
     }
     #pragma warning restore CS1591
 }

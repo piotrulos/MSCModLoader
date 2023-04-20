@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !Mini
+using System;
 
 namespace MSCLoader;
 
@@ -154,3 +155,4 @@ public partial class Mod
     public Mod() => modSettings = new ModSettings(this);
 #pragma warning restore CS0618 // Type or member is obsolete
 }
+#endif

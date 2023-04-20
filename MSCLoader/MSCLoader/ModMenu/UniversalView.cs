@@ -15,6 +15,7 @@ namespace MSCLoader
         private Mod mod;
         private bool set = false;
         private string previousText = "INSTALLED MODS";
+#if !Mini
         public void FillMetadataInfo(Mod m)
         {
             mod = m;
@@ -72,6 +73,7 @@ namespace MSCLoader
             Title.gameObject.SetActive(true);
             Title.text = $"{mod.Name} - Update File".ToUpper();                
         }
+#endif
         public void CloseView()
         {
             if (!gameObject.activeSelf) return;
@@ -80,6 +82,7 @@ namespace MSCLoader
             gameObject.SetActive(false);
             SearchBtn.SetActive(true);
         }
+#if !Mini
         void OnEnable()
         {
             previousText = Title.text;
@@ -89,5 +92,6 @@ namespace MSCLoader
             if (set)
                 ModMenu.SaveSettings(mod);
         }
+#endif
     }
 }

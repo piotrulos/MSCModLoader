@@ -21,6 +21,7 @@ namespace MSCLoader
         public GameObject consoleContainer;
         public Texture2D cursor;
         public bool Xresizer = false;
+
         class ConsoleSizeSave
         {
             public int v = 1;
@@ -38,6 +39,7 @@ namespace MSCLoader
         }
         public void OnDrag(PointerEventData eventData)
         {
+            #if !Mini
             ClampToBorder();
             if (Xresizer)
             {
@@ -61,7 +63,9 @@ namespace MSCLoader
                 }
                 m_consoleContainer.sizeDelta = new Vector2(m_consoleContainer.sizeDelta.x, m_consoleContainer.sizeDelta.y + eventData.delta.y);
             }
+#endif
         }
+#if !Mini
         public void OnMouseEnter()
         {
             Cursor.SetCursor(cursor, new Vector2(16, 16), CursorMode.Auto);
@@ -77,7 +81,7 @@ namespace MSCLoader
         }
         public void LoadConsoleSize()
         {
-#if !Mini
+
             if (!Xresizer) return;
             Start();
             string path = ModLoader.GetModSettingsFolder(new ModConsole());
@@ -100,11 +104,11 @@ namespace MSCLoader
                     File.Delete(Path.Combine(path, "consoleSize.data"));
                 }
             }
-#endif
+
         }
         public void SaveConsoleSize()
         {
-            #if !Mini
+
             string path = ModLoader.GetModSettingsFolder(new ModConsole());
             if (Xresizer)
             {
@@ -116,7 +120,7 @@ namespace MSCLoader
                 string serializedData = JsonConvert.SerializeObject(css, Formatting.Indented);
                 File.WriteAllText(Path.Combine(path, "consoleSize.data"), serializedData);
             }
-#endif
+
         }
         private void ClampToBorder()
         {
@@ -150,6 +154,7 @@ namespace MSCLoader
                 clampedToTop = false;
             }
         }
+#endif
 #pragma warning restore CS1591
     }
 }
