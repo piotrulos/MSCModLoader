@@ -33,6 +33,7 @@ namespace MSCLoader
         public bool modList = false;
         public GameObject modListView;
         DwnlModList dml;
+        #if !Mini
         public void RefreshTabs()
         {
 
@@ -42,10 +43,9 @@ namespace MSCLoader
             getdwl.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
             try
             {
-#if !Mini
+
                 dwl = getdwl.DownloadString($"{ModLoader.serverURL}/mods_list.php?mods={0}");
                 dml = JsonConvert.DeserializeObject<DwnlModList>(dwl);
-#endif
             }
             catch (Exception e)
             {
@@ -123,9 +123,7 @@ namespace MSCLoader
                 //try opening in steam overlay
                 try
                 {
-#if !Mini
                     Steamworks.SteamFriends.ActivateGameOverlayToWebPage(url);
-#endif
                 }
                 catch (Exception e)
                 {
@@ -169,5 +167,6 @@ namespace MSCLoader
             tx.transform.SetParent(listView.transform, false);
             return txt;
         }
+#endif
     }
 }

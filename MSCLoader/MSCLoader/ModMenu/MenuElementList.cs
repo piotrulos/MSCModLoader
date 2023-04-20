@@ -25,7 +25,7 @@ namespace MSCLoader
         public RectTransform contents;
         private bool collapsed;
         private bool anim;
-
+#if !Mini
         public void ModInfoFill()
         {
             if (mod != null)
@@ -418,7 +418,7 @@ namespace MSCLoader
                 ModMenu.SaveSettings(mod);
             }
         }
-
+#endif
         public void ToggleInfo()
         {
             if (anim) return;

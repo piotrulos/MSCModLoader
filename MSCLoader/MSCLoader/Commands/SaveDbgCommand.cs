@@ -1,5 +1,5 @@
-﻿using MSCLoader;
-using NAudio.Dsp;
+﻿#if !Mini
+using MSCLoader;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -118,3 +118,4 @@ namespace MSCLoader.Commands
 
     }
 }
+#endif

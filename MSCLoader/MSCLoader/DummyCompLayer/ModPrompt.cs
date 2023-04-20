@@ -1,4 +1,5 @@
-﻿using UnityEngine.Events;
+﻿#if !Mini
+using UnityEngine.Events;
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace MSCLoader;
 
@@ -51,3 +52,4 @@ public class ModPrompt
     }
 }
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#endif

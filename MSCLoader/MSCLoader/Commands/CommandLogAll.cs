@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !Mini
+using System;
 using System.IO;
 
 namespace MSCLoader.Commands;
@@ -263,3 +264,4 @@ internal class CommandLogAll : ConsoleCommand
         }
     }
 }
+#endif

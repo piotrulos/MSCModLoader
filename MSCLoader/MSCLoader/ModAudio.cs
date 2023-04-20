@@ -1,4 +1,5 @@
-﻿using AudioLibrary;
+﻿#if !Mini
+using AudioLibrary;
 using System;
 using System.Collections;
 using System.IO;
@@ -24,7 +25,7 @@ namespace MSCLoader
         /// <param name="background">Load file in background</param>
         public void LoadAudioFromFile(string path, bool doStream, bool background)
         {
-#if !Mini
+
             Stream stream = new MemoryStream(File.ReadAllBytes(path));
             AudioFormat format = Manager.GetAudioFormat(path);
             string filename = Path.GetFileName(path);
@@ -51,7 +52,7 @@ namespace MSCLoader
                 System.Console.WriteLine(e);
                 audioSource.clip = null;
             }
-#endif
+
         }
 
         /// <summary>
@@ -118,3 +119,4 @@ namespace MSCLoader
         }
     }
 }
+#endif

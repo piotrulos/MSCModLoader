@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !Mini
+using System;
 using MSCLoader.Commands;
 using System.Text.RegularExpressions;
 using System.Collections;
@@ -217,3 +218,4 @@ namespace MSCLoader
         }
     }
 }
+#endif

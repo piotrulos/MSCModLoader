@@ -1,7 +1,6 @@
 ﻿#if !Mini
 using Ionic.Zip;
 using Newtonsoft.Json;
-#endif
 using System;
 using System.Collections;
 using System.IO;
@@ -14,7 +13,6 @@ namespace MSCLoader
     {
         void UnpackUpdates()
         {
-            #if !Mini
             ModConsole.Print("Unpacking mod updates...");
             for (int i = 0; i < ModsUpdateDir.Length; i++)
             {
@@ -72,7 +70,6 @@ namespace MSCLoader
             }
             ModUI.ShowMessage("Updating mods finished.", "Update mods");
             ContinueInit();
-#endif
         }
 
         private bool cfmuErrored = false;
@@ -104,7 +101,6 @@ namespace MSCLoader
             canvLoading.uStatus.text = "Downloading mods update info...";
             while (cfmuInProgress)
                 yield return null;
-#if !Mini   
 if (!cfmuErrored)
             {
                 if (cfmuResult.StartsWith("error"))
@@ -232,7 +228,6 @@ if (!cfmuErrored)
                 if (!dnsaf)
                     canvLoading.modUpdateUI.SetActive(false);
             }
-#endif
         }
 
         IEnumerator DownloadMetadataFiles()
@@ -441,7 +436,6 @@ if (!cfmuErrored)
                 }
                 else
                 {
-                    #if !Mini
                     steamID = Steamworks.SteamUser.GetSteamID().ToString();
                     WebClient Client = new WebClient();
                     Client.Headers.Add("Content-Type", "binary/octet-stream");
@@ -474,7 +468,6 @@ if (!cfmuErrored)
                         else
                             ModMetadata.UpdateVersionNumber(GetMod(ID, true));
                     }
-#endif
                 }
             }
             else
@@ -845,3 +838,4 @@ if (!cfmuErrored)
 
     }
 }
+#endif

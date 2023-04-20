@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿#if !Mini
+using System.Linq;
 
 namespace MSCLoader.Commands;
 
@@ -88,3 +89,4 @@ internal class MetadataCommand : ConsoleCommand
     }
 
 }
+#endif

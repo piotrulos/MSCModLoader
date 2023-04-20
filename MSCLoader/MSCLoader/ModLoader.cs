@@ -1,8 +1,9 @@
-﻿global using UnityEngine;
-using System;
+﻿
+global using UnityEngine;
+using HutongGames.PlayMaker.Actions;
 #if !Mini
+using System;
 using Newtonsoft.Json;
-#endif
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -279,7 +280,6 @@ public partial class ModLoader : MonoBehaviour
     }
     void ContinueInit()
     {
-#if !Mini
         LoadReferences();
         try
         {
@@ -367,11 +367,24 @@ public partial class ModLoader : MonoBehaviour
             }
             wasSaving = false;
         }
-#endif
+
+    }
+    internal static void HandleCanv(GameObject go)
+    {
+        Instance.HandleCCanv(go);
+    }
+    void HandleCCanv(GameObject go)
+    {
+        StartCoroutine(HandleCanvC(go));
+    }
+    IEnumerator HandleCanvC(GameObject go)
+    {
+        yield return null;
+        go.SetActive(true);
     }
     internal void CheckForModsUpd(bool force = false)
     {
-#if !Mini
+
         string sp = Path.Combine(SettingsFolder, Path.Combine("MSCLoader_Settings", "lastCheck"));
         if (force)
         {
@@ -428,7 +441,6 @@ public partial class ModLoader : MonoBehaviour
             DownloadUpdateData();
             File.WriteAllText(sp, DateTime.Now.ToString());
         }
-#endif
     }
 
     private void DownloadUpdateData()
@@ -465,7 +477,6 @@ public partial class ModLoader : MonoBehaviour
 
     private void SAuthCheckCompleted(object sender, DownloadStringCompletedEventArgs e)
     {
-#if !Mini
         try
         {
             if (e.Error != null)
@@ -572,7 +583,6 @@ public partial class ModLoader : MonoBehaviour
             }
             System.Console.WriteLine(ex);
         }
-#endif
     }
 
     private void LoadReferences()
@@ -645,17 +655,15 @@ public partial class ModLoader : MonoBehaviour
         guiskin = ab.LoadAsset<GUISkin>("MSCLoader.guiskin");
         ModUI.canvasPrefab = ab.LoadAsset<GameObject>("CanvasPrefab.prefab");
         mainMenuInfo = ab.LoadAsset<GameObject>("MSCLoader Info.prefab");
-        GameObject loadingP = ab.LoadAsset<GameObject>("LoadingCanvas.prefab");
-        GameObject mbP = ab.LoadAsset<GameObject>("PopupsCanvas.prefab");
+        GameObject loadingP = ab.LoadAsset<GameObject>("MSCLoader Canvas loading.prefab");
+        GameObject mbP = ab.LoadAsset<GameObject>("MSCLoader Canvas msgbox.prefab");
 
-        ModUI.CreateCanvases();
+        ModUI.PrepareDefaultCanvas();
         GameObject mb = GameObject.Instantiate(mbP);
-        mb.name = "MSCLoader Canvas msgbox";
         ModUI.messageBoxCv = mb.GetComponent<MessageBoxesCanvas>();
         DontDestroyOnLoad(mb);
  
         GameObject loading = GameObject.Instantiate(loadingP);
-        loading.name = "MSCLoader Canvas loading";
         canvLoading = loading.GetComponent<MSCLoaderCanvasLoading>();
         canvLoading.lHeader.text = $"MSCLOADER <color=green>{MSCLoader_Ver}</color>";
         DontDestroyOnLoad(loading);
@@ -991,9 +999,7 @@ public partial class ModLoader : MonoBehaviour
         canvLoading.lProgress.value = 100;
         canvLoading.lMod.text = "Finishing touches...";
         yield return null;
-        #if !Mini
         GameObject.Find("ITEMS").FsmInject("Save game", SaveMods);
-#endif
         ModConsole.Print("</color>");
         allModsLoaded = true;
         canvLoading.modLoadingUI.SetActive(false);
@@ -1116,9 +1122,7 @@ public partial class ModLoader : MonoBehaviour
         canvLoading.lProgress.value = canvLoading.lProgress.maxValue;
         canvLoading.lMod.text = "Finishing touches...";
         yield return null;
-        #if !Mini
         GameObject.Find("ITEMS").FsmInject("Save game", SaveMods);
-#endif
         ModConsole.Print("</color>");
         allModsLoaded = true;
         canvLoading.modLoadingUI.SetActive(false);
@@ -1683,3 +1687,4 @@ public partial class ModLoader : MonoBehaviour
         return SystemInfo.operatingSystem;
     }
 }
+#endif

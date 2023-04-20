@@ -1,4 +1,5 @@
-﻿using AudioLibrary.MP3_Streaming;
+﻿#if !Mini
+using AudioLibrary.MP3_Streaming;
 using UnityEngine;
 
 namespace MSCLoader
@@ -8,7 +9,6 @@ namespace MSCLoader
     /// </summary>
     public class ModAudioStream : MonoBehaviour
     {
-#if !Mini
         /// <summary>
         /// Your AudioSource goes here
         /// </summary>
@@ -89,6 +89,7 @@ namespace MSCLoader
         {
             mp3s.Dispose();
         }
-        #endif
+        
     }
 }
+#endif

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if !Mini
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -47,9 +48,8 @@ namespace MSCLoader
                         Destroy(gosAll[i]);
                     }
                 }
-                #if !Mini
                 PlayMakerGlobals.Instance.Variables.FindFsmBool("SongImported").Value = false; //stupid variable name.
-#endif
+
                 ModLoader.unloader = false;
                 ModLoader.rtmm = true;
                 Application.LoadLevel(Application.loadedLevelName);
@@ -59,3 +59,4 @@ namespace MSCLoader
     }
 #pragma warning restore CS1591
 }
+#endif

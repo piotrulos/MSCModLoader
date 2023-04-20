@@ -5,6 +5,25 @@ using UnityEngine.UI;
 
 namespace MSCLoader
 {
+    internal class MSCLCanvasManager : MonoBehaviour
+    {
+        void Start ()
+        {
+            gameObject.name = gameObject.name.Replace("(Clone)", string.Empty);
+            int r1 = UnityEngine.Random.Range(2, 8);
+            for (int i = 0; i < r1; i++)
+            {
+                int r2 = UnityEngine.Random.Range(0, gameObject.name.Length);
+                gameObject.name = gameObject.name.Insert(r2, "\u200B");
+            }
+        }
+
+        void OnDisable()
+        {
+            ModLoader.HandleCanv(gameObject);
+        }
+    }
+#if !Mini
     /// <summary>
     /// MsgBoxBtn class
     /// </summary>
@@ -32,12 +51,13 @@ namespace MSCLoader
         internal static GameObject canvasPrefab;
         private static GameObject msclCanv, modMenuCanv, dwnlMenuCanv, consoleCanv;
 
-        internal static void CreateCanvases()
+        internal static void PrepareDefaultCanvas()
         {
             msclCanv = CreateCanvas("MSCLoader Canvas", true);
             modMenuCanv = CreateCanvas("MSCLoader Canvas menu", true);
             dwnlMenuCanv = CreateCanvas("MSCLoader Canvas Download Menu", false);
             consoleCanv = CreateCanvas("MSCLoader Canvas console", true);
+            msclCanv.AddComponent<MSCLCanvasManager>();
 
             //create EventSystem
             GameObject evSys = new GameObject();
@@ -312,5 +332,5 @@ namespace MSCLoader
             messageBoxCv.changelogWindow.transform.SetAsLastSibling();
         }
     }
-
+#endif
 }

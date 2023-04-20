@@ -1,4 +1,5 @@
-﻿namespace MSCLoader
+﻿#if !Mini
+namespace MSCLoader
 {
     /// <summary>
     /// Base class for console commands
@@ -49,3 +50,4 @@
         }
     }
 }
+#endif

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !Mini
+using System;
 using System.IO;
 using System.Linq;
 
@@ -106,3 +107,4 @@ internal class EarlyAccessCommand : ConsoleCommand
           .Select(s => s[random.Next(s.Length)]).ToArray());
     }
 }
+#endif

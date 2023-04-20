@@ -20,6 +20,7 @@ namespace MSCLoader
 
         public bool modList = false;
         public GameObject modListView;
+#if !Mini
         public void RefreshTabs()
         {
             if(ModLoader.InvalidMods.Count > 0)
@@ -694,5 +695,6 @@ namespace MSCLoader
             tx.transform.SetParent(listView.transform, false);
             return txt;
         }
+#endif
     }
 }

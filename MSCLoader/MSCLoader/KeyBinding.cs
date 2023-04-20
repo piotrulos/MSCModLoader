@@ -37,7 +37,7 @@ namespace MSCLoader
 
         public Mod mod;
         public string id;
-
+#if !Mini
         public void LoadBind(Keybind kb, Mod m)
         {
             mod = m;
@@ -115,6 +115,6 @@ namespace MSCLoader
             }
             ModMenu.SaveModBinds(mod);
         }
-
+#endif
     }
 }

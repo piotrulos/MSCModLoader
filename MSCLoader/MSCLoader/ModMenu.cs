@@ -2,7 +2,6 @@
 using IniParser;
 using IniParser.Model;
 using Newtonsoft.Json;
-#endif
 using System;
 using System.Collections;
 using System.IO;
@@ -26,7 +25,6 @@ namespace MSCLoader
         private static SettingsCheckBoxGroup checkLaunch, checkDaily, checkWeekly;
         private System.Diagnostics.FileVersionInfo coreVer;
 
-#if !Mini
         public override void ModSetup()
         {
             SetupFunction(Setup.OnMenuLoad, Mod_OnMenuLoad);
@@ -159,7 +157,6 @@ namespace MSCLoader
                 ModUI.ShowMessage($"Fatal error:{Environment.NewLine}<color=orange>{e.Message}</color>{Environment.NewLine}Please install MSCLoader correctly.", "Fatal Error");
             }
         }
-#endif
 
         public void CreateSettingsUI()
         {
@@ -237,10 +234,8 @@ namespace MSCLoader
 
                 list.keybinds.Add(keybinds);
             }
-            #if !Mini
             string serializedData = JsonConvert.SerializeObject(list, Formatting.Indented);
             File.WriteAllText(path, serializedData);
-#endif
 
         }
 
@@ -306,10 +301,8 @@ namespace MSCLoader
 
                 list.settings.Add(sets);
             }
-            #if !Mini
             string serializedData = JsonConvert.SerializeObject(list, Formatting.Indented);
             File.WriteAllText(path, serializedData);
-#endif
 
         }
 
@@ -326,7 +319,6 @@ namespace MSCLoader
                     SaveModBinds(binds[i]);
                     continue;
                 }
-                #if !Mini
                 //Load and deserialize 
                 KeybindList keybinds = JsonConvert.DeserializeObject<KeybindList>(File.ReadAllText(path));
                 if (keybinds.keybinds.Count == 0)
@@ -339,7 +331,6 @@ namespace MSCLoader
                     bind.Key = keybinds.keybinds[k].Key;
                     bind.Modifier = keybinds.keybinds[k].Modifier;
                 }
-#endif
             }
         }
 
@@ -352,7 +343,6 @@ namespace MSCLoader
                 string path = Path.Combine(ModLoader.GetModSettingsFolder(ModLoader.LoadedMods[i]), "settings.json");
                 if (!File.Exists(path))
                     SaveSettings(ModLoader.LoadedMods[i]); //create settings file if not exists.
-                #if !Mini
                 //Load and deserialize 
                 SettingsList settings = JsonConvert.DeserializeObject<SettingsList>(File.ReadAllText(path));
                 ModLoader.LoadedMods[i].isDisabled = settings.isDisabled;
@@ -416,7 +406,6 @@ namespace MSCLoader
                 {
                     ModLoader.ModException(e, ModLoader.LoadedMods[i]);
                 }
-#endif
             }
         }
 
@@ -453,3 +442,4 @@ namespace MSCLoader
         }
     }
 }
+#endif

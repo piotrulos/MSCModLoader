@@ -38,7 +38,7 @@ namespace MSCLoader
         /// Helpful additional variables.
         /// </summary>
         public object[] Vals { get; set; }
-
+#if !Mini
         /// <summary>
         /// Add a keybind.
         /// </summary>
@@ -215,7 +215,7 @@ namespace MSCLoader
         public bool IsDown()
 		{
             return GetKeybindDown();
-        }   
-        
-	}
+        }
+#endif
+    }
 }

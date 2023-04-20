@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !Mini
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -177,3 +178,4 @@ namespace MSCLoader
         public static string GetModAssetsFolder(Mod mod, bool create = true) => GetModAssetsFolder(mod);
     }
 }
+#endif

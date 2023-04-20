@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿#if !Mini
 
 namespace MSCLoader
 {
@@ -9,3 +9,4 @@ namespace MSCLoader
         private void Update() => modLoader.A_Update();
     }
 }
+#endif

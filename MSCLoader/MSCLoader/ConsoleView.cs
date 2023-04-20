@@ -15,7 +15,7 @@ namespace MSCLoader
         public InputField inputField;
         private bool wasFocused;
         private int commands, pos;
-
+#if !Mini
         void Awake()
         {
             controller = new ConsoleController();
@@ -134,7 +134,7 @@ namespace MSCLoader
                 wasFocused = false;
             }
         }
-
+#endif
     }
 #pragma warning restore CS1591
 }
