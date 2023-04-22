@@ -161,21 +161,10 @@ namespace MSCLoader
         public void CreateSettingsUI()
         {
             AssetBundle ab = LoadAssets.LoadBundle(this, "settingsui.unity3d");
-            GameObject UIp = ab.LoadAsset<GameObject>("Mod Menu.prefab");
-            GameObject UIp2 = ab.LoadAsset<GameObject>("Mod Download.prefab");
+            GameObject UIp = ab.LoadAsset<GameObject>("MSCLoader Canvas menu.prefab");
             UI = GameObject.Instantiate(UIp);
-            UI.name = "MSCLoader Mod Menu";
-            UI.transform.SetParent(ModUI.GetCanvas(1).transform, false);
+            GameObject.DontDestroyOnLoad(UI);
             GameObject.Destroy(UIp);
-
-           /* if (ModLoader.devMode) //Move this into new module
-            {
-                GameObject UI2 = GameObject.Instantiate(UIp2);
-                UI2.name = "MSCLoader Mod Download Menu";
-                UI2.transform.SetParent(ModUI.GetCanvas(5).transform, false);
-                GameObject.Destroy(UIp2);
-                UI2.SetActive(true);
-            }*/
             ab.Unload(false);
         }
 
@@ -411,8 +400,8 @@ namespace MSCLoader
 
         internal static void ModMenuHandle()
         {
-            GameObject.Find("Systems").transform.Find("OptionsMenu").gameObject.AddComponent<ModMenuHandler>().modMenuUI = instance.UI;
-            instance.UI.SetActive(false);
+            GameObject.Find("Systems").transform.Find("OptionsMenu").gameObject.AddComponent<ModMenuHandler>().modMenuUI = instance.UI.transform.GetChild(0).gameObject;
+            instance.UI.transform.GetChild(0).gameObject.SetActive(false);
         }
 
         public class ModMenuHandler : MonoBehaviour

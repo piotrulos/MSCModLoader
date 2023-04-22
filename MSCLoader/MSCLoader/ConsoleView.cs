@@ -21,6 +21,7 @@ namespace MSCLoader
             controller = new ConsoleController();
             controller.logChanged += OnLogChanged;
             UpdateLogStr(controller.log);
+            SetVisibility(false);
         }
 
         void OnDestroy()
@@ -62,16 +63,19 @@ namespace MSCLoader
                 logTextArea.text = string.Join(Environment.NewLine, newLog);
             }
         }
-
+#endif
         // Event that should be called by anything wanting to submit the current input to the console.
         public void RunCommand()
         {
+#if !Mini
             controller.RunCommandString(inputField.text);
             inputField.text = string.Empty;
             //keep active input field
             inputField.ActivateInputField();
             inputField.Select();
+#endif
         }
+#if !Mini
         private void FixedUpdate()
         {
             if (inputField.text.Length > 0 && Input.GetKey(KeyCode.Return))
