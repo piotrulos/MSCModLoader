@@ -1,7 +1,7 @@
 ﻿
 global using UnityEngine;
-using HutongGames.PlayMaker.Actions;
 #if !Mini
+using HutongGames.PlayMaker.Actions;
 using System;
 using Newtonsoft.Json;
 using System.Collections;

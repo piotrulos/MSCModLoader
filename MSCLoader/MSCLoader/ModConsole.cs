@@ -80,11 +80,10 @@ namespace MSCLoader
         void CreateConsoleUI()
         {
             AssetBundle ab = LoadAssets.LoadBundle(this, "console.unity3d");
-            GameObject UIp = ab.LoadAsset<GameObject>("MSCLoader Console.prefab");
-            UI = GameObject.Instantiate(UIp);
-            UI.name = "MSCLoader Console";           
-            console = UI.GetComponent<ConsoleView>();
-            UI.transform.SetParent(ModUI.GetCanvas(2).transform, false);
+            GameObject UIp = ab.LoadAsset<GameObject>("MSCLoader Canvas console.prefab");
+            UI = GameObject.Instantiate(UIp);                    
+            console = UI.GetComponentInChildren<ConsoleView>();
+            GameObject.DontDestroyOnLoad(UI);
             GameObject.Destroy(UIp);
             ab.Unload(false);
         }

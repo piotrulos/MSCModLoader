@@ -7,6 +7,7 @@ namespace MSCLoader
 {
     internal class MSCLCanvasManager : MonoBehaviour
     {
+        private bool isApplicationQuitting = false;
         void Start ()
         {
             gameObject.name = gameObject.name.Replace("(Clone)", string.Empty);
@@ -17,11 +18,17 @@ namespace MSCLoader
                 gameObject.name = gameObject.name.Insert(r2, "\u200B");
             }
         }
-
+        #if !Mini
         void OnDisable()
         {
+            if (isApplicationQuitting) return;
             ModLoader.HandleCanv(gameObject);
         }
+        void OnApplicationQuit()
+        {
+            isApplicationQuitting = true;
+        }
+#endif
     }
 #if !Mini
     /// <summary>
@@ -49,14 +56,11 @@ namespace MSCLoader
     {
         internal static MessageBoxesCanvas messageBoxCv;
         internal static GameObject canvasPrefab;
-        private static GameObject msclCanv, modMenuCanv, dwnlMenuCanv, consoleCanv;
+        private static GameObject msclCanv;
 
         internal static void PrepareDefaultCanvas()
         {
             msclCanv = CreateCanvas("MSCLoader Canvas", true);
-            modMenuCanv = CreateCanvas("MSCLoader Canvas menu", true);
-            dwnlMenuCanv = CreateCanvas("MSCLoader Canvas Download Menu", false);
-            consoleCanv = CreateCanvas("MSCLoader Canvas console", true);
             msclCanv.AddComponent<MSCLCanvasManager>();
 
             //create EventSystem
@@ -84,19 +88,7 @@ namespace MSCLoader
 
         internal static GameObject GetCanvas(byte type)
         {
-            switch (type)
-            {
-                case 0:
-                    return msclCanv;
-                case 1:
-                    return modMenuCanv;
-                case 2:
-                    return consoleCanv;
-                case 5:
-                    return dwnlMenuCanv;
-                default:
-                    return msclCanv;
-            }
+            return msclCanv;
         }
         /// <summary>
         /// Get UI canvas

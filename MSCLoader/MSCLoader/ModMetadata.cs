@@ -783,7 +783,7 @@ namespace MSCLoader
                     continue;
                 }
             }
-            ModMenu.instance.UI.GetComponent<ModMenuView>().RefreshTabs();
+            ModMenu.instance.UI.transform.GetChild(0).GetComponent<ModMenuView>().RefreshTabs();
 
         }
         internal static void ReadRefUpdateInfo(RefVersions mv)
@@ -818,7 +818,7 @@ namespace MSCLoader
                     continue;
                 }
             }
-            ModMenu.instance.UI.GetComponent<ModMenuView>().RefreshTabs();
+            ModMenu.instance.UI.transform.GetChild(0).GetComponent<ModMenuView>().RefreshTabs();
             bool upd = false;
             string Upd_list = string.Empty;
             if (ModLoader.ModSelfUpdateList.Count > 0)

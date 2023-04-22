@@ -65,7 +65,7 @@ namespace MSCLoader
             }
 #endif
         }
-#if !Mini
+
         public void OnMouseEnter()
         {
             Cursor.SetCursor(cursor, new Vector2(16, 16), CursorMode.Auto);
@@ -75,6 +75,7 @@ namespace MSCLoader
         {
             Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
         }
+#if !Mini
         public void OnDisable()
         {
             OnMouseExit();
