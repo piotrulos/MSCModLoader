@@ -407,26 +407,31 @@ namespace MSCLoader
         public class ModMenuHandler : MonoBehaviour
         {
             public GameObject modMenuUI;
-
+            private bool isApplicationQuitting = false;
             void OnEnable()
             {
                 modMenuUI.SetActive(true);
-                StartCoroutine(CursorPM());
+            //    StartCoroutine(CursorPM());
             }
-            IEnumerator CursorPM()
+          /*  IEnumerator CursorPM()
             {
                 yield return new WaitForSeconds(0.5f);
                 //Fix that shitty custom playmaker cursor to regular system one.
                 Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
-            }
+            }*/
             void OnDisable()
             {
+                if (isApplicationQuitting) return;
                 modMenuUI.SetActive(false);
                 if (ListStuff.settingsOpened)
                 {
                     SaveSettings(ModLoader.LoadedMods[0]);
                     SaveSettings(ModLoader.LoadedMods[1]);
                 }
+            }
+            void OnApplicationQuit()
+            {
+                isApplicationQuitting = true;
             }
         }
     }

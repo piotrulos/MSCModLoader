@@ -101,7 +101,7 @@ namespace MSCLoader
             canvLoading.uStatus.text = "Downloading mods update info...";
             while (cfmuInProgress)
                 yield return null;
-if (!cfmuErrored)
+            if (!cfmuErrored)
             {
                 if (cfmuResult.StartsWith("error"))
                 {
@@ -136,16 +136,16 @@ if (!cfmuErrored)
                 else if (cfmuResult.StartsWith("{"))
                 {
                     ModVersions v = JsonConvert.DeserializeObject<ModVersions>(cfmuResult);
-                    File.WriteAllText(Path.Combine(SettingsFolder, Path.Combine("MSCLoader_Settings","updateInfo.json")), cfmuResult);
+                    File.WriteAllText(Path.Combine(SettingsFolder, Path.Combine("MSCLoader_Settings", "updateInfo.json")), cfmuResult);
                     ModMetadata.ReadUpdateInfo(v);
                 }
             }
             else
             {
                 failed = true;
-                if (File.Exists(Path.Combine(SettingsFolder, Path.Combine("MSCLoader_Settings","updateInfo.json"))))
+                if (File.Exists(Path.Combine(SettingsFolder, Path.Combine("MSCLoader_Settings", "updateInfo.json"))))
                 {
-                    string s = File.ReadAllText(Path.Combine(SettingsFolder, Path.Combine("MSCLoader_Settings","updateInfo.json")));
+                    string s = File.ReadAllText(Path.Combine(SettingsFolder, Path.Combine("MSCLoader_Settings", "updateInfo.json")));
                     ModVersions v = JsonConvert.DeserializeObject<ModVersions>(s);
                     ModMetadata.ReadUpdateInfo(v);
                 }

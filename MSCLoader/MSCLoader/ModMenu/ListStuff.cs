@@ -24,6 +24,7 @@ namespace MSCLoader
         public InputField searchField;
 
         public static bool settingsOpened = false;
+        private bool isApplicationQuitting = false;
 #if !Mini
         void OnEnable()
         {
@@ -60,6 +61,7 @@ namespace MSCLoader
         }
         void OnDisable()
         {
+            if (isApplicationQuitting) return;
             switch (type)
             {
                 case ListType.Mods:
@@ -73,6 +75,10 @@ namespace MSCLoader
                     ModMenu.SaveSettings(ModLoader.LoadedMods[1]);
                     break;
             }
+        }
+        void OnApplicationQuit()
+        {
+            isApplicationQuitting = true;
         }
 #endif
     }
