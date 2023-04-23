@@ -1,5 +1,7 @@
 ﻿
 global using UnityEngine;
+using MSCLoaderHelpers;
+using HutongGames.PlayMaker;
 #if !Mini
 using HutongGames.PlayMaker.Actions;
 using System;
@@ -442,10 +444,11 @@ public partial class ModLoader : MonoBehaviour
             File.WriteAllText(sp, DateTime.Now.ToString());
         }
     }
-
+    internal bool updChecked = false;
     private void DownloadUpdateData()
     {
         StartCoroutine(CheckForRefModUpdates());
+        updChecked = true;
     }
     private void ModsUpdateDataProgress(object sender, UploadProgressChangedEventArgs e)
     {
@@ -898,7 +901,14 @@ public partial class ModLoader : MonoBehaviour
         ModConsole.Print("<color=aqua>==== Resetting mods finished ====</color>");
         IsModsResetting = false;
     }
-
+    void MouseFix()
+    {
+        PlayMakerFSM curFSM = GameObject.Find("PLAYER").GetPlayMaker("Update Cursor");
+        FsmState curLock = curFSM.GetState("Update cursor");
+        FsmState curUnLock = curFSM.GetState("In Menu");
+        curLock.Actions[2] = new SetMouseCursorFix(true);
+        curUnLock.Actions[1] = new SetMouseCursorFix(false); 
+    }
     IEnumerator LoadMods()
     {
         ModConsole.Print("<color=aqua>==== Loading mods (Phase 1) ====</color><color=#505050ff>");
@@ -937,6 +947,8 @@ public partial class ModLoader : MonoBehaviour
         canvLoading.lMod.text = "Waiting for game to finish load...";
         while (GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera") == null)
             yield return null;
+        MouseFix();
+        yield return null;
         canvLoading.lTitle.text = "Loading mods - Phase 2".ToUpper();
         canvLoading.lMod.text = "Loading mods. Please wait...";
         ModConsole.Print("</color><color=aqua>==== Loading mods (Phase 2) ====</color><color=#505050ff>");
@@ -1050,6 +1062,8 @@ public partial class ModLoader : MonoBehaviour
         canvLoading.lMod.text = "Waiting for game to finish load...";
         while (GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera") == null)
             yield return null;
+        MouseFix();
+        yield return null;
         canvLoading.lTitle.text = "Loading mods - Phase 2".ToUpper();
         canvLoading.lMod.text = "Loading mods. Please wait...";
         ModConsole.Print("</color><color=aqua>==== Loading mods (Phase 2) ====</color><color=#505050ff>");

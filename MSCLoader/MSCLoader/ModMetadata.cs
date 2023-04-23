@@ -844,13 +844,12 @@ namespace MSCLoader
                 Upd_list += Environment.NewLine;
             }
 
-            if (!ModLoader.Instance.ModloaderUpdateMessage && upd)
+            if (!ModLoader.Instance.ModloaderUpdateMessage && upd && ModLoader.Instance.updChecked)
             {
                 //ModUI.ShowYesNoMessage($"There are updates available that can be updated automatically{Environment.NewLine}{Environment.NewLine}{Upd_list}Do you want to install updates now?", "Updates Available", ModLoader.Instance.DownloadModsUpdates);
                 MsgBoxBtn[] btn1 = { ModUI.CreateMessageBoxBtn("YES", ModLoader.Instance.DownloadModsUpdates), ModUI.CreateMessageBoxBtn("NO") };
                 MsgBoxBtn[] btn2 = { ModUI.CreateMessageBoxBtn("Show Changelog", ShowChangelogs, new Color32(0, 0, 80, 255), Color.white, true) };
                 ModUI.ShowCustomMessage($"There are updates available that can be updated automatically{Environment.NewLine}{Environment.NewLine}{Upd_list}Do you want to install updates now?", "Updates Available", btn1, btn2);
-
             }
         }
         internal static void ShowChangelogs()

@@ -21,7 +21,7 @@ namespace MSCLoader
         public GameObject consoleContainer;
         public Texture2D cursor;
         public bool Xresizer = false;
-
+        private bool isApplicationQuitting = false;
         class ConsoleSizeSave
         {
             public int v = 1;
@@ -78,7 +78,12 @@ namespace MSCLoader
 #if !Mini
         public void OnDisable()
         {
+            if (isApplicationQuitting) return;
             OnMouseExit();
+        }
+        void OnApplicationQuit()
+        {
+            isApplicationQuitting = true;
         }
         public void LoadConsoleSize()
         {

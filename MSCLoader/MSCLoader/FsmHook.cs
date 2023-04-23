@@ -6,6 +6,36 @@ using HutongGames.PlayMaker;
 
 namespace MSCLoader
 {
+    //Fix shitty cursor lock
+    internal class SetMouseCursorFix : FsmStateAction
+    {
+        public FsmBool hideCursor;
+
+        public FsmBool lockCursor;
+
+        public override void Reset()
+        {
+            //cursorTexture = null;
+            hideCursor = false;
+            lockCursor = false;
+        }
+        public SetMouseCursorFix(bool locked)
+        {
+            hideCursor = locked;
+            lockCursor = locked;
+        }
+        public override void OnEnter()
+        {
+            Cursor.visible = !hideCursor.Value;
+            Cursor.SetCursor(null, new Vector2(0, 0), CursorMode.Auto);
+            if (lockCursor.Value)
+                Cursor.lockState = CursorLockMode.Locked;
+            else
+                Cursor.lockState = CursorLockMode.None;
+            Finish();
+        }
+    }
+
     /// <summary>
     /// Playmaker hook inject method.
     /// </summary>

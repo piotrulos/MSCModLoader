@@ -15,6 +15,7 @@ namespace MSCLoader
         private Mod mod;
         private bool set = false;
         private string previousText = "INSTALLED MODS";
+        private bool isApplicationQuitting = false;
 #if !Mini
         public void FillMetadataInfo(Mod m)
         {
@@ -89,8 +90,13 @@ namespace MSCLoader
         }
         void OnDisable()
         {
+            if (isApplicationQuitting) return;
             if (set)
                 ModMenu.SaveSettings(mod);
+        }
+        void OnApplicationQuit()
+        {
+            isApplicationQuitting = true;
         }
 #endif
     }
