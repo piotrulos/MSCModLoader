@@ -652,6 +652,7 @@ namespace MSCLoader
                 case SettingsType.Text:
                     GameObject tx = Instantiate(LabelPrefab);
                     SettingsElement label = tx.GetComponent<SettingsElement>();
+                    setting.SettingsElement = label;
                     label.settingName.text = setting.Name;
                     tx.transform.SetParent(listView, false);
                     break;
