@@ -615,6 +615,7 @@ public partial class ModLoader : MonoBehaviour
                 catch (Exception e)
                 {
                     ModConsole.Error($"<b>References/{Path.GetFileName(files[i])}</b> - Failed to load.");
+                    Console.WriteLine(e);
                     References reference = new References()
                     {
                         FileName = Path.GetFileName(files[i]),
