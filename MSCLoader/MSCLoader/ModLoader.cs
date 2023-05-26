@@ -1,9 +1,6 @@
-﻿
-global using UnityEngine;
-using MSCLoaderHelpers;
+﻿global using UnityEngine;
 using HutongGames.PlayMaker;
 #if !Mini
-using HutongGames.PlayMaker.Actions;
 using System;
 using Newtonsoft.Json;
 using System.Collections;
@@ -37,7 +34,7 @@ public partial class ModLoader : MonoBehaviour
     /// Is this version of ModLoader experimental (this is NOT game experimental branch)
     /// </summary>
 #if Debug
-        public static readonly bool experimental = true;
+    public static readonly bool experimental = true;
 #else
     public static readonly bool experimental = false;
 #endif
