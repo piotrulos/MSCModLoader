@@ -1,5 +1,4 @@
-﻿
-namespace MSCLoader;
+﻿namespace MSCLoader;
 
 internal class References
 {
