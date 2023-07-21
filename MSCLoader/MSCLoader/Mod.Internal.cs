@@ -56,7 +56,7 @@ public partial class Mod
         /// </summary>
         OnModDisabled,
         /// <summary>
-        /// ModSettingsLoaded - Called after saved settings habe been loaded from file.
+        /// ModSettingsLoaded - Called after saved settings have been loaded from file.
         /// </summary>
         ModSettingsLoaded,
         /// <summary>

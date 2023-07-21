@@ -49,7 +49,7 @@ internal class ModMenuView : MonoBehaviour
         //  ModConsole.Warning(filteredList.Length.ToString());
         for (int i = 0; i < filteredList.Length; i++)
         {
-            GameObject mod = GameObject.Instantiate(ModElementPrefab);
+            GameObject mod = Instantiate(ModElementPrefab);
             mod.GetComponent<MenuElementList>().mod = filteredList[i];
             mod.GetComponent<MenuElementList>().ModInfoFill();
             mod.GetComponent<MenuElementList>().ModButtonsPrep(universalView);

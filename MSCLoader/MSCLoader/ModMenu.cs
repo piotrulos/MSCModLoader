@@ -374,6 +374,7 @@ namespace MSCLoader
                     Settings set = Settings.Get(ModLoader.LoadedMods[i]).Find(x => x.ID == settings.settings[j].ID);
                     if (set == null)
                         continue;
+                    //TODO: Add checks for values that no longer exists (like in dropdowns that are based on file list)
                     set.Value = settings.settings[j].Value;
                 }
                 try
