@@ -1185,7 +1185,7 @@ public partial class ModLoader : MonoBehaviour
         getdwl.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
         try
         {
-            dwl = getdwl.DownloadString($"{earlyAccessURL}/ea_test?steam={steamID}&file={Path.GetFileNameWithoutExtension(file)}");
+            dwl = getdwl.DownloadString($"{earlyAccessURL}?steam={steamID}&file={Path.GetFileNameWithoutExtension(file)}");
         }
         catch (Exception e)
         {

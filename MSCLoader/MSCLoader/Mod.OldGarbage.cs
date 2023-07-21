@@ -144,7 +144,7 @@ public partial class Mod
     public virtual void ModSettings() { }
 
     /// <summary>
-    /// Called after saved settings habe been loaded from file.
+    /// Called after saved settings have been loaded from file.
     /// </summary>
     public virtual void ModSettingsLoaded() { }
 

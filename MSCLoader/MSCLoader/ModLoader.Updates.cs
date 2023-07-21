@@ -247,7 +247,7 @@ public partial class ModLoader : MonoBehaviour
             WebClient webClient = new WebClient();
             webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
             webClient.DownloadStringCompleted += cfmuDownloadCompl;
-            webClient.DownloadStringAsync(new Uri($"{metadataURL}/man_v2/{MetadataUpdateList[i]}"));
+            webClient.DownloadStringAsync(new Uri($"{metadataURL}/{MetadataUpdateList[i]}"));
             while (cfmuInProgress)
                 yield return null;
             if (cfmuErrored)
