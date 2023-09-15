@@ -38,6 +38,7 @@ public partial class ModLoader : MonoBehaviour
             {
                 ModConsole.Error(e.Message);
                 System.Console.WriteLine(e);
+                File.Delete(ModsUpdateDir[i]);
             }
         }
         for (int i = 0; i < RefsUpdateDir.Length; i++)
@@ -65,6 +66,7 @@ public partial class ModLoader : MonoBehaviour
             {
                 ModConsole.Error(e.Message);
                 System.Console.WriteLine(e);
+                File.Delete(RefsUpdateDir[i]);
             }
         }
         ModUI.ShowMessage("Updating mods finished.", "Update mods");
@@ -484,7 +486,6 @@ public partial class ModLoader : MonoBehaviour
     {
         downloadInProgress = true;
         downloadPercentage = e.ProgressPercentage;
-        //throw new NotImplementedException();
     }
 
     private void UploadModUpdateCompleted(object sender, UploadFileCompletedEventArgs e)
@@ -541,7 +542,7 @@ public partial class ModLoader : MonoBehaviour
         }
     }
 
-    string DownloadInfo(string ID, bool isRef)
+    internal string DownloadInfo(string ID, bool isRef)
     {
         string dwl = string.Empty;
         WebClient getdwl = new WebClient();
