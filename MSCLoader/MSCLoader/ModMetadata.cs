@@ -80,14 +80,15 @@ namespace MSCLoader
     }
     internal class ModMetadata
     {
-        public static bool VerifyOwnership(string ID, bool reference)
+        public static bool VerifyOwnership(string ID, bool reference, bool sl = false)
         {
             string steamID;
             string key;
             string auth = ModLoader.GetMetadataFolder("auth.bin");
             if (!File.Exists(auth))
             {
-                ModConsole.Error("No auth key detected. Please set auth first.");
+                if (!sl)
+                    ModConsole.Error("No auth key detected. Please set auth first.");
                 return false;
             }
             key = File.ReadAllText(auth);
@@ -108,40 +109,47 @@ namespace MSCLoader
                 }
                 catch (Exception e)
                 {
-                    ModConsole.Error($"Failed to verify key");
+                    if (!sl)
+                        ModConsole.Error($"Failed to verify key");
                     Console.WriteLine(e);
                     return false;
                 }
 
                 string[] result = dwl.Split('|');
-           
+
                 if (result[0] == "error")
                 {
                     switch (result[1])
                     {
                         case "0":
-                            ModConsole.Error($"Invalid or non existent key");
+                            if (!sl)
+                                ModConsole.Error($"Invalid or non existent key");
                             break;
                         case "1":
-                            ModConsole.Error($"Database error");
+                            if (!sl)
+                                ModConsole.Error($"Database error");
                             break;
                         case "2":
-                            ModConsole.Error($"User not found");
+                            if (!sl)
+                                ModConsole.Error($"User not found");
                             break;
                         case "3":
-                            if (reference)
-                                ModConsole.Error($"This Reference ID doesn't exist in database, create it first");
-                            else
-                                ModConsole.Error($"This Mod ID doesn't exist in database, create it first");
+                            if (!sl)
+                                if (reference)
+                                    ModConsole.Error($"This Reference ID doesn't exist in database, create it first");
+                                else
+                                    ModConsole.Error($"This Mod ID doesn't exist in database, create it first");
                             break;
                         case "4":
-                            if (reference)
-                                ModConsole.Error($"You are not owner of this Reference");
-                            else
-                                ModConsole.Error($"You are not owner of this Mod");
+                            if (!sl)
+                                if (reference)
+                                    ModConsole.Error($"You are not owner of this Reference");
+                                else
+                                    ModConsole.Error($"You are not owner of this Mod");
                             break;
                         default:
-                            ModConsole.Error($"Unknown error");
+                            if (!sl)
+                                ModConsole.Error($"Unknown error");
                             break;
                     }
                     return false;
@@ -152,16 +160,17 @@ namespace MSCLoader
                 }
                 else
                 {
-                    ModConsole.Error($"Unknown server respnse");
+                    if (!sl)
+                        ModConsole.Error($"Unknown server respnse");
                     return false;
                 }
             }
             else
             {
-                ModConsole.Error($"steam auth failed");
+                if (!sl)
+                    ModConsole.Error($"steam auth failed");
                 return false;
             }
-
         }
         public static void AuthMe(string key)
         {
@@ -749,7 +758,7 @@ namespace MSCLoader
                         case 1:
                             mod.hasUpdate = true;
                             ModLoader.HasUpdateModList.Add(mod);
-                            if (mv.versions[i].mod_type == 4 || mv.versions[i].mod_type == 5 || mv.versions[i].mod_type == 6)
+                            if (mv.versions[i].mod_type == 4 || mv.versions[i].mod_type == 6)
                             {
                                 ModLoader.ModSelfUpdateList.Add(mod.ID);
                             }
@@ -914,14 +923,17 @@ namespace MSCLoader
             }
             if (mod.metadata.type == 3)
             {
-                if (mod.metadata.sign != CalculateFileChecksum(mod.fileName))
+                if (!ModLoader.CheckSteam())
                 {
-                    mod.isDisabled = true;
-                    ModMenu.SaveSettings(mod);
-                    return;
+                    if (mod.metadata.sign != CalculateFileChecksum(mod.fileName))
+                    {
+                        if (!VerifyOwnership(mod.ID, false, true))
+                            CheckForUpdatedDescription(mod);
+                    }
                 }
+                mod.metadata.type = 4;
             }
-            if (mod.metadata.type == 1 || mod.metadata.type == 4 || mod.metadata.type == 5 || mod.metadata.type == 6)
+            if (mod.metadata.type == 1 || mod.metadata.type == 4 || mod.metadata.type == 6)
             {
                 if (!string.IsNullOrEmpty(mod.metadata.icon.iconFileName))
                 {
@@ -1039,6 +1051,26 @@ namespace MSCLoader
                     }
                 }
             }
+        }
+
+        private static void CheckForUpdatedDescription(Mod mod)
+        {
+            string[] result;
+            result = ModLoader.Instance.DownloadInfo(mod.ID, false).Split('|');
+            if (result[0] == "ok")
+            {
+                using WebClient descritpion = new WebClient();
+                descritpion.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
+                descritpion.DownloadFileCompleted += DescritpionDownloadCompleted;
+                descritpion.DownloadFileAsync(new Uri($"{ModLoader.serverURL}/{result[1]}"), Path.Combine(Path.Combine("Updates", "Mods"), $"{mod}.zip"),mod);
+            }
+        }
+
+        private static void DescritpionDownloadCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        {
+            Mod m = (Mod)e.UserState;
+            m.isDisabled = true;
+            ModUI.ShowMessage($"<color=yellow>{m.ID}</color> - Fatal crash when trying to read mod data.{Environment.NewLine}{Environment.NewLine}Error details: {Environment.NewLine}<color=aqua>{new BadImageFormatException().Message}</color>", "Crashed");
         }
 
         internal static ModsManifest LoadMetadata(Mod mod)

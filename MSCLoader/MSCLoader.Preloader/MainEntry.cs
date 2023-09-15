@@ -99,6 +99,7 @@ namespace MSCLoader.Preloader
             {
                 MDebug.Log("[MODLOADER UPDATE FAILED]");
                 MDebug.Log(e.ToString(), true);
+                File.Delete(fn);
             }
         }
         private static void ReadSettings()
