@@ -172,19 +172,19 @@ namespace MSCLoader
             object fsmVar = null;
             switch (typeof(T).ToString())
             {
-                case "FsmFloat": fsmVar = pm.Fsm.Variables.FloatVariables.FirstOrDefault(x => x.Name == ID); break;
-                case "FsmInt": fsmVar = pm.Fsm.Variables.IntVariables.FirstOrDefault(x => x.Name == ID); break;
-                case "FsmBool": fsmVar = pm.Fsm.Variables.BoolVariables.FirstOrDefault(x => x.Name == ID); break;
-                case "FsmGameObject": fsmVar = pm.Fsm.Variables.GameObjectVariables.FirstOrDefault(x => x.Name == ID); break;
-                case "FsmString": fsmVar = pm.Fsm.Variables.StringVariables.FirstOrDefault(x => x.Name == ID); break;
-                case "FsmVector2": fsmVar = pm.Fsm.Variables.Vector2Variables.FirstOrDefault(x => x.Name == ID); break;
-                case "FsmVector3": fsmVar = pm.Fsm.Variables.Vector3Variables.FirstOrDefault(x => x.Name == ID); break;
-                case "FsmColor": fsmVar = pm.Fsm.Variables.ColorVariables.FirstOrDefault(x => x.Name == ID); break;
-                case "FsmRect": fsmVar = pm.Fsm.Variables.RectVariables.FirstOrDefault(x => x.Name == ID); break;
-                case "FsmMaterial": fsmVar = pm.Fsm.Variables.MaterialVariables.FirstOrDefault(x => x.Name == ID); break;
-                case "FsmTexture": fsmVar = pm.Fsm.Variables.TextureVariables.FirstOrDefault(x => x.Name == ID); break;
-                case "FsmQuaternion": fsmVar = pm.Fsm.Variables.QuaternionVariables.FirstOrDefault(x => x.Name == ID); break;
-                case "FsmObject": fsmVar = pm.Fsm.Variables.ObjectVariables.FirstOrDefault(x => x.Name == ID); break;
+                case "HutongGames.PlayMaker.FsmFloat": fsmVar = pm.Fsm.Variables.FloatVariables.FirstOrDefault(x => x.Name == ID); break;
+                case "HutongGames.PlayMaker.FsmInt": fsmVar = pm.Fsm.Variables.IntVariables.FirstOrDefault(x => x.Name == ID); break;
+                case "HutongGames.PlayMaker.FsmBool": fsmVar = pm.Fsm.Variables.BoolVariables.FirstOrDefault(x => x.Name == ID); break;
+                case "HutongGames.PlayMaker.FsmGameObject": fsmVar = pm.Fsm.Variables.GameObjectVariables.FirstOrDefault(x => x.Name == ID); break;
+                case "HutongGames.PlayMaker.FsmString": fsmVar = pm.Fsm.Variables.StringVariables.FirstOrDefault(x => x.Name == ID); break;
+                case "HutongGames.PlayMaker.FsmVector2": fsmVar = pm.Fsm.Variables.Vector2Variables.FirstOrDefault(x => x.Name == ID); break;
+                case "HutongGames.PlayMaker.FsmVector3": fsmVar = pm.Fsm.Variables.Vector3Variables.FirstOrDefault(x => x.Name == ID); break;
+                case "HutongGames.PlayMaker.FsmColor": fsmVar = pm.Fsm.Variables.ColorVariables.FirstOrDefault(x => x.Name == ID); break;
+                case "HutongGames.PlayMaker.FsmRect": fsmVar = pm.Fsm.Variables.RectVariables.FirstOrDefault(x => x.Name == ID); break;
+                case "HutongGames.PlayMaker.FsmMaterial": fsmVar = pm.Fsm.Variables.MaterialVariables.FirstOrDefault(x => x.Name == ID); break;
+                case "HutongGames.PlayMaker.FsmTexture": fsmVar = pm.Fsm.Variables.TextureVariables.FirstOrDefault(x => x.Name == ID); break;
+                case "HutongGames.PlayMaker.FsmQuaternion": fsmVar = pm.Fsm.Variables.QuaternionVariables.FirstOrDefault(x => x.Name == ID); break;
+                case "HutongGames.PlayMaker.FsmObject": fsmVar = pm.Fsm.Variables.ObjectVariables.FirstOrDefault(x => x.Name == ID); break;
                 default:
                     ModConsole.Error($"GetVariable error: {typeof(T)} is not valid FSM variable type.");
                     break;
