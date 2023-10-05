@@ -110,7 +110,7 @@ namespace MSCPatcher
                 using (WebClient client = new WebClient())
                 {
                     client.QueryString.Add("core", "stable");
-                    res = client.DownloadString("http://my-summer-car.ml/ver.php");
+                    res = client.DownloadString("http://my-summer-car.ovh/ver.php");
                 }
                 string[] result = res.Split('|');
                 if (result[0] == "error")
