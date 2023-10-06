@@ -27,7 +27,7 @@ namespace MSCLoader
     /// <summary>
     /// My Summer Car specific extensions
     /// </summary>
-    public static class MSCExtensions 
+    public static class MSCExtensions
     {
 
         /// <summary>
@@ -65,12 +65,12 @@ namespace MSCLoader
                     return fsm;
                 else
                 {
-                    ModConsole.Error($"GetPlayMaker: Cannot find <b>{playMakerName}</b> in GameObject <b>{obj.name}</b>");
+                    ModConsole.Error(string.Format("GetPlayMaker: Cannot find <b>{0}</b> in GameObject <b>{1}</b>", playMakerName, obj.name));
                     return null;
                 }
 
             }
-            ModConsole.Error($"GetPlayMaker: Cannot find any Playmakers in GameObject <b>{obj.name}</b>");
+            ModConsole.Error(string.Format("GetPlayMaker: Cannot find any Playmakers in GameObject <b>{0}</b>", obj.name));
             return null;
         }
 
@@ -103,144 +103,12 @@ namespace MSCLoader
                     if (state != null)
                         return state;
                 }
-                ModConsole.Error($"GetPlayMakerState: Cannot find <b>{stateName}</b> state in GameObject <b>{obj.name}</b>");
+                ModConsole.Error(string.Format("GetPlayMakerState: Cannot find <b>{0}</b> state in GameObject <b>{1}</b>", stateName, obj.name));
                 return null;
             }
-            ModConsole.Error($"GetPlayMakerState: Cannot find any Playmakers in GameObject <b>{obj.name}</b>");
+            ModConsole.Error(string.Format("GetPlayMakerState: Cannot find any Playmakers in GameObject <b>{0}</b>", obj.name));
             return null;
         }
-
-        /// <summary>
-        /// Gets a FsmState from the PlayMakerFSM
-        /// </summary>
-        /// <param name="pm">PlayMakerFSM</param>
-        /// <param name="stateName">Name of the state</param>
-        /// <returns>FsmState</returns>
-        public static FsmState GetState(this PlayMakerFSM pm, string stateName)
-        {
-            if (pm == null)
-            {
-                ModConsole.Error($"GetState: PlayMakerFSM is null");
-                return null;
-            }
-
-            FsmState state = pm.FsmStates.FirstOrDefault(x => x.Name == stateName);
-            if (state != null)
-                return state;
-            ModConsole.Error($"GetState: Cannot find <b>{stateName}</b> state in PlayMaker <b>{pm.name}</b>");
-            return null;
-        }
-
-        /// <summary>
-        /// Gets a FsmState from the PlayMakerFSM by index
-        /// </summary>
-        /// <param name="pm">PlayMakerFSM</param>
-        /// <param name="index">State index in array</param>
-        /// <returns>FsmState</returns>
-        public static FsmState GetState(this PlayMakerFSM pm, int index)
-        {
-            if (pm == null)
-            {
-                ModConsole.Error($"GetState: PlayMakerFSM is null");
-                return null;
-            }
-            try
-            {
-                return pm.FsmStates[index];
-            }
-            catch (Exception ex)
-            {
-                ModConsole.Error($"GetState:{ex.Message}");
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Get a variable of specified type and name.
-        /// </summary>
-        /// <typeparam name="T">Type of variable to get.</typeparam>
-        /// <param name="pm">PlayMakerFSM</param>
-        /// <param name="ID">Name of the variable to find.</param>
-        /// <returns>PlayMaker variable</returns>
-        public static T GetVariable<T>(this PlayMakerFSM pm, string ID) where T : new()
-        {
-            if (pm == null)
-            {
-                ModConsole.Error($"GetVariable: PlayMakerFSM is null");
-                return new T();
-            }
-            object fsmVar = null;
-            switch (typeof(T).ToString())
-            {
-                case "HutongGames.PlayMaker.FsmFloat": fsmVar = pm.Fsm.Variables.FloatVariables.FirstOrDefault(x => x.Name == ID); break;
-                case "HutongGames.PlayMaker.FsmInt": fsmVar = pm.Fsm.Variables.IntVariables.FirstOrDefault(x => x.Name == ID); break;
-                case "HutongGames.PlayMaker.FsmBool": fsmVar = pm.Fsm.Variables.BoolVariables.FirstOrDefault(x => x.Name == ID); break;
-                case "HutongGames.PlayMaker.FsmGameObject": fsmVar = pm.Fsm.Variables.GameObjectVariables.FirstOrDefault(x => x.Name == ID); break;
-                case "HutongGames.PlayMaker.FsmString": fsmVar = pm.Fsm.Variables.StringVariables.FirstOrDefault(x => x.Name == ID); break;
-                case "HutongGames.PlayMaker.FsmVector2": fsmVar = pm.Fsm.Variables.Vector2Variables.FirstOrDefault(x => x.Name == ID); break;
-                case "HutongGames.PlayMaker.FsmVector3": fsmVar = pm.Fsm.Variables.Vector3Variables.FirstOrDefault(x => x.Name == ID); break;
-                case "HutongGames.PlayMaker.FsmColor": fsmVar = pm.Fsm.Variables.ColorVariables.FirstOrDefault(x => x.Name == ID); break;
-                case "HutongGames.PlayMaker.FsmRect": fsmVar = pm.Fsm.Variables.RectVariables.FirstOrDefault(x => x.Name == ID); break;
-                case "HutongGames.PlayMaker.FsmMaterial": fsmVar = pm.Fsm.Variables.MaterialVariables.FirstOrDefault(x => x.Name == ID); break;
-                case "HutongGames.PlayMaker.FsmTexture": fsmVar = pm.Fsm.Variables.TextureVariables.FirstOrDefault(x => x.Name == ID); break;
-                case "HutongGames.PlayMaker.FsmQuaternion": fsmVar = pm.Fsm.Variables.QuaternionVariables.FirstOrDefault(x => x.Name == ID); break;
-                case "HutongGames.PlayMaker.FsmObject": fsmVar = pm.Fsm.Variables.ObjectVariables.FirstOrDefault(x => x.Name == ID); break;
-                default:
-                    ModConsole.Error($"GetVariable error: {typeof(T)} is not valid FSM variable type.");
-                    break;
-            }
-            if (fsmVar == null)
-                return new T();
-            else
-                return (T)fsmVar;
-        }
-
-        /// <summary>
-        /// Gets a GlobalTransition of the PlayMakerFSM
-        /// </summary>
-        /// <param name="pm">PlayMakerFSM</param>
-        /// <param name="eventName">Name of the event</param>
-        /// <returns>FsmTransition</returns>
-        public static FsmTransition GetGlobalTransition(this PlayMakerFSM pm, string eventName)
-        {
-            if (pm == null)
-            {
-                ModConsole.Error($"GetGlobalTransition: PlayMakerFSM is null");
-                return null;
-            }
-            FsmTransition gT = pm.Fsm.GlobalTransitions.FirstOrDefault(x => x.EventName == eventName);
-            if (gT != null)
-                return gT;
-            else
-            {
-                ModConsole.Error($"GetGlobalTransition: {eventName} not found");
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Gets a FsmTransition from the FsmState
-        /// </summary>
-        /// <param name="fs">FsmState</param>
-        /// <param name="eventName">Name of the event</param>
-        /// <returns>FsmTransition</returns>
-        public static FsmTransition GetTransition(this FsmState fs, string eventName)
-        {
-            if (fs == null)
-            {
-                ModConsole.Error($"GetTransition: FsmState is null");
-                return null;
-            }
-            if (fs.Transitions.FirstOrDefault(x => x.EventName == eventName) != null)
-                return fs.Transitions.FirstOrDefault(x => x.EventName == eventName);
-            else
-            {
-                ModConsole.Error($"GetTransition: Transition for {eventName} in State {fs.Name} doesn't exist!");
-                return null;
-            }
-
-        }
-
         /// <summary>
         /// FSM Inject as extension (same as old FsmHook.FsmInject)
         /// </summary>
@@ -252,9 +120,9 @@ namespace MSCLoader
             FsmHook.FsmInject(gameObject, stateName, hook);
         }
 
-  
+
         //------------------ BrennFuchS Playmaker Extensions ---------------------//       
-        
+
         /// <summary>
         /// Initialize a PlayMakerFSM
         /// </summary>
@@ -284,7 +152,23 @@ namespace MSCLoader
             catch (Exception ex) { ModConsole.Error(ex.ToString()); }
         }
 
-
+        /// <summary>
+        /// Gets a GlobalTransition of the PlayMakerFSM
+        /// </summary>
+        /// <param name="pm">PlayMakerFSM</param>
+        /// <param name="eventName">Name of the event</param>
+        /// <returns>FsmTransition</returns>
+        public static FsmTransition GetGlobalTransition(this PlayMakerFSM pm, string eventName)
+        {
+            try
+            {
+                pm.Fsm.InitData();
+                var gT = pm.Fsm.GlobalTransitions.First(x => x.EventName == eventName);
+                if (gT != null) return gT;
+                else return null;
+            }
+            catch (Exception ex) { ModConsole.Error(ex.ToString()); return null; }
+        }
 
         /// <summary>
         /// Add FsmFloat variable to PlayMakerFSM
@@ -493,7 +377,39 @@ namespace MSCLoader
             catch (Exception ex) { ModConsole.Error(ex.ToString()); }
         }
 
-
+        /// <summary>
+        /// Get a variable of specified type and name.
+        /// </summary>
+        /// <typeparam name="T">Type of variable to get.</typeparam>
+        /// <param name="pm">PlayMakerFSM</param>
+        /// <param name="ID">Name of the variable to find.</param>
+        /// <returns>PlayMaker variable</returns>
+        public static T GetVariable<T>(this PlayMakerFSM pm, string ID) where T : new()
+        {
+            try
+            {
+                object var = null;
+                pm.Fsm.InitData();
+                switch (typeof(T))
+                {
+                    case Type t when t == typeof(FsmFloat): var = (object)pm.Fsm.Variables.FloatVariables.First(x => x.Name == ID); break;
+                    case Type t when t == typeof(FsmInt): var = (object)pm.Fsm.Variables.IntVariables.First(x => x.Name == ID); break;
+                    case Type t when t == typeof(FsmBool): var = (object)pm.Fsm.Variables.BoolVariables.First(x => x.Name == ID); break;
+                    case Type t when t == typeof(FsmGameObject): var = (object)pm.Fsm.Variables.GameObjectVariables.First(x => x.Name == ID); break;
+                    case Type t when t == typeof(FsmString): var = (object)pm.Fsm.Variables.StringVariables.First(x => x.Name == ID); break;
+                    case Type t when t == typeof(FsmVector2): var = (object)pm.Fsm.Variables.Vector2Variables.First(x => x.Name == ID); break;
+                    case Type t when t == typeof(FsmVector3): var = (object)pm.Fsm.Variables.Vector3Variables.First(x => x.Name == ID); break;
+                    case Type t when t == typeof(FsmColor): var = (object)pm.Fsm.Variables.ColorVariables.First(x => x.Name == ID); break;
+                    case Type t when t == typeof(FsmRect): var = (object)pm.Fsm.Variables.RectVariables.First(x => x.Name == ID); break;
+                    case Type t when t == typeof(FsmMaterial): var = (object)pm.Fsm.Variables.MaterialVariables.First(x => x.Name == ID); break;
+                    case Type t when t == typeof(FsmTexture): var = (object)pm.Fsm.Variables.TextureVariables.First(x => x.Name == ID); break;
+                    case Type t when t == typeof(FsmQuaternion): var = (object)pm.Fsm.Variables.QuaternionVariables.First(x => x.Name == ID); break;
+                    case Type t when t == typeof(FsmObject): var = (object)pm.Fsm.Variables.ObjectVariables.First(x => x.Name == ID); break;
+                }
+                return (T)var;
+            }
+            catch (Exception ex) { ModConsole.Error(ex.ToString()); return new T(); }
+        }
 
         /// <summary>
         /// Adds an empty FsmState to the PlayMakerFSM
@@ -525,6 +441,46 @@ namespace MSCLoader
         }
 
         /// <summary>
+        /// Gets a FsmState from the PlayMakerFSM
+        /// </summary>
+        /// <param name="pm">PlayMakerFSM</param>
+        /// <param name="stateName">Name of the state</param>
+        /// <returns>FsmState</returns>
+        public static FsmState GetState(this PlayMakerFSM pm, string stateName)
+        {
+            try
+            {
+                pm.Fsm.InitData();
+                return pm.FsmStates.First(x => x.Name == stateName);
+            }
+            catch (Exception ex)
+            {
+                ModConsole.Error(ex.ToString());
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets a FsmState from the PlayMakerFSM
+        /// </summary>
+        /// <param name="pm">PlayMakerFSM</param>
+        /// <param name="index">State index in array</param>
+        /// <returns>FsmState</returns>
+        public static FsmState GetState(this PlayMakerFSM pm, int index)
+        {
+            try
+            {
+                pm.Fsm.InitData();
+                return pm.FsmStates[index];
+            }
+            catch (Exception ex)
+            {
+                ModConsole.Error(ex.ToString());
+                return null;
+            }
+        }
+
+        /// <summary>
         /// Adds a FsmTransition to the FsmState
         /// </summary>
         /// <param name="fs">FsmState</param>
@@ -544,6 +500,21 @@ namespace MSCLoader
             catch (Exception ex) { ModConsole.Error(ex.ToString()); }
         }
 
+        /// <summary>
+        /// Gets a FsmTransition from the FsmState
+        /// </summary>
+        /// <param name="fs">FsmState</param>
+        /// <param name="eventName">Name of the event</param>
+        /// <returns>FsmTransition</returns>
+        public static FsmTransition GetTransition(this FsmState fs, string eventName)
+        {
+            try
+            {
+                if (fs.Transitions.First(x => x.EventName == eventName) != null) return fs.Transitions.First(x => x.EventName == eventName);
+                else { ModConsole.Error($"Transition for {eventName} in State {fs.Name} doesn't exist!"); return null; }
+            }
+            catch (Exception ex) { ModConsole.Error(ex.ToString()); return null; }
+        }
 
         /// <summary>
         /// Adds a FsmStateAction to the FsmState
@@ -580,7 +551,7 @@ namespace MSCLoader
         /// <returns></returns>
         public static T GetAction<T>(this FsmState fs, int index) where T : class, new()
         {
-            try { return (T)(object)fs.Actions[index]; }
+            try { return (T)((object)fs.Actions[index]); }
             catch (Exception ex) { ModConsole.Error(ex.ToString()); return new T(); }
         }
 
