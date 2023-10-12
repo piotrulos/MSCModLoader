@@ -37,6 +37,12 @@ namespace MSCPatcher
             form1 = this;
             InitializeComponent();
             Log.logBox = logBox;
+
+            // Change to the directory containing the exe.
+            // This allows running the exe from the commandline in another
+            // folder while still working with the existing path logic.
+            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+
             if (File.Exists("Assembly-CSharp.dll") || File.Exists("UnityEngine.dll") || File.Exists("mysummercar.exe") || File.Exists("mainData") || File.Exists("mono.dll") || File.Exists("CSteamworks.dll") || Directory.Exists("References")) //check if idiot unpacked this to game folder.
             {
                 if (MessageBox.Show("Did you read the instructions? (Readme.txt)", "Question for you!", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
