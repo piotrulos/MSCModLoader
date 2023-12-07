@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MSCLInstaller"
         mc:Ignorable="d"
-        Title="MSCLoader installer" ResizeMode="NoResize" SizeToContent="WidthAndHeight" MinWidth="600" MaxWidth="600"  Background="#FFF0F0F0">
+        Title="MSCLoader installer" ResizeMode="NoResize" SizeToContent="WidthAndHeight" MinWidth="600" MaxWidth="600"  Background="White">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="80"/>
@@ -16,7 +16,7 @@
         <Frame Grid.Row="1" Name="MainFrame"/>
         <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Right">
             <Button Name="BackBtn" Content="Back" Width="80"/>
-            <Button Name="NextBtn" Content="Next" Width="80" Margin="10,0,0,0"/>
+            <Button Name="NextBtn" Content="Next" Width="80" Margin="10,0,0,0" Click="NextBtn_Click"/>
         </StackPanel>
         <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Left">
             <TextBlock Text="VersionFooter" Name="VersionFooter"/>

@@ -19,9 +19,17 @@ namespace MSCLInstaller
     /// </summary>
     public partial class MainWindow : Window
     {
+        SelectGameFolder sgf;
         public MainWindow()
         {
             InitializeComponent();
+            sgf = new SelectGameFolder();
+        }
+
+        private void NextBtn_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Content = sgf;
+            sgf.Init();
         }
     }
 }
