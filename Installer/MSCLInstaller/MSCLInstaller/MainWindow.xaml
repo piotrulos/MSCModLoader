@@ -1,0 +1,25 @@
+﻿<Window x:Class="MSCLInstaller.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MSCLInstaller"
+        mc:Ignorable="d"
+        Title="MSCLoader installer" ResizeMode="NoResize" SizeToContent="WidthAndHeight" MinWidth="600" MaxWidth="600"  Background="#FFF0F0F0">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80"/>
+            <RowDefinition Height="300"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        <Image Grid.Row="0" Name="GameLogo"/>
+        <Frame Grid.Row="1" Name="MainFrame"/>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Right">
+            <Button Name="BackBtn" Content="Back" Width="80"/>
+            <Button Name="NextBtn" Content="Next" Width="80" Margin="10,0,0,0"/>
+        </StackPanel>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Left">
+            <TextBlock Text="VersionFooter" Name="VersionFooter"/>
+        </StackPanel>
+    </Grid>
+</Window>
