@@ -83,7 +83,7 @@ public partial class ModLoader : MonoBehaviour
     internal static void Init_MD()
     {
         if (unloader) return;
-        ModsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Path.Combine("MySummerCar", "Mods"));
+        ModsFolder = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Path.Combine("MySummerCar", "Mods")));
         PrepareModLoader();
     }
 

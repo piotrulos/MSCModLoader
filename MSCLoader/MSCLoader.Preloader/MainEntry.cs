@@ -59,7 +59,7 @@ namespace MSCLoader.Preloader
                         modPath = Path.GetFullPath(Path.Combine("Mods", ""));
                         break;
                     case "MD":
-                        modPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Path.Combine("MySummerCar", "Mods"));
+                        modPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Path.Combine("MySummerCar", "Mods")));
                         break;
                     case "AD":
                         modPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"..\LocalLow\Amistech\My Summer Car\Mods"));
