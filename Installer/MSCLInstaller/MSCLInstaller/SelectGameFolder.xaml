@@ -28,6 +28,6 @@
                 <TextBlock Text="On this step you need to select where My Summer Car is installed.&#x0a;This should happen automatically, if not click &quot;Change...&quot;&#x0a;&#x0a;If detected text is green you can go to next step"/>
             </GroupBox>
         </StackPanel>
-        <Button Name="GoNext" Content="Next" Width="70" Height="20" Margin="510,270,10,10" RenderTransformOrigin="0.5,0.5" IsEnabled="False"/>
+        <Button Name="GoNext" Content="Next" Width="70" Height="20" Margin="510,270,10,10" RenderTransformOrigin="0.5,0.5" IsEnabled="False" Click="GoNext_Click"/>
     </Grid>
 </Page>

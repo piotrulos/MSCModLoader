@@ -29,6 +29,14 @@ namespace MSCLInstaller
             Dbg.Init();
             Dbg.Log($"Current folder: {Path.GetFullPath(".")}");
             sgf = new SelectGameFolder();
+            if(Directory.GetFiles(".", "*.pack").Length == 0)
+            {
+                MessageBox.Show($"Couldn't find any required core files.{Environment.NewLine}Please unpack all files before launching this installer!", "Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Dbg.Log($"!!! CRASH !!!", true, true);
+                Dbg.Log($"Core files not found, exiting.");
+                Environment.Exit(0);
+            }
+            SelectGameFolderPage(Game.MSC);
         }
 
         private void NextBtn_Click(object sender, RoutedEventArgs e)

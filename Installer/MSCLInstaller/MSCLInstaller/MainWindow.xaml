@@ -13,7 +13,7 @@
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <Border BorderBrush="Black" BorderThickness=".3">
-            <Image Name="GameLogo"/>
+            <Image Name="GameLogo" Source="/Images/logo.png"/>
         </Border>
         <Frame Grid.Row="1" Name="MainFrame"/>
         <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Right">

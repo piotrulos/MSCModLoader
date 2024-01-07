@@ -66,6 +66,9 @@
     </ApplicationDefinition>
     <Compile Include="Dbg.cs" />
     <Compile Include="MD5FileHashes.cs" />
+    <Compile Include="MSCLoaderInstaller.xaml.cs">
+      <DependentUpon>MSCLoaderInstaller.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SelectGame.xaml.cs">
       <DependentUpon>SelectGame.xaml</DependentUpon>
     </Compile>
@@ -85,6 +88,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="MSCLoaderInstaller.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="SelectGame.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -119,6 +126,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="mscpatchericon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\logo_sel.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
