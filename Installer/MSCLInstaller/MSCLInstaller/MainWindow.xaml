@@ -12,14 +12,17 @@
             <RowDefinition Height="300"/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        <Image Grid.Row="0" Name="GameLogo"/>
+        <Border BorderBrush="Black" BorderThickness=".3">
+            <Image Name="GameLogo"/>
+        </Border>
         <Frame Grid.Row="1" Name="MainFrame"/>
         <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Right">
-            <Button Name="BackBtn" Content="Back" Width="80"/>
-            <Button Name="NextBtn" Content="Next" Width="80" Margin="10,0,0,0" Click="NextBtn_Click"/>
+            <Button Name="NextBtn" Content="Test" Width="80" Margin="10,0,0,0" Click="NextBtn_Click"/>
         </StackPanel>
-        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Left">
-            <TextBlock Text="VersionFooter" Name="VersionFooter"/>
-        </StackPanel>
+        <Border BorderBrush="Black" BorderThickness=".3" Grid.Row="2">
+            <StackPanel Orientation="Horizontal" Margin="10,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Left">
+                <TextBlock Text="MSCLInstaller Ready!" Name="StatusBarText"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </Window>

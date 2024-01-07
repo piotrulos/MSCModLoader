@@ -13,6 +13,9 @@ namespace MSCLInstaller
             throw e.Exception;
 #else
             MessageBox.Show("Error:\n\n" + e.Exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            Dbg.Log("!!! Unhandled Exception !!!",true,true);
+            Dbg.Log(e.Exception.ToString());
+
             e.Handled = true;
 
 #endif       

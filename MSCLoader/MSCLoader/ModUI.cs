@@ -9,7 +9,7 @@ namespace MSCLoader
     {
         private bool isApplicationQuitting = false;
         private Canvas canvas;
-        void Start ()
+        void Start()
         {
             gameObject.name = gameObject.name.Replace("(Clone)", string.Empty);
             int r1 = UnityEngine.Random.Range(2, 8);
@@ -20,7 +20,7 @@ namespace MSCLoader
             }
             canvas = GetComponent<Canvas>();
         }
-        #if !Mini
+#if !Mini
         void FixedUpdate()
         {
             if (!canvas.enabled) canvas.enabled = true;

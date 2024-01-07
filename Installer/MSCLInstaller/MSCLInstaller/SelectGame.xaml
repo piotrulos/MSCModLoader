@@ -1,0 +1,19 @@
+﻿<Page x:Class="MSCLInstaller.SelectGame"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:MSCLInstaller"
+      mc:Ignorable="d" 
+      d:DesignHeight="300" d:DesignWidth="600"
+      Title="SelectGame">
+
+    <Grid Background="WhiteSmoke">
+        <StackPanel Margin="10">
+            <TextBlock FontSize="30" Text="Select Game"/>
+            <Button Height="60" Margin="2" Content="My Summer Car"/>
+            <Button Height="60" Margin="2" Content="My Summer Car"/>
+            <Button Height="60" Margin="2" Content="My Summer Car"/>
+        </StackPanel>
+    </Grid>
+</Page>
