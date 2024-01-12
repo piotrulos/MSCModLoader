@@ -5,12 +5,39 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:MSCLInstaller"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="300" d:DesignWidth="600"
       Title="MSCLoaderInstaller">
 
     <Grid Background="WhiteSmoke">
-        <StackPanel Margin="10">
+        <StackPanel Margin="7">
+            <TextBlock FontSize="25" Text="MSCLoader Installer"/>
+            <GroupBox Name="MSCLStatus" Header="MSCLoader status">
+                <StackPanel>
+                <TextBlock Name="MSCFolderText" Text="msc folder"/>
+                <TextBlock Name="ModsFolderText" Text="mods folder"/>
+                <TextBlock Name="InstallStatusText" Text="Status"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                        <Button Width="130" Content="Change Mods Folder"/>
+                        <Button Width="130" Name="InstallBtn" Content="Install MSCLoader" Margin="10,0,0,0"/>
+                        <Button Width="130" Name="UninstallBtn" Content="Uninstall MSCLoader" Margin="10,0,0,0" IsEnabled="False"/>
+                        <Button Width="130" Content="Advanced Options" Margin="10,0,0,0" IsEnabled="False"/>
+                    </StackPanel>
+                </StackPanel>
 
+            </GroupBox>
+            <GroupBox Header="Help">
+                <TextBlock>
+                    Here you can see a status if MSCLoader is installed, not installed or up to date.
+                    <LineBreak/>
+                    If you want to change Mods folder click <Bold>Change Mods Folder</Bold>
+                    <LineBreak/>
+                    If you want to repair/reinstall MSCLoader click <Bold>Reinstall MSCLoader</Bold>
+
+                </TextBlock>
+            </GroupBox>
         </StackPanel>
+        <Border Margin="7" Name="PleaseWait" Background="WhiteSmoke" Visibility="Visible">
+            <TextBlock FontSize="25" Text="Please wait.... Checking current files"/>
+        </Border>
     </Grid>
 </Page>

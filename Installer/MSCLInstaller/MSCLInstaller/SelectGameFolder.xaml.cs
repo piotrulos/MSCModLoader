@@ -29,6 +29,18 @@ namespace MSCLInstaller
         public void Init(MainWindow m)
         {
             main = m;
+            switch (Storage.selectedGame)
+            {
+                case Game.MSC:
+                    main.Title += " - My Summer Car"; 
+                    break;
+                case Game.MSC_IMA:
+                    main.Title += " - My Summer Car (Community)";
+                    break;
+                case Game.MWC:
+                    main.Title += " - My Winter Car";
+                    break;
+            }
             FindMSCOnSteam();
             if (string.IsNullOrEmpty(Storage.mscPath))
             {
@@ -105,6 +117,7 @@ namespace MSCLInstaller
             string game = Path.Combine(Storage.mscPath, "mysummercar.exe");
             if (File.Exists(game))
             {
+                DetectedGameText.Text = string.Empty;
                 switch (MD5FileHashes.MD5HashFile(game))
                 {
                     case MD5FileHashes.msc64:
@@ -134,7 +147,7 @@ namespace MSCLInstaller
             };
             if (openFileDialog.ShowDialog() == true)
             {
-                Storage.mscPath = Path.GetDirectoryName(openFileDialog.FileName);
+                Storage.mscPath = Path.GetFullPath(Path.GetDirectoryName(openFileDialog.FileName));
                 MSCFolder.Text = Storage.mscPath;
                 Dbg.Log($"MSC path set manually: {Storage.mscPath}");
                 try
@@ -152,7 +165,7 @@ namespace MSCLInstaller
 
         private void GoNext_Click(object sender, RoutedEventArgs e)
         {
-
+            main.MSCLoaderInstallerPage();
         }
     }
 }

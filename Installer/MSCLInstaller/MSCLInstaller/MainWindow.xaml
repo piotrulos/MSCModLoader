@@ -15,7 +15,7 @@
         <Border BorderBrush="Black" BorderThickness=".3">
             <Image Name="GameLogo" Source="/Images/logo.png"/>
         </Border>
-        <Frame Grid.Row="1" Name="MainFrame"/>
+        <Frame Grid.Row="1" Name="MainFrame" NavigationUIVisibility="Hidden"/>
         <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Right">
             <Button Name="NextBtn" Content="Test" Width="80" Margin="10,0,0,0" Click="NextBtn_Click"/>
         </StackPanel>

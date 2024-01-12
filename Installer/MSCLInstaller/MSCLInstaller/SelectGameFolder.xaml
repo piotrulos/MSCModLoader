@@ -9,8 +9,8 @@
       Title="SelectGameFolder">
 
     <Grid Background="WhiteSmoke">
-        <StackPanel Margin="10">
-            <TextBlock FontSize="30" Text="Select Game Folder"/>
+        <StackPanel Margin="7">
+            <TextBlock FontSize="25" Text="Select Game Folder"/>
             <TextBlock Text="Select where game is installed"/>
             <StackPanel>
                 <TextBlock Name="MSCStatus" Visibility="Collapsed"/>
@@ -24,10 +24,11 @@
                 </Grid>
             </StackPanel>
             <TextBlock Name="DetectedGameText" Text=""/>
-            <GroupBox>
+            <GroupBox Header="Help">
                 <TextBlock Text="On this step you need to select where My Summer Car is installed.&#x0a;This should happen automatically, if not click &quot;Change...&quot;&#x0a;&#x0a;If detected text is green you can go to next step"/>
             </GroupBox>
         </StackPanel>
-        <Button Name="GoNext" Content="Next" Width="70" Height="20" Margin="510,270,10,10" RenderTransformOrigin="0.5,0.5" IsEnabled="False" Click="GoNext_Click"/>
+
+        <Button Name="GoNext" Content="Next" Width="70" Height="20" IsEnabled="False" Click="GoNext_Click" Margin="0,0,10,10" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
     </Grid>
 </Page>
