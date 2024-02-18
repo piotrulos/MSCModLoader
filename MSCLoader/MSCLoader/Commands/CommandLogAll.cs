@@ -98,7 +98,7 @@ internal class CommandLogAll : ConsoleCommand
                     ModConsole.Print($"<color=lime><b>Available settings:</b></color>{Environment.NewLine}" +
              $"<color=orange><b>save</b></color>: Save log all state{Environment.NewLine}" +
              $"<color=orange><b>status</b></color>: Current logall status{Environment.NewLine}" +
-             $"<color=orange><b>mods</b></color>: log all errors from mod class{Environment.NewLine}" +
+             $"<color=orange><b>mods</b></color>: Log all errors from mod class{Environment.NewLine}" +
              $"<color=orange><b>errors</b></color>: Show all errors from game{Environment.NewLine}" +
              $"<color=orange><b>warnings</b></color>: Show all warnings from game{Environment.NewLine}" +
              $"<color=orange><b>messages</b></color>: Show all messages from game{Environment.NewLine}" +

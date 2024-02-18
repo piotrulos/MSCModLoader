@@ -841,9 +841,9 @@ public partial class ModLoader : MonoBehaviour
     {
         string errorDetails = $"{Environment.NewLine}<b>Details: </b>{e.Message} in <b>{new StackTrace(e, true).GetFrame(0).GetMethod()}</b>";
         if (save)
-            saveErrors.Add($"Mod <b>{mod.ID}</b> throw an error!{errorDetails}");
+            saveErrors.Add($"Mod <b>{mod.ID}</b> has thrown an error!{errorDetails}");
         else
-            ModConsole.Error($"Mod <b>{mod.ID}</b> throw an error!{errorDetails}");
+            ModConsole.Error($"Mod <b>{mod.ID}</b> has thrown an error!{errorDetails}");
         if (devMode)
         {
             if (save)

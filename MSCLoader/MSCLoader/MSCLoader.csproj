@@ -44,49 +44,49 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp" Condition="!$(DefineConstants.Contains('Mini'))">
-      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass" Condition="!$(DefineConstants.Contains('Mini'))">
-      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="ES2, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\ES2.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\ES2.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="INIFileParser" Condition="!$(DefineConstants.Contains('Mini'))">
-      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\INIFileParser.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\INIFileParser.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Ionic.Zip" Condition="!$(DefineConstants.Contains('Mini'))">
-      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Ionic.Zip.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Ionic.Zip.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="MSCLoader.Helpers" Condition="!$(DefineConstants.Contains('Mini'))">
-      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\Mods\References\MSCLoader.Helpers.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\Mods\References\MSCLoader.Helpers.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="NAudio" Condition="!$(DefineConstants.Contains('Mini'))">
-      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\NAudio.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\NAudio.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="NAudio.Flac" Condition="!$(DefineConstants.Contains('Mini'))">
-      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\NAudio.Flac.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\NAudio.Flac.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json" Condition="!$(DefineConstants.Contains('Mini'))">
-      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Newtonsoft.Json.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NVorbis, Version=0.8.4.0, Culture=neutral, processorArchitecture=MSIL" Condition="!$(DefineConstants.Contains('Mini'))">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\NVorbis.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\NVorbis.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="PlayMaker" Condition="!$(DefineConstants.Contains('Mini'))">
-      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\PlayMaker.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\PlayMaker.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System">
@@ -99,11 +99,11 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Data" />
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\UnityEngine.UI.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -185,13 +185,13 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if "$(ConfigurationName)" == "MSC_Release" (
-copy $(TargetPath) "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
+copy $(TargetPath) "C:\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\" /y
 ) 
 if "$(ConfigurationName)" == "MSC_Debug" (
-copy $(TargetPath) "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
-copy "$(TargetDir)$(TargetName).pdb" "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
-cd "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\"
-call "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\debug.bat"
+copy $(TargetPath) "C:\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\" /y
+copy "$(TargetDir)$(TargetName).pdb" "C:\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\" /y
+cd "C:\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\"
+call "C:\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\debug.bat"
 )
 </PostBuildEvent>
   </PropertyGroup>

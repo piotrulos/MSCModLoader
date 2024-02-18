@@ -77,14 +77,14 @@ internal class MetadataCommand : ConsoleCommand
                     ModMetadata.AuthMe(args[1]);
                     break;
                 default:
-                    ModConsole.Warning($"Usage: metadata <create|update|upload> <ModID>");
+                    ModConsole.Warning($"Usage: metadata <auth|create|update|upload> <ModID>");
                     break;
 
             }
         }
         else
         {
-            ModConsole.Warning($"Usage: metadata <create|update|upload> <ModID>");
+            ModConsole.Warning($"Usage: metadata <auth|create|update|upload> <ModID>");
         }
     }
 

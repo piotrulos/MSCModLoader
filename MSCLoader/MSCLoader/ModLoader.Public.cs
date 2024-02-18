@@ -56,7 +56,7 @@ public partial class ModLoader
 #if !Mini
         if (!CheckSteam())
         {
-            System.Console.WriteLine("Cannot check if the experimental branch is being used or not because no valid steam installation was detected");
+            System.Console.WriteLine("Cannot check if the experimental branch is being used or not because no valid Steam installation was detected");
             return false;
         }
         bool ret = Steamworks.SteamApps.GetCurrentBetaName(out string Name, 128);
