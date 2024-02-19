@@ -275,7 +275,7 @@ public partial class ModLoader : MonoBehaviour
         {
             UnpackUpdates();
         }
-        if (launchArgs.Contains("-mscloader-disable")) ModUI.ShowMessage("To use <color=yellow>-mscloader-disable</color> launch option, you need to update core module of MSCLoader, download latest version and launch <color=aqua>MSCPatcher.exe</color> to update","Outdated module");
+        if (launchArgs.Contains("-mscloader-disable")) ModUI.ShowMessage("To use <color=yellow>-mscloader-disable</color> launch option, you need to update the core module of MSCLoader, download the latest version and launch <color=aqua>MSCPatcher.exe</color> to update","Outdated module");
     }
     void ContinueInit()
     {
@@ -317,7 +317,7 @@ public partial class ModLoader : MonoBehaviour
         catch (Exception e)
         {
             steamID = null;
-            ModConsole.Error("Steam client doesn't exists.");
+            ModConsole.Error("Steam client doesn't exist.");
             if (devMode)
                 ModConsole.Error(e.ToString());
             System.Console.WriteLine(e);
@@ -351,14 +351,14 @@ public partial class ModLoader : MonoBehaviour
         }
 
         if (devMode)
-            ModConsole.Warning("You are running ModLoader in <color=red><b>DevMode</b></color>, this mode is <b>only for modders</b> and shouldn't be use in normal gameplay.");
+            ModConsole.Warning("You are running ModLoader in <color=red><b>DevMode</b></color>, this mode is <b>only for modders</b> and shouldn't be used in normal gameplay.");
         System.Console.WriteLine(SystemInfoFix()); //operating system version to output_log.txt
 
         if (saveErrors != null)
         {
             if (saveErrors.Count > 0 && wasSaving)
             {
-                ModUI.ShowMessage($"Some mod thrown an error during saving{Environment.NewLine}Check console for more information!");
+                ModUI.ShowMessage($"Some mod has thrown an error during saving{Environment.NewLine}Check console for more information!");
                 for (int i = 0; i < saveErrors.Count; i++)
                 {
                     ModConsole.Error(saveErrors[i]);
@@ -456,7 +456,7 @@ public partial class ModLoader : MonoBehaviour
         cfmuInProgress = false;
         if (e.Error != null)
         {
-            ModConsole.Error("Failed to check for mods updates");
+            ModConsole.Error("Failed to check for mod updates");
             ModConsole.Error(e.Error.Message);
             Console.WriteLine(e.Error);
             cfmuErrored = true;
@@ -1399,7 +1399,7 @@ public partial class ModLoader : MonoBehaviour
 
             //Warn about wrong .net target, source of some mod crashes.
             if (!asm.ImageRuntimeVersion.Equals(Assembly.GetExecutingAssembly().ImageRuntimeVersion))
-                ModConsole.Warning($"File <b>{Path.GetFileName(file)}</b> is targeting runtime version <b>{asm.ImageRuntimeVersion}</b> which is different that current running version <b>{Assembly.GetExecutingAssembly().ImageRuntimeVersion}</b>. This may cause unexpected behaviours, check your target assembly.");
+                ModConsole.Warning($"File <b>{Path.GetFileName(file)}</b> is targeting runtime version <b>{asm.ImageRuntimeVersion}</b> which is different than the current running version <b>{Assembly.GetExecutingAssembly().ImageRuntimeVersion}</b>. This may cause unexpected behaviours, check your target assembly.");
 
             // Look through all public classes                
             Type[] asmTypes = asm.GetTypes();

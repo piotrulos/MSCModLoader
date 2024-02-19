@@ -104,7 +104,7 @@ namespace MSCLoader
             }
             catch(System.Exception e)
             {
-                ModUI.ShowMessage($"Fatal error:{System.Environment.NewLine}<color=orange>{e.Message}</color>{System.Environment.NewLine}Please install modloader correctly.", "Fatal Error");
+                ModUI.ShowMessage($"Fatal error:{System.Environment.NewLine}<color=orange>{e.Message}</color>{System.Environment.NewLine}Please install MSCLoader correctly.", "Fatal Error");
             }
             ConsoleCommand.cc = console.controller;
             console.SetVisibility(false);

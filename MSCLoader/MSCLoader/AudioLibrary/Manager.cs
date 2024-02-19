@@ -252,7 +252,7 @@ namespace AudioLibrary
         {
             if (!managerInstance)
             {
-                managerInstance = new GameObject("Runtime AudioClip Loader Manger singleton instance");
+                managerInstance = new GameObject("Runtime AudioClip Loader Manager singleton instance");
                 managerInstance.hideFlags = HideFlags.HideAndDontSave;
                 managerInstance.AddComponent<Manager>();
             }
