@@ -110,7 +110,7 @@ namespace MSCLoader
             RemoveChildren(listView.transform);
             if (ModLoader.Instance.actualModList.Length == 0 && search == string.Empty)
             {
-                SettingsElement tx = CreateText(listView.transform, $"<color=aqua>A little empty here, seems like there is no mods installed.{Environment.NewLine}If you think that you installed mods, check if you put mods in correct folder.{Environment.NewLine}Current Mod folder is: <color=yellow>{ModLoader.ModsFolder}</color></color>");
+                SettingsElement tx = CreateText(listView.transform, $"<color=aqua>A little empty here, seems like there are no mods installed.{Environment.NewLine}If you think that you installed mods, check if you put mods in the correct folder.{Environment.NewLine}Current Mod folder is: <color=yellow>{ModLoader.ModsFolder}</color></color>");
                 tx.settingName.alignment = TextAnchor.MiddleCenter;
             }
             StartCoroutine(ModListAsync(listView, search));

@@ -270,7 +270,7 @@ public partial class ModLoader : MonoBehaviour
                                 yield return null;
                                 continue;
                             case "1":
-                                System.Console.WriteLine("Database connection problem");
+                                System.Console.WriteLine("Database connection problem.");
                                 yield return null;
                                 continue;
                             default:
@@ -590,7 +590,7 @@ public partial class ModLoader : MonoBehaviour
                 yield return new WaitForSeconds(1f);
                 canvLoading.uProgress.value = 100;
                 canvLoading.uStatus.text = $"<color=lime>Download Complete</color>";
-                ModUI.ShowMessage("You have to restart the Game for the updates to take effect!", "download completed");
+                ModUI.ShowMessage("You have to restart the game for the updates to take effect!", "download completed");
                 break;
             case 1:
             case 2:

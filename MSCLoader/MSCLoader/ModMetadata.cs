@@ -168,7 +168,7 @@ namespace MSCLoader
             else
             {
                 if (!sl)
-                    ModConsole.Error($"steam auth failed");
+                    ModConsole.Error($"Steam auth failed");
                 return false;
             }
         }
@@ -202,7 +202,7 @@ namespace MSCLoader
                             ModConsole.Error($"Database error");
                             break;
                         case "2":
-                            ModConsole.Error($"User not found, login on webiste first.");
+                            ModConsole.Error($"User not found, login on website first.");
                             break;
                         default:
                             ModConsole.Error($"Unknown error");
@@ -219,7 +219,7 @@ namespace MSCLoader
             }
             else
             {
-                ModConsole.Error("No valid steam detected");
+                ModConsole.Error("No valid Steam detected");
             }
         }
         public static void CreateMetadata(Mod mod)
@@ -316,7 +316,7 @@ namespace MSCLoader
             }
             else
             {
-                ModConsole.Error("No valid steam detected");
+                ModConsole.Error("No valid Steam detected");
             }
         }
         public static void CreateReference(References refs)
@@ -391,7 +391,7 @@ namespace MSCLoader
             }
             else
             {
-                ModConsole.Error("No valid steam detected");
+                ModConsole.Error("No valid Steam detected");
             }
         }
  
