@@ -328,7 +328,7 @@ namespace MSCLoader
                 Title.text = $"<color=lime>{dml.mod_id}</color>";
                     Author.text = $"by <color=orange>Placeholder</color> (<color=aqua>{dml.mod_version}</color>)";
                 Description.text = dml.mod_description;
-                if (ModLoader.Instance.actualModList.All(x => x.ID != dml.mod_id))
+                if (!ModLoader.Instance.actualModList.Where(x => x.ID == dml.mod_id).Any())
                 {
                     DownloadInfoTxt.text = string.Empty;                    
                     DownloadUpdateBtn.onClick.AddListener(delegate
