@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSCLoader", "MSCLoader\MSCLoader.csproj", "{3323FE4A-D360-4692-9309-F20B57BBB745}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSCLoader.Preloader", "MSCLoader.Preloader\MSCLoader.Preloader.csproj", "{807B36C0-F066-4736-8980-E7B18E3CB1F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSCLoader", "MSCLoader\MSCLoader.csproj", "{3323FE4A-D360-4692-9309-F20B57BBB745}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,18 +14,18 @@ Global
 		MSC_Release|Any CPU = MSC_Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3323FE4A-D360-4692-9309-F20B57BBB745}.MSC_Debug|Any CPU.ActiveCfg = MSC_Debug|Any CPU
-		{3323FE4A-D360-4692-9309-F20B57BBB745}.MSC_Debug|Any CPU.Build.0 = MSC_Debug|Any CPU
-		{3323FE4A-D360-4692-9309-F20B57BBB745}.MSC_Mini|Any CPU.ActiveCfg = MSC_Mini|Any CPU
-		{3323FE4A-D360-4692-9309-F20B57BBB745}.MSC_Mini|Any CPU.Build.0 = MSC_Mini|Any CPU
-		{3323FE4A-D360-4692-9309-F20B57BBB745}.MSC_Release|Any CPU.ActiveCfg = MSC_Release|Any CPU
-		{3323FE4A-D360-4692-9309-F20B57BBB745}.MSC_Release|Any CPU.Build.0 = MSC_Release|Any CPU
 		{807B36C0-F066-4736-8980-E7B18E3CB1F9}.MSC_Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{807B36C0-F066-4736-8980-E7B18E3CB1F9}.MSC_Debug|Any CPU.Build.0 = Debug|Any CPU
 		{807B36C0-F066-4736-8980-E7B18E3CB1F9}.MSC_Mini|Any CPU.ActiveCfg = Mini|Any CPU
 		{807B36C0-F066-4736-8980-E7B18E3CB1F9}.MSC_Mini|Any CPU.Build.0 = Mini|Any CPU
 		{807B36C0-F066-4736-8980-E7B18E3CB1F9}.MSC_Release|Any CPU.ActiveCfg = Release|Any CPU
 		{807B36C0-F066-4736-8980-E7B18E3CB1F9}.MSC_Release|Any CPU.Build.0 = Release|Any CPU
+		{3323FE4A-D360-4692-9309-F20B57BBB745}.MSC_Debug|Any CPU.ActiveCfg = MSC_Debug|Any CPU
+		{3323FE4A-D360-4692-9309-F20B57BBB745}.MSC_Debug|Any CPU.Build.0 = MSC_Debug|Any CPU
+		{3323FE4A-D360-4692-9309-F20B57BBB745}.MSC_Mini|Any CPU.ActiveCfg = MSC_Mini|Any CPU
+		{3323FE4A-D360-4692-9309-F20B57BBB745}.MSC_Mini|Any CPU.Build.0 = MSC_Mini|Any CPU
+		{3323FE4A-D360-4692-9309-F20B57BBB745}.MSC_Release|Any CPU.ActiveCfg = MSC_Release|Any CPU
+		{3323FE4A-D360-4692-9309-F20B57BBB745}.MSC_Release|Any CPU.Build.0 = MSC_Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

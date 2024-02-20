@@ -42,32 +42,32 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\0Harmony.dll</HintPath>
+      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="INIFileParser">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\INIFileParser.dll</HintPath>
+      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\INIFileParser.dll</HintPath>
     </Reference>
     <Reference Include="Ionic.Zip">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Ionic.Zip.dll</HintPath>
+      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Ionic.Zip.dll</HintPath>
     </Reference>
     <Reference Include="MSCLoader">
-      <HintPath>..\MSCLoader\obj\MSC_Debug\MSCLoader.dll</HintPath>
+      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\MSCLoader.dll</HintPath>
     </Reference>
     <Reference Include="PlayMaker">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\PlayMaker.dll</HintPath>
+      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\PlayMaker.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -81,12 +81,12 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if "$(ConfigurationName)" == "Release" (
-copy $(TargetPath) "C:\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\" /y
+copy $(TargetPath) "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
 ) ELSE (
-copy $(TargetPath) "C:\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\" /y
-copy "$(TargetDir)$(TargetName).pdb" "C:\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\" /y
-cd "C:\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\"
-call "C:\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\debug.bat"
+copy $(TargetPath) "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
+copy "$(TargetDir)$(TargetName).pdb" "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
+cd "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\"
+call "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\debug.bat"
 )
 </PostBuildEvent>
   </PropertyGroup>
