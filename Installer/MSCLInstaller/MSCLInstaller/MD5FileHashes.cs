@@ -81,7 +81,7 @@ namespace MSCLInstaller
                     Dbg.Log($"Deleting file.....{Path.GetFileName(filename)}");
             }
         }
-        public static async Task delayedWork()
+        public static async Task DelayedWork()
         {
             await Task.Delay(500);
         }

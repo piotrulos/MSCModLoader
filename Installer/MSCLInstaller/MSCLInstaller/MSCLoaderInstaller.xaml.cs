@@ -102,7 +102,6 @@ namespace MSCLInstaller
         }
         void VersionCompares()
         {
-
             string corepack;
             if (Storage.is64)
                 corepack = Path.Combine(".", "core64.pack");
@@ -111,7 +110,7 @@ namespace MSCLInstaller
             Directory.CreateDirectory(Path.Combine(".", "temp"));
             if (!ZipFile.IsZipFile(corepack))
             {
-                Dbg.Log($"Failed read {corepack}");
+                Dbg.Log($"Invalid file: {corepack}");
             }
             ZipFile zip1 = ZipFile.Read(corepack);
             zip1.ExtractAll(Path.Combine(".", "temp"));
@@ -125,7 +124,7 @@ namespace MSCLInstaller
             string refpack = Path.Combine(".", "main_ref.pack");
             if (!ZipFile.IsZipFile(refpack))
             {
-                Dbg.Log($"Failed read {refpack}");
+                Dbg.Log($"Invalid file: {refpack}");
             }
             ZipFile zip2 = ZipFile.Read(refpack);
             zip2.ExtractAll(Path.Combine(".", "temp"));
@@ -142,7 +141,7 @@ namespace MSCLInstaller
             string msc = Path.Combine(".", "main_msc.pack");
             if (!ZipFile.IsZipFile(msc))
             {
-                Dbg.Log($"Failed read {msc}");
+                Dbg.Log($"Invalid file: {msc}");
             }
             ZipFile zip3 = ZipFile.Read(msc);
             zip3.ExtractAll(Path.Combine(".", "temp"));
@@ -184,12 +183,17 @@ namespace MSCLInstaller
                             Storage.modsPath = Path.GetFullPath(Path.Combine(Storage.mscPath, "Mods"));
                             break;
                     }
-                    Dbg.Log($"Got mods folder {Storage.modsPath}");
+                    Dbg.Log($"Found mods folder {Storage.modsPath}");
+                    if (ini["General"]["target_assembly"] == null)
+                    {
+                        Dbg.Log("doorstop_config.ini is outdated (pre-4.1)");
+                        return true;
+                    }
                     return false;
                 }
                 else
                 {
-                    Dbg.Log("doorstop_config.ini is outdated");
+                    Dbg.Log("doorstop_config.ini is outdated (really old)");
                     return true;
                 }
 

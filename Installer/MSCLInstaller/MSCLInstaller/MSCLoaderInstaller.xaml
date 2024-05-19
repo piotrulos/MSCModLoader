@@ -9,7 +9,7 @@
       Title="MSCLoaderInstaller">
 
     <Grid Background="WhiteSmoke">
-        <StackPanel Margin="7">
+            <StackPanel Margin="7">
             <TextBlock FontSize="25" Text="MSCLoader Installer"/>
             <GroupBox Name="MSCLStatus" Header="MSCLoader status">
                 <StackPanel>

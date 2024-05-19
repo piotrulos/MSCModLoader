@@ -61,7 +61,7 @@ namespace MSCLInstaller
         {
             Dbg.Log("MSCLoader Installer", true, true);
             MainFrame.Content = mscli;
-            await InstallerHelpers.delayedWork();
+            await InstallerHelpers.DelayedWork();
             mscli.Init();
         }
     }
