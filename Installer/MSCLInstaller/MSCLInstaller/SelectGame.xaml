@@ -8,7 +8,7 @@
       d:DesignHeight="300" d:DesignWidth="600"
       Title="SelectGame">
 
-    <Grid Background="WhiteSmoke">
+    <Grid>
         <StackPanel Margin="10">
             <TextBlock FontSize="30" Text="Select Game"/>
             <Button Height="60" Margin="2" Content="My Summer Car"/>
