@@ -9,17 +9,21 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="80"/>
+            <RowDefinition Height="35"/>
             <RowDefinition Height="300"/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        <Border BorderBrush="Black" BorderThickness=".3">
+
             <Image Name="GameLogo" Source="/Images/logo.png"/>
+
+        <Border BorderBrush="#707070" BorderThickness=".5" Grid.Row="1">
+            <TextBlock Name="MSCIPageTitle" FontSize="25" Text="Select Game Folder" FontFamily="Consolas" TextAlignment="Center" VerticalAlignment="Center"/>
         </Border>
-        <Frame Grid.Row="1" Name="MainFrame" NavigationUIVisibility="Hidden"/>
-        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Right">
+        <Frame Grid.Row="2" Name="MainFrame" NavigationUIVisibility="Hidden"/>
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="10,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Right">
             <Button Name="NextBtn" Content="Test" Width="80" Margin="10,0,0,0" Click="NextBtn_Click"/>
         </StackPanel>
-        <Border BorderBrush="Black" BorderThickness=".3" Grid.Row="2">
+        <Border BorderBrush="#707070" BorderThickness=".3" Grid.Row="3">
             <StackPanel Orientation="Horizontal" Margin="10,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Left">
                 <TextBlock Text="MSCLInstaller Ready!" Name="StatusBarText"/>
             </StackPanel>

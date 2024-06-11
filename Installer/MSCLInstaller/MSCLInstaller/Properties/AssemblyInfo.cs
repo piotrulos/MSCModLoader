@@ -8,11 +8,11 @@ using System.Windows;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("MSCLInstaller")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Mod Loader installer for My Summer Car")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Kosmo Software")]
 [assembly: AssemblyProduct("MSCLInstaller")]
-[assembly: AssemblyCopyright("Copyright ©  2023")]
+[assembly: AssemblyCopyright("Copyright © 2024 by Kosmo Software")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -53,3 +53,4 @@ using System.Windows;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.3.0.301")]
 [assembly: AssemblyFileVersion("1.3.0.301")]
+[assembly: NeutralResourcesLanguage("en")]

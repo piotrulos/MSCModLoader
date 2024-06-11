@@ -10,7 +10,6 @@
 
     <Grid>
             <StackPanel Margin="7">
-            <TextBlock FontSize="25" Text="MSCLoader Installer"/>
             <GroupBox Name="MSCLStatus" Header="MSCLoader status">
                 <StackPanel>
                 <TextBlock Name="MSCFolderText" Text="msc folder"/>
@@ -37,7 +36,6 @@
             </GroupBox>
         </StackPanel>
         <Border Margin="7" Name="PleaseWait" Background="#2a2a2a" Visibility="Visible">
-            <TextBlock FontSize="25" Text="Please wait.... Checking current files"/>
         </Border>
     </Grid>
 </Page>

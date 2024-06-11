@@ -46,12 +46,13 @@ namespace MSCLInstaller
 
         private void NextBtn_Click(object sender, RoutedEventArgs e)
         {
-            SelectGameFolderPage(Game.MSC);
+            MessageBox.Show("wtf", "wtf", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         public void SelectGameFolderPage(Game game)
         {
             Dbg.Log("Select Game Folder", true, true);
+            MSCIPageTitle.Text = "Select Game Folder";
             Storage.selectedGame = game;
             MainFrame.Content = sgf;
             sgf.Init(this);
@@ -61,7 +62,9 @@ namespace MSCLInstaller
         {
             Dbg.Log("MSCLoader Installer", true, true);
             MainFrame.Content = mscli;
+            MSCIPageTitle.Text = "Please wait.... Checking current files";
             await InstallerHelpers.DelayedWork();
+            MSCIPageTitle.Text = "Select Option Below";
             mscli.Init();
         }
     }
