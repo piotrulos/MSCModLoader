@@ -28,9 +28,11 @@
                 <TextBlock>
                     Here you can see a status if MSCLoader is installed, not installed or up to date.
                     <LineBreak/>
-                    If you want to change Mods folder click <Bold>Change Mods Folder</Bold>
+                    If you want to change Mods folder click <Bold Foreground="Aquamarine">Change Mods Folder</Bold>
                     <LineBreak/>
-                    If you want to repair/reinstall MSCLoader click <Bold>Reinstall MSCLoader</Bold>
+                    If you want to repair/reinstall MSCLoader click <Bold Foreground="Aquamarine">Reinstall MSCLoader</Bold>
+                    <LineBreak/>
+                    If you want to Uninstall MSCLoader click <Bold Foreground="Aquamarine">Uninstall MSCLoader</Bold>
 
                 </TextBlock>
             </GroupBox>

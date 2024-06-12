@@ -37,7 +37,7 @@ namespace MSCLInstaller
         {
             bool isInstalled = false;
             MSCFolderText.Text = $"MSC Folder: ";
-            MSCFolderText.Inlines.Add(new Run(Storage.mscPath) { FontWeight = FontWeights.Bold });
+            MSCFolderText.Inlines.Add(new Run(Storage.mscPath) { FontWeight = FontWeights.Bold, Foreground = Brushes.Wheat });
             if (File.Exists(Path.Combine(Storage.mscPath, "mysummercar_Data", "Managed", "MSCLoader.Preloader.dll")) && File.Exists(Path.Combine(Storage.mscPath, "winhttp.dll")) && File.Exists(Path.Combine(Storage.mscPath, "doorstop_config.ini")))
             {
                 isInstalled = true;
@@ -57,7 +57,7 @@ namespace MSCLInstaller
                 if (Storage.modsPath == null)
                     Storage.modsPath = Path.GetFullPath(Path.Combine(Storage.mscPath, "Mods"));
                 ModsFolderText.Text = $"Mods Folder: ";
-                ModsFolderText.Inlines.Add(new Run(Storage.modsPath) { FontWeight = FontWeights.Bold });
+                ModsFolderText.Inlines.Add(new Run(Storage.modsPath) { FontWeight = FontWeights.Bold, Foreground = Brushes.Wheat });
                 if (resetConfig)
                 {
                     Dbg.Log("Outdated config - update Required");
@@ -80,13 +80,13 @@ namespace MSCLInstaller
                 if (fullinstall || updateCore || updateRefs || updateMSCL)
                 {
                     InstallStatusText.Text = $"Status: ";
-                    InstallStatusText.Inlines.Add(new Run("Updates available") { FontWeight = FontWeights.Bold, Foreground = Brushes.Blue });
+                    InstallStatusText.Inlines.Add(new Run("Updates available") { FontWeight = FontWeights.Bold, Foreground = Brushes.LightBlue });
                     InstallBtn.Content = "Update MSCLoader";
                 }
                 else
                 {
                     InstallStatusText.Text = $"Status: ";
-                    InstallStatusText.Inlines.Add(new Run("Installed and up to date") { FontWeight = FontWeights.Bold, Foreground = Brushes.Green });
+                    InstallStatusText.Inlines.Add(new Run("Installed and up to date") { FontWeight = FontWeights.Bold, Foreground = Brushes.LightGreen });
                     InstallBtn.IsEnabled = false;
                 }
                 UninstallBtn.IsEnabled = true;
