@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:MSCLInstaller"
         mc:Ignorable="d"
         Title="MSCLoader installer" ResizeMode="NoResize" SizeToContent="WidthAndHeight" MinWidth="600" MaxWidth="600">
-    <Grid>
+    <Grid TextElement.Foreground="#f0f0f0">
         <Grid.RowDefinitions>
             <RowDefinition Height="80"/>
             <RowDefinition Height="35"/>

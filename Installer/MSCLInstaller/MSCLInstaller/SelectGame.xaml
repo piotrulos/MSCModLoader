@@ -9,7 +9,7 @@
       Title="SelectGame">
 
     <Grid>
-        <StackPanel Margin="10">
+        <StackPanel Margin="10" TextElement.Foreground="#f0f0f0">
             <TextBlock FontSize="30" Text="Select Game"/>
             <Button Height="60" Margin="2" Content="My Summer Car"/>
             <Button Height="60" Margin="2" Content="My Summer Car"/>

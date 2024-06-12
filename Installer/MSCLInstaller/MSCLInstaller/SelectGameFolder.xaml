@@ -9,7 +9,7 @@
       Title="SelectGameFolder">
 
     <Grid>
-        <StackPanel Margin="7">
+        <StackPanel Margin="7" TextElement.Foreground="#f0f0f0">
             <TextBlock Text="Select where game is installed"/>
             <StackPanel>
                 <TextBlock Name="MSCStatus" Visibility="Collapsed"/>

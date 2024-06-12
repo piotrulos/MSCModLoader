@@ -9,8 +9,8 @@
       Title="MSCLoaderInstaller">
 
     <Grid>
-            <StackPanel Margin="7">
-            <GroupBox Name="MSCLStatus" Header="MSCLoader status">
+            <StackPanel Margin="7" TextElement.Foreground="#f0f0f0">
+            <GroupBox Name="MSCLStatus"  Header="MSCLoader status">
                 <StackPanel>
                 <TextBlock Name="MSCFolderText" Text="msc folder"/>
                 <TextBlock Name="ModsFolderText" Text="mods folder"/>
@@ -35,7 +35,7 @@
                 </TextBlock>
             </GroupBox>
         </StackPanel>
-        <Border Margin="7" Name="PleaseWait" Background="#2a2a2a" Visibility="Visible">
+        <Border Margin="7" Name="PleaseWait" Background="#111111" Visibility="Collapsed">
         </Border>
     </Grid>
 </Page>
