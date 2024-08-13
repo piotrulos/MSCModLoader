@@ -48,9 +48,8 @@
       <HintPath>..\..\..\..\MSCLoader Release\MSCLoader\INIFileParser.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Ionic.Zip">
-      <HintPath>..\..\..\..\..\..\programowanie_c\DotNetZip.Semverd-master\src\Zip Reduced\bin\Release\Ionic.Zip.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Ionic.Zip.Reduced">
+      <HintPath>..\..\..\..\..\..\programowanie_c\DotNetZip.Semverd-master\src\Zip Reduced\bin\Release\Ionic.Zip.Reduced.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -136,6 +135,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\logo_sel.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

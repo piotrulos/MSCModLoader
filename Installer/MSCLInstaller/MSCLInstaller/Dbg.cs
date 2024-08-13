@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Windows;
 
 namespace MSCLInstaller
 {
@@ -21,6 +22,14 @@ namespace MSCLInstaller
             tw.WriteLine(message);
             if (separator) tw.WriteLine("=================");
             tw.Flush();
+        }
+
+        public static void MissingFilesError()
+        {
+            MessageBox.Show($"Couldn't find any required core files.{Environment.NewLine}Please unpack all files before launching this installer!", "Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            Dbg.Log($"!!! CRASH !!!", true, true);
+            Dbg.Log($"Core files not found, exiting.");
+            Environment.Exit(0);
         }
     }
 }

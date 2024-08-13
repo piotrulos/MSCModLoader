@@ -10,10 +10,11 @@
 
     <Grid>
         <StackPanel Margin="10" TextElement.Foreground="#f0f0f0">
+            <!-- Doesn't do anything for now, it's for future content -->
             <TextBlock FontSize="30" Text="Select Game"/>
             <Button Height="60" Margin="2" Content="My Summer Car"/>
-            <Button Height="60" Margin="2" Content="My Summer Car"/>
-            <Button Height="60" Margin="2" Content="My Summer Car"/>
+            <Button Height="60" Margin="2" Content="My Summer Car (IMA)"/>
+            <Button Height="60" Margin="2" Content="My Winter Car"/>
         </StackPanel>
     </Grid>
 </Page>

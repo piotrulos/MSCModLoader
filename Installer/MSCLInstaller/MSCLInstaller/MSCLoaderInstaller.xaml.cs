@@ -1,18 +1,11 @@
 ﻿using IniParser.Model;
 using IniParser;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using Ionic.Zip;
 
 namespace MSCLInstaller
@@ -22,7 +15,7 @@ namespace MSCLInstaller
     /// </summary>
     public partial class MSCLoaderInstaller : Page
     {
-
+        bool isInstalled = false;
         bool resetConfig = false;
         bool fullinstall = false;
         bool updateCore = false;
@@ -35,7 +28,6 @@ namespace MSCLInstaller
         }
         public void Init()
         {
-            bool isInstalled = false;
             MSCFolderText.Text = $"MSC Folder: ";
             MSCFolderText.Inlines.Add(new Run(Storage.mscPath) { FontWeight = FontWeights.Bold, Foreground = Brushes.Wheat });
             if (File.Exists(Path.Combine(Storage.mscPath, "mysummercar_Data", "Managed", "MSCLoader.Preloader.dll")) && File.Exists(Path.Combine(Storage.mscPath, "winhttp.dll")) && File.Exists(Path.Combine(Storage.mscPath, "doorstop_config.ini")))
@@ -77,19 +69,6 @@ namespace MSCLInstaller
                         fullinstall = true;
                     }
                 }
-                if (fullinstall || updateCore || updateRefs || updateMSCL)
-                {
-                    InstallStatusText.Text = $"Status: ";
-                    InstallStatusText.Inlines.Add(new Run("Updates available") { FontWeight = FontWeights.Bold, Foreground = Brushes.LightBlue });
-                    InstallBtn.Content = "Update MSCLoader";
-                }
-                else
-                {
-                    InstallStatusText.Text = $"Status: ";
-                    InstallStatusText.Inlines.Add(new Run("Installed and up to date") { FontWeight = FontWeights.Bold, Foreground = Brushes.LightGreen });
-                    InstallBtn.IsEnabled = false;
-                }
-                UninstallBtn.IsEnabled = true;
             }
             else
             {
@@ -97,8 +76,45 @@ namespace MSCLInstaller
                 InstallStatusText.Inlines.Add(new Run("Not installed") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red });
 
             }
+            UpdateInstallationStatus();
             PleaseWait.Visibility = Visibility.Hidden;
 
+        }
+        void UpdateInstallationStatus()
+        {
+            ExecuteSelectedBtn.IsEnabled = false;
+            if (!isInstalled)
+            {
+                InstallStatusText.Text = $"Status: ";
+                InstallStatusText.Inlines.Add(new Run("Not installed") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red });
+                ToggleRadioButtonsVisibility(Visibility.Collapsed, Visibility.Visible, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed);
+            }
+            if (fullinstall || updateCore || updateRefs || updateMSCL)
+            {
+                InstallStatusText.Text = $"Status: ";
+                InstallStatusText.Inlines.Add(new Run("Updates available") { FontWeight = FontWeights.Bold, Foreground = Brushes.LightBlue });
+                ToggleRadioButtonsVisibility(Visibility.Visible, Visibility.Collapsed, Visibility.Visible, Visibility.Collapsed, Visibility.Visible);
+            }
+            else
+            {
+                InstallStatusText.Text = $"Status: ";
+                InstallStatusText.Inlines.Add(new Run("Installed and up to date") { FontWeight = FontWeights.Bold, Foreground = Brushes.LightGreen });
+                ToggleRadioButtonsVisibility(Visibility.Visible, Visibility.Collapsed, Visibility.Collapsed, Visibility.Visible, Visibility.Visible);
+            }
+        }
+
+        void ToggleRadioButtonsVisibility(Visibility changeModsFolder, Visibility installMSCLoader, Visibility updateMSCLoader, Visibility reinstallMSCLoader, Visibility uninstallMSCLoader)
+        {
+            ModsFolderRadio.Visibility = changeModsFolder;
+            InstallRadio.Visibility = installMSCLoader;
+            UpdateRadio.Visibility = updateMSCLoader;
+            ReinstallRadio.Visibility = uninstallMSCLoader;
+            UninstallRadio.Visibility = uninstallMSCLoader; 
+        }
+
+        void ToggleAdvancedRadioVisibility(Visibility advancedOptions)
+        {
+            AdvancedRadio.Visibility = advancedOptions;
         }
         void VersionCompares()
         {
@@ -107,10 +123,14 @@ namespace MSCLInstaller
                 corepack = Path.Combine(".", "core64.pack");
             else
                 corepack = Path.Combine(".", "core32.pack");
+            if(!File.Exists(corepack))
+            {
+                Dbg.MissingFilesError();
+            }
             Directory.CreateDirectory(Path.Combine(".", "temp"));
             if (!ZipFile.IsZipFile(corepack))
             {
-                Dbg.Log($"Invalid file: {corepack}");
+                Dbg.Log($"Failed to read file: {corepack}");
             }
             ZipFile zip1 = ZipFile.Read(corepack);
             zip1.ExtractAll(Path.Combine(".", "temp"));
@@ -122,9 +142,13 @@ namespace MSCLInstaller
             Directory.Delete(Path.Combine(".", "temp"), true);
             Directory.CreateDirectory(Path.Combine(".", "temp"));
             string refpack = Path.Combine(".", "main_ref.pack");
+            if (!File.Exists(refpack))
+            {
+                Dbg.MissingFilesError();
+            }
             if (!ZipFile.IsZipFile(refpack))
             {
-                Dbg.Log($"Invalid file: {refpack}");
+                Dbg.Log($"Failed to read file: {refpack}");
             }
             ZipFile zip2 = ZipFile.Read(refpack);
             zip2.ExtractAll(Path.Combine(".", "temp"));
@@ -139,9 +163,13 @@ namespace MSCLInstaller
             Directory.Delete(Path.Combine(".", "temp"), true);
             Directory.CreateDirectory(Path.Combine(".", "temp"));
             string msc = Path.Combine(".", "main_msc.pack");
+            if (!File.Exists(msc))
+            {
+                Dbg.MissingFilesError();
+            }
             if (!ZipFile.IsZipFile(msc))
             {
-                Dbg.Log($"Invalid file: {msc}");
+                Dbg.Log($"Failed to read file: {msc}");
             }
             ZipFile zip3 = ZipFile.Read(msc);
             zip3.ExtractAll(Path.Combine(".", "temp"));
@@ -199,6 +227,41 @@ namespace MSCLInstaller
 
             }
             else return true;
+        }
+
+        private void ModsFolderRadio_Checked(object sender, RoutedEventArgs e)
+        {
+            Storage.selectedAction = SelectedAction.ChangeModsFolder;
+        }
+
+        private void InstallRadio_Checked(object sender, RoutedEventArgs e)
+        {
+            Storage.selectedAction = SelectedAction.InstallMSCLoader;
+        }
+
+        private void UpdateRadio_Checked(object sender, RoutedEventArgs e)
+        {
+            Storage.selectedAction = SelectedAction.UpdateMSCLoader;
+        }
+
+        private void ReinstallRadio_Checked(object sender, RoutedEventArgs e)
+        {
+            Storage.selectedAction  = SelectedAction.ReinstallMSCLoader;
+        }
+
+        private void UninstallRadio_Checked(object sender, RoutedEventArgs e)
+        {
+            Storage.selectedAction = SelectedAction.UninstallMSCLoader;
+        }
+
+        private void AdvancedRadio_Checked(object sender, RoutedEventArgs e)
+        {
+            Storage.selectedAction = SelectedAction.AdvancedOptions;
+        }
+
+        private void ExecuteSelectedBtn_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

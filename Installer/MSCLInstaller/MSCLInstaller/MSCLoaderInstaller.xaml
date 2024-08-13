@@ -12,17 +12,21 @@
             <StackPanel Margin="7" TextElement.Foreground="#f0f0f0">
             <GroupBox Name="MSCLStatus"  Header="MSCLoader status">
                 <StackPanel>
-                <TextBlock Name="MSCFolderText" Text="msc folder"/>
-                <TextBlock Name="ModsFolderText" Text="mods folder"/>
-                <TextBlock Name="InstallStatusText" Text="Status"/>
-                    <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
-                        <Button Width="130" Content="Change Mods Folder"/>
-                        <Button Width="130" Name="InstallBtn" Content="Install MSCLoader" Margin="10,0,0,0"/>
-                        <Button Width="130" Name="UninstallBtn" Content="Uninstall MSCLoader" Margin="10,0,0,0" IsEnabled="False"/>
-                        <Button Width="130" Content="Advanced Options" Margin="10,0,0,0" IsEnabled="False"/>
-                    </StackPanel>
+                    <TextBlock Name="MSCFolderText" Text="msc folder"/>
+                    <TextBlock Name="ModsFolderText" Text="mods folder"/>
+                    <TextBlock Name="InstallStatusText" Text="Status"/>
                 </StackPanel>
-
+            </GroupBox>
+            <GroupBox Header="Select what do you want to do">
+                <StackPanel>
+                    <RadioButton Name="ModsFolderRadio" Content="Change Mods Folder" Visibility="Visible" GroupName="SelectOption" Checked="ModsFolderRadio_Checked"/>
+                    <RadioButton Name="InstallRadio" Content="Install MSCLoader" Visibility="Visible" GroupName="SelectOption" Checked="InstallRadio_Checked"/>
+                    <RadioButton Name="UpdateRadio" Content="Update MSCLoader" Visibility="Visible" GroupName="SelectOption" Checked="UpdateRadio_Checked"/>
+                    <RadioButton Name="ReinstallRadio" Content="Reinstall MSCLoader" Visibility="Visible" GroupName="SelectOption" Checked="ReinstallRadio_Checked"/>
+                    <RadioButton Name="UninstallRadio" Content="Uninstall MSCLoader" Visibility="Visible" GroupName="SelectOption" Checked="UninstallRadio_Checked"/>
+                    <RadioButton Name="AdvancedRadio" Content="Show Advanced Options" Visibility="Visible" GroupName="SelectOption" Checked="AdvancedRadio_Checked"/>
+                    <Button Name="ExecuteSelectedBtn" Content="Select Option" IsEnabled="False" Margin="0,5,0,0" Click="ExecuteSelectedBtn_Click"/>
+                </StackPanel>
             </GroupBox>
             <GroupBox Header="Help">
                 <TextBlock>
@@ -33,9 +37,9 @@
                     If you want to repair/reinstall MSCLoader click <Bold Foreground="Aquamarine">Reinstall MSCLoader</Bold>
                     <LineBreak/>
                     If you want to Uninstall MSCLoader click <Bold Foreground="Aquamarine">Uninstall MSCLoader</Bold>
-
                 </TextBlock>
             </GroupBox>
+
         </StackPanel>
         <Border Margin="7" Name="PleaseWait" Background="#111111" Visibility="Collapsed">
         </Border>
