@@ -15,21 +15,26 @@ namespace MSCLInstaller
     /// </summary>
     public partial class MSCLoaderInstaller : Page
     {
+        MainWindow main;
         bool isInstalled = false;
         bool resetConfig = false;
         bool fullinstall = false;
         bool updateCore = false;
         bool updateRefs = false;
         bool updateMSCL = false;
-
+        bool initialized = false;
         public MSCLoaderInstaller()
         {
             InitializeComponent();
         }
-        public void Init()
+        public void Init(MainWindow m)
         {
-            MSCFolderText.Text = $"MSC Folder: ";
-            MSCFolderText.Inlines.Add(new Run(Storage.mscPath) { FontWeight = FontWeights.Bold, Foreground = Brushes.Wheat });
+            if (initialized) 
+            {
+                UpdatePathText();
+                return; 
+            }
+            main = m;
             if (File.Exists(Path.Combine(Storage.mscPath, "mysummercar_Data", "Managed", "MSCLoader.Preloader.dll")) && File.Exists(Path.Combine(Storage.mscPath, "winhttp.dll")) && File.Exists(Path.Combine(Storage.mscPath, "doorstop_config.ini")))
             {
                 isInstalled = true;
@@ -48,8 +53,6 @@ namespace MSCLInstaller
                 }
                 if (Storage.modsPath == null)
                     Storage.modsPath = Path.GetFullPath(Path.Combine(Storage.mscPath, "Mods"));
-                ModsFolderText.Text = $"Mods Folder: ";
-                ModsFolderText.Inlines.Add(new Run(Storage.modsPath) { FontWeight = FontWeights.Bold, Foreground = Brushes.Wheat });
                 if (resetConfig)
                 {
                     Dbg.Log("Outdated config - update Required");
@@ -77,9 +80,19 @@ namespace MSCLInstaller
 
             }
             UpdateInstallationStatus();
+            UpdatePathText();
             PleaseWait.Visibility = Visibility.Hidden;
-
+            initialized = true;
         }
+
+        void UpdatePathText()
+        {
+            MSCFolderText.Text = $"MSC Folder: ";
+            MSCFolderText.Inlines.Add(new Run(Storage.mscPath) { FontWeight = FontWeights.Bold, Foreground = Brushes.Wheat });
+            ModsFolderText.Text = $"Mods Folder: ";
+            ModsFolderText.Inlines.Add(new Run(Storage.modsPath) { FontWeight = FontWeights.Bold, Foreground = Brushes.Wheat });
+        }
+
         void UpdateInstallationStatus()
         {
             ExecuteSelectedBtn.IsEnabled = false;
@@ -188,7 +201,6 @@ namespace MSCLInstaller
         {
             if (File.Exists(Path.Combine(Storage.mscPath, "doorstop_config.ini")))
             {
-
                 Dbg.Log("Reading.....doorstop_config.ini");
                 IniData ini = new FileIniDataParser().ReadFile(Path.Combine(Storage.mscPath, "doorstop_config.ini"));
                 ini.Configuration.AssigmentSpacer = "";
@@ -232,36 +244,47 @@ namespace MSCLInstaller
         private void ModsFolderRadio_Checked(object sender, RoutedEventArgs e)
         {
             Storage.selectedAction = SelectedAction.ChangeModsFolder;
+            ExecuteSelectedBtn.IsEnabled = true;
         }
 
         private void InstallRadio_Checked(object sender, RoutedEventArgs e)
         {
             Storage.selectedAction = SelectedAction.InstallMSCLoader;
+            ExecuteSelectedBtn.IsEnabled = true;
         }
 
         private void UpdateRadio_Checked(object sender, RoutedEventArgs e)
         {
             Storage.selectedAction = SelectedAction.UpdateMSCLoader;
+            ExecuteSelectedBtn.IsEnabled = true;
         }
 
         private void ReinstallRadio_Checked(object sender, RoutedEventArgs e)
         {
             Storage.selectedAction  = SelectedAction.ReinstallMSCLoader;
+            ExecuteSelectedBtn.IsEnabled = true;
         }
 
         private void UninstallRadio_Checked(object sender, RoutedEventArgs e)
         {
             Storage.selectedAction = SelectedAction.UninstallMSCLoader;
+            ExecuteSelectedBtn.IsEnabled = true;
         }
 
         private void AdvancedRadio_Checked(object sender, RoutedEventArgs e)
         {
             Storage.selectedAction = SelectedAction.AdvancedOptions;
+            ExecuteSelectedBtn.IsEnabled = true;
         }
 
         private void ExecuteSelectedBtn_Click(object sender, RoutedEventArgs e)
         {
-
+            switch (Storage.selectedAction)
+            {
+                case SelectedAction.ChangeModsFolder:
+                    main.SelectModsFolderPage(true);
+                    break;
+            }
         }
     }
 }

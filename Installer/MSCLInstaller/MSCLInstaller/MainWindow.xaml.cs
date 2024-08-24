@@ -11,6 +11,7 @@ namespace MSCLInstaller
     {
         SelectGameFolder sgf;
         MSCLoaderInstaller mscli;
+        SelectModsFolder smf;
         public MainWindow()
         {
             InitializeComponent();
@@ -21,6 +22,7 @@ namespace MSCLInstaller
             Dbg.Log($"Current folder: {Path.GetFullPath(".")}");
             sgf = new SelectGameFolder();
             mscli = new MSCLoaderInstaller();
+            smf = new SelectModsFolder();
             Storage.packFiles = Directory.GetFiles(".", "*.pack");
             if (Storage.packFiles.Length == 0)
             {
@@ -33,10 +35,15 @@ namespace MSCLInstaller
 
             SelectGameFolderPage(Game.MSC);
         }
-
+        internal void ReInitInstallerPage()
+        {
+            mscli = new MSCLoaderInstaller();
+        }
         private void NextBtn_Click(object sender, RoutedEventArgs e)
         {
-          //  MessageBox.Show(Environment.GetFolderPath(), "wtf", MessageBoxButton.OK, MessageBoxImage.Error);
+       //     mscli = new MSCLoaderInstaller();
+
+            //  MessageBox.Show(Environment.GetFolderPath(), "wtf", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         public void SelectGameFolderPage(Game game)
@@ -55,7 +62,15 @@ namespace MSCLInstaller
             MSCIPageTitle.Text = "Please wait.... Checking current files";
             await InstallerHelpers.DelayedWork();
             MSCIPageTitle.Text = "Select Option Below";
-            mscli.Init();
+            mscli.Init(this);
+        }
+
+        public void SelectModsFolderPage(bool change)
+        {
+            Dbg.Log("Select Mods Folder", true, true);
+            MSCIPageTitle.Text = "Select Mods Folder";
+            MainFrame.Content = smf;
+            smf.Init(this, change);
         }
     }
 }

@@ -10,6 +10,12 @@
         UninstallMSCLoader,
         AdvancedOptions
     }
+    internal enum ModsFolder
+    {
+        GameFolder,
+        MyDocuments,
+        Appdata
+    }
     internal class Storage
     {
         public static string mscPath;

@@ -81,6 +81,9 @@
     <Compile Include="SelectGameFolder.xaml.cs">
       <DependentUpon>SelectGameFolder.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SelectModsFolder.xaml.cs">
+      <DependentUpon>SelectModsFolder.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Storage.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -103,6 +106,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="SelectGameFolder.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SelectModsFolder.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
