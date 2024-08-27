@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 using Ionic.Zip;
+using System.Diagnostics;
 
 namespace MSCLInstaller
 {
@@ -15,14 +16,17 @@ namespace MSCLInstaller
     /// </summary>
     public partial class MSCLoaderInstaller : Page
     {
-        MainWindow main;
-        bool isInstalled = false;
-        bool resetConfig = false;
-        bool fullinstall = false;
-        bool updateCore = false;
-        bool updateRefs = false;
-        bool updateMSCL = false;
-        bool initialized = false;
+        private bool initialized = false;
+        private MainWindow main;
+
+        //MSCloader install status
+        private bool isInstalled = false; //Is MSCLoader installed
+        private bool resetConfig = false; //Config is out of date (or invalid), reset it.
+        private bool fullinstall = false; //Do a full install
+        private bool updateCore = false; //Only update core files
+        private bool updateRefs = false; //Only update references
+        private bool updateMSCL = false; //Only update MSCLoader files
+        
         public MSCLoaderInstaller()
         {
             InitializeComponent();
@@ -194,6 +198,7 @@ namespace MSCLInstaller
             {
                 updateMSCL = true;
             }
+            main.SetMSCLoaderVer(FileVersionInfo.GetVersionInfo(Path.Combine(".", "temp", "MSCLoader.dll")).FileVersion);
             Directory.Delete(Path.Combine(".", "temp"), true);
 
         }

@@ -1,0 +1,27 @@
+﻿<Page x:Class="MSCLInstaller.InstallProgress"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:MSCLInstaller"
+      mc:Ignorable="d" 
+      d:DesignHeight="300" d:DesignWidth="600"
+      Title="InstallProgress">
+
+    <Grid>
+        <StackPanel Margin="7" TextElement.Foreground="#f0f0f0">
+            <GroupBox Header="Progress">
+                <StackPanel>
+                    <TextBlock Name="ProgressText" Text="Waiting..."/>
+                    <ProgressBar Name="ProgressBar" Height="15"/>
+                    <Button Content="shit" Click="Button_Click"/>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Progress Log">
+                <StackPanel>
+                    <TextBox Name="LogBox" Text="..." IsReadOnly="True" VerticalScrollBarVisibility="Visible" Height="120"/>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+    </Grid>
+</Page>

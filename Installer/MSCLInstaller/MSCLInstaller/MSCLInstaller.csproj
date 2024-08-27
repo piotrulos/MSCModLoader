@@ -71,6 +71,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Dbg.cs" />
+    <Compile Include="InstallProgress.xaml.cs">
+      <DependentUpon>InstallProgress.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MD5FileHashes.cs" />
     <Compile Include="MSCLoaderInstaller.xaml.cs">
       <DependentUpon>MSCLoaderInstaller.xaml</DependentUpon>
@@ -85,6 +88,10 @@
       <DependentUpon>SelectModsFolder.xaml</DependentUpon>
     </Compile>
     <Compile Include="Storage.cs" />
+    <Page Include="InstallProgress.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
