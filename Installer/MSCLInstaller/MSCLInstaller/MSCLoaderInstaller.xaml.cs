@@ -110,7 +110,7 @@ namespace MSCLInstaller
             {
                 InstallStatusText.Text = $"Status: ";
                 InstallStatusText.Inlines.Add(new Run("Updates available") { FontWeight = FontWeights.Bold, Foreground = Brushes.LightBlue });
-                ToggleRadioButtonsVisibility(Visibility.Visible, Visibility.Collapsed, Visibility.Visible, Visibility.Collapsed, Visibility.Visible);
+                ToggleRadioButtonsVisibility(resetConfig ? Visibility.Collapsed : Visibility.Visible, Visibility.Collapsed, Visibility.Visible, Visibility.Collapsed, Visibility.Visible);
             }
             else
             {

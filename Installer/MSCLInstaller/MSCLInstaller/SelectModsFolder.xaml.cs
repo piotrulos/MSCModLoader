@@ -81,20 +81,59 @@ namespace MSCLInstaller
         }
         private void SelectModsFolderBtn_Click(object sender, RoutedEventArgs e)
         {
-            Storage.modsPath = selectedFolder == ModsFolder.GameFolder ? gfPath : selectedFolder == ModsFolder.MyDocuments ? mdPath : adPath;
-
+            string oldPath = Storage.modsPath;
+            string newPath = selectedFolder == ModsFolder.GameFolder ? gfPath : selectedFolder == ModsFolder.MyDocuments ? mdPath : adPath;
+            //If Change Folder is selected
             if (changeFolder)
             {
                 if (selectedFolder == currentFolder)
                 {
-                    main.MSCLoaderInstallerPage();
+                    Dbg.Log("Selected folder is same as current, no changes will be made");
+                    main.MSCLoaderInstallerPage(); //No change, go back.
                     return;
                 }
-                main.InstallProgressPage().DoSomeSHit();
+                if (MessageBox.Show($"Your new Mods folder will be changed to {Environment.NewLine}{newPath}{Environment.NewLine}{Environment.NewLine}Continue?", "Mods Folder", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                {
+                    Dbg.Log($"Changing mods folder from {oldPath} to {newPath}");
+                    if (MessageBox.Show($"Do you want to copy all mods from old location to new one?{Environment.NewLine}{Environment.NewLine}Selecting No will create blank Mods folder in new location", "Copy Old Mods?", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    {
+                        Dbg.Log($"Selected Yes, copying old mods from {oldPath} to {newPath}");
+                        ChangeModsFolderStart(true, oldPath, newPath, selectedFolder);
+                    }
+                    else
+                    {
+                        Dbg.Log($"Creating new blank mods folder in {newPath}");
+                        ChangeModsFolderStart(false, oldPath, newPath, selectedFolder);
+                    }
+                }
+                return;
+            }
+            //If Install MSCLoader is selected
 
+          //  Storage.modsPath = newPath;
+
+        }
+        private async void ChangeModsFolderStart(bool copyOldMods, string oldPath, string newPath, ModsFolder newFolder)
+        {
+            if (Directory.Exists(newPath))
+            {
+                Dbg.Log($"New path for Mods folder {newPath} already exists");
+                if (MessageBox.Show($"Warning!{Environment.NewLine}Selected mods path already exists, all files will be deleted!{Environment.NewLine}{Environment.NewLine}Continue?", "Mods Folder", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
+                {
+                    Dbg.Log("Cancelling folder change");
+                    return;
+                }
+            }
+            Storage.modsPath = newPath;
+            if (copyOldMods)
+            {
+               await main.InstallProgressPage().ChangeModsFolderAndCopyAsync(oldPath, newFolder);
+            }
+            else
+            {
+               main.InstallProgressPage().ChangeModsFolder(newFolder);
             }
         }
-
         private void GameFolderRB_Checked(object sender, RoutedEventArgs e)
         {
             selectedFolder = ModsFolder.GameFolder;
