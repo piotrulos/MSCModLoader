@@ -144,19 +144,25 @@ namespace MSCLInstaller
             {
                 Dbg.MissingFilesError();
             }
-            Directory.CreateDirectory(Path.Combine(".", "temp"));
+            //Directory.CreateDirectory(Path.Combine(".", "temp"));
             if (!ZipFile.IsZipFile(corepack))
             {
                 Dbg.Log($"Failed to read file: {corepack}");
             }
             ZipFile zip1 = ZipFile.Read(corepack);
-            zip1.ExtractAll(Path.Combine(".", "temp"));
+            Version coreVer = new Version("0.0.0.0");
+            if (zip1.Comment != null)
+            {
+                coreVer = new Version(zip1.Comment);
+            }
+            //zip1.ExtractAll(Path.Combine(".", "temp"));
             zip1.Dispose();
-            if (InstallerHelpers.VersionCompare(Path.Combine(".", "temp", "winhttp.dll"), Path.Combine(Storage.mscPath, "winhttp.dll")))
+            Dbg.Log("Comparing core file version...", true);
+            if (InstallerHelpers.VersionCompare(coreVer, Path.Combine(Storage.mscPath, "winhttp.dll")))
             {
                 updateCore = true;
             }
-            Directory.Delete(Path.Combine(".", "temp"), true);
+         //   Directory.Delete(Path.Combine(".", "temp"), true);
             Directory.CreateDirectory(Path.Combine(".", "temp"));
             string refpack = Path.Combine(".", "main_ref.pack");
             if (!File.Exists(refpack))
@@ -170,6 +176,7 @@ namespace MSCLInstaller
             ZipFile zip2 = ZipFile.Read(refpack);
             zip2.ExtractAll(Path.Combine(".", "temp"));
             zip2.Dispose();
+            Dbg.Log("Comparing references versions...", true);
             foreach (string f in Directory.GetFiles(Path.Combine(".", "temp")))
             {
                 if (InstallerHelpers.VersionCompare(f, Path.Combine(Storage.mscPath, "mysummercar_Data", "Managed", Path.GetFileName(f))))
@@ -178,7 +185,7 @@ namespace MSCLInstaller
                 }
             }
             Directory.Delete(Path.Combine(".", "temp"), true);
-            Directory.CreateDirectory(Path.Combine(".", "temp"));
+            //Directory.CreateDirectory(Path.Combine(".", "temp"));
             string msc = Path.Combine(".", "main_msc.pack");
             if (!File.Exists(msc))
             {
@@ -189,18 +196,25 @@ namespace MSCLInstaller
                 Dbg.Log($"Failed to read file: {msc}");
             }
             ZipFile zip3 = ZipFile.Read(msc);
-            zip3.ExtractAll(Path.Combine(".", "temp"));
+            Version mscVer = new Version("0.0.0.0");
+            if (zip3.Comment != null)
+            {
+                mscVer = new Version(zip3.Comment);
+            }
             zip3.Dispose();
-            ZipFile zip4 = ZipFile.Read(Path.Combine(".", "temp", "Managed.zip"));
-            zip4.ExtractAll(Path.Combine(".", "temp"));
-            zip4.Dispose();
-            if (InstallerHelpers.VersionCompare(Path.Combine(".", "temp", "MSCLoader.dll"), Path.Combine(Storage.mscPath, "mysummercar_Data", "Managed", "MSCLoader.dll")))
+            /* zip3.ExtractAll(Path.Combine(".", "temp"));
+
+             ZipFile zip4 = ZipFile.Read(Path.Combine(".", "temp", "Managed.zip"));
+             zip4.ExtractAll(Path.Combine(".", "temp"));*/
+            //zip4.Dispose();
+            Dbg.Log("Comparing MSCLoader version...", true);
+            if (InstallerHelpers.VersionCompare(mscVer, Path.Combine(Storage.mscPath, "mysummercar_Data", "Managed", "MSCLoader.dll")))
             {
                 updateMSCL = true;
             }
-            main.SetMSCLoaderVer(FileVersionInfo.GetVersionInfo(Path.Combine(".", "temp", "MSCLoader.dll")).FileVersion);
-            Directory.Delete(Path.Combine(".", "temp"), true);
+            main.SetMSCLoaderVer(mscVer.ToString());
 
+          //  Directory.Delete(Path.Combine(".", "temp"), true);
         }
         bool CheckConfig()
         {

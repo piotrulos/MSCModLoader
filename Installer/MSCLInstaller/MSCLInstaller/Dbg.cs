@@ -14,7 +14,7 @@ namespace MSCLInstaller
             ts.Switch.Level = SourceLevels.All;
             ts.Listeners.Add(tw);
             Log($"MSCLoader Installer Log {DateTime.Now:u}");
-            Log($"Version {System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}");
+            Log($"Installer Version {System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}");
         }
         public static void Log(string message, bool newline = false, bool separator = false)
         {

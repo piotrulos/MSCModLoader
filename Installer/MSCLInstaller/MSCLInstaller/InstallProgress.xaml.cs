@@ -56,6 +56,7 @@ namespace MSCLInstaller
                     newCfg = "AD";
                     break;
                 default:
+                    //The fuck happened here?
                     break;
             }            
  

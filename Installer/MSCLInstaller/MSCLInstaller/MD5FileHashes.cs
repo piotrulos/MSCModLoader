@@ -49,10 +49,15 @@ namespace MSCLInstaller
     {
         public static bool VersionCompare(string file1, string file2)
         {
-            Version newVer, oldVer;
+            Version newVer;
             if (File.Exists(file1))
                 newVer = new Version(FileVersionInfo.GetVersionInfo(file1).FileVersion);
             else return false;
+            return VersionCompare(newVer, file2);
+        }
+        public static bool VersionCompare(Version newVer, string file2)
+        {
+            Version oldVer;
             if (File.Exists(file2))
                 oldVer = new Version(FileVersionInfo.GetVersionInfo(file2).FileVersion);
             else return false;
@@ -60,15 +65,16 @@ namespace MSCLInstaller
             switch (newVer.CompareTo(oldVer))
             {
                 case 1:
-                    Dbg.Log($"{Path.GetFileName(file1)} ({oldVer} => {newVer}) Update available");
+                    Dbg.Log($"{Path.GetFileName(file2)} ({oldVer} => {newVer}) - Update available");
                     return true;
                 case 0:
+                    Dbg.Log($"{Path.GetFileName(file2)} ({oldVer}) - Same version as installed");
                     return false;
                 case -1:
-                    Dbg.Log($"{Path.GetFileName(file1)} ({oldVer} => {newVer}) Older than installed");
+                    Dbg.Log($"{Path.GetFileName(file2)} ({oldVer} <= {newVer}) - Older than installed");
                     return false;
                 default:
-                    Dbg.Log($"{Path.GetFileName(file1)} ({oldVer} => {newVer}) WTF"); //never happens
+                    Dbg.Log($"{Path.GetFileName(file2)} ({oldVer} <?> {newVer}) WTF"); 
                     return false;
 
             }
