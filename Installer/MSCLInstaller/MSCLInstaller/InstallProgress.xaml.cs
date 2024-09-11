@@ -1,6 +1,8 @@
 ﻿using IniParser;
 using IniParser.Model;
+using Ionic.Zip;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
@@ -13,17 +15,23 @@ namespace MSCLInstaller
     /// </summary>
     public partial class InstallProgress : Page
     {
-        Progress<(int percent, string text, string log)> progress = new Progress<(int percent, string text, string log)>();
+        Progress<(string text, string log)> progressLog = new();
+        Progress<(int percent, int max, bool isIndeterminate)> progress = new();
         
         public InstallProgress()
         {
             InitializeComponent();
             LogBox.Clear();
-            progress.ProgressChanged += (_, e) =>
+            progressLog.ProgressChanged += (_, e) =>
             {
-                progressBar.Value = e.percent;
                 ProgressText.Text = e.text;
                 AddLog(e.log);
+            };
+            progress.ProgressChanged += (_, e) =>
+            {
+                progressBar.IsIndeterminate = e.isIndeterminate;
+                progressBar.Maximum = e.max;
+                progressBar.Value = e.percent;
             };
         }
 
@@ -31,20 +39,22 @@ namespace MSCLInstaller
         {
             AddLog($"shit");
         }
-        internal void ChangeModsFolder(ModsFolder newfolder)
+        internal async void ChangeModsFolder(ModsFolder newfolder)
         {
             AddLog("Changing Mods Folder...");
-
+            await Task.Run(() => ChangeModsFolderWork(newfolder, progressLog,progress));
         }
         internal async Task ChangeModsFolderAndCopyAsync(string oldPath, ModsFolder newFolder)
         {
             ChangeModsFolder(newFolder);
             AddLog($"Copying mods from {oldPath} to {Storage.modsPath}...");
             progressBar.Maximum = 100;
-            await Task.Run(() => ChangeModsFolderAndCopyWork(progress));
+            await Task.Run(() => ChangeModsFolderAndCopyWork(progressLog, progress));
         }
-        private void ChangeModsFolderWork(ModsFolder newfolder, IProgress<(int percent, string text, string log)> progress)
+        private void ChangeModsFolderWork(ModsFolder newfolder, IProgress<(string text, string log)> progressLog, IProgress<(int percent, int max, bool isIndeterminate)> progress)
         {
+            progress.Report((0, 10, true));
+            System.Threading.Thread.Sleep(1500);
             string newCfg = "GF";
             switch (newfolder)
             {
@@ -61,36 +71,71 @@ namespace MSCLInstaller
                     //The fuck happened here?
                     break;
             }
+            System.Threading.Thread.Sleep(100);
             if (File.Exists(Path.Combine(Storage.mscPath, "doorstop_config.ini")))
             {
-                AddLog("Reading.....doorstop_config.ini");
+                progressLog.Report(("Reading: doorstop_config.ini","Reading.....doorstop_config.ini"));
                 IniData ini = new FileIniDataParser().ReadFile(Path.Combine(Storage.mscPath, "doorstop_config.ini"));
+                System.Threading.Thread.Sleep(100);
                 ini["MSCLoader"]["mods"] = newCfg;
-                AddLog("Writing.....doorstop_config.ini");
+                progressLog.Report(("Writing: doorstop_config.ini", "Writing.....doorstop_config.ini"));
                 new FileIniDataParser().WriteFile(Path.Combine(Storage.mscPath, "doorstop_config.ini"), ini);
-                AddLog("Done!");
+                System.Threading.Thread.Sleep(100);
+                progressLog.Report(("Done", "Done!"));
             }
             else
             {
                 //This is probably super outdated MSCLoader.
-                AddLog("ERROR: doorstop_config.ini does not exist.");
-                AddLog("Please re-install MSCLoader first.");
+                progressLog.Report(("ERROR: doorstop_config.ini does not exist", "ERROR: doorstop_config.ini does not exist"));
+                progressLog.Report(("ERROR: doorstop_config.ini does not exist", "Please re-install MSCLoader first."));
+                return;
             }
-            for (int i = 0; i < 100; i++)
+            System.Threading.Thread.Sleep(100);
+            if (Directory.Exists(Storage.modsPath))
             {
-                //test
-                progress.Report((i, $"File test {i}", $"File test {i}"));
-                System.Threading.Thread.Sleep(500);
+                progressLog.Report(("Deleting existing folder", $"Deleting.....{Storage.modsPath}"));
+                Directory.Delete(Storage.modsPath, true);
+                System.Threading.Thread.Sleep(100);
             }
+            progressLog.Report(("Creating new folder structure", $"Creating new folder structure"));
+            progress.Report((0, 5, false));
+
+            System.Threading.Thread.Sleep(100);
+            Directory.CreateDirectory(Storage.modsPath);
+            progressLog.Report(($"Creating: {Storage.modsPath}", $"Creating.....{Storage.modsPath}"));
+            progress.Report((1, 5, false));
+            System.Threading.Thread.Sleep(100);
+            Directory.CreateDirectory(Path.Combine(Storage.modsPath, "Assets"));
+            progressLog.Report(($"Creating Assets folder", $"Creating.....{Path.Combine(Storage.modsPath, "Assets")}"));
+            progress.Report((2, 5, false));
+            System.Threading.Thread.Sleep(100);
+            Directory.CreateDirectory(Path.Combine(Storage.modsPath, "Config"));
+            progressLog.Report(($"Creating Config folder", $"Creating.....{Path.Combine(Storage.modsPath, "Config")}"));
+            progress.Report((3, 5, false));
+            System.Threading.Thread.Sleep(100);
+            Directory.CreateDirectory(Path.Combine(Storage.modsPath, "References"));
+            progressLog.Report(($"Creating References folder", $"Creating.....{Path.Combine(Storage.modsPath, "References")}"));
+            progress.Report((4, 5, false));
+            System.Threading.Thread.Sleep(100);
+            ExtractFiles(Path.Combine(".", "main_msc.pack"), Path.Combine(".", "temp"), progressLog, progress, true);
+            System.Threading.Thread.Sleep(100);
+            ExtractFiles(Path.Combine(".", "temp","Mods.zip"), Storage.modsPath, progressLog, progress, false);
+            System.Threading.Thread.Sleep(100);
+            Directory.Delete(Path.Combine(".", "temp"), true);
+            progress.Report((5, 5, false));
+            progressLog.Report(("Done", "Done!"));
+
         }
 
-        private void ChangeModsFolderAndCopyWork(IProgress<(int percent, string text, string log)> progress)
+        private void ChangeModsFolderAndCopyWork(IProgress<(string text, string log)> progressLog, IProgress<(int percent, int max, bool isIndeterminate)> progress)
         {
-
+            progress.Report((0, 10, true));
+            System.Threading.Thread.Sleep(1500);
             for (int i = 0; i < 10; i++)
             {
-                progress.Report((i, $"File test {i}", $"File test {i}"));
-                System.Threading.Thread.Sleep(500);
+                progressLog.Report(($"File test {i}", $"File test {i}"));
+                progress.Report((i, 10, false));
+                System.Threading.Thread.Sleep(100);
             }
         }
 
@@ -99,6 +144,42 @@ namespace MSCLInstaller
             LogBox.AppendText($"{log}{Environment.NewLine}");
             LogBox.ScrollToEnd();
             Dbg.Log(log);
+        }
+        private bool ExtractFiles(string fn, string target, IProgress<(string text, string log)> progressLog, IProgress<(int percent, int max, bool isIndeterminate)> progress, bool isTemp)
+        {
+            try
+            {
+                if (!ZipFile.IsZipFile(fn))
+                {
+                    progressLog.Report(($"ERROR: Failed read file: {Path.GetFileName(fn)}", $"ERROR: Failed read file.....{Path.GetFileName(fn)}"));
+                    return false;
+                }
+                else
+                {
+                    ZipFile zip1 = ZipFile.Read(fn);
+                    progressLog.Report(($"Reading file: {Path.GetFileName(fn)}", $"Reading file.....{Path.GetFileName(fn)}"));
+                    if(!isTemp)
+                        progress.Report((0,zip1.Count,false));
+                    System.Threading.Thread.Sleep(100);
+
+                    foreach (ZipEntry zz in zip1)
+                    {                        
+                        if(!isTemp)
+                            progressLog.Report(($"Copying file: {zz.FileName}", $"Copying file.....{zz.FileName}"));
+                        zz.Extract(target, ExtractExistingFileAction.OverwriteSilently);
+                        System.Threading.Thread.Sleep(100);
+
+                    }
+                    zip1.Dispose();
+                }
+                
+                return true;
+            }
+            catch (Exception e)
+            {
+                progressLog.Report(($"Failed read zip file {e.Message}", $"Failed read zip file{Environment.NewLine}{e}"));
+                return false;
+            }
         }
     }
 }
