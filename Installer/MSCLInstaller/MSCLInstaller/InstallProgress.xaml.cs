@@ -1,21 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
+﻿using IniParser;
+using IniParser.Model;
+using System;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace MSCLInstaller
 {
@@ -24,16 +13,18 @@ namespace MSCLInstaller
     /// </summary>
     public partial class InstallProgress : Page
     {
-        Progress<int> progress;
-        Progress<string> progressText, progressLog;
+        Progress<(int percent, string text, string log)> progress = new Progress<(int percent, string text, string log)>();
         
         public InstallProgress()
         {
             InitializeComponent();
             LogBox.Clear();
-            progress = new Progress<int>(x => progressBar.Value = x);
-            progressText = new Progress<string>(x => ProgressText.Text = x);
-            progressLog = new Progress<string>(x => AddLog(x));
+            progress.ProgressChanged += (_, e) =>
+            {
+                progressBar.Value = e.percent;
+                ProgressText.Text = e.text;
+                AddLog(e.log);
+            };
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -43,6 +34,17 @@ namespace MSCLInstaller
         internal void ChangeModsFolder(ModsFolder newfolder)
         {
             AddLog("Changing Mods Folder...");
+
+        }
+        internal async Task ChangeModsFolderAndCopyAsync(string oldPath, ModsFolder newFolder)
+        {
+            ChangeModsFolder(newFolder);
+            AddLog($"Copying mods from {oldPath} to {Storage.modsPath}...");
+            progressBar.Maximum = 100;
+            await Task.Run(() => ChangeModsFolderAndCopyWork(progress));
+        }
+        private void ChangeModsFolderWork(ModsFolder newfolder, IProgress<(int percent, string text, string log)> progress)
+        {
             string newCfg = "GF";
             switch (newfolder)
             {
@@ -50,7 +52,7 @@ namespace MSCLInstaller
                     newCfg = "GF";
                     break;
                 case ModsFolder.MyDocuments:
-                    newCfg = "MD"; 
+                    newCfg = "MD";
                     break;
                 case ModsFolder.Appdata:
                     newCfg = "AD";
@@ -58,25 +60,36 @@ namespace MSCLInstaller
                 default:
                     //The fuck happened here?
                     break;
-            }            
- 
-        }
-        internal async Task ChangeModsFolderAndCopyAsync(string oldPath, ModsFolder newFolder)
-        {
-            ChangeModsFolder(newFolder);
-            AddLog($"Copying mods from {oldPath} to {Storage.modsPath}...");
-            progressBar.Maximum = 100;
-            await Task.Run(() => ChangeModsFolderAndCopyWork(progress, progressText, progressLog));
-        }
-
-        private void ChangeModsFolderAndCopyWork(IProgress<int> progress, IProgress<string> progressText, IProgress<string> progressLog)
-        {
+            }
+            if (File.Exists(Path.Combine(Storage.mscPath, "doorstop_config.ini")))
+            {
+                AddLog("Reading.....doorstop_config.ini");
+                IniData ini = new FileIniDataParser().ReadFile(Path.Combine(Storage.mscPath, "doorstop_config.ini"));
+                ini["MSCLoader"]["mods"] = newCfg;
+                AddLog("Writing.....doorstop_config.ini");
+                new FileIniDataParser().WriteFile(Path.Combine(Storage.mscPath, "doorstop_config.ini"), ini);
+                AddLog("Done!");
+            }
+            else
+            {
+                //This is probably super outdated MSCLoader.
+                AddLog("ERROR: doorstop_config.ini does not exist.");
+                AddLog("Please re-install MSCLoader first.");
+            }
             for (int i = 0; i < 100; i++)
             {
                 //test
-                progress.Report(i);
-                progressText.Report($"File test {i}");
-                progressLog.Report($"File test {i}");
+                progress.Report((i, $"File test {i}", $"File test {i}"));
+                System.Threading.Thread.Sleep(500);
+            }
+        }
+
+        private void ChangeModsFolderAndCopyWork(IProgress<(int percent, string text, string log)> progress)
+        {
+
+            for (int i = 0; i < 10; i++)
+            {
+                progress.Report((i, $"File test {i}", $"File test {i}"));
                 System.Threading.Thread.Sleep(500);
             }
         }
