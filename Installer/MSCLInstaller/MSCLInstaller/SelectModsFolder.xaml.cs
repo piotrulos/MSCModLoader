@@ -113,25 +113,41 @@ namespace MSCLInstaller
           //  Storage.modsPath = newPath;
 
         }
-        private async void ChangeModsFolderStart(bool copyOldMods, string oldPath, string newPath, ModsFolder newFolder)
+        private void ChangeModsFolderStart(bool copyOldMods, string oldPath, string newPath, ModsFolder newFolder)
         {
-            if (Directory.Exists(newPath))
+            bool deleteTargetFolder = false;
+
+            if (Directory.Exists(newPath) && copyOldMods)
             {
                 Dbg.Log($"New path for Mods folder {newPath} already exists");
-                if (MessageBox.Show($"Warning!{Environment.NewLine}Selected mods path already exists, all files will be deleted!{Environment.NewLine}{Environment.NewLine}Continue?", "Mods Folder", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
+                if (MessageBox.Show($"Warning!{Environment.NewLine}Selected mods path already exists, all files will be deleted in new path!{Environment.NewLine}{Environment.NewLine}Continue?", "Mods Folder", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
                 {
                     Dbg.Log("Cancelling folder change");
                     return;
                 }
             }
+            if (Directory.Exists(newPath) && !copyOldMods)
+            {
+                Dbg.Log($"New path for Mods folder {newPath} already exists");
+                MessageBoxResult messageBoxResult = MessageBox.Show($"Warning!{Environment.NewLine}Selected mods path already exists, do you want to delete it and make it new Mods folder?{Environment.NewLine}{Environment.NewLine}Yes - Delete and make it as new blank Mods folder{Environment.NewLine}No - Keep all files in target folder{Environment.NewLine}Cancel - Cancel folder change", "Mods Folder", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+                if (messageBoxResult == MessageBoxResult.Cancel)
+                {
+                    Dbg.Log("Cancelling folder change");
+                    return;
+                }
+                if (messageBoxResult == MessageBoxResult.Yes)
+                {
+                    deleteTargetFolder = true;
+                }
+            }
             Storage.modsPath = newPath;
             if (copyOldMods)
             {
-               await main.InstallProgressPage().ChangeModsFolderAndCopyAsync(oldPath, newFolder);
+               main.InstallProgressPage().ChangeModsFolderAndCopyAsync(oldPath, newFolder);
             }
             else
             {
-               main.InstallProgressPage().ChangeModsFolder(newFolder);
+               main.InstallProgressPage().ChangeModsFolder(newFolder, deleteTargetFolder);
             }
         }
         private void GameFolderRB_Checked(object sender, RoutedEventArgs e)

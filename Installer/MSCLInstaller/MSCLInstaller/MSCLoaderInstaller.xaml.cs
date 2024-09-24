@@ -35,9 +35,10 @@ namespace MSCLInstaller
         {
             if (initialized) 
             {
-                UpdatePathText();
+                UpdatePathText(); 
                 return; 
             }
+            
             main = m;
             if (File.Exists(Path.Combine(Storage.mscPath, "mysummercar_Data", "Managed", "MSCLoader.Preloader.dll")) && File.Exists(Path.Combine(Storage.mscPath, "winhttp.dll")) && File.Exists(Path.Combine(Storage.mscPath, "doorstop_config.ini")))
             {
@@ -77,12 +78,6 @@ namespace MSCLInstaller
                     }
                 }
             }
-            else
-            {
-                InstallStatusText.Text = $"Status: ";
-                InstallStatusText.Inlines.Add(new Run("Not installed") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red });
-
-            }
             UpdateInstallationStatus();
             UpdatePathText();
             PleaseWait.Visibility = Visibility.Hidden;
@@ -100,21 +95,19 @@ namespace MSCLInstaller
         void UpdateInstallationStatus()
         {
             ExecuteSelectedBtn.IsEnabled = false;
+            InstallStatusText.Text = $"Status: ";
             if (!isInstalled)
             {
-                InstallStatusText.Text = $"Status: ";
                 InstallStatusText.Inlines.Add(new Run("Not installed") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red });
                 ToggleRadioButtonsVisibility(Visibility.Collapsed, Visibility.Visible, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed);
             }
             if (fullinstall || updateCore || updateRefs || updateMSCL)
             {
-                InstallStatusText.Text = $"Status: ";
                 InstallStatusText.Inlines.Add(new Run("Updates available") { FontWeight = FontWeights.Bold, Foreground = Brushes.LightBlue });
                 ToggleRadioButtonsVisibility(resetConfig ? Visibility.Collapsed : Visibility.Visible, Visibility.Collapsed, Visibility.Visible, Visibility.Collapsed, Visibility.Visible);
             }
             else
             {
-                InstallStatusText.Text = $"Status: ";
                 InstallStatusText.Inlines.Add(new Run("Installed and up to date") { FontWeight = FontWeights.Bold, Foreground = Brushes.LightGreen });
                 ToggleRadioButtonsVisibility(Visibility.Visible, Visibility.Collapsed, Visibility.Collapsed, Visibility.Visible, Visibility.Visible);
             }
@@ -125,7 +118,7 @@ namespace MSCLInstaller
             ModsFolderRadio.Visibility = changeModsFolder;
             InstallRadio.Visibility = installMSCLoader;
             UpdateRadio.Visibility = updateMSCLoader;
-            ReinstallRadio.Visibility = uninstallMSCLoader;
+            ReinstallRadio.Visibility = reinstallMSCLoader;
             UninstallRadio.Visibility = uninstallMSCLoader; 
         }
 
@@ -197,8 +190,9 @@ namespace MSCLInstaller
             }
             ZipFile zip3 = ZipFile.Read(msc);
             Version mscVer = new Version("0.0.0.0");
-            if (zip3.Comment != null)
+            if (zip3.Comment != null)      
             {
+               
                 mscVer = new Version(zip3.Comment);
             }
             zip3.Dispose();

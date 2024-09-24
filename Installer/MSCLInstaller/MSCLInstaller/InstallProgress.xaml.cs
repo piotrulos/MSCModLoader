@@ -14,9 +14,9 @@ namespace MSCLInstaller
     /// Interaction logic for InstallProgress.xaml
     /// </summary>
     public partial class InstallProgress : Page
-    {
-        Progress<(string text, string log)> progressLog = new();
-        Progress<(int percent, int max, bool isIndeterminate)> progress = new();
+    {       
+        private Progress<(string text, string log)> progressLog = new();
+        private Progress<(int percent, int max, bool isIndeterminate)> progress = new();
         
         public InstallProgress()
         {
@@ -39,19 +39,19 @@ namespace MSCLInstaller
         {
             AddLog($"shit");
         }
-        internal async void ChangeModsFolder(ModsFolder newfolder)
+        internal async void ChangeModsFolder(ModsFolder newfolder,bool deleteTarget)
         {
             AddLog("Changing Mods Folder...");
-            await Task.Run(() => ChangeModsFolderWork(newfolder, progressLog,progress));
+            await Task.Run(() => ChangeModsFolderWork(newfolder, deleteTarget, progressLog,progress));
         }
-        internal async Task ChangeModsFolderAndCopyAsync(string oldPath, ModsFolder newFolder)
+        internal async void ChangeModsFolderAndCopyAsync(string oldPath, ModsFolder newFolder)
         {
-            ChangeModsFolder(newFolder);
+            ChangeModsFolder(newFolder, true);
             AddLog($"Copying mods from {oldPath} to {Storage.modsPath}...");
             progressBar.Maximum = 100;
             await Task.Run(() => ChangeModsFolderAndCopyWork(progressLog, progress));
         }
-        private void ChangeModsFolderWork(ModsFolder newfolder, IProgress<(string text, string log)> progressLog, IProgress<(int percent, int max, bool isIndeterminate)> progress)
+        private void ChangeModsFolderWork(ModsFolder newfolder, bool deleteTarget, IProgress<(string text, string log)> progressLog, IProgress<(int percent, int max, bool isIndeterminate)> progress)
         {
             progress.Report((0, 10, true));
             System.Threading.Thread.Sleep(1500);
@@ -91,31 +91,34 @@ namespace MSCLInstaller
                 return;
             }
             System.Threading.Thread.Sleep(100);
-            if (Directory.Exists(Storage.modsPath))
+            if (deleteTarget)
             {
-                progressLog.Report(("Deleting existing folder", $"Deleting.....{Storage.modsPath}"));
-                Directory.Delete(Storage.modsPath, true);
-                System.Threading.Thread.Sleep(100);
-            }
-            progressLog.Report(("Creating new folder structure", $"Creating new folder structure"));
-            progress.Report((0, 5, false));
+                if (Directory.Exists(Storage.modsPath))
+                {
+                    progressLog.Report(("Deleting existing folder", $"Deleting.....{Storage.modsPath}"));
+                    Directory.Delete(Storage.modsPath, true);
+                    System.Threading.Thread.Sleep(100);
+                }
+                progressLog.Report(("Creating new folder structure", $"Creating new folder structure"));
+                progress.Report((0, 5, false));
 
-            System.Threading.Thread.Sleep(100);
-            Directory.CreateDirectory(Storage.modsPath);
-            progressLog.Report(($"Creating: {Storage.modsPath}", $"Creating.....{Storage.modsPath}"));
-            progress.Report((1, 5, false));
-            System.Threading.Thread.Sleep(100);
-            Directory.CreateDirectory(Path.Combine(Storage.modsPath, "Assets"));
-            progressLog.Report(($"Creating Assets folder", $"Creating.....{Path.Combine(Storage.modsPath, "Assets")}"));
-            progress.Report((2, 5, false));
-            System.Threading.Thread.Sleep(100);
-            Directory.CreateDirectory(Path.Combine(Storage.modsPath, "Config"));
-            progressLog.Report(($"Creating Config folder", $"Creating.....{Path.Combine(Storage.modsPath, "Config")}"));
-            progress.Report((3, 5, false));
-            System.Threading.Thread.Sleep(100);
-            Directory.CreateDirectory(Path.Combine(Storage.modsPath, "References"));
-            progressLog.Report(($"Creating References folder", $"Creating.....{Path.Combine(Storage.modsPath, "References")}"));
-            progress.Report((4, 5, false));
+                System.Threading.Thread.Sleep(100);
+                Directory.CreateDirectory(Storage.modsPath);
+                progressLog.Report(($"Creating: {Storage.modsPath}", $"Creating.....{Storage.modsPath}"));
+                progress.Report((1, 5, false));
+                System.Threading.Thread.Sleep(100);
+                Directory.CreateDirectory(Path.Combine(Storage.modsPath, "Assets"));
+                progressLog.Report(($"Creating Assets folder", $"Creating.....{Path.Combine(Storage.modsPath, "Assets")}"));
+                progress.Report((2, 5, false));
+                System.Threading.Thread.Sleep(100);
+                Directory.CreateDirectory(Path.Combine(Storage.modsPath, "Config"));
+                progressLog.Report(($"Creating Config folder", $"Creating.....{Path.Combine(Storage.modsPath, "Config")}"));
+                progress.Report((3, 5, false));
+                System.Threading.Thread.Sleep(100);
+                Directory.CreateDirectory(Path.Combine(Storage.modsPath, "References"));
+                progressLog.Report(($"Creating References folder", $"Creating.....{Path.Combine(Storage.modsPath, "References")}"));
+                progress.Report((4, 5, false));
+            }
             System.Threading.Thread.Sleep(100);
             ExtractFiles(Path.Combine(".", "main_msc.pack"), Path.Combine(".", "temp"), progressLog, progress, true);
             System.Threading.Thread.Sleep(100);
@@ -138,10 +141,10 @@ namespace MSCLInstaller
                 System.Threading.Thread.Sleep(100);
             }
         }
-
+        
         private void AddLog(string log)
-        {
-            LogBox.AppendText($"{log}{Environment.NewLine}");
+        {            
+            LogBox.AppendText($"{log}{Environment.NewLine}");            
             LogBox.ScrollToEnd();
             Dbg.Log(log);
         }
@@ -159,13 +162,17 @@ namespace MSCLInstaller
                     ZipFile zip1 = ZipFile.Read(fn);
                     progressLog.Report(($"Reading file: {Path.GetFileName(fn)}", $"Reading file.....{Path.GetFileName(fn)}"));
                     if(!isTemp)
-                        progress.Report((0,zip1.Count,false));
+                        progress.Report((0,zip1.Entries.Count,false));
                     System.Threading.Thread.Sleep(100);
 
-                    foreach (ZipEntry zz in zip1)
-                    {                        
-                        if(!isTemp)
+                    for(int i = 0; i < zip1.Entries.Count; i++)
+                    {
+                        ZipEntry zz = zip1[i];
+                        if (!isTemp)
+                        {
                             progressLog.Report(($"Copying file: {zz.FileName}", $"Copying file.....{zz.FileName}"));
+                            progress.Report((i, zip1.Entries.Count, false));
+                        }
                         zz.Extract(target, ExtractExistingFileAction.OverwriteSilently);
                         System.Threading.Thread.Sleep(100);
 
