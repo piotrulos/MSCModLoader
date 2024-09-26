@@ -79,7 +79,7 @@ namespace MSCLInstaller
                 System.Threading.Thread.Sleep(100);
                 ini["MSCLoader"]["mods"] = newCfg;
                 progressLog.Report(("Writing: doorstop_config.ini", "Writing.....doorstop_config.ini"));
-                new FileIniDataParser().WriteFile(Path.Combine(Storage.mscPath, "doorstop_config.ini"), ini);
+                new FileIniDataParser().WriteFile(Path.Combine(Storage.mscPath, "doorstop_config.ini"), ini, System.Text.Encoding.ASCII);
                 System.Threading.Thread.Sleep(100);
                 progressLog.Report(("Done", "Done!"));
             }
