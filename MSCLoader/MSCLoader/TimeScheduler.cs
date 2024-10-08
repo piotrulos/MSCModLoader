@@ -1,4 +1,4 @@
-﻿using HutongGames.PlayMaker;
+﻿#if !Mini
 using System;
 using System.Collections.Generic;
 
@@ -9,31 +9,42 @@ namespace MSCLoader
     /// </summary>
     public class TimeScheduler : MonoBehaviour
     {
-        private static int lastMinute = -1;
+        static int lastMinute = -1;
 
+        /// <summary>
+        /// Init the Action Scheduler (only meant to be called once on game load)
+        /// </summary>
         internal static void StartScheduler()
         {
             GameObject timeScheduler = new GameObject("MSCLoader Time Scheduler");
             timeScheduler.AddComponent<TimeScheduler>();
         }
 
-        private class ScheduledAction 
+        /// <summary>
+        /// Class for all scheduled actions
+        /// </summary>
+        public class ScheduledAction 
         {
             public int Hour { get; }
             public int Minute { get; }
             public Action Action { get; }
             public bool OneTimeAction { get; }
+            public GameTime.Days Day { get; }
 
-            internal ScheduledAction(int hour, int minute, Action action, bool oneTimeAction)
+            internal ScheduledAction(int hour, int minute, Action action, GameTime.Days day, bool oneTimeAction)
             {
                 Hour = hour;
                 Minute = minute;
                 Action = action;
+                Day = day;
                 OneTimeAction = oneTimeAction;
             }
         }
-
-        private static List<ScheduledAction> scheduledActions = new List<ScheduledAction>();
+        
+        /// <summary>
+        /// List containing all Scheduled Actions
+        /// </summary>
+        public static List<ScheduledAction> ScheduledActions { get; private set; } = new List<ScheduledAction>();        
 
         /// <summary>
         /// Method to schedule an action
@@ -42,70 +53,26 @@ namespace MSCLoader
         /// <param name="minute">Game Minute (0-60)</param>
         /// <param name="action">The action to execute</param>
         /// <param name="oneTimeAction">[Optional] Whether the action is ran only once (false on default)</param>
-        public static void ScheduleAction(int hour, int minute, Action action, bool oneTimeAction = false) => scheduledActions.Add(new ScheduledAction(hour, minute, action, oneTimeAction));
+        public static void ScheduleAction(int hour, int minute, Action action, GameTime.Days day = GameTime.Days.All, bool oneTimeAction = false) 
+            => ScheduledActions.Add(new ScheduledAction(hour, minute, action, day, oneTimeAction));
         
-        private void Update()
+        void Update()
         {
-            int hour = MSCTime.hours;
-            int minute = MSCTime.minutes;
-
-            if (minute != lastMinute)
+            if (GameTime.Minute != lastMinute)
             {
-                for (int i = scheduledActions.Count - 1; i >= 0; i--)
+                for (int i = ScheduledActions.Count - 1; i >= 0; i--)
                 {
-                    ScheduledAction action = scheduledActions[i];
+                    ScheduledAction action = ScheduledActions[i];
 
-                    if (action.Hour == hour && action.Minute == minute)
+                    if (action.Hour == GameTime.Hour && action.Minute == GameTime.Minute && (action.Day == GameTime.Day || action.Day == GameTime.Days.All)) // None means ran every day
                     {
                         action.Action.Invoke();
-                        if (action.OneTimeAction) scheduledActions.Remove(action);
+                        if (action.OneTimeAction) ScheduledActions.Remove(action);
                     }
                 }
-                lastMinute = minute;
+                lastMinute = GameTime.Minute;
             }
         }
     }
-
-    internal static class MSCTime
-    {
-        static FsmInt fsm_time;
-        static FsmFloat fsm_minutes;
-        static bool initialized = false;
-
-        static bool Initialize()
-        {
-            if (initialized) return true;
-
-            Transform sun = GameObject.Find("MAP").transform.Find("SUN/Pivot/SUN");
-            if (sun == null) return false;
-
-            PlayMakerFSM fsm = sun.GetPlayMaker("Color");
-            fsm_time = fsm.GetVariable<FsmInt>("Time");
-            fsm_minutes = fsm.GetVariable<FsmFloat>("Minutes");
-
-            initialized = (fsm_time != null && fsm_minutes != null);
-            return initialized;
-        }
-
-        public static int hours
-        {
-            get
-            {
-                if (!Initialize()) return 0;
-                int hour = fsm_time.Value == 24 ? 0 : fsm_time.Value;
-                if (fsm_minutes.Value > 60f) hour++;
-                return hour;
-            }
-        }
-
-        public static int minutes
-        {
-            get
-            {
-                if (!Initialize()) return 0;
-                return Mathf.Clamp(Mathf.FloorToInt(fsm_minutes.Value) % 60, 0, 59);
-            }
-        }
-    }
-
 }
+#endif

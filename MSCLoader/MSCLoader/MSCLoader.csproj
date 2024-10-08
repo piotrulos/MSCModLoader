@@ -128,6 +128,7 @@
     <Compile Include="DummyCompLayer\ModSettings.cs" />
     <Compile Include="DummyCompLayer\ModSettingTypes.cs" />
     <Compile Include="FsmHook.cs" />
+    <Compile Include="GameTime.cs" />
     <Compile Include="TimeScheduler.cs" />
     <Compile Include="Keybind.cs" />
     <Compile Include="KeyBinding.cs" />
