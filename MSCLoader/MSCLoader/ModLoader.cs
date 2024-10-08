@@ -152,6 +152,7 @@ public partial class ModLoader : MonoBehaviour
                     QualitySettings.vSyncCount = 0;
 
                 menuInfoAnim.Play("fade_out");
+                TimeScheduler.StartScheduler();
                 StartLoadingMods(!syncLoad);
                 ModMenu.ModMenuHandle();
                 break;
@@ -366,7 +367,6 @@ public partial class ModLoader : MonoBehaviour
             }
             wasSaving = false;
         }
-
     }
     internal static void HandleCanv(GameObject go)
     {
