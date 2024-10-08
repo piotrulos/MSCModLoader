@@ -189,16 +189,17 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if "$(ConfigurationName)" == "MSC_Release" (
-copy $(TargetPath) "C:\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
-) 
-if "$(ConfigurationName)" == "MSC_Debug" (
-copy $(TargetPath) "C:\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
-copy "$(TargetDir)$(TargetName).pdb" "C:\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
-cd "C:\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\"
-call "C:\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\debug.bat"
-)
-</PostBuildEvent>
+	  <PostBuildEvent>
+		  if "$(ConfigurationName)" == "MSC_Release" (
+		  copy $(TargetPath) "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
+		  )
+		  if "$(ConfigurationName)" == "MSC_Debug" (
+		  copy $(TargetPath) "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
+		  copy "$(TargetDir)$(TargetName).pdb" "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
+		  cd "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\"
+		  call "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\debug.bat"
+		  )
+	  </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>
