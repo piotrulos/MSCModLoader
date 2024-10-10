@@ -1,205 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-	<PropertyGroup>
-		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-		<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-		<ProjectGuid>{3323FE4A-D360-4692-9309-F20B57BBB745}</ProjectGuid>
-		<OutputType>Library</OutputType>
-		<AppDesignerFolder>Properties</AppDesignerFolder>
-		<RootNamespace>MSCLoader</RootNamespace>
-		<AssemblyName>MSCLoader</AssemblyName>
-		<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-		<FileAlignment>512</FileAlignment>
-		<TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
-		<LangVersion>10</LangVersion>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'MSC_Debug|AnyCPU' ">
-		<DebugSymbols>true</DebugSymbols>
-		<DebugType>full</DebugType>
-		<Optimize>false</Optimize>
-		<OutputPath>bin\Debug\</OutputPath>
-		<DefineConstants>TRACE;DEBUG;Debug</DefineConstants>
-		<ErrorReport>prompt</ErrorReport>
-		<WarningLevel>4</WarningLevel>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'MSC_Release|AnyCPU' ">
-		<DebugType>none</DebugType>
-		<Optimize>true</Optimize>
-		<OutputPath>bin\Release\</OutputPath>
-		<DefineConstants>TRACE</DefineConstants>
-		<ErrorReport>prompt</ErrorReport>
-		<WarningLevel>4</WarningLevel>
-		<DebugSymbols>false</DebugSymbols>
-		<DocumentationFile>bin\Release\MSCLoader.xml</DocumentationFile>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'MSC_Mini|AnyCPU' ">
-		<OutputPath>bin\Mini\</OutputPath>
-		<DefineConstants>TRACE;Mini</DefineConstants>
-		<DocumentationFile>bin\Release\MSCLoader.xml</DocumentationFile>
-		<Optimize>true</Optimize>
-		<PlatformTarget>AnyCPU</PlatformTarget>
-		<LangVersion>10</LangVersion>
-		<ErrorReport>prompt</ErrorReport>
-	</PropertyGroup>
-	<ItemGroup>
-		<Reference Include="Assembly-CSharp" Condition="!$(DefineConstants.Contains('Mini'))">
-			<HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Assembly-CSharp.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="Assembly-CSharp-firstpass" Condition="!$(DefineConstants.Contains('Mini'))">
-			<HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="ES2, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-			<SpecificVersion>False</SpecificVersion>
-			<HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\ES2.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="INIFileParser" Condition="!$(DefineConstants.Contains('Mini'))">
-			<HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\INIFileParser.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="Ionic.Zip" Condition="!$(DefineConstants.Contains('Mini'))">
-			<HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Ionic.Zip.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="MSCLoader.Helpers" Condition="!$(DefineConstants.Contains('Mini'))">
-			<HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\Mods\References\MSCLoader.Helpers.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="NAudio" Condition="!$(DefineConstants.Contains('Mini'))">
-			<HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\NAudio.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="NAudio.Flac" Condition="!$(DefineConstants.Contains('Mini'))">
-			<HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\NAudio.Flac.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="Newtonsoft.Json" Condition="!$(DefineConstants.Contains('Mini'))">
-			<HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Newtonsoft.Json.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="NVorbis, Version=0.8.4.0, Culture=neutral, processorArchitecture=MSIL" Condition="!$(DefineConstants.Contains('Mini'))">
-			<SpecificVersion>False</SpecificVersion>
-			<HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\NVorbis.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="PlayMaker" Condition="!$(DefineConstants.Contains('Mini'))">
-			<HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\PlayMaker.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="System">
-			<HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\System.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="System.Core">
-			<Aliases>global</Aliases>
-		</Reference>
-		<Reference Include="System.Runtime.Serialization" />
-		<Reference Include="System.Data" />
-		<Reference Include="UnityEngine">
-			<HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\UnityEngine.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="UnityEngine.UI">
-			<HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\UnityEngine.UI.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-	</ItemGroup>
-	<ItemGroup>
-		<Compile Include="AudioLibrary\MP3_Streaming\MP3Stream.cs" />
-		<Compile Include="AudioLibrary\MP3_Streaming\ReadFullyStream.cs" />
-		<Compile Include="AudioLibrary\Playlists.cs" />
-		<Compile Include="Commands\CommandVersion.cs" />
-		<Compile Include="Commands\CommandLogAll.cs" />
-		<Compile Include="Commands\EarlyAccessCommand.cs" />
-		<Compile Include="Commands\MetadataCommand.cs" />
-		<Compile Include="Commands\SaveDbgCommand.cs" />
-		<Compile Include="ConsoleCommand.cs" />
-		<Compile Include="ConsoleController.cs" />
-		<Compile Include="ConsoleUIResizer.cs" />
-		<Compile Include="ConsoleView.cs" />
-		<Compile Include="CoreAssets\MessageBoxesCanvas.cs" />
-		<Compile Include="CoreAssets\MSCLoaderCanvasLoading.cs" />
-		<Compile Include="DummyCompLayer\ModAssets.cs" />
-		<Compile Include="DummyCompLayer\ModHelper.cs" />
-		<Compile Include="DummyCompLayer\ModPrompt.cs" />
-		<Compile Include="DummyCompLayer\ModSettings.cs" />
-		<Compile Include="DummyCompLayer\ModSettingTypes.cs" />
-		<Compile Include="FsmHook.cs" />
-		<Compile Include="Keybind.cs" />
-		<Compile Include="KeyBinding.cs" />
-		<Compile Include="LoadAssets.cs" />
-		<Compile Include="Mod.cs" />
-		<Compile Include="Mod.Internal.cs" />
-		<Compile Include="Mod.OldGarbage.cs" />
-		<Compile Include="ModAudio.cs" />
-		<Compile Include="ModAudioStream.cs" />
-		<Compile Include="ModCallbacks\A_ModUpdate.cs" />
-		<Compile Include="ModCallbacks\A_ModFixedUpdate.cs" />
-		<Compile Include="ModCallbacks\A_ModOnGUI.cs" />
-		<Compile Include="ModConsole.cs" />
-		<Compile Include="ModCallbacks\BC_ModFixedUpdate.cs" />
-		<Compile Include="ModLoader.cs" />
-		<Compile Include="ModCallbacks\BC_ModOnGUI.cs" />
-		<Compile Include="ModLoader.Internal.cs" />
-		<Compile Include="ModLoader.Public.cs" />
-		<Compile Include="ModLoader.Updates.cs" />
-		<Compile Include="ModMenu\ListStuff.cs" />
-		<Compile Include="ModMenu\MenuElementList.cs" />
-		<Compile Include="ModMenu\ModMenuButton.cs" />
-		<Compile Include="ModMenu\DownloadMenuView.cs" />
-		<Compile Include="ModMenu\ModMenuView.cs" />
-		<Compile Include="ModMenu\ScrollRectCulling.cs" />
-		<Compile Include="ModMenu\SettingsElement.cs" />
-		<Compile Include="ModMenu\SettingsGroup.cs" />
-		<Compile Include="ModMenu\UIExtensions\ColorImage.cs" />
-		<Compile Include="ModMenu\UIExtensions\ColorPicker.cs" />
-		<Compile Include="ModMenu\UIExtensions\ColorSlider.cs" />
-		<Compile Include="ModMenu\UIExtensions\ColorSliderImage.cs" />
-		<Compile Include="ModMenu\UIExtensions\DropDownList.cs" />
-		<Compile Include="ModMenu\UIExtensions\DropDownListButton.cs" />
-		<Compile Include="ModMenu\UIExtensions\DropDownListItem.cs" />
-		<Compile Include="ModMenu\UniversalView.cs" />
-		<Compile Include="DummyCompLayer\ModSave.cs" />
-		<Compile Include="ModMenu.cs" />
-		<Compile Include="ModMetadata.cs" />
-		<Compile Include="ModUI.cs" />
-		<Compile Include="ModUIDrag.cs" />
-		<Compile Include="ModCallbacks\BC_ModUpdate.cs" />
-		<Compile Include="MSCUnloader.cs" />
-		<Compile Include="AudioLibrary\NAudio.Vorbis\VorbisWaveReader.cs" />
-		<Compile Include="OBJLoader.cs" />
-		<Compile Include="PlayMakerExtensions.cs" />
-		<Compile Include="Properties\AssemblyInfo.cs" />
-		<Compile Include="AudioLibrary\AudioFileReader.cs" />
-		<Compile Include="AudioLibrary\Manager.cs" />
-		<Compile Include="References.cs" />
-		<Compile Include="SaveLoad.cs" />
-		<Compile Include="Settings.cs" />
-	</ItemGroup>
-	<ItemGroup>
-		<EmbeddedResource Include="CoreAssets\core.unity3d" Condition="!$(DefineConstants.Contains('Mini'))" />
-	</ItemGroup>
-	<Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-	<PropertyGroup>
-		<PostBuildEvent>
-			if "$(ConfigurationName)" == "MSC_Release" (
-			copy $(TargetPath) "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
-			)
-			if "$(ConfigurationName)" == "MSC_Debug" (
-			copy $(TargetPath) "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
-			copy "$(TargetDir)$(TargetName).pdb" "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
-			cd "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\"
-			call "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\debug.bat"
-			)
-		</PostBuildEvent>
-	</PropertyGroup>
-	<PropertyGroup>
-		<PreBuildEvent>
-		</PreBuildEvent>
-	</PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -242,71 +42,71 @@
     <LangVersion>10</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
-	<ItemGroup>
-		<Reference Include="Assembly-CSharp" Condition="!$(DefineConstants.Contains('Mini'))">
-			<HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Assembly-CSharp.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="Assembly-CSharp-firstpass" Condition="!$(DefineConstants.Contains('Mini'))">
-			<HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="ES2, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-			<SpecificVersion>False</SpecificVersion>
-			<HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\ES2.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="INIFileParser" Condition="!$(DefineConstants.Contains('Mini'))">
-			<HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\INIFileParser.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="Ionic.Zip" Condition="!$(DefineConstants.Contains('Mini'))">
-			<HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Ionic.Zip.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="MSCLoader.Helpers" Condition="!$(DefineConstants.Contains('Mini'))">
-			<HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\Mods\References\MSCLoader.Helpers.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="NAudio" Condition="!$(DefineConstants.Contains('Mini'))">
-			<HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\NAudio.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="NAudio.Flac" Condition="!$(DefineConstants.Contains('Mini'))">
-			<HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\NAudio.Flac.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="Newtonsoft.Json" Condition="!$(DefineConstants.Contains('Mini'))">
-			<HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Newtonsoft.Json.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="NVorbis, Version=0.8.4.0, Culture=neutral, processorArchitecture=MSIL" Condition="!$(DefineConstants.Contains('Mini'))">
-			<SpecificVersion>False</SpecificVersion>
-			<HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\NVorbis.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="PlayMaker" Condition="!$(DefineConstants.Contains('Mini'))">
-			<HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\PlayMaker.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="System">
-			<HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\System.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="System.Core">
-			<Aliases>global</Aliases>
-		</Reference>
-		<Reference Include="System.Runtime.Serialization" />
-		<Reference Include="System.Data" />
-		<Reference Include="UnityEngine">
-			<HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\UnityEngine.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="UnityEngine.UI">
-			<HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\UnityEngine.UI.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-	</ItemGroup>
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp" Condition="!$(DefineConstants.Contains('Mini'))">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data BACKUP\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass" Condition="!$(DefineConstants.Contains('Mini'))">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="ES2, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data BACKUP\Managed\ES2.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="INIFileParser" Condition="!$(DefineConstants.Contains('Mini'))">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data BACKUP\Managed\INIFileParser.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Ionic.Zip" Condition="!$(DefineConstants.Contains('Mini'))">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data BACKUP\Managed\Ionic.Zip.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MSCLoader.Helpers" Condition="!$(DefineConstants.Contains('Mini'))">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\Mods\References\MSCLoader.Helpers.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NAudio" Condition="!$(DefineConstants.Contains('Mini'))">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data BACKUP\Managed\NAudio.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NAudio.Flac" Condition="!$(DefineConstants.Contains('Mini'))">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data BACKUP\Managed\NAudio.Flac.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data BACKUP\Managed\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NVorbis, Version=0.8.4.0, Culture=neutral, processorArchitecture=MSIL" Condition="!$(DefineConstants.Contains('Mini'))">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data BACKUP\Managed\NVorbis.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="PlayMaker" Condition="!$(DefineConstants.Contains('Mini'))">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data BACKUP\Managed\PlayMaker.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System">
+      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\System.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Core">
+      <Aliases>global</Aliases>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Data" />
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data BACKUP\Managed\UnityEngine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data BACKUP\Managed\UnityEngine.UI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="AudioLibrary\MP3_Streaming\MP3Stream.cs" />
     <Compile Include="AudioLibrary\MP3_Streaming\ReadFullyStream.cs" />
@@ -328,8 +128,8 @@
     <Compile Include="DummyCompLayer\ModSettings.cs" />
     <Compile Include="DummyCompLayer\ModSettingTypes.cs" />
     <Compile Include="FsmHook.cs" />
-    <Compile Include="GameTime.cs" />
-    <Compile Include="TimeScheduler.cs" />
+    <Compile Include="MSCLibrary\GameTime.cs" />
+    <Compile Include="MSCLibrary\TimeScheduler.cs" />
     <Compile Include="Keybind.cs" />
     <Compile Include="KeyBinding.cs" />
     <Compile Include="LoadAssets.cs" />
@@ -389,21 +189,20 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-	  <PostBuildEvent>
-		  if "$(ConfigurationName)" == "MSC_Release" (
-		  copy $(TargetPath) "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
-		  )
-		  if "$(ConfigurationName)" == "MSC_Debug" (
-		  copy $(TargetPath) "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
-		  copy "$(TargetDir)$(TargetName).pdb" "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
-		  cd "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\"
-		  call "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\debug.bat"
-		  )
-	  </PostBuildEvent>
+    <PostBuildEvent>
+			if "$(ConfigurationName)" == "MSC_Release" (
+			copy $(TargetPath) "C:\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
+			)
+			if "$(ConfigurationName)" == "MSC_Debug" (
+			copy $(TargetPath) "C:\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
+			copy "$(TargetDir)$(TargetName).pdb" "C:\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
+			cd "C:\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\"
+			call "C:\Program Files (x86)\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\debug.bat"
+			)
+		</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
   </PropertyGroup>
->>>>>>> tmp2
 </Project>

@@ -136,6 +136,7 @@ public partial class ModLoader : MonoBehaviour
                     unloader = true;
                     return;
                 }
+                TimeScheduler.StopScheduler();
                 break;
             case "Intro":
                 CurrentScene = CurrentScene.NewGameIntro;
@@ -158,6 +159,7 @@ public partial class ModLoader : MonoBehaviour
                 break;
             case "Ending":
                 CurrentScene = CurrentScene.Ending;
+                TimeScheduler.StopScheduler();
                 break;
         }
     }
