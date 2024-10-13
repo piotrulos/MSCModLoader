@@ -1,6 +1,8 @@
 ﻿#if !Mini
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 
 namespace MSCLoader
 {
@@ -15,7 +17,7 @@ namespace MSCLoader
         static bool schedulerInstantiated = false;
 
         /// <summary>
-        /// Init the Action Scheduler (only meant to be called once on game load)
+        /// Create and init the Action Scheduler (only meant to be called on game scene load)
         /// </summary>
         internal static void StartScheduler()
         {
@@ -26,6 +28,9 @@ namespace MSCLoader
             schedulerInstantiated = true;
         }
 
+        /// <summary>
+        /// Disable and destroy the Action Scheduler (only meant to be called on game scene exit)
+        /// </summary>
         internal static void StopScheduler()
         {
             if (!schedulerInstantiated) return;
@@ -85,7 +90,7 @@ namespace MSCLoader
             {
                 ScheduledAction action = ScheduledActions[i];
 
-                if (action.Hour == GameTime.Hour && action.Minute == GameTime.Minute && (action.Day == GameTime.Day || action.Day == GameTime.Days.All)) // None means ran every day
+                if (action.Hour == GameTime.Hour && action.Minute == GameTime.Minute && ((GameTime.Day & action.Day) != 0))
                 {
                     action.Action.Invoke();
                     if (action.OneTimeAction) ScheduledActions.Remove(action);
@@ -123,31 +128,13 @@ namespace MSCLoader
 
             List<ScheduledAction> missedActions = new List<ScheduledAction>();
 
-            foreach (ScheduledAction action in ScheduledActions)
-            {
-                int actionMinute = CalcTotalMinutes(action.Hour, action.Minute, action.Day);
+            foreach (ScheduledAction action in ScheduledActions) if (ActionMissed(action, sinceDay, sinceHour, sinceMinute)) missedActions.Add(action);
 
-                if (action.Day != GameTime.Days.All && (actionMinute > startMinute && actionMinute < endMinute)) missedActions.Add(action);
-
-                else if (action.Day == GameTime.Days.All) 
-                {
-                    // calculate total minutes independent of day, hence 0
-                    actionMinute = CalcTotalMinutes(action.Hour, action.Minute, 0);
-                    int startTimeAny = CalcTotalMinutes(sinceHour, sinceMinute, 0);
-                    int endTimeAny = CalcTotalMinutes(GameTime.Hour, GameTime.Minute, 0);
-
-                    startTimeAny = startTimeAny % 1440;
-                    endTimeAny = endTimeAny % 1440;
-                    actionMinute = actionMinute % 1440;
-
-                    if ((startTimeAny == endTimeAny && GameTime.Day != sinceDay) ||  // Whole day has passed
-                        (startTimeAny < endTimeAny && actionMinute > startTimeAny && actionMinute < endTimeAny) ||  // No wraparound
-                        (startTimeAny > endTimeAny && (actionMinute > startTimeAny || actionMinute < endTimeAny)))  // Wraparound case
-                    {
-                        missedActions.Add(action);
-                    }
-                }
-            }
+            missedActions = missedActions
+            .OrderBy(action => (int)action.Day)
+            .ThenBy(action => action.Hour)
+            .ThenBy(action => action.Minute)
+            .ToList();
 
             foreach (ScheduledAction action in missedActions)
             {
@@ -155,7 +142,31 @@ namespace MSCLoader
                 if (action.OneTimeAction) ScheduledActions.Remove(action);
             }
         }
-        static int CalcTotalMinutes(int hour, int minute, GameTime.Days day) => ((int)day * 24 + hour) * 60 + minute;
+
+        static bool ActionMissed(ScheduledAction action, GameTime.Days sinceDay, int sinceHour, int sinceMinute)
+        {
+            int currentTotalMinutes = CalcTotalMinutes(GameTime.Hour, GameTime.Minute, GameTime.Day);
+            int sinceTotalMinutes = CalcTotalMinutes(sinceHour, sinceMinute, sinceDay);
+
+            for (GameTime.Days day = GameTime.Days.Sunday; day <= GameTime.Days.Saturday; day = (GameTime.Days)((int)day << 1))
+            {
+                if ((action.Day & day) != 0)
+                {
+                    int actionTotalMinutes = CalcTotalMinutes(action.Hour, action.Minute, day);
+
+                    // Week rollover
+                    if (currentTotalMinutes < sinceTotalMinutes) currentTotalMinutes += 10080;  
+                    
+                    if (actionTotalMinutes < sinceTotalMinutes) actionTotalMinutes += 10080;
+
+                    if (actionTotalMinutes > sinceTotalMinutes && actionTotalMinutes <= currentTotalMinutes) return true; 
+                }
+            }
+
+            return false;
+        }
+
+        static int CalcTotalMinutes(int hour, int minute, GameTime.Days day = (GameTime.Days)1) => ((int)Math.Log((int)day, 2) * 24 + hour) * 60 + minute;
     }
 }
 #endif

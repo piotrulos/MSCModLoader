@@ -1,27 +1,33 @@
 ﻿#if !Mini
 using HutongGames.PlayMaker;
+using System;
 
 namespace MSCLoader
 {
     /// <summary>
     /// Class to read the current in-game time and day
-    /// </summary>
+    /// </summary> 
+
+
+    
     public static class GameTime
     {
         /// <summary>
-        /// Integer values representing the days of a week, <b>Sunday</b> (0) to <b>Saturday</b> (6). 
-        /// <br/>Also contains <b>All</b> (-1)
-        /// </summary>
-        public enum Days
+        /// Enum representing the days of the week from sunday to saturday, also containing <b>Week</b>, <b>Weekend</b>, and <b>All</b>.
+        /// </summary>       
+        [Flags] public enum Days
         {
-            All = -1,
-            Sunday = 0,
-            Monday,
-            Tuesday,
-            Wednesday,
-            Thursday,
-            Friday,
-            Saturday
+            Sunday = 1 << 0,
+            Monday = 1 << 1,
+            Tuesday = 1 << 2,
+            Wednesday = 1 << 3,
+            Thursday = 1 << 4,
+            Friday = 1 << 5,
+            Saturday = 1 << 6,
+
+            Week = Monday | Tuesday | Wednesday | Thursday | Friday,
+            Weekend = Saturday | Sunday,
+            All = Week | Weekend
         }
 
         static FsmInt fsm_time;
@@ -82,7 +88,7 @@ namespace MSCLoader
             get
             {
                 if (!Initialize()) return 0;
-                return (Days)fsm_day.Value;
+                return (Days)(1 << fsm_day.Value);
             }
         }
     }
