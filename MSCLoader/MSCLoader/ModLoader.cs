@@ -1138,6 +1138,7 @@ public partial class ModLoader : MonoBehaviour
         yield return null;
         GameObject.Find("ITEMS").FsmInject("Save game", SaveMods);
         ModConsole.Print("</color>");
+        TimeScheduler.LoadScheduler();
         allModsLoaded = true;
         canvLoading.modLoadingUI.SetActive(false);
     }
@@ -1171,6 +1172,7 @@ public partial class ModLoader : MonoBehaviour
                 ModException(e, OnSaveMods[i], true);
             }
         }
+        TimeScheduler.SaveScheduler();
     }
 
     internal static bool CheckEmptyMethod(Mod mod, string methodName)

@@ -1,7 +1,10 @@
 ﻿#if !Mini
+using HutongGames.PlayMaker.Actions;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using static MSCLoader.GameTime;
 
 
 namespace MSCLoader
@@ -15,6 +18,7 @@ namespace MSCLoader
 
         static GameObject timeScheduler;
         static bool schedulerInstantiated = false;
+        static bool executeActions = false;
 
         /// <summary>
         /// Create and init the Action Scheduler (only meant to be called on game scene load)
@@ -39,6 +43,8 @@ namespace MSCLoader
             ScheduledActions = new List<ScheduledAction>();
             previousMinute = previousHour = default;
             previousDay = default;
+            executeActions = false;
+
             schedulerInstantiated = false;
         }
 
@@ -84,7 +90,7 @@ namespace MSCLoader
 
         void Update()
         {
-            if (GameTime.Minute == previousMinute) return;
+            if (GameTime.Minute == previousMinute || !executeActions) return;
 
             for (int i = ScheduledActions.Count - 1; i >= 0; i--)
             {
@@ -122,24 +128,33 @@ namespace MSCLoader
 
         static void InvokeMissedActions(int sinceHour, int sinceMinute, GameTime.Days sinceDay)
         {
-            int startMinute = CalcTotalMinutes(sinceHour, sinceMinute, sinceDay);
-            int endMinute = CalcTotalMinutes(GameTime.Hour, GameTime.Minute, GameTime.Day);
-            if (endMinute < startMinute) endMinute += 10080;
-
             List<ScheduledAction> missedActions = new List<ScheduledAction>();
 
             foreach (ScheduledAction action in ScheduledActions) if (ActionMissed(action, sinceDay, sinceHour, sinceMinute)) missedActions.Add(action);
 
             missedActions = missedActions
-            .OrderBy(action => (int)action.Day)
-            .ThenBy(action => action.Hour)
-            .ThenBy(action => action.Minute)
-            .ToList();
+                .OrderBy(action => GetFirstSetDay(action.Day))
+                .ThenBy(action => action.Hour)                  
+                .ThenBy(action => action.Minute)                
+                .ToList();
 
             foreach (ScheduledAction action in missedActions)
             {
                 action.Action.Invoke();
                 if (action.OneTimeAction) ScheduledActions.Remove(action);
+            }
+
+            static int GetFirstSetDay(Days day)
+            {
+                if ((day & Days.Sunday) != 0) return 0;
+                if ((day & Days.Monday) != 0) return 1;
+                if ((day & Days.Tuesday) != 0) return 2;
+                if ((day & Days.Wednesday) != 0) return 3;
+                if ((day & Days.Thursday) != 0) return 4;
+                if ((day & Days.Friday) != 0) return 5;
+                if ((day & Days.Saturday) != 0) return 6;
+
+                return int.MaxValue;
             }
         }
 
@@ -167,6 +182,50 @@ namespace MSCLoader
         }
 
         static int CalcTotalMinutes(int hour, int minute, GameTime.Days day = (GameTime.Days)1) => ((int)Math.Log((int)day, 2) * 24 + hour) * 60 + minute;
+
+        internal static void SaveScheduler()
+        {
+            ES2.Save(GameTime.Hour, $"Mods.txt?tag=MSCLoader_TimeScheduler||hour");
+            ES2.Save(GameTime.Minute, $"Mods.txt?tag=MSCLoader_TimeScheduler||minute");
+            ES2.Save(GameTime.Day, $"Mods.txt?tag=MSCLoader_TimeScheduler||day");
+        }
+
+        internal static void LoadScheduler()
+        {
+            int hour = default;
+            int minute = default;
+            GameTime.Days day = default;
+
+            bool savedata = true;
+            string savepath = "Mods.txt?tag=MSCLoader_TimeScheduler||";
+
+            if (ES2.Exists($"{savepath}hour"))
+                hour = ES2.Load<int>($"{savepath}hour");
+            else savedata = false;
+
+            if (ES2.Exists($"{savepath}minute"))
+                minute = ES2.Load<int>($"{savepath}minute");
+
+            if (ES2.Exists($"{savepath}day"))
+                day = ES2.Load<GameTime.Days>($"{savepath}day");
+
+            if (savedata) InvokeMissedActions(hour, minute, day);
+
+            timeScheduler.GetComponent<TimeScheduler>().StartCoroutine(Wait(day));
+        }
+
+        static IEnumerator Wait(GameTime.Days day)
+        {
+            while (GameTime.Day != day) yield return new WaitForEndOfFrame();
+
+            previousMinute = GameTime.Minute;
+            previousHour = GameTime.Hour;
+            previousDay = GameTime.Day;
+
+            executeActions = true;
+
+            yield break;
+        }
     }
 }
 #endif
