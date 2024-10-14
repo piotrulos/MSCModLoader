@@ -46,10 +46,11 @@ namespace MSCLInstaller
         }
         internal async void ChangeModsFolderAndCopyAsync(string oldPath, ModsFolder newFolder)
         {
-            ChangeModsFolder(newFolder, true);
+            AddLog("Changing Mods Folder...");
+            await Task.Run(() => ChangeModsFolderWork(newFolder, true, progressLog, progress));
             AddLog($"Copying mods from {oldPath} to {Storage.modsPath}...");
             progressBar.Maximum = 100;
-            await Task.Run(() => ChangeModsFolderAndCopyWork(progressLog, progress));
+            await Task.Run(() => ChangeModsFolderAndCopyWork(oldPath, progressLog, progress));
         }
         private void ChangeModsFolderWork(ModsFolder newfolder, bool deleteTarget, IProgress<(string text, string log)> progressLog, IProgress<(int percent, int max, bool isIndeterminate)> progress)
         {
@@ -111,13 +112,9 @@ namespace MSCLInstaller
                 progressLog.Report(($"Creating Assets folder", $"Creating.....{Path.Combine(Storage.modsPath, "Assets")}"));
                 progress.Report((2, 5, false));
                 System.Threading.Thread.Sleep(100);
-                Directory.CreateDirectory(Path.Combine(Storage.modsPath, "Config"));
-                progressLog.Report(($"Creating Config folder", $"Creating.....{Path.Combine(Storage.modsPath, "Config")}"));
-                progress.Report((3, 5, false));
-                System.Threading.Thread.Sleep(100);
                 Directory.CreateDirectory(Path.Combine(Storage.modsPath, "References"));
                 progressLog.Report(($"Creating References folder", $"Creating.....{Path.Combine(Storage.modsPath, "References")}"));
-                progress.Report((4, 5, false));
+                progress.Report((3, 5, false));
             }
             System.Threading.Thread.Sleep(100);
             ExtractFiles(Path.Combine(".", "main_msc.pack"), Path.Combine(".", "temp"), progressLog, progress, true);
@@ -130,18 +127,52 @@ namespace MSCLInstaller
 
         }
 
-        private void ChangeModsFolderAndCopyWork(IProgress<(string text, string log)> progressLog, IProgress<(int percent, int max, bool isIndeterminate)> progress)
+        private void ChangeModsFolderAndCopyWork(string oldPath, IProgress<(string text, string log)> progressLog, IProgress<(int percent, int max, bool isIndeterminate)> progress)
         {
             progress.Report((0, 10, true));
+            string[] oldMods = Directory.GetFiles(oldPath, "*.dll");
+            string[] oldAssets = Directory.GetDirectories(Path.Combine(oldPath, "Assets"));
+            string[] oldRefs = Directory.GetFiles(Path.Combine(oldPath, "References"), "*.dll");
             System.Threading.Thread.Sleep(1500);
-            for (int i = 0; i < 10; i++)
+            progressLog.Report(($"Copying mods", $"- Start Copying Mods -"));
+            for (int i = 0; i < oldMods.Length; i++)
             {
-                progressLog.Report(($"File test {i}", $"File test {i}"));
-                progress.Report((i, 10, false));
+                progressLog.Report(($"Copying mod {Path.GetFileName(oldMods[i])}", $"Copying mod {Path.GetFileName(oldMods[i])}....."));
+                progress.Report((i + 1, oldMods.Length, false));
+                File.Copy(oldMods[i], Path.Combine(Storage.modsPath, Path.GetFileName(oldMods[i])));
                 System.Threading.Thread.Sleep(100);
             }
+            progressLog.Report(($"Copying mods", $"- End Copying Mods -"));
+            System.Threading.Thread.Sleep(1000);
+            progressLog.Report(($"Copying Assets", $"- Start Copying Assets -"));
+            for (int i = 0; i < oldAssets.Length; i++)
+            {
+                DirectoryInfo dir = new DirectoryInfo(oldAssets[i]);
+                if (dir.Name.StartsWith("MSCLoader_")) continue;
+                progressLog.Report(($"Copying Asset {dir.Name}", $"Copying Asset {dir.Name}....."));
+                progress.Report((i + 1, oldAssets.Length, false));
+                CopyDirectory(oldAssets[i], Path.Combine(Path.Combine(Storage.modsPath, "Assets"), dir.Name), true);
+                System.Threading.Thread.Sleep(100);
+            }
+            progressLog.Report(($"Copying Assets", $"- End Copying Assets -"));
+            System.Threading.Thread.Sleep(1000);
+            progressLog.Report(($"Copying Config", $"- Start Copying Config -"));
+            CopyDirectory(Path.Combine(oldPath, "Config"), Path.Combine(Storage.modsPath, "Config"), true);
+            progressLog.Report(($"Copying Config", $"- End Copying Config -"));
+            System.Threading.Thread.Sleep(1000);
+            progressLog.Report(($"Copying Refereces", $"- Start Copying Refereces -"));
+            for (int i = 0; i < oldRefs.Length; i++)
+            {
+                progressLog.Report(($"Copying reference {Path.GetFileName(oldRefs[i])}", $"Copying reference {Path.GetFileName(oldMods[i])}....."));
+                progress.Report((i + 1, oldRefs.Length, false));
+                File.Copy(oldRefs[i], Path.Combine(Path.Combine(Storage.modsPath, "References"), Path.GetFileName(oldRefs[i])));
+                System.Threading.Thread.Sleep(100);
+            }
+            progressLog.Report(($"Copying Refereces", $"- End Copying Refereces -"));
+            progress.Report((5, 5, false));
+            progressLog.Report(("Done", "Done!"));
         }
-        
+
         private void AddLog(string log)
         {            
             LogBox.AppendText($"{log}{Environment.NewLine}");            
@@ -186,6 +217,38 @@ namespace MSCLInstaller
             {
                 progressLog.Report(($"Failed read zip file {e.Message}", $"Failed read zip file{Environment.NewLine}{e}"));
                 return false;
+            }
+        }
+        private void CopyDirectory(string sourceDir, string destinationDir, bool recursive)
+        {
+            // Get information about the source directory
+            var dir = new DirectoryInfo(sourceDir);
+
+            // Check if the source directory exists
+            if (!dir.Exists)
+                throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
+
+            // Cache directories before we start copying
+            DirectoryInfo[] dirs = dir.GetDirectories();
+
+            // Create the destination directory
+            Directory.CreateDirectory(destinationDir);
+
+            // Get the files in the source directory and copy to the destination directory
+            foreach (FileInfo file in dir.GetFiles())
+            {
+                string targetFilePath = Path.Combine(destinationDir, file.Name);
+                file.CopyTo(targetFilePath);
+            }
+
+            // If recursive and copying subdirectories, recursively call this method
+            if (recursive)
+            {
+                foreach (DirectoryInfo subDir in dirs)
+                {
+                    string newDestinationDir = Path.Combine(destinationDir, subDir.Name);
+                    CopyDirectory(subDir.FullName, newDestinationDir, true);
+                }
             }
         }
     }
