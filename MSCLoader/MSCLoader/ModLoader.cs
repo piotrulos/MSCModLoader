@@ -136,6 +136,7 @@ public partial class ModLoader : MonoBehaviour
                     unloader = true;
                     return;
                 }
+                TimeScheduler.StopScheduler();
                 break;
             case "Intro":
                 CurrentScene = CurrentScene.NewGameIntro;
@@ -152,11 +153,13 @@ public partial class ModLoader : MonoBehaviour
                     QualitySettings.vSyncCount = 0;
 
                 menuInfoAnim.Play("fade_out");
+                TimeScheduler.StartScheduler();
                 StartLoadingMods(!syncLoad);
                 ModMenu.ModMenuHandle();
                 break;
             case "Ending":
                 CurrentScene = CurrentScene.Ending;
+                TimeScheduler.StopScheduler();
                 break;
         }
     }
@@ -366,7 +369,6 @@ public partial class ModLoader : MonoBehaviour
             }
             wasSaving = false;
         }
-
     }
     internal static void HandleCanv(GameObject go)
     {
@@ -1136,6 +1138,7 @@ public partial class ModLoader : MonoBehaviour
         yield return null;
         GameObject.Find("ITEMS").FsmInject("Save game", SaveMods);
         ModConsole.Print("</color>");
+        TimeScheduler.LoadScheduler();
         allModsLoaded = true;
         canvLoading.modLoadingUI.SetActive(false);
     }
@@ -1169,6 +1172,7 @@ public partial class ModLoader : MonoBehaviour
                 ModException(e, OnSaveMods[i], true);
             }
         }
+        TimeScheduler.SaveScheduler();
     }
 
     internal static bool CheckEmptyMethod(Mod mod, string methodName)
