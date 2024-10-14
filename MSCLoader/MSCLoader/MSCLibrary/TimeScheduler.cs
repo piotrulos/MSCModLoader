@@ -81,12 +81,36 @@ namespace MSCLoader
         /// <param name="minute">Game Minute (0-60)</param>
         /// <param name="action">The action to execute</param>
         /// <param name="oneTimeAction">[Optional] Whether the action is ran only once (false on default)</param>
-        public static void ScheduleAction(int hour, int minute, Action action, GameTime.Days day = GameTime.Days.All, bool oneTimeAction = false)
-            => ScheduledActions.Add(new ScheduledAction(hour, minute, action, day, oneTimeAction));
+        /// <returns>Scheduled action</returns>
+        public static ScheduledAction ScheduleAction(int hour, int minute, Action action, GameTime.Days day = GameTime.Days.All, bool oneTimeAction = false) 
+        {
+            ScheduledAction sa = new(hour, minute, action, day, oneTimeAction);
+            ScheduledActions.Add(sa);
+
+            ScheduledActions = SortActions(ScheduledActions);
+
+            return sa;
+        }
 
         static int previousMinute;
         static int previousHour;
         static GameTime.Days previousDay;
+
+        /// <summary>
+        /// Method to un-schedule an action
+        /// </summary>
+        /// <param name="action">The action you want to unscheduled</param>
+        /// <returns>Whether the action has been unscheduled successfully or not</returns>
+        public static bool UnscheduleAction(ScheduledAction action)
+        {
+            if (ScheduledActions.Contains(action))
+            {
+                ScheduledActions.Remove(action);
+                return true;
+            }
+
+            else return false;
+        }
 
         void Update()
         {
@@ -95,6 +119,8 @@ namespace MSCLoader
             for (int i = ScheduledActions.Count - 1; i >= 0; i--)
             {
                 ScheduledAction action = ScheduledActions[i];
+
+                if (action.Hour > GameTime.Hour || action.Minute > GameTime.Minute) break;
 
                 if (action.Hour == GameTime.Hour && action.Minute == GameTime.Minute && ((GameTime.Day & action.Day) != 0))
                 {
@@ -132,29 +158,10 @@ namespace MSCLoader
 
             foreach (ScheduledAction action in ScheduledActions) if (ActionMissed(action, sinceDay, sinceHour, sinceMinute)) missedActions.Add(action);
 
-            missedActions = missedActions
-                .OrderBy(action => GetFirstSetDay(action.Day))
-                .ThenBy(action => action.Hour)                  
-                .ThenBy(action => action.Minute)                
-                .ToList();
-
             foreach (ScheduledAction action in missedActions)
             {
                 action.Action.Invoke();
                 if (action.OneTimeAction) ScheduledActions.Remove(action);
-            }
-
-            static int GetFirstSetDay(Days day)
-            {
-                if ((day & Days.Sunday) != 0) return 0;
-                if ((day & Days.Monday) != 0) return 1;
-                if ((day & Days.Tuesday) != 0) return 2;
-                if ((day & Days.Wednesday) != 0) return 3;
-                if ((day & Days.Thursday) != 0) return 4;
-                if ((day & Days.Friday) != 0) return 5;
-                if ((day & Days.Saturday) != 0) return 6;
-
-                return int.MaxValue;
             }
         }
 
@@ -182,6 +189,28 @@ namespace MSCLoader
         }
 
         static int CalcTotalMinutes(int hour, int minute, GameTime.Days day = (GameTime.Days)1) => ((int)Math.Log((int)day, 2) * 24 + hour) * 60 + minute;
+
+        static List<ScheduledAction> SortActions(List<ScheduledAction> list)
+        {
+            return list
+                .OrderBy(action => GetFirstSetDay(action.Day))
+                .ThenBy(action => action.Hour)
+                .ThenBy(action => action.Minute)
+                .ToList();
+
+            static int GetFirstSetDay(Days day)
+            {
+                if ((day & Days.Sunday) != 0) return 0;
+                if ((day & Days.Monday) != 0) return 1;
+                if ((day & Days.Tuesday) != 0) return 2;
+                if ((day & Days.Wednesday) != 0) return 3;
+                if ((day & Days.Thursday) != 0) return 4;
+                if ((day & Days.Friday) != 0) return 5;
+                if ((day & Days.Saturday) != 0) return 6;
+
+                return int.MaxValue;
+            }
+        }
 
         internal static void SaveScheduler()
         {

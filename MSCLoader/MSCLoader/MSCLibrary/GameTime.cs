@@ -6,10 +6,7 @@ namespace MSCLoader
 {
     /// <summary>
     /// Class to read the current in-game time and day
-    /// </summary> 
-
-
-    
+    /// </summary>    
     public static class GameTime
     {
         /// <summary>
