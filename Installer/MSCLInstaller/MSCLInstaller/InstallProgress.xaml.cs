@@ -54,45 +54,18 @@ namespace MSCLInstaller
             await Task.Run(() => UninstallMSCLoaderWork(progressLog, progress));
         }
 
+        internal async void InstallMSCLoader(ModsFolder modsfolder)
+        {
+            AddLog("Installing MSCLoader...");
+            await Task.Run(() => InstallMSCLoaderWork(modsfolder, progressLog, progress));
+        }
+
         private void ChangeModsFolderWork(ModsFolder newfolder, bool deleteTarget, IProgress<(string text, string log)> progressLog, IProgress<(int percent, int max, bool isIndeterminate)> progress)
         {
             progress.Report((0, 10, true));
             System.Threading.Thread.Sleep(1500);
-            string newCfg = "GF";
-            switch (newfolder)
-            {
-                case ModsFolder.GameFolder:
-                    newCfg = "GF";
-                    break;
-                case ModsFolder.MyDocuments:
-                    newCfg = "MD";
-                    break;
-                case ModsFolder.Appdata:
-                    newCfg = "AD";
-                    break;
-                default:
-                    //The fuck happened here?
-                    break;
-            }
-            System.Threading.Thread.Sleep(100);
-            if (File.Exists(Path.Combine(Storage.mscPath, "doorstop_config.ini")))
-            {
-                progressLog.Report(("Reading: doorstop_config.ini","Reading.....doorstop_config.ini"));
-                IniData ini = new FileIniDataParser().ReadFile(Path.Combine(Storage.mscPath, "doorstop_config.ini"));
-                System.Threading.Thread.Sleep(100);
-                ini["MSCLoader"]["mods"] = newCfg;
-                progressLog.Report(("Writing: doorstop_config.ini", "Writing.....doorstop_config.ini"));
-                new FileIniDataParser().WriteFile(Path.Combine(Storage.mscPath, "doorstop_config.ini"), ini, System.Text.Encoding.ASCII);
-                System.Threading.Thread.Sleep(100);
-                progressLog.Report(("Done", "Done!"));
-            }
-            else
-            {
-                //This is probably super outdated MSCLoader.
-                progressLog.Report(("ERROR: doorstop_config.ini does not exist", "ERROR: doorstop_config.ini does not exist"));
-                progressLog.Report(("ERROR: doorstop_config.ini does not exist", "Please re-install MSCLoader first."));
+            if (!UpdateConfigFile(newfolder, progressLog, progress))
                 return;
-            }
             System.Threading.Thread.Sleep(100);
             if (deleteTarget)
             {
@@ -216,7 +189,43 @@ namespace MSCLInstaller
             progressLog.Report(("Done", "Done!"));
 
         }
-
+        private void InstallMSCLoaderWork(ModsFolder newfolder, IProgress<(string text, string log)> progressLog, IProgress<(int percent, int max, bool isIndeterminate)> progress)
+        {
+            bool failed = false;
+            progress.Report((0, 10, true));
+            progressLog.Report(($"Installing Core Files (1 / 4)", $"Installing Core Files"));
+            System.Threading.Thread.Sleep(1500);
+            if(Storage.is64)
+                ExtractFiles(Path.Combine(".", "core64.pack"), Storage.mscPath, progressLog, progress, false);
+            else
+                ExtractFiles(Path.Combine(".", "core32.pack"), Storage.mscPath, progressLog, progress, false);
+            progress.Report((0, 10, true));
+            progressLog.Report(($"Installing References (2 / 4)", $"Installing References"));
+            System.Threading.Thread.Sleep(1500);
+            ExtractFiles(Path.Combine(".", "main_ref.pack"), Path.Combine(Storage.mscPath, "mysummercar_Data", "Managed"), progressLog, progress, false);
+            progress.Report((0, 10, true));
+            progressLog.Report(($"Installing MSCLoader (3 / 4)", $"Installing MSCLoader"));
+            System.Threading.Thread.Sleep(1500);
+            ExtractFiles(Path.Combine(".", "main_msc.pack"), Path.Combine(".", "temp"), progressLog, progress, true);
+            System.Threading.Thread.Sleep(100);
+            ExtractFiles(Path.Combine(".", "temp", "Managed.zip"), Path.Combine(Storage.mscPath, "mysummercar_Data", "Managed"), progressLog, progress, false);
+            progress.Report((0, 10, true));
+            progressLog.Report(($"Installing MSCLoader Assets (4 / 4)", $"Installing MSCLoader Assets"));
+            System.Threading.Thread.Sleep(1500);
+            ExtractFiles(Path.Combine(".", "temp", "Mods.zip"), Storage.modsPath, progressLog, progress, false);
+            progress.Report((0, 10, true));
+            progressLog.Report(($"Cleaning temp files", $"Cleaning temp files"));
+            System.Threading.Thread.Sleep(1500);
+            Directory.Delete(Path.Combine(".", "temp"), true);
+            progress.Report((0, 10, true));
+            progressLog.Report(($"Updating config file", $"Updating config file"));
+            System.Threading.Thread.Sleep(1500);
+            if (!UpdateConfigFile(newfolder, progressLog, progress))
+                failed = true;
+            progress.Report((5, 5, false));
+            System.Threading.Thread.Sleep(100);
+            progressLog.Report(("Done", "Done!"));
+        }
         private void AddLog(string log)
         {            
             LogBox.AppendText($"{log}{Environment.NewLine}");            
@@ -293,6 +302,46 @@ namespace MSCLInstaller
                     string newDestinationDir = Path.Combine(destinationDir, subDir.Name);
                     CopyDirectory(subDir.FullName, newDestinationDir, true);
                 }
+            }
+        }
+        private bool UpdateConfigFile(ModsFolder modsFolder, IProgress<(string text, string log)> progressLog, IProgress<(int percent, int max, bool isIndeterminate)> progress)
+        {
+            string newCfg = "GF";
+            switch (modsFolder)
+            {
+                case ModsFolder.GameFolder:
+                    newCfg = "GF";
+                    break;
+                case ModsFolder.MyDocuments:
+                    newCfg = "MD";
+                    break;
+                case ModsFolder.Appdata:
+                    newCfg = "AD";
+                    break;
+                default:
+                    //The fuck happened here?
+                    break;
+            }
+            System.Threading.Thread.Sleep(100);
+            if (File.Exists(Path.Combine(Storage.mscPath, "doorstop_config.ini")))
+            {
+                progressLog.Report(("Reading: doorstop_config.ini", "Reading.....doorstop_config.ini"));
+                IniData ini = new FileIniDataParser().ReadFile(Path.Combine(Storage.mscPath, "doorstop_config.ini"));
+                System.Threading.Thread.Sleep(100);
+                ini["MSCLoader"]["mods"] = newCfg;
+                ini["MSCLoader"]["skipIntro"] = Storage.skipIntroCfg.ToString().ToLower();
+                ini["MSCLoader"]["skipConfigScreen"] = Storage.skipConfigScreenCfg.ToString().ToLower();
+                progressLog.Report(("Writing: doorstop_config.ini", "Writing.....doorstop_config.ini"));
+                new FileIniDataParser().WriteFile(Path.Combine(Storage.mscPath, "doorstop_config.ini"), ini, System.Text.Encoding.ASCII);
+                System.Threading.Thread.Sleep(100);
+                return true;
+            }
+            else
+            {
+                //This is probably super outdated MSCLoader.
+                progressLog.Report(("ERROR: doorstop_config.ini does not exist", "ERROR: doorstop_config.ini does not exist"));
+                progressLog.Report(("ERROR: doorstop_config.ini does not exist", "Please re-install MSCLoader first."));
+                return false;
             }
         }
         private void DeleteIfExists(string filename)

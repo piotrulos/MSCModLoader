@@ -108,10 +108,8 @@ namespace MSCLInstaller
                 }
                 return;
             }
-            //If Install MSCLoader is selected
-
-          //  Storage.modsPath = newPath;
-
+            Storage.modsPath = newPath;
+            main.InstallProgressPage().InstallMSCLoader(selectedFolder);
         }
         private void ChangeModsFolderStart(bool copyOldMods, string oldPath, string newPath, ModsFolder newFolder)
         {

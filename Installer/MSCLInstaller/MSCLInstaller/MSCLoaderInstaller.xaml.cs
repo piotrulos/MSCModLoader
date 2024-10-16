@@ -218,8 +218,12 @@ namespace MSCLInstaller
                 ini.Configuration.AssigmentSpacer = "";
                 string cfg = ini["MSCLoader"]["mods"];
                 string skipIntro = ini["MSCLoader"]["skipIntro"];
+                string skipConfigScreen = ini["MSCLoader"]["skipConfigScreen"];
                 if (cfg != null && skipIntro != null)
                 {
+                    Storage.skipIntroCfg = bool.Parse(skipIntro);
+                    if(skipConfigScreen != null)
+                        Storage.skipConfigScreenCfg = bool.Parse(skipConfigScreen);
                     switch (cfg)
                     {
                         case "GF":
@@ -297,6 +301,7 @@ namespace MSCLInstaller
                     main.SelectModsFolderPage(true);
                     break;
                 case SelectedAction.InstallMSCLoader:
+                    main.SelectModsFolderPage(false);
                     break;
                 case SelectedAction.UpdateMSCLoader:
                     break;

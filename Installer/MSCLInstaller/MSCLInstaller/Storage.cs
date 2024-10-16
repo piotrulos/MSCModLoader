@@ -25,5 +25,7 @@
         public static bool dbgPack = false;
         public static string[] packFiles = null;
         public static SelectedAction selectedAction = SelectedAction.Nothing;
+        public static bool skipIntroCfg = false;
+        public static bool skipConfigScreenCfg = false;            
     }
 }
