@@ -35,10 +35,6 @@ namespace MSCLInstaller
             };
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            AddLog($"shit");
-        }
         internal async void ChangeModsFolder(ModsFolder newfolder,bool deleteTarget)
         {
             AddLog("Changing Mods Folder...");
@@ -52,6 +48,12 @@ namespace MSCLInstaller
             progressBar.Maximum = 100;
             await Task.Run(() => ChangeModsFolderAndCopyWork(oldPath, progressLog, progress));
         }
+        internal async void UninstalMSCLoader()
+        {
+            AddLog("Uninstalling MSCLoader...");
+            await Task.Run(() => UninstallMSCLoaderWork(progressLog, progress));
+        }
+
         private void ChangeModsFolderWork(ModsFolder newfolder, bool deleteTarget, IProgress<(string text, string log)> progressLog, IProgress<(int percent, int max, bool isIndeterminate)> progress)
         {
             progress.Report((0, 10, true));
@@ -172,6 +174,48 @@ namespace MSCLInstaller
             progress.Report((5, 5, false));
             progressLog.Report(("Done", "Done!"));
         }
+        private void UninstallMSCLoaderWork(IProgress<(string text, string log)> progressLog, IProgress<(int percent, int max, bool isIndeterminate)> progress)
+        {
+            progress.Report((0, 10, true));
+            int max = 0;
+            System.Threading.Thread.Sleep(1500);
+            try
+            {
+                ZipFile zip1 = ZipFile.Read(Path.Combine(".", "main_ref.pack"));
+                max = zip1.Entries.Count+3;
+                for (int i = 0; i < zip1.Entries.Count; i++)
+                {
+                    ZipEntry zz = zip1[i];
+                    progressLog.Report(($"Deleting {zz.FileName}", $"Deleting.....{zz.FileName}"));
+                    DeleteIfExists(Path.Combine(Storage.mscPath, "mysummercar_Data","Managed" + zz.FileName));
+                    progress.Report((i, max, false));
+                    System.Threading.Thread.Sleep(100);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                progressLog.Report((ex.Message, ex.ToString()));
+            }
+            System.Threading.Thread.Sleep(100);
+            DeleteIfExists(Path.Combine(Storage.mscPath, "mysummercar_Data", "Managed", "MSCLoader.dll"));
+            DeleteIfExists(Path.Combine(Storage.mscPath, "mysummercar_Data", "Managed", "MSCLoader.dll.mdb"));
+            DeleteIfExists(Path.Combine(Storage.mscPath, "mysummercar_Data", "Managed", "MSCLoader.pdb"));
+            progressLog.Report(($"Deleting MSCLoader.dll", $"Deleting.....MSCLoader.dll"));
+            progress.Report((max - 2, max, false));
+            System.Threading.Thread.Sleep(100);
+            DeleteIfExists(Path.Combine(Storage.mscPath, "winhttp.dll"));
+
+            progressLog.Report(($"Deleting winhttp.dll", $"Deleting.....winhttp.dll"));
+            progress.Report((max - 1, max, false));
+            System.Threading.Thread.Sleep(100);
+            DeleteIfExists(Path.Combine(Storage.mscPath, "doorstop_config.ini"));
+            progressLog.Report(($"Deleting doorstop_config.ini", $"Deleting.....doorstop_config.ini"));
+            progress.Report((max, max, false));
+            System.Threading.Thread.Sleep(100);
+            progressLog.Report(("Done", "Done!"));
+
+        }
 
         private void AddLog(string log)
         {            
@@ -249,6 +293,13 @@ namespace MSCLInstaller
                     string newDestinationDir = Path.Combine(destinationDir, subDir.Name);
                     CopyDirectory(subDir.FullName, newDestinationDir, true);
                 }
+            }
+        }
+        private void DeleteIfExists(string filename)
+        {
+            if (File.Exists(filename))
+            {
+                File.Delete(filename);
             }
         }
     }

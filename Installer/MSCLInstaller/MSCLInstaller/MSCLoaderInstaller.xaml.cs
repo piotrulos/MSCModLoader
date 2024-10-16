@@ -100,17 +100,16 @@ namespace MSCLInstaller
             {
                 InstallStatusText.Inlines.Add(new Run("Not installed") { FontWeight = FontWeights.Bold, Foreground = Brushes.Red });
                 ToggleRadioButtonsVisibility(Visibility.Collapsed, Visibility.Visible, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed);
+                return;
             }
             if (fullinstall || updateCore || updateRefs || updateMSCL)
             {
                 InstallStatusText.Inlines.Add(new Run("Updates available") { FontWeight = FontWeights.Bold, Foreground = Brushes.LightBlue });
                 ToggleRadioButtonsVisibility(resetConfig ? Visibility.Collapsed : Visibility.Visible, Visibility.Collapsed, Visibility.Visible, Visibility.Collapsed, Visibility.Visible);
+                return;
             }
-            else
-            {
-                InstallStatusText.Inlines.Add(new Run("Installed and up to date") { FontWeight = FontWeights.Bold, Foreground = Brushes.LightGreen });
-                ToggleRadioButtonsVisibility(Visibility.Visible, Visibility.Collapsed, Visibility.Collapsed, Visibility.Visible, Visibility.Visible);
-            }
+            InstallStatusText.Inlines.Add(new Run("Installed and up to date") { FontWeight = FontWeights.Bold, Foreground = Brushes.LightGreen });
+            ToggleRadioButtonsVisibility(Visibility.Visible, Visibility.Collapsed, Visibility.Collapsed, Visibility.Visible, Visibility.Visible);
         }
 
         void ToggleRadioButtonsVisibility(Visibility changeModsFolder, Visibility installMSCLoader, Visibility updateMSCLoader, Visibility reinstallMSCLoader, Visibility uninstallMSCLoader)
@@ -296,6 +295,24 @@ namespace MSCLInstaller
             {
                 case SelectedAction.ChangeModsFolder:
                     main.SelectModsFolderPage(true);
+                    break;
+                case SelectedAction.InstallMSCLoader:
+                    break;
+                case SelectedAction.UpdateMSCLoader:
+                    break;
+                case SelectedAction.ReinstallMSCLoader:
+                    break;
+                case SelectedAction.UninstallMSCLoader:
+                    if(MessageBox.Show("Do you want to uninstall MSCLoader?", "Uninstall MSCLoader", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    {
+                        main.InstallProgressPage().UninstalMSCLoader();
+                    }
+                    break;
+                case SelectedAction.AdvancedOptions:
+                    break;
+                default:
+                    Dbg.Log("No action selected");
+                    MessageBox.Show("No action selected", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     break;
             }
         }

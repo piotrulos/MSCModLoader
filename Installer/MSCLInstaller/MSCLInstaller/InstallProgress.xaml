@@ -14,7 +14,6 @@
                 <StackPanel>
                     <TextBlock Name="ProgressText" Text="Waiting..."/>
                     <ProgressBar Name="progressBar" Height="15"/>
-                    <Button Content="shit" Click="Button_Click"/>
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Progress Log">
