@@ -320,6 +320,11 @@ namespace MSCLInstaller
                     }
                     break;
                 case SelectedAction.AdvancedOptions:
+                    Advanced a = new Advanced
+                    {
+                        Owner = main
+                    };
+                    a.ShowDialog();
                     break;
                 default:
                     Dbg.Log("No action selected");
