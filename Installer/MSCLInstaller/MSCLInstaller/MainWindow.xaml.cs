@@ -51,8 +51,8 @@ namespace MSCLInstaller
         }
         private void NextBtn_Click(object sender, RoutedEventArgs e)
         {
-            installProgress = new InstallProgress();
-            MainFrame.Content = installProgress;
+          //  installProgress = new InstallProgress();
+           // MainFrame.Content = installProgress;
 
        //     mscli = new MSCLoaderInstaller();
 
@@ -61,7 +61,7 @@ namespace MSCLInstaller
 
         internal InstallProgress InstallProgressPage()
         {
-            installProgress = new InstallProgress();
+            installProgress = new InstallProgress(this);
             MainFrame.Content = installProgress;
             return installProgress;
         }

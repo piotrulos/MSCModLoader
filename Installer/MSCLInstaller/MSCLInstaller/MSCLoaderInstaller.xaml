@@ -41,7 +41,7 @@
             </GroupBox>
 
         </StackPanel>
-        <Border Margin="7" Name="PleaseWait" Background="#111111" Visibility="Collapsed">
+        <Border Margin="7" Name="PleaseWait" Background="#111111" Visibility="Visible">
         </Border>
     </Grid>
 </Page>

@@ -2,7 +2,6 @@
 using IniParser.Model;
 using Ionic.Zip;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,11 +13,12 @@ namespace MSCLInstaller
     /// Interaction logic for InstallProgress.xaml
     /// </summary>
     public partial class InstallProgress : Page
-    {       
+    {
+        MainWindow main;
         private Progress<(string text, string log)> progressLog = new();
         private Progress<(int percent, int max, bool isIndeterminate)> progress = new();
         
-        public InstallProgress()
+        public InstallProgress(MainWindow m)
         {
             InitializeComponent();
             LogBox.Clear();
@@ -33,12 +33,18 @@ namespace MSCLInstaller
                 progressBar.Maximum = e.max;
                 progressBar.Value = e.percent;
             };
+            main = m;
         }
 
         internal async void ChangeModsFolder(ModsFolder newfolder,bool deleteTarget)
         {
             AddLog("Changing Mods Folder...");
             await Task.Run(() => ChangeModsFolderWork(newfolder, deleteTarget, progressLog,progress));
+            if (MessageBox.Show("Folder has been changed", "Change Mods Folder", MessageBoxButton.OK, MessageBoxImage.Information) == MessageBoxResult.OK)
+            {
+                main.ReInitInstallerPage();
+                main.MSCLoaderInstallerPage();
+            }
         }
         internal async void ChangeModsFolderAndCopyAsync(string oldPath, ModsFolder newFolder)
         {
@@ -47,23 +53,43 @@ namespace MSCLInstaller
             AddLog($"Copying mods from {oldPath} to {Storage.modsPath}...");
             progressBar.Maximum = 100;
             await Task.Run(() => ChangeModsFolderAndCopyWork(oldPath, progressLog, progress));
+            if (MessageBox.Show("Folder has been changed", "Change Mods Folder", MessageBoxButton.OK, MessageBoxImage.Information) == MessageBoxResult.OK)
+            {
+                main.ReInitInstallerPage();
+                main.MSCLoaderInstallerPage();
+            }
         }
         internal async void UninstalMSCLoader()
         {
             AddLog("Uninstalling MSCLoader...");
             await Task.Run(() => UninstallMSCLoaderWork(progressLog, progress));
+            if (MessageBox.Show("Uninstall Complete", "Uninstalling MSCLoader", MessageBoxButton.OK, MessageBoxImage.Information) == MessageBoxResult.OK)
+            {
+                main.ReInitInstallerPage();
+                main.MSCLoaderInstallerPage();
+            }
         }
 
         internal async void InstallMSCLoader(ModsFolder modsfolder)
         {
             AddLog("Installing MSCLoader...");
             await Task.Run(() => InstallMSCLoaderWork(modsfolder, progressLog, progress));
+            if (MessageBox.Show("Install Complete", "Install MSCLoader", MessageBoxButton.OK, MessageBoxImage.Information) == MessageBoxResult.OK)
+            {
+                main.ReInitInstallerPage();
+                main.MSCLoaderInstallerPage();
+            }
         }
 
         internal async void UpdateMSCLoader(bool updateCore, bool updateRefs, bool updateMSCL)
         {
             AddLog("Updating MSCLoader...");
             await Task.Run(() => UpdateMSCLoaderWork(updateCore, updateRefs, updateMSCL, progressLog, progress));
+            if (MessageBox.Show("Update Complete", "Update MSCLoader", MessageBoxButton.OK, MessageBoxImage.Information) == MessageBoxResult.OK)
+            {
+                main.ReInitInstallerPage();
+                main.MSCLoaderInstallerPage();
+            }
         }
 
         private void ChangeModsFolderWork(ModsFolder newfolder, bool deleteTarget, IProgress<(string text, string log)> progressLog, IProgress<(int percent, int max, bool isIndeterminate)> progress)
@@ -105,7 +131,6 @@ namespace MSCLInstaller
             Directory.Delete(Path.Combine(".", "temp"), true);
             progress.Report((5, 5, false));
             progressLog.Report(("Done", "Done!"));
-
         }
 
         private void ChangeModsFolderAndCopyWork(string oldPath, IProgress<(string text, string log)> progressLog, IProgress<(int percent, int max, bool isIndeterminate)> progress)

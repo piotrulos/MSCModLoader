@@ -80,7 +80,7 @@ namespace MSCLInstaller
             }
             UpdateInstallationStatus();
             UpdatePathText();
-            PleaseWait.Visibility = Visibility.Hidden;
+            PleaseWait.Visibility = Visibility.Collapsed;
             initialized = true;
         }
 
