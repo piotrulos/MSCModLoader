@@ -60,6 +60,12 @@ namespace MSCLInstaller
             await Task.Run(() => InstallMSCLoaderWork(modsfolder, progressLog, progress));
         }
 
+        internal async void UpdateMSCLoader(bool updateCore, bool updateRefs, bool updateMSCL)
+        {
+            AddLog("Updating MSCLoader...");
+            await Task.Run(() => UpdateMSCLoaderWork(updateCore, updateRefs, updateMSCL, progressLog, progress));
+        }
+
         private void ChangeModsFolderWork(ModsFolder newfolder, bool deleteTarget, IProgress<(string text, string log)> progressLog, IProgress<(int percent, int max, bool isIndeterminate)> progress)
         {
             progress.Report((0, 10, true));
@@ -224,6 +230,40 @@ namespace MSCLInstaller
                 failed = true;
             progress.Report((5, 5, false));
             System.Threading.Thread.Sleep(100);
+            progressLog.Report(("Done", "Done!"));
+        }
+        private void UpdateMSCLoaderWork(bool updateCore, bool updateRefs, bool updateMSCL, IProgress<(string text, string log)> progressLog, IProgress<(int percent, int max, bool isIndeterminate)> progress)
+        {
+            progress.Report((0, 10, true));
+            progressLog.Report(($"Updating MSCLoader Files", $"Updating MSCLoader Files"));
+            System.Threading.Thread.Sleep(1500);
+            if (updateCore)
+            {
+                if (Storage.is64)
+                    ExtractFiles(Path.Combine(".", "core64.pack"), Storage.mscPath, progressLog, progress, false);
+                else
+                    ExtractFiles(Path.Combine(".", "core32.pack"), Storage.mscPath, progressLog, progress, false);
+                progressLog.Report(($"Updating config file", $"Updating config file"));
+                System.Threading.Thread.Sleep(100);
+                UpdateConfigFile(Storage.modsFolderCfg, progressLog, progress);
+            }
+            System.Threading.Thread.Sleep(100);
+            if (updateRefs)
+                ExtractFiles(Path.Combine(".", "main_ref.pack"), Path.Combine(Storage.mscPath, "mysummercar_Data", "Managed"), progressLog, progress, false);
+            System.Threading.Thread.Sleep(100);
+            if (updateMSCL)
+            {
+                ExtractFiles(Path.Combine(".", "main_msc.pack"), Path.Combine(".", "temp"), progressLog, progress, true);
+                System.Threading.Thread.Sleep(100);
+                ExtractFiles(Path.Combine(".", "temp", "Managed.zip"), Path.Combine(Storage.mscPath, "mysummercar_Data", "Managed"), progressLog, progress, false);
+                System.Threading.Thread.Sleep(100);
+                ExtractFiles(Path.Combine(".", "temp", "Mods.zip"), Storage.modsPath, progressLog, progress, false);
+                progress.Report((0, 10, true));
+                progressLog.Report(($"Cleaning temp files", $"Cleaning temp files"));
+                System.Threading.Thread.Sleep(1500);
+                Directory.Delete(Path.Combine(".", "temp"), true);
+            }            
+            progress.Report((5, 5, false));
             progressLog.Report(("Done", "Done!"));
         }
         private void AddLog(string log)

@@ -60,7 +60,12 @@ namespace MSCLInstaller
             Version oldVer;
             if (File.Exists(file2))
                 oldVer = new Version(FileVersionInfo.GetVersionInfo(file2).FileVersion);
-            else return false;
+            else
+            {
+                //File doesn't exist in current install (mark as update required)
+                Dbg.Log($"{Path.GetFileName(file2)} - Doesn't exist");
+                return true;
+            }
 
             switch (newVer.CompareTo(oldVer))
             {
@@ -76,7 +81,6 @@ namespace MSCLInstaller
                 default:
                     Dbg.Log($"{Path.GetFileName(file2)} ({oldVer} <?> {newVer}) WTF"); 
                     return false;
-
             }
         }
         public static void DeleteIfExists(string filename)

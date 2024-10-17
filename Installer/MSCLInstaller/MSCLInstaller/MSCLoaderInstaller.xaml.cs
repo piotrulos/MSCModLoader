@@ -136,7 +136,6 @@ namespace MSCLInstaller
             {
                 Dbg.MissingFilesError();
             }
-            //Directory.CreateDirectory(Path.Combine(".", "temp"));
             if (!ZipFile.IsZipFile(corepack))
             {
                 Dbg.Log($"Failed to read file: {corepack}");
@@ -147,14 +146,12 @@ namespace MSCLInstaller
             {
                 coreVer = new Version(zip1.Comment);
             }
-            //zip1.ExtractAll(Path.Combine(".", "temp"));
             zip1.Dispose();
             Dbg.Log("Comparing core file version...", true);
             if (InstallerHelpers.VersionCompare(coreVer, Path.Combine(Storage.mscPath, "winhttp.dll")))
             {
                 updateCore = true;
             }
-         //   Directory.Delete(Path.Combine(".", "temp"), true);
             Directory.CreateDirectory(Path.Combine(".", "temp"));
             string refpack = Path.Combine(".", "main_ref.pack");
             if (!File.Exists(refpack))
@@ -177,7 +174,6 @@ namespace MSCLInstaller
                 }
             }
             Directory.Delete(Path.Combine(".", "temp"), true);
-            //Directory.CreateDirectory(Path.Combine(".", "temp"));
             string msc = Path.Combine(".", "main_msc.pack");
             if (!File.Exists(msc))
             {
@@ -195,11 +191,6 @@ namespace MSCLInstaller
                 mscVer = new Version(zip3.Comment);
             }
             zip3.Dispose();
-            /* zip3.ExtractAll(Path.Combine(".", "temp"));
-
-             ZipFile zip4 = ZipFile.Read(Path.Combine(".", "temp", "Managed.zip"));
-             zip4.ExtractAll(Path.Combine(".", "temp"));*/
-            //zip4.Dispose();
             Dbg.Log("Comparing MSCLoader version...", true);
             if (InstallerHelpers.VersionCompare(mscVer, Path.Combine(Storage.mscPath, "mysummercar_Data", "Managed", "MSCLoader.dll")))
             {
@@ -207,7 +198,6 @@ namespace MSCLInstaller
             }
             main.SetMSCLoaderVer(mscVer.ToString());
 
-          //  Directory.Delete(Path.Combine(".", "temp"), true);
         }
         bool CheckConfig()
         {
@@ -228,21 +218,25 @@ namespace MSCLInstaller
                     {
                         case "GF":
                             Storage.modsPath = Path.GetFullPath(Path.Combine(Storage.mscPath, "Mods"));
+                            Storage.modsFolderCfg = ModsFolder.GameFolder;
                             break;
                         case "MD":
                             Storage.modsPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MySummerCar", "Mods"));
+                            Storage.modsFolderCfg = ModsFolder.MyDocuments;
                             break;
                         case "AD":
                             Storage.modsPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "..", "LocalLow", "Amistech", "My Summer Car", "Mods"));
+                            Storage.modsFolderCfg = ModsFolder.Appdata;
                             break;
                         default:
                             Storage.modsPath = Path.GetFullPath(Path.Combine(Storage.mscPath, "Mods"));
+                            Storage.modsFolderCfg = ModsFolder.GameFolder;
                             break;
                     }
                     Dbg.Log($"Found mods folder {Storage.modsPath}");
                     if (ini["General"]["target_assembly"] == null)
                     {
-                        Dbg.Log("doorstop_config.ini is outdated (pre-4.1)");
+                        Dbg.Log("doorstop_config.ini is outdated (pre-4.x)");
                         return true;
                     }
                     return false;
@@ -304,8 +298,20 @@ namespace MSCLInstaller
                     main.SelectModsFolderPage(false);
                     break;
                 case SelectedAction.UpdateMSCLoader:
+                    if (fullinstall)
+                    {
+                        main.InstallProgressPage().InstallMSCLoader(Storage.modsFolderCfg);
+                    }
+                    else
+                    {
+                        main.InstallProgressPage().UpdateMSCLoader(updateCore, updateRefs, updateMSCL);
+                    }
                     break;
                 case SelectedAction.ReinstallMSCLoader:
+                    if (MessageBox.Show("Do you want to reinstall MSCLoader?", "Reinstall MSCLoader", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    {
+                        main.InstallProgressPage().InstallMSCLoader(Storage.modsFolderCfg);
+                    }
                     break;
                 case SelectedAction.UninstallMSCLoader:
                     if(MessageBox.Show("Do you want to uninstall MSCLoader?", "Uninstall MSCLoader", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
