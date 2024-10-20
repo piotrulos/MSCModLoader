@@ -92,5 +92,14 @@ namespace MSCLInstaller
             MainFrame.Content = selectModsFolder;
             selectModsFolder.Init(this, change);
         }
+
+        private void Hyperlink_Click(object sender, RoutedEventArgs e)
+        {
+            About a = new About
+            {
+                Owner = this
+            };
+            a.ShowDialog();
+        }
     }
 }

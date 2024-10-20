@@ -1,0 +1,22 @@
+﻿<Window x:Class="MSCLInstaller.About"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MSCLInstaller"
+        mc:Ignorable="d"
+        Title="About MSCLInstaller" Height="200" Width="200" SizeToContent="WidthAndHeight" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+    <StackPanel Margin="10">
+        <TextBlock Text="MSCLoader Installer" TextAlignment="Center" Width="Auto" />
+        <TextBlock Text="Universal Mod Loader installer for Amistech Games." TextAlignment="Center" Width="Auto" />
+        <TextBlock><LineBreak/>
+        Supported game: <Bold>My Summer Car</Bold> <LineBreak/>            
+        <Hyperlink NavigateUri="https://www.nexusmods.com/mysummercar/mods/147" RequestNavigate="Hyperlink_RequestNavigate">Nexus Mods</Hyperlink><LineBreak/>
+        <Hyperlink NavigateUri="https://github.com/piotrulos/MSCModLoader" RequestNavigate="Hyperlink_RequestNavigate">Github</Hyperlink><LineBreak/>
+        <Hyperlink NavigateUri="https://github.com/piotrulos/MSCModLoader/wiki" RequestNavigate="Hyperlink_RequestNavigate">Modders Documentation</Hyperlink>
+
+
+        </TextBlock>
+
+    </StackPanel>
+</Window>

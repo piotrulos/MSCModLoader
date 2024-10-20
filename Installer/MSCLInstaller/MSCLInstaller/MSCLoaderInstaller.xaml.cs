@@ -7,7 +7,6 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 using Ionic.Zip;
-using System.Diagnostics;
 
 namespace MSCLInstaller
 {

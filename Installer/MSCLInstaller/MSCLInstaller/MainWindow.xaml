@@ -21,7 +21,9 @@
         </Border>
         <Frame Grid.Row="2" Name="MainFrame" NavigationUIVisibility="Hidden"/>
         <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="10,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Right">
-            <Button Name="NextBtn" Content="Test" Width="80" Margin="10,0,0,0" Click="NextBtn_Click"/>
+            <TextBlock>
+                <Hyperlink Click="Hyperlink_Click">About MSCLInstaller</Hyperlink>
+            </TextBlock>
         </StackPanel>
         <Border BorderBrush="#707070" BorderThickness=".3" Grid.Row="3">
             <StackPanel Orientation="Horizontal" Margin="10,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Left">
