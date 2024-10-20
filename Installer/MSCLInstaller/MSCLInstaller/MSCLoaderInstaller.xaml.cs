@@ -44,6 +44,10 @@ namespace MSCLInstaller
             {
                 isInstalled = true;
             }
+            if (File.Exists(Path.Combine(".", "dbg.pack")))
+                ToggleAdvancedRadioVisibility(Visibility.Visible);
+            else
+                ToggleAdvancedRadioVisibility(Visibility.Collapsed);
             if (isInstalled)
             {
                 try
@@ -122,7 +126,7 @@ namespace MSCLInstaller
         }
 
         void ToggleAdvancedRadioVisibility(Visibility advancedOptions)
-        {
+        {            
             AdvancedRadio.Visibility = advancedOptions;
         }
         void VersionCompares()
