@@ -1,0 +1,34 @@
+﻿<Window x:Class="MSCLInstaller.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MSCLInstaller"
+        mc:Ignorable="d"
+        Title="MSCLoader installer" ResizeMode="NoResize" SizeToContent="WidthAndHeight" MinWidth="600" MaxWidth="600">
+    <Grid TextElement.Foreground="#f0f0f0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80"/>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="300"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+
+            <Image Name="GameLogo" Source="/Images/logo.png"/>
+
+        <Border BorderBrush="#707070" BorderThickness=".5" Grid.Row="1">
+            <TextBlock Name="MSCIPageTitle" FontSize="25" Text="Select Game Folder" FontFamily="Consolas" TextAlignment="Center" VerticalAlignment="Center"/>
+        </Border>
+        <Frame Grid.Row="2" Name="MainFrame" NavigationUIVisibility="Hidden"/>
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="10,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Right">
+            <TextBlock>
+                <Hyperlink Click="Hyperlink_Click">About MSCLInstaller</Hyperlink>
+            </TextBlock>
+        </StackPanel>
+        <Border BorderBrush="#707070" BorderThickness=".3" Grid.Row="3">
+            <StackPanel Orientation="Horizontal" Margin="10,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Left">
+                <TextBlock Text="MSCLInstaller Ready!" Name="StatusBarText"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

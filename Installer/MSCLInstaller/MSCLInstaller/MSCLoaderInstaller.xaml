@@ -1,0 +1,47 @@
+﻿<Page x:Class="MSCLInstaller.MSCLoaderInstaller"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:MSCLInstaller"
+      mc:Ignorable="d" 
+      d:DesignHeight="300" d:DesignWidth="600"
+      Title="MSCLoaderInstaller">
+
+    <Grid>
+            <StackPanel Margin="7" TextElement.Foreground="#f0f0f0">
+            <GroupBox Name="MSCLStatus"  Header="MSCLoader status">
+                <StackPanel>
+                    <TextBlock Name="MSCFolderText" Text="msc folder"/>
+                    <TextBlock Name="ModsFolderText" Text="mods folder"/>
+                    <TextBlock Name="InstallStatusText" Text="Status"/>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Select what do you want to do">
+                <StackPanel>
+                    <RadioButton Name="ModsFolderRadio" Content="Change Mods Folder" Visibility="Visible" GroupName="SelectOption" Checked="ModsFolderRadio_Checked"/>
+                    <RadioButton Name="InstallRadio" Content="Install MSCLoader" Visibility="Visible" GroupName="SelectOption" Checked="InstallRadio_Checked"/>
+                    <RadioButton Name="UpdateRadio" Content="Update MSCLoader" Visibility="Visible" GroupName="SelectOption" Checked="UpdateRadio_Checked"/>
+                    <RadioButton Name="ReinstallRadio" Content="Reinstall MSCLoader" Visibility="Visible" GroupName="SelectOption" Checked="ReinstallRadio_Checked"/>
+                    <RadioButton Name="UninstallRadio" Content="Uninstall MSCLoader" Visibility="Visible" GroupName="SelectOption" Checked="UninstallRadio_Checked"/>
+                    <RadioButton Name="AdvancedRadio" Content="Show Advanced Options" Visibility="Visible" GroupName="SelectOption" Checked="AdvancedRadio_Checked"/>
+                    <Button Name="ExecuteSelectedBtn" Content="Select Option" IsEnabled="False" Margin="0,5,0,0" Click="ExecuteSelectedBtn_Click"/>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Help">
+                <TextBlock>
+                    Here you can see a status if MSCLoader is installed, not installed or up to date.
+                    <LineBreak/>
+                    If you want to change Mods folder click <Bold Foreground="Aquamarine">Change Mods Folder</Bold>
+                    <LineBreak/>
+                    If you want to repair/reinstall MSCLoader click <Bold Foreground="Aquamarine">Reinstall MSCLoader</Bold>
+                    <LineBreak/>
+                    If you want to Uninstall MSCLoader click <Bold Foreground="Aquamarine">Uninstall MSCLoader</Bold>
+                </TextBlock>
+            </GroupBox>
+
+        </StackPanel>
+        <Border Margin="7" Name="PleaseWait" Background="#111111" Visibility="Visible">
+        </Border>
+    </Grid>
+</Page>

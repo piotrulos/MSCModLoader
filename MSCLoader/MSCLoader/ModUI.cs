@@ -8,7 +8,8 @@ namespace MSCLoader
     internal class MSCLCanvasManager : MonoBehaviour
     {
         private bool isApplicationQuitting = false;
-        void Start ()
+        private Canvas canvas;
+        void Start()
         {
             gameObject.name = gameObject.name.Replace("(Clone)", string.Empty);
             int r1 = UnityEngine.Random.Range(2, 8);
@@ -17,8 +18,13 @@ namespace MSCLoader
                 int r2 = UnityEngine.Random.Range(0, gameObject.name.Length);
                 gameObject.name = gameObject.name.Insert(r2, "\u200B");
             }
+            canvas = GetComponent<Canvas>();
         }
-        #if !Mini
+#if !Mini
+        void FixedUpdate()
+        {
+            if (!canvas.enabled) canvas.enabled = true;
+        }
         void OnDisable()
         {
             if (isApplicationQuitting) return;
