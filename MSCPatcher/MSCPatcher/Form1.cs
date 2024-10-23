@@ -62,6 +62,7 @@ namespace MSCPatcher
             }
             if (File.Exists("MSCFolder.txt"))
             {
+                
                 mscPath = File.ReadAllText("MSCFolder.txt");
                 if (!Directory.Exists(mscPath))
                 {
@@ -342,7 +343,7 @@ namespace MSCPatcher
                 Patcher.CopyCoreAssets(modPath);
                 Patcher.DeleteIfExists(Path.Combine(mscPath, @"ModLoaderSettings.ini"));
                 bool resetConfig = false;
-                if (File.Exists(Path.Combine(mscPath, @"doorstop_config.ini")))
+                if (File.Exists(Path.Combine(mscPath, "doorstop_config.ini")))
                 {
                     IniData ini = new FileIniDataParser().ReadFile(Path.Combine(mscPath, @"doorstop_config.ini"));
                     ini.Configuration.AssigmentSpacer = "";
