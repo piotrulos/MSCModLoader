@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" ?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="MSCLoaderTemplates.Piotrulos.40e0e374-6a16-47ae-87f8-009138faa324" Version="1.2.11" Language="en-US" Publisher="Piotrulos" />
+        <Identity Id="MSCLoaderTemplates.Piotrulos.40e0e374-6a16-47ae-87f8-009138faa324" Version="1.2.13.14" Language="en-US" Publisher="Piotrulos" />
         <DisplayName>MSCLoader Templates</DisplayName>
         <Description xml:space="preserve">MSCLoader Template for VS 2022</Description>
         <MoreInfo>https://github.com/piotrulos/MSCModLoader/wiki/How-to-use-templates</MoreInfo>
