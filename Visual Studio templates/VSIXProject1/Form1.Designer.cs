@@ -81,7 +81,7 @@ namespace VSIXProject1
             this.doneButton.Size = new System.Drawing.Size(75, 21);
             this.doneButton.TabIndex = 0;
             this.doneButton.Text = "Done";
-            this.doneButton.Click += new System.EventHandler(this.button1_Click);
+            this.doneButton.Click += new System.EventHandler(this.doneButton_Click);
             // 
             // managedPathBox
             // 
@@ -207,7 +207,6 @@ namespace VSIXProject1
             // 
             // addAssCSfDll
             // 
-            this.addAssCSfDll.AutoEllipsis = true;
             this.addAssCSfDll.AutoSize = true;
             this.addAssCSfDll.Location = new System.Drawing.Point(6, 134);
             this.addAssCSfDll.Name = "addAssCSfDll";
@@ -218,7 +217,6 @@ namespace VSIXProject1
             // 
             // addHarmonyDll
             // 
-            this.addHarmonyDll.AutoEllipsis = true;
             this.addHarmonyDll.AutoSize = true;
             this.addHarmonyDll.Location = new System.Drawing.Point(6, 111);
             this.addHarmonyDll.Name = "addHarmonyDll";
@@ -229,7 +227,6 @@ namespace VSIXProject1
             // 
             // addcInputDll
             // 
-            this.addcInputDll.AutoEllipsis = true;
             this.addcInputDll.AutoSize = true;
             this.addcInputDll.Location = new System.Drawing.Point(6, 65);
             this.addcInputDll.Name = "addcInputDll";
@@ -240,7 +237,6 @@ namespace VSIXProject1
             // 
             // addUIDll
             // 
-            this.addUIDll.AutoEllipsis = true;
             this.addUIDll.AutoSize = true;
             this.addUIDll.Location = new System.Drawing.Point(6, 88);
             this.addUIDll.Name = "addUIDll";
@@ -251,7 +247,6 @@ namespace VSIXProject1
             // 
             // addAssCSDll
             // 
-            this.addAssCSDll.AutoEllipsis = true;
             this.addAssCSDll.AutoSize = true;
             this.addAssCSDll.Location = new System.Drawing.Point(6, 42);
             this.addAssCSDll.Name = "addAssCSDll";
@@ -262,7 +257,6 @@ namespace VSIXProject1
             // 
             // addPlaymakerDll
             // 
-            this.addPlaymakerDll.AutoEllipsis = true;
             this.addPlaymakerDll.AutoSize = true;
             this.addPlaymakerDll.Location = new System.Drawing.Point(6, 19);
             this.addPlaymakerDll.Name = "addPlaymakerDll";
@@ -291,7 +285,6 @@ namespace VSIXProject1
             // 
             // setupOnGUI
             // 
-            this.setupOnGUI.AutoEllipsis = true;
             this.setupOnGUI.AutoSize = true;
             this.setupOnGUI.Location = new System.Drawing.Point(6, 157);
             this.setupOnGUI.Name = "setupOnGUI";
@@ -302,7 +295,6 @@ namespace VSIXProject1
             // 
             // setupOnPreLoad
             // 
-            this.setupOnPreLoad.AutoEllipsis = true;
             this.setupOnPreLoad.AutoSize = true;
             this.setupOnPreLoad.Location = new System.Drawing.Point(6, 65);
             this.setupOnPreLoad.Name = "setupOnPreLoad";
@@ -313,7 +305,6 @@ namespace VSIXProject1
             // 
             // setupPostLoad
             // 
-            this.setupPostLoad.AutoEllipsis = true;
             this.setupPostLoad.AutoSize = true;
             this.setupPostLoad.Location = new System.Drawing.Point(6, 111);
             this.setupPostLoad.Name = "setupPostLoad";
@@ -324,7 +315,6 @@ namespace VSIXProject1
             // 
             // setupFixedUpdate
             // 
-            this.setupFixedUpdate.AutoEllipsis = true;
             this.setupFixedUpdate.AutoSize = true;
             this.setupFixedUpdate.Location = new System.Drawing.Point(6, 203);
             this.setupFixedUpdate.Name = "setupFixedUpdate";
@@ -335,7 +325,6 @@ namespace VSIXProject1
             // 
             // setupUpdate
             // 
-            this.setupUpdate.AutoEllipsis = true;
             this.setupUpdate.AutoSize = true;
             this.setupUpdate.Location = new System.Drawing.Point(6, 180);
             this.setupUpdate.Name = "setupUpdate";
@@ -346,7 +335,6 @@ namespace VSIXProject1
             // 
             // setupOnNewGame
             // 
-            this.setupOnNewGame.AutoEllipsis = true;
             this.setupOnNewGame.AutoSize = true;
             this.setupOnNewGame.Location = new System.Drawing.Point(6, 42);
             this.setupOnNewGame.Name = "setupOnNewGame";
@@ -357,7 +345,6 @@ namespace VSIXProject1
             // 
             // setupOnSave
             // 
-            this.setupOnSave.AutoEllipsis = true;
             this.setupOnSave.AutoSize = true;
             this.setupOnSave.Location = new System.Drawing.Point(6, 134);
             this.setupOnSave.Name = "setupOnSave";
@@ -368,7 +355,6 @@ namespace VSIXProject1
             // 
             // setupOnMenuLoad
             // 
-            this.setupOnMenuLoad.AutoEllipsis = true;
             this.setupOnMenuLoad.AutoSize = true;
             this.setupOnMenuLoad.Location = new System.Drawing.Point(6, 19);
             this.setupOnMenuLoad.Name = "setupOnMenuLoad";
@@ -379,7 +365,6 @@ namespace VSIXProject1
             // 
             // setupOnLoad
             // 
-            this.setupOnLoad.AutoEllipsis = true;
             this.setupOnLoad.AutoSize = true;
             this.setupOnLoad.Checked = true;
             this.setupOnLoad.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -413,6 +398,7 @@ namespace VSIXProject1
             this.linkLabel3.TabIndex = 2;
             this.linkLabel3.TabStop = true;
             this.linkLabel3.Text = "Order of Execution";
+            this.linkLabel3.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel3_LinkClicked);
             // 
             // linkLabel2
             // 
@@ -423,6 +409,7 @@ namespace VSIXProject1
             this.linkLabel2.TabIndex = 1;
             this.linkLabel2.TabStop = true;
             this.linkLabel2.Text = "MSCLoader documentation";
+            this.linkLabel2.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel2_LinkClicked);
             // 
             // linkLabel1
             // 
@@ -433,6 +420,7 @@ namespace VSIXProject1
             this.linkLabel1.TabIndex = 0;
             this.linkLabel1.TabStop = true;
             this.linkLabel1.Text = "Template explained";
+            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
             // 
             // comboBox1
             // 
@@ -482,12 +470,12 @@ namespace VSIXProject1
             this.Controls.Add(this.label1);
             this.Controls.Add(this.doneButton);
             this.Controls.Add(this.managedPathBox);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Configure MSCLoader Mod";
+            this.Shown += new System.EventHandler(this.Form1_Shown);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -509,11 +497,7 @@ namespace VSIXProject1
                 customMessage = value;
             }
         }
-        private void button1_Click(object sender, EventArgs e)
-        {
-            customMessage = managedPathBox.Text;
-            this.Close();
-        }
+
         #endregion
         private static string customMessage;
         private TextBox managedPathBox;
