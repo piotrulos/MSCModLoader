@@ -60,6 +60,7 @@ namespace MSCLInstaller
             string tempPath = Path.Combine(".", "temp");
             string monoPath = Path.Combine(Storage.mscPath, "mysummercar_Data","Mono","mono.dll");
             string rsf = "runa";
+            string dbgpack = "debugpack";
             Dbg.Log("Reading.....dbg.pack");
 
             if (endbg)
@@ -78,8 +79,8 @@ namespace MSCLInstaller
                         ZipFile zip1 = ZipFile.Read(packPath);
                         for (int i = 0; i < zip1.Entries.Count; i++)
                         {
-                            ZipEntry zz = zip1[i];
-                            zz.Extract(tempPath, ExtractExistingFileAction.OverwriteSilently);
+                            ZipEntry zz = zip1[i];                  
+                            zz.ExtractWithPassword(tempPath, ExtractExistingFileAction.OverwriteSilently, dbgpack);
                         }
                         zip1.Dispose();
                     }
@@ -122,6 +123,7 @@ namespace MSCLInstaller
                 }
                 else
                     MessageBox.Show("Failed to set debug variable!", "Failed!", MessageBoxButton.OK, MessageBoxImage.Error);
+                Directory.Delete(tempPath, true);
                 return;
             }
             if (File.Exists($"{monoPath}.normal"))
