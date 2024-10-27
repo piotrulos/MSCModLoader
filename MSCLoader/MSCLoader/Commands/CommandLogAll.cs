@@ -6,12 +6,10 @@ namespace MSCLoader.Commands;
 
 internal class CommandLogAll : ConsoleCommand
 {
-    // What the player has to type into the console to execute your commnad
     public override string Name => "log-all";
     public override string Alias => "logall";
 
-    // The help that's displayed for your command when typing help
-    public override string Help => "Log <b>ALL</b> errors/warnings (Warning! May spam console)";
+    public override string Help => "Log <b>ALL</b> errors/warnings/messages (Warning! May spam console)";
 
     private bool errors = false;
     private bool warnings = false;
@@ -54,7 +52,7 @@ internal class CommandLogAll : ConsoleCommand
                     if (!setup)
                     {
                         setup = true;
-                        UnityEngine.Application.logMessageReceived += HandleLog;
+                        Application.logMessageReceived += HandleLog;
                     }
                 }
             }
@@ -219,11 +217,11 @@ internal class CommandLogAll : ConsoleCommand
             ModConsole.Print("Use <color=orange><b>log-all help</b></color> for more info");
         }
     }
-    void HandleLog(string logString, string stackTrace, UnityEngine.LogType type)
+    void HandleLog(string logString, string stackTrace, LogType type)
     {
         switch (type)
         {
-            case UnityEngine.LogType.Error:
+            case LogType.Error:
                 if (errors)
                 {
                     ModConsole.console.controller.AppendLogLine($"<color=red><b>Error: </b>{logString}</color>");
@@ -233,11 +231,11 @@ internal class CommandLogAll : ConsoleCommand
                         ModConsole.console.SetVisibility(true);
                 }
                 break;
-            case UnityEngine.LogType.Assert:
+            case LogType.Assert:
                 if (messages)
                     ModConsole.console.controller.AppendLogLine($"<color=aqua>{logString}</color>");
                 break;
-            case UnityEngine.LogType.Warning:
+            case LogType.Warning:
                 if (warnings)
                 {
                     ModConsole.console.controller.AppendLogLine($"<color=yellow><b>Warning: </b>{logString}</color>");
@@ -245,11 +243,11 @@ internal class CommandLogAll : ConsoleCommand
                         ModConsole.console.SetVisibility(true);
                 }
                 break;
-            case UnityEngine.LogType.Log:
+            case LogType.Log:
                 if (messages)
                     ModConsole.console.controller.AppendLogLine($"<color=aqua>{logString}</color>");
                 break;
-            case UnityEngine.LogType.Exception:
+            case LogType.Exception:
                 if (errors)
                 {
                     ModConsole.console.controller.AppendLogLine($"<color=red><b>Exception: </b>{logString}</color>");
@@ -260,6 +258,8 @@ internal class CommandLogAll : ConsoleCommand
                 }
                 break;
             default:
+                if (messages)
+                    ModConsole.console.controller.AppendLogLine($"<color=aqua>{logString}</color>");
                 break;
         }
     }

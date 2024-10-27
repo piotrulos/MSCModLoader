@@ -82,15 +82,16 @@ namespace MSCLoader.Preloader
                 if (!ZipFile.IsZipFile(fn))
                 {
                     MDebug.Log("[MODLOADER UPDATE FAILED]");
-                    MDebug.Log($"Failed read zip file {fn}", true);
+                    MDebug.Log($"Invalid zip file {fn}", true);
+                    File.Delete(fn);
                 }
                 else
                 {
-                    ZipFile zip1 = ZipFile.Read(File.ReadAllBytes(fn));
-                    foreach (ZipEntry zz in zip1)
+                    ZipFile zipFile = ZipFile.Read(File.ReadAllBytes(fn));
+                    foreach (ZipEntry zipEntry in zipFile)
                     {
-                        MDebug.Log($"Unpacking: {zz.FileName}");
-                        zz.Extract(target, ExtractExistingFileAction.OverwriteSilently);
+                        MDebug.Log($"Unpacking: {zipEntry.FileName}");
+                        zipEntry.Extract(target, ExtractExistingFileAction.OverwriteSilently);
                     }
                 }
                 File.Delete(fn);
@@ -107,7 +108,7 @@ namespace MSCLoader.Preloader
             try
             {
                 MDebug.Log("Reading settings...");
-                if (File.Exists("ModLoaderSettings.ini"))
+                if (File.Exists("ModLoaderSettings.ini")) //Pro crap
                     File.Delete("ModLoaderSettings.ini");
                 IniData ini = new FileIniDataParser().ReadFile("doorstop_config.ini");
                 ini.Configuration.AssigmentSpacer = "";
@@ -147,25 +148,9 @@ namespace MSCLoader.Preloader
                 {
                     MDebug.Log("Checking output_log status...");
                     stream.Position = offset + 115;
-                    if (stream.ReadByte() == 1)
-                    {
-                        enLog = false;
-                    }
-                    else
-                    {
-                        enLog = true;
-
-                    }
+                    enLog = stream.ReadByte() != 1;
                     stream.Position = offset + 96;
-                    if (stream.ReadByte() == 1)
-                    {
-                        skipCfg = false;
-                    }
-                    else
-                    {
-                        skipCfg = true;
-
-                    }
+                    skipCfg = stream.ReadByte() != 1;
                     stream.Close();
                 }
                 if (enLog)
@@ -205,7 +190,7 @@ namespace MSCLoader.Preloader
             //System.dll -> Loaded at very end.
             if (args.LoadedAssembly.GetName().Name == "System")
             {
-                AppDomain.CurrentDomain.AssemblyLoad -= AssemblyWatcher; //Remove from domain when done.
+                AppDomain.CurrentDomain.AssemblyLoad -= AssemblyWatcher; //Unsubscribe from event when done.
                 InjectModLoader(); //Inject modloader
             }
         }
