@@ -10,64 +10,44 @@ using System.Net;
 namespace MSCLoader;
 public partial class ModLoader : MonoBehaviour
 {
+    void UnpackZipFile(string zip, string target)
+    {
+        ModConsole.Print($"Unpacking {zip}");
+        try
+        {
+            if (!ZipFile.IsZipFile(zip))
+            {
+                ModConsole.Error($"Invalid zip file: {zip}");
+                File.Delete(zip); //Delete if error (invalid zip file)
+            }
+            else
+            {
+                ZipFile zipFile = ZipFile.Read(File.ReadAllBytes(zip));
+                foreach (ZipEntry zipEntry in zipFile)
+                {
+                    ModConsole.Print($"Copying new file: {zipEntry.FileName}");
+                    zipEntry.Extract(target, ExtractExistingFileAction.OverwriteSilently);
+                }
+            }
+            File.Delete(zip);
+        }
+        catch (Exception e)
+        {
+            ModConsole.Error(e.Message);
+            Console.WriteLine(e);
+            File.Delete(zip); //Delete if error (corrupted zip file)
+        }
+    }
     void UnpackUpdates()
     {
-        ModConsole.Print("Unpacking mod updates...");
+        ModConsole.Print("Unpacking updates...");
         for (int i = 0; i < ModsUpdateDir.Length; i++)
         {
-            ModConsole.Print($"Unpacking file {ModsUpdateDir[i]}");
-            string zip = ModsUpdateDir[i];
-            try
-            {
-                if (!ZipFile.IsZipFile(zip))
-                {
-                    ModConsole.Error($"Failed to read zip file {ModsUpdateDir[i]}");
-                }
-                else
-                {
-                    ZipFile zip1 = ZipFile.Read(File.ReadAllBytes(zip));
-                    foreach (ZipEntry zz in zip1)
-                    {
-                        ModConsole.Print($"Copying new file: {zz.FileName}");
-                        zz.Extract(ModsFolder, ExtractExistingFileAction.OverwriteSilently);
-                    }
-                }
-                File.Delete(ModsUpdateDir[i]);
-            }
-            catch (Exception e)
-            {
-                ModConsole.Error(e.Message);
-                System.Console.WriteLine(e);
-                File.Delete(ModsUpdateDir[i]);
-            }
+            UnpackZipFile(ModsUpdateDir[i], ModsFolder); 
         }
         for (int i = 0; i < RefsUpdateDir.Length; i++)
         {
-            ModConsole.Print($"Unpacking file {RefsUpdateDir[i]}");
-            string zip = RefsUpdateDir[i];
-            try
-            {
-                if (!ZipFile.IsZipFile(zip))
-                {
-                    ModConsole.Error($"Failed to read zip file {RefsUpdateDir[i]}");
-                }
-                else
-                {
-                    ZipFile zip1 = ZipFile.Read(File.ReadAllBytes(zip));
-                    foreach (ZipEntry zz in zip1)
-                    {
-                        ModConsole.Print($"Copying new file: {zz.FileName}");
-                        zz.Extract(Path.Combine(ModsFolder, "References"), ExtractExistingFileAction.OverwriteSilently);
-                    }
-                }
-                File.Delete(RefsUpdateDir[i]);
-            }
-            catch (Exception e)
-            {
-                ModConsole.Error(e.Message);
-                System.Console.WriteLine(e);
-                File.Delete(RefsUpdateDir[i]);
-            }
+            UnpackZipFile(RefsUpdateDir[i], Path.Combine(ModsFolder, "References")); 
         }
         ModUI.ShowMessage("Updating mods finished.", "Update mods");
         ContinueInit();
@@ -79,7 +59,6 @@ public partial class ModLoader : MonoBehaviour
     internal bool checkForUpdatesProgress = false;
     IEnumerator CheckForRefModUpdates()
     {
-
         checkForUpdatesProgress = true;
         canvLoading.uTitle.text = "Checking for mod updates...".ToUpper();
         canvLoading.uProgress.maxValue = 3;
