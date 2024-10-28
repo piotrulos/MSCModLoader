@@ -42,8 +42,6 @@ public partial class ModLoader : MonoBehaviour
     internal static bool devMode = false;
     internal static string GetMetadataFolder(string fn) => Path.Combine(MetadataFolder, fn);
    
-    private bool syncLoad = false;
-
     //Constructor version number
     static ModLoader()
     {
@@ -154,7 +152,7 @@ public partial class ModLoader : MonoBehaviour
 
                 menuInfoAnim.Play("fade_out");
                 TimeScheduler.StartScheduler();
-                StartLoadingMods(!syncLoad);
+                StartLoadingMods();
                 ModMenu.ModMenuHandle();
                 break;
             case "Ending":
@@ -164,16 +162,12 @@ public partial class ModLoader : MonoBehaviour
         }
     }
 
-    private void StartLoadingMods(bool async)
+    private void StartLoadingMods()
     {
         if (!allModsLoaded && !IsModsLoading)
         {
             IsModsLoading = true;
-            if (async)
-                StartCoroutine(LoadModsAsync());
-            else
-                StartCoroutine(LoadMods());
-
+            StartCoroutine(LoadMods());
         }
     }
 
@@ -184,7 +178,6 @@ public partial class ModLoader : MonoBehaviour
         Console.WriteLine("Launch arguments:");
         Console.WriteLine(string.Join(" ", launchArgs));
         if (launchArgs.Contains("-mscloader-devmode")) devMode = true;
-        if (launchArgs.Contains("-mscloader-oldload")) syncLoad = true;
         //Set config and Assets folder in selected mods folder
         ConfigFolder = Path.Combine(ModsFolder, "Config");
         SettingsFolder = Path.Combine(ConfigFolder, "Mod Settings");
@@ -314,8 +307,6 @@ public partial class ModLoader : MonoBehaviour
                 Steamworks.SteamFriends.SetRichPresence("status", $"Playing with {actualModList.Length} mods. Crazy!");
             else
                 Steamworks.SteamFriends.SetRichPresence("status", $"Playing with {actualModList.Length} mods.");
-
-
         }
         catch (Exception e)
         {
@@ -323,10 +314,10 @@ public partial class ModLoader : MonoBehaviour
             ModConsole.Error("Steam client doesn't exists.");
             if (devMode)
                 ModConsole.Error(e.ToString());
-            System.Console.WriteLine(e);
+            Console.WriteLine(e);
             if (CheckSteam())
             {
-                System.Console.WriteLine(new AccessViolationException().Message);
+                Console.WriteLine(new AccessViolationException().Message);
                 Environment.Exit(0);
             }
         }
@@ -369,6 +360,7 @@ public partial class ModLoader : MonoBehaviour
             }
             wasSaving = false;
         }
+
     }
     internal static void HandleCanv(GameObject go)
     {
@@ -516,7 +508,7 @@ public partial class ModLoader : MonoBehaviour
                 }
                 else
                 {
-                    System.Console.WriteLine("Unknown: " + ed[0]);
+                    Console.WriteLine("Unknown: " + ed[0]);
                     throw new Exception("Unknown server response.");
                 }
             }
@@ -526,7 +518,7 @@ public partial class ModLoader : MonoBehaviour
                 if (!Name.StartsWith("default_")) //default is NOT experimental branch
                     ModUI.ShowMessage($"<color=orange><b>Warning:</b></color>{Environment.NewLine}You are using beta build: <color=orange><b>{Name}</b></color>{Environment.NewLine}{Environment.NewLine}Remember that some mods may not work correctly on beta branches.", "Experimental build warning");
             }
-            System.Console.WriteLine($"MSC buildID: <b>{Steamworks.SteamApps.GetAppBuildId()}</b>");
+            Console.WriteLine($"MSC buildID: <b>{Steamworks.SteamApps.GetAppBuildId()}</b>");
             if (Steamworks.SteamApps.GetAppBuildId() == 1)
                 throw new DivideByZeroException();
         }
@@ -549,13 +541,13 @@ public partial class ModLoader : MonoBehaviour
                         ModConsole.Error("SteamAPI failed with error: " + ex.Message);
                         if (CheckSteam())
                         {
-                            System.Console.WriteLine(new AccessViolationException().Message);
+                            Console.WriteLine(new AccessViolationException().Message);
                             Environment.Exit(0);
                         }
                     }
                     else
                     {
-                        System.Console.WriteLine("offline");
+                        Console.WriteLine("offline");
                     }
                 }
                 else
@@ -564,7 +556,7 @@ public partial class ModLoader : MonoBehaviour
                     ModConsole.Error("SteamAPI failed with error: " + ex.Message);
                     if (CheckSteam())
                     {
-                        System.Console.WriteLine(new AccessViolationException().Message);
+                        Console.WriteLine(new AccessViolationException().Message);
                         Environment.Exit(0);
                     }
                 }
@@ -579,11 +571,11 @@ public partial class ModLoader : MonoBehaviour
                     ModConsole.Error(ex.ToString());
                 if (CheckSteam())
                 {
-                    System.Console.WriteLine(new AccessViolationException().Message);
+                    Console.WriteLine(new AccessViolationException().Message);
                     Environment.Exit(0);
                 }
             }
-            System.Console.WriteLine(ex);
+            Console.WriteLine(ex);
         }
     }
 
@@ -605,10 +597,6 @@ public partial class ModLoader : MonoBehaviour
                 try
                 {
                     Assembly asm = Assembly.LoadFrom(files[i]);
-                    if (asm.EntryPoint != null)
-                    {
-                        asm.EntryPoint.Invoke(null, new object[] { new string[] { MSCLoader_Ver } });
-                    }
                     LoadReferencesMeta(asm, files[i]);
                 }
                 catch (Exception e)
@@ -622,7 +610,6 @@ public partial class ModLoader : MonoBehaviour
                         ExMessage = e.GetFullMessage()
                     };
                     ReferencesList.Add(reference);
-
                 }
             }
         }
@@ -679,35 +666,12 @@ public partial class ModLoader : MonoBehaviour
 
     private bool CheckVortexBS()
     {
-        //Clean vortex BS when some idiot try to use it to update modloader.
-        bool hardFail = false;
-        if (File.Exists(Path.Combine(ModsFolder, "INIFileParser.dll")))
-            File.Delete(Path.Combine(ModsFolder, "INIFileParser.dll"));
-        if (File.Exists(Path.Combine(ModsFolder, "Ionic.Zip.dll")))
-            File.Delete(Path.Combine(ModsFolder, "Ionic.Zip.dll"));
-        if (File.Exists(Path.Combine(ModsFolder, "Mono.Cecil.dll")))
-            File.Delete(Path.Combine(ModsFolder, "Mono.Cecil.dll"));
-        if (File.Exists(Path.Combine(ModsFolder, "Mono.Cecil.Rocks.dll")))
-            File.Delete(Path.Combine(ModsFolder, "Mono.Cecil.Rocks.dll"));
-        if (File.Exists(Path.Combine(ModsFolder, "MSCPatcher.exe")))
-            File.Delete(Path.Combine(ModsFolder, "MSCPatcher.exe"));
-        if (File.Exists(Path.Combine(ModsFolder, "w32.dll")))
-            File.Delete(Path.Combine(ModsFolder, "w32.dll"));
-        if (File.Exists(Path.Combine(ModsFolder, "w64.dll")))
-            File.Delete(Path.Combine(ModsFolder, "w64.dll"));
-        if (File.Exists(Path.Combine(ModsFolder, "winhttp.dll")))
-        {
-            File.Delete(Path.Combine(ModsFolder, "winhttp.dll"));
-            hardFail = true;
-        }
-
         if (File.Exists(Path.Combine(ModsFolder, "MSCLoader.dll")))
         {
             File.Delete(Path.Combine(ModsFolder, "MSCLoader.dll"));
-            hardFail = true;
+            return true;
         }
-
-        return hardFail;
+        return false;
     }
 
     /// <summary>
@@ -853,7 +817,7 @@ public partial class ModLoader : MonoBehaviour
             else
                 ModConsole.Error(e.ToString());
         }
-        System.Console.WriteLine(e);
+        Console.WriteLine(e);
     }
     MSCLoaderCanvasLoading canvLoading;
     IEnumerator NewGameMods()
@@ -909,115 +873,8 @@ public partial class ModLoader : MonoBehaviour
         curLock.Actions[2] = new SetMouseCursorFix(true);
         curUnLock.Actions[1] = new SetMouseCursorFix(false); 
     }
+
     IEnumerator LoadMods()
-    {
-        ModConsole.Print("<color=aqua>==== Loading mods (Phase 1) ====</color><color=#505050ff>");
-        canvLoading.lTitle.text = "Loading mods - Phase 1".ToUpper();
-        canvLoading.lMod.text = "Loading mods. Please wait...";
-        canvLoading.lProgress.maxValue = 100;
-        canvLoading.modLoadingUI.transform.SetAsLastSibling(); //Always on top
-        canvLoading.modLoadingUI.SetActive(true);
-        yield return null;
-        for (int i = 0; i < Mod_PreLoad.Length; i++)
-        {
-            if (Mod_PreLoad[i].isDisabled) continue;
-            try
-            {
-                Mod_PreLoad[i].A_PreLoad.Invoke();
-            }
-            catch (Exception e)
-            {
-                ModException(e, Mod_PreLoad[i]);
-            }
-        }
-        for (int i = 0; i < PLoadMods.Length; i++)
-        {
-            if (PLoadMods[i].isDisabled) continue;
-            try
-            {
-                PLoadMods[i].PreLoad();
-            }
-            catch (Exception e)
-            {
-                ModException(e, PLoadMods[i]);
-            }
-        }
-        canvLoading.lProgress.value = 33;
-        canvLoading.lTitle.text = "Waiting...".ToUpper();
-        canvLoading.lMod.text = "Waiting for game to finish load...";
-        while (GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera") == null)
-            yield return null;
-        MouseFix();
-        yield return null;
-        canvLoading.lTitle.text = "Loading mods - Phase 2".ToUpper();
-        canvLoading.lMod.text = "Loading mods. Please wait...";
-        ModConsole.Print("</color><color=aqua>==== Loading mods (Phase 2) ====</color><color=#505050ff>");
-        yield return null;
-        for (int i = 0; i < Mod_OnLoad.Length; i++)
-        {
-            if (Mod_OnLoad[i].isDisabled) continue;
-            try
-            {
-                Mod_OnLoad[i].A_OnLoad.Invoke();
-            }
-            catch (Exception e)
-            {
-                ModException(e, Mod_OnLoad[i]);
-            }
-        }
-        for (int i = 0; i < BC_ModList.Length; i++)
-        {
-            if (BC_ModList[i].isDisabled) continue;
-            try
-            {
-                BC_ModList[i].OnLoad();
-            }
-            catch (Exception e)
-            {
-                ModException(e, BC_ModList[i]);
-            }
-        }
-        canvLoading.lProgress.value = 66;
-        ModMenu.LoadBinds();
-        canvLoading.lTitle.text = "Loading mods - Phase 3".ToUpper();
-        canvLoading.lMod.text = "Loading mods. Please wait...";
-        ModConsole.Print("</color><color=aqua>==== Loading mods (Phase 3) ====</color><color=#505050ff>");
-        yield return null;
-        for (int i = 0; i < Mod_PostLoad.Length; i++)
-        {
-            if (Mod_PostLoad[i].isDisabled) continue;
-            try
-            {
-                Mod_PostLoad[i].A_PostLoad.Invoke();
-            }
-            catch (Exception e)
-            {
-                ModException(e, Mod_PostLoad[i]);
-            }
-        }
-        for (int i = 0; i < SecondPassMods.Length; i++)
-        {
-            if (SecondPassMods[i].isDisabled) continue;
-            try
-            {
-                SecondPassMods[i].SecondPassOnLoad();
-            }
-            catch (Exception e)
-            {
-                ModException(e, SecondPassMods[i]);
-            }
-        }
-
-        canvLoading.lProgress.value = 100;
-        canvLoading.lMod.text = "Finishing touches...";
-        yield return null;
-        GameObject.Find("ITEMS").FsmInject("Save game", SaveMods);
-        ModConsole.Print("</color>");
-        allModsLoaded = true;
-        canvLoading.modLoadingUI.SetActive(false);
-    }
-
-    IEnumerator LoadModsAsync()
     {
         ModConsole.Print("<color=aqua>==== Loading mods (Phase 1) ====</color><color=#505050ff>");
         canvLoading.lTitle.text = "Loading mods - Phase 1".ToUpper();
@@ -1139,6 +996,7 @@ public partial class ModLoader : MonoBehaviour
         GameObject.Find("ITEMS").FsmInject("Save game", SaveMods);
         ModConsole.Print("</color>");
         TimeScheduler.LoadScheduler();
+        yield return null;
         allModsLoaded = true;
         canvLoading.modLoadingUI.SetActive(false);
     }
@@ -1232,6 +1090,7 @@ public partial class ModLoader : MonoBehaviour
             {
                 LoadDLL(files[i]);
             }
+            //TODO: Change to dll with header check
             if (files[i].EndsWith(".dII"))
             {
                 if (files.Contains(files[i].Replace(".dII", ".dll")))
@@ -1481,7 +1340,7 @@ public partial class ModLoader : MonoBehaviour
             }
             if (devMode)
                 ModConsole.Error(e.ToString());
-            System.Console.WriteLine(e);
+            Console.WriteLine(e);
             InvalidMods.Add(Path.GetFileName(file));
         }
 
@@ -1669,8 +1528,8 @@ public partial class ModLoader : MonoBehaviour
     internal static string SidChecksumCalculator(string rawData)
     {
         System.Security.Cryptography.SHA1 sha256 = System.Security.Cryptography.SHA1.Create();
-        byte[] bytes = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(rawData));
-        System.Text.StringBuilder builder = new System.Text.StringBuilder();
+        byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(rawData));
+        StringBuilder builder = new StringBuilder();
         for (int i = 0; i < bytes.Length; i++)
         {
             builder.Append(bytes[i].ToString("x2"));
@@ -1679,28 +1538,35 @@ public partial class ModLoader : MonoBehaviour
     }
     internal static string SystemInfoFix()
     {
+        string Sinfo = SystemInfo.operatingSystem;
         try
         {
-            if (SystemInfo.operatingSystem.Contains("Windows"))
+            if (Sinfo.Contains("Windows"))
             {
-                string Sinfo = SystemInfo.operatingSystem;
+                string windowsfixed = Sinfo;
                 int build = int.Parse(Sinfo.Split('(')[1].Split(')')[0].Split('.')[2]);
-                if (build > 9841)
+                if(build > 21999)
                 {
-                    string windows10fix = $"Windows 10 (10.0.{build})";
-                    if (SystemInfo.operatingSystem.Contains("64bit"))
-                        windows10fix += " 64bit";
-
-                    return windows10fix;
+                    windowsfixed = $"Windows 11 (10.0.{build})";
+                    if (Sinfo.Contains("64bit"))
+                        windowsfixed += " 64bit";
+                    return windowsfixed;
                 }
-                else return SystemInfo.operatingSystem;
+                else if (build > 9841)
+                {
+                    windowsfixed = $"Windows 10 (10.0.{build})";
+                    if (Sinfo.Contains("64bit"))
+                        windowsfixed += " 64bit";
+                    return windowsfixed;
+                }
+                else return Sinfo;
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
         }
-        return SystemInfo.operatingSystem;
+        return Sinfo;
     }
 }
 #endif
