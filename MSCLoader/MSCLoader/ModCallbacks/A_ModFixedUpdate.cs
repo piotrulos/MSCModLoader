@@ -1,12 +1,10 @@
 ﻿#if !Mini
+namespace MSCLoader;
 
-namespace MSCLoader
+internal class A_ModFixedUpdate : MonoBehaviour
 {
-    internal class A_ModFixedUpdate : MonoBehaviour
-    {
-        internal ModLoader modLoader;
+    internal ModLoader modLoader;
 
-        private void FixedUpdate() => modLoader.A_FixedUpdate();
-    }
+    private void FixedUpdate() => modLoader.A_FixedUpdate();
 }
 #endif

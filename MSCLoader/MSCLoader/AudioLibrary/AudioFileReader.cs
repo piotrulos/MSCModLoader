@@ -1,22 +1,40 @@
 #if !Mini
+using NAudio.Flac;
+using NAudio.Vorbis;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using NAudio.Vorbis;
-using NAudio.Flac;
 using System.IO;
-using UnityEngine;
 
 namespace AudioLibrary
 {
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-
+    /// <summary>
+    /// Audio format
+    /// </summary>
     public enum AudioFormat
     {
+        /// <summary>
+        /// Wave format
+        /// </summary>
         wav,
+        /// <summary>
+        /// MP3 format
+        /// </summary>
         mp3,
+        /// <summary>
+        /// AIFF format
+        /// </summary>
         aiff,
+        /// <summary>
+        /// Ogg format
+        /// </summary>
         ogg,
+        /// <summary>
+        /// FLAC format
+        /// </summary>
         flac,
+        /// <summary>
+        /// Unknown
+        /// </summary>
         unknown = -1
     }
     internal class AudioFileReader : WaveStream, ISampleProvider
@@ -135,7 +153,6 @@ namespace AudioLibrary
             base.Dispose(disposing);
         }
     }
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
 }
 #endif

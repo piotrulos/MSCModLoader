@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.Events;
-using System;
+﻿using UnityEngine.Events;
 
 namespace MSCLoader
 {

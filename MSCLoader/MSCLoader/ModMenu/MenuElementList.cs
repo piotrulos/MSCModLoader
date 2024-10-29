@@ -1,9 +1,9 @@
-﻿using System.Collections;
-using UnityEngine.UI;
-using System;
+﻿using System;
+using System.Collections;
 using System.IO;
 using System.Linq;
 using System.Net;
+using UnityEngine.UI;
 
 namespace MSCLoader
 {
@@ -199,7 +199,7 @@ namespace MSCLoader
             else
                 QuickInfo.text += $"<color=yellow>Author:</color> <color=aqua>{rf.AssemblyAuthor}</color>{Environment.NewLine}";
             QuickInfo.text += $"<color=yellow>Version:</color> <color=aqua>{rf.AssemblyFileVersion}</color>{Environment.NewLine}";
-          //  QuickInfo.text += $"<color=yellow>Guid test:</color> <color=aqua>{rf.Guid}</color>{Environment.NewLine}";
+            //  QuickInfo.text += $"<color=yellow>Guid test:</color> <color=aqua>{rf.Guid}</color>{Environment.NewLine}";
 
         }
         internal void ShowChangelog(string id, string ver, string name)
@@ -220,7 +220,7 @@ namespace MSCLoader
         }
         public void UpdateInfoFill()
         {
-            if(refs != null)
+            if (refs != null)
             {
                 Title.text = $"<color=lime>{refs.AssemblyTitle}</color>";
                 if (string.IsNullOrEmpty(refs.AssemblyAuthor))
@@ -326,18 +326,18 @@ namespace MSCLoader
             if (dml != null)
             {
                 Title.text = $"<color=lime>{dml.mod_id}</color>";
-                    Author.text = $"by <color=orange>Placeholder</color> (<color=aqua>{dml.mod_version}</color>)";
+                Author.text = $"by <color=orange>Placeholder</color> (<color=aqua>{dml.mod_version}</color>)";
                 Description.text = dml.mod_description;
                 if (!ModLoader.Instance.actualModList.Where(x => x.ID == dml.mod_id).Any())
                 {
-                    DownloadInfoTxt.text = string.Empty;                    
+                    DownloadInfoTxt.text = string.Empty;
                     DownloadUpdateBtn.onClick.AddListener(delegate
                     {
                         ModLoader.Instance.DownloadRequiredMod(dml.mod_id);
                     });
                     DownloadUpdateBtn.gameObject.SetActive(true);
                 }
-            }            
+            }
         }
         public void DisableThisMod(bool ischecked)
         {

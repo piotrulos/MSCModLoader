@@ -3,9 +3,7 @@ using Newtonsoft.Json;
 #endif
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using UnityEngine;
 using UnityEngine.UI;
 
 namespace MSCLoader
@@ -33,7 +31,7 @@ namespace MSCLoader
         public bool modList = false;
         public GameObject modListView;
         DwnlModList dml;
-        #if !Mini
+#if !Mini
         public void RefreshTabs()
         {
 

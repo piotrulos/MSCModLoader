@@ -1,18 +1,17 @@
 ﻿using UnityEngine.UI;
 
-namespace MSCLoader
+namespace MSCLoader;
+
+internal class MessageBoxesCanvas : MonoBehaviour
 {
-    internal class MessageBoxesCanvas : MonoBehaviour
-    {
-        public GameObject messageBoxPrefab, messageBoxBtnPrefab;
-        public GameObject changelogWindow;
+    public GameObject messageBoxPrefab, messageBoxBtnPrefab;
+    public GameObject changelogWindow;
 
-        public Text changelogText;
-    }
+    public Text changelogText;
+}
 
-    internal class MessageBoxHelper : MonoBehaviour
-    {
-        public Text messageBoxTitle, messageBoxContent;
-        public GameObject btnRow1, btnRow2;
-    }
+internal class MessageBoxHelper : MonoBehaviour
+{
+    public Text messageBoxTitle, messageBoxContent;
+    public GameObject btnRow1, btnRow2;
 }

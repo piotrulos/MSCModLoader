@@ -10,7 +10,7 @@ namespace MSCLoader.Preloader
 
         public static void Init()
         {
-            ts.Switch.Level = SourceLevels.All;       
+            ts.Switch.Level = SourceLevels.All;
             ts.Listeners.Add(tw);
             Log($"MSCLoader Preloader Log {DateTime.Now.ToString("u")}");
             Log($"Version {System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}", true);

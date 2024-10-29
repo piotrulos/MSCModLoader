@@ -5,28 +5,28 @@ using System.Linq;
 
 namespace MSCLoader;
 
+/// <summary>
+/// List of possible scenes
+/// </summary>
+public enum CurrentScene
+{
     /// <summary>
-    /// List of possible scenes
+    /// Main Menu
     /// </summary>
-    public enum CurrentScene
-    {
-        /// <summary>
-        /// Main Menu
-        /// </summary>
-        MainMenu,
-        /// <summary>
-        /// Game Scene
-        /// </summary>
-        Game,
-        /// <summary>
-        /// Intro for new game
-        /// </summary>
-        NewGameIntro,
-        /// <summary>
-        /// End game scene
-        /// </summary>
-        Ending
-    }
+    MainMenu,
+    /// <summary>
+    /// Game Scene
+    /// </summary>
+    Game,
+    /// <summary>
+    /// Intro for new game
+    /// </summary>
+    NewGameIntro,
+    /// <summary>
+    /// End game scene
+    /// </summary>
+    Ending
+}
 
 public partial class ModLoader
 {

@@ -23,7 +23,7 @@ public class ModSettings
     {
         this.mod = mod;
     }
-   
+
     [System.Obsolete("=> Settings.AddButton", true)]
     public SettingButton AddButton(string id, string buttonText, UnityAction action = null, bool blockSuspension = false) => AddButton(id, buttonText, "", action, blockSuspension);
     [System.Obsolete("=> Settings.AddButton", true)]
@@ -102,7 +102,7 @@ public class ModSettings
     public SettingSlider AddSlider(string id, string name, float value, float minValue, float maxValue, int roundDigits = 2, UnityAction<float> action = null)
     {
         Settings.AddText(mod, $"<color=orange>Incompatible setting action - <color=aqua><b>{id}</b></color></color>");
-        return AddSlider(id,name,value,minValue,maxValue,roundDigits, (UnityAction)null);
+        return AddSlider(id, name, value, minValue, maxValue, roundDigits, (UnityAction)null);
     }
     [System.Obsolete("=> Settings.AddSlider", true)]
     public SettingSlider AddSlider(string id, string name, float value, float minValue, float maxValue, int roundDigits = 2, UnityAction action = null)

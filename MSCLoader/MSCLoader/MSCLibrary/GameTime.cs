@@ -28,7 +28,8 @@ public static class GameTime
     /// <summary>
     /// Enum representing the days of the week from sunday to saturday, also containing <b>Week</b>, <b>Weekend</b>, and <b>All</b>.
     /// </summary>       
-    [Flags] public enum Days
+    [Flags]
+    public enum Days
     {
         Sunday = 1 << 0,
         Monday = 1 << 1,

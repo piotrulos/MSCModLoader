@@ -1,12 +1,10 @@
 ﻿#if !Mini
+namespace MSCLoader;
 
-namespace MSCLoader
+internal class BC_ModOnGUI : MonoBehaviour
 {
-    internal class BC_ModOnGUI : MonoBehaviour
-    {
-        internal ModLoader modLoader;
+    internal ModLoader modLoader;
 
-        private void OnGUI() => modLoader.BC_OnGUI();
-    }
+    private void OnGUI() => modLoader.BC_OnGUI();
 }
 #endif

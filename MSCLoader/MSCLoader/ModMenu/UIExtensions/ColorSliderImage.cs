@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine.UI;
 
 namespace MSCLoader
 {
@@ -10,7 +9,7 @@ namespace MSCLoader
         public Slider.Direction direction;
         private RawImage image;
 
-         private void Awake()
+        private void Awake()
         {
             image = GetComponent<RawImage>();
             RegenerateTexture();
@@ -100,7 +99,7 @@ namespace MSCLoader
                     {
                         colors[inverted ? size - 1 - i : i] = new Color32(i, i, i, 255);
                     }
-                    break;            
+                    break;
                 default:
                     break;
             }

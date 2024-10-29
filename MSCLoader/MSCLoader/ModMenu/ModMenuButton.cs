@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
+﻿using UnityEngine.UI;
 
 namespace MSCLoader
 {
@@ -9,7 +7,7 @@ namespace MSCLoader
         public bool menu2 = false;
         public Texture2D arrowLeft, arrowRight;
         public RawImage image;
-        public Animation btnAnim; 
+        public Animation btnAnim;
         public GameObject TitleText, SearchField;
         Animation anim;
         internal bool opened = false;

@@ -1,18 +1,17 @@
 ﻿using UnityEngine.UI;
 
-namespace MSCLoader
+namespace MSCLoader;
+
+//Helper class UI
+internal class MSCLoaderCanvasLoading : MonoBehaviour
 {
-    //Helper class UI
-    internal class MSCLoaderCanvasLoading : MonoBehaviour
+    public GameObject modLoadingUI, modUpdateUI;
+    public Text lHeader, lTitle, lMod, uTitle, uStatus;
+    public Slider lProgress, uProgress;
+
+    void Awake()
     {
-        public GameObject modLoadingUI, modUpdateUI;
-        public Text lHeader, lTitle, lMod, uTitle, uStatus;
-        public Slider lProgress, uProgress;
-        
-        void Awake()
-        {
-            modLoadingUI.SetActive(false);
-            modUpdateUI.SetActive(false);
-        }
+        modLoadingUI.SetActive(false);
+        modUpdateUI.SetActive(false);
     }
 }
