@@ -13,17 +13,6 @@ public partial class Mod
     public virtual bool LoadInMenu => false;
 
     /// <summary>
-    /// Set this to true if you want load custom files from Assets folder
-    /// (This will create a subfolder for your mod)
-    /// </summary>        
-    public virtual bool UseAssetsFolder { get; set; } = false;
-
-    /// <summary>
-    /// Enable SecondPassOnLoad() that will execute after all mods have been loaded.
-    /// </summary>     
-    public virtual bool SecondPass => false;
-
-    /// <summary>
     /// Called once after starting "New Game"
     /// You can reset/delete your saves here
     /// </summary>
@@ -36,6 +25,7 @@ public partial class Mod
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     [Obsolete("This doesn't do anything")]
     public ModSettings modSettings;
+
     /// <summary>
     /// Constructor DON'T USE
     /// </summary>
@@ -44,34 +34,10 @@ public partial class Mod
     public bool proSettings;
 
     /// <summary>
-    /// Compatibility only: does nothing
-    /// </summary>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public virtual string UpdateLink { get; } = "";
-
-    /// <summary>
     /// Compatibility only: same as OnMenuLoad()
     /// </summary>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public virtual void MenuOnLoad() { }
-
-    /// <summary>
-    /// Compatibility only: same as OnGUI()
-    /// </summary>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public virtual void MenuOnGUI() { }
-
-    /// <summary>
-    /// Compatibility only: same as Update()
-    /// </summary>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public virtual void MenuUpdate() { }
-
-    /// <summary>
-    /// Compatibility only: same as FixedUpdate()
-    /// </summary>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public virtual void MenuFixedUpdate() { }
 
     /// <summary>
     /// Compatibility only: same as SecondPassOnLoad()
@@ -89,19 +55,19 @@ public partial class Mod
     /// </summary>
     /// <example>See: https://docs.unity3d.com/500/Documentation/Manual/GUIScriptingGuide.html
     /// </example>
-    public virtual void OnGUI() { MenuOnGUI(); }
+    public virtual void OnGUI() { }
 
     /// <summary>
     /// Called once every frame
     /// (standard unity Update()).
     /// </summary>
-    public virtual void Update() { MenuUpdate(); }
+    public virtual void Update() { }
 
     /// <summary>
     /// Called once every fixed frame 
     /// (standard unity FixedUpdate()).
     /// </summary>
-    public virtual void FixedUpdate() { MenuFixedUpdate(); }
+    public virtual void FixedUpdate() { }
 
     /// <summary>
     /// Called once in main menu (only when LoadInMenu is true).
