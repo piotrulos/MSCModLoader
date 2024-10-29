@@ -1,12 +1,11 @@
-﻿
-namespace MSCLoader;
+﻿namespace MSCLoader;
 
 /// <summary>
 /// The base mod class, all mods should have this class.
 /// </summary>
 public abstract partial class Mod
 {
-    #if !Mini
+#if !Mini
     /// <summary>
     /// The ID for your mod (This should be unique).
     /// </summary>

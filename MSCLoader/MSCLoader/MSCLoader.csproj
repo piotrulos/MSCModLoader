@@ -180,6 +180,7 @@
     <Compile Include="Settings.cs" />
     <Compile Include="MSCLibrary\GameTime.cs" />
     <Compile Include="MSCLibrary\TimeScheduler.cs" />
+    <Compile Include="Settings.OldStuff.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CoreAssets\core.unity3d" Condition="!$(DefineConstants.Contains('Mini'))" />

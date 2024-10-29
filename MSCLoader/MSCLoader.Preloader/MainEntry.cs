@@ -1,11 +1,11 @@
-﻿using System;
-using System.IO;
-using System.Reflection;
-using Harmony;
-using IniParser.Model;
+﻿using Harmony;
 using IniParser;
+using IniParser.Model;
 using Ionic.Zip;
+using System;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace Doorstop
 {
@@ -35,10 +35,10 @@ namespace MSCLoader.Preloader
             if (File.Exists("MSCLoader_Preloader.txt")) File.Delete("MSCLoader_Preloader.txt");
             MDebug.Init();
             MDebug.Log($"Launch parameters");
-            MDebug.Log($"{string.Join(" ", launchArgs)}",true);
+            MDebug.Log($"{string.Join(" ", launchArgs)}", true);
             ReadSettings();
             if (launchArgs.Contains("-mscloader-disable"))
-            { 
+            {
                 MDebug.Log($"Detected -mscloader-disable flag, exiting...");
                 return;
             }
@@ -142,9 +142,9 @@ namespace MSCLoader.Preloader
             {
                 bool enLog = false;
                 bool skipCfg = false;
-                offset = FindBytes(Path.Combine("", Path.Combine("mysummercar_Data","mainData")), data);
+                offset = FindBytes(Path.Combine("", Path.Combine("mysummercar_Data", "mainData")), data);
 
-                using (FileStream stream = File.OpenRead(Path.Combine("", Path.Combine("mysummercar_Data","mainData"))))
+                using (FileStream stream = File.OpenRead(Path.Combine("", Path.Combine("mysummercar_Data", "mainData"))))
                 {
                     MDebug.Log("Checking output_log status...");
                     stream.Position = offset + 115;
@@ -155,7 +155,7 @@ namespace MSCLoader.Preloader
                 }
                 if (enLog)
                 {
-                    using (FileStream stream = new FileStream(Path.Combine("", Path.Combine("mysummercar_Data","mainData")), FileMode.Open, FileAccess.ReadWrite))
+                    using (FileStream stream = new FileStream(Path.Combine("", Path.Combine("mysummercar_Data", "mainData")), FileMode.Open, FileAccess.ReadWrite))
                     {
                         //output_log.txt
                         MDebug.Log("Enabling output_log...");
@@ -166,7 +166,7 @@ namespace MSCLoader.Preloader
                 }
                 if (cfgScreenSkip != skipCfg)
                 {
-                    using (FileStream stream = new FileStream(Path.Combine("", Path.Combine(@"mysummercar_Data","mainData")), FileMode.Open, FileAccess.ReadWrite))
+                    using (FileStream stream = new FileStream(Path.Combine("", Path.Combine(@"mysummercar_Data", "mainData")), FileMode.Open, FileAccess.ReadWrite))
                     {
                         MDebug.Log("Changing config screen skip...");
                         stream.Position = offset + 96;
@@ -212,7 +212,7 @@ namespace MSCLoader.Preloader
         {
             static void Prefix() => SkipIntro(introSkip);
         }
-        
+
         [HarmonyPatch(typeof(HutongGames.PlayMaker.Actions.MousePickEvent))]
         [HarmonyPatch("DoMousePickEvent")]
         class InjectClickthroughFix
@@ -221,9 +221,9 @@ namespace MSCLoader.Preloader
             {
                 if (UnityEngine.GUIUtility.hotControl != 0)
                 {
-                    return false; 
+                    return false;
                 }
-                if(UnityEngine.EventSystems.EventSystem.current != null)
+                if (UnityEngine.EventSystems.EventSystem.current != null)
                 {
                     if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
                     {

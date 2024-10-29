@@ -97,7 +97,7 @@ public class TimeScheduler : MonoBehaviour
     /// <param name="action">The action to execute</param>
     /// <param name="oneTimeAction">[Optional] Whether the action is ran only once (false on default)</param>
     /// <returns>Scheduled action</returns>
-    public static ScheduledAction ScheduleAction(int hour, int minute, Action action, GameTime.Days day = GameTime.Days.All, bool oneTimeAction = false) 
+    public static ScheduledAction ScheduleAction(int hour, int minute, Action action, GameTime.Days day = GameTime.Days.All, bool oneTimeAction = false)
     {
         ScheduledAction sa;
         ScheduledActions.Add(sa = new ScheduledAction(hour, minute, action, day, oneTimeAction));
@@ -192,11 +192,11 @@ public class TimeScheduler : MonoBehaviour
                 int actionTotalMinutes = CalcTotalMinutes(action.Hour, action.Minute, day);
 
                 // Week rollover
-                if (currentTotalMinutes < sinceTotalMinutes) currentTotalMinutes += 10080;  
-                
+                if (currentTotalMinutes < sinceTotalMinutes) currentTotalMinutes += 10080;
+
                 if (actionTotalMinutes < sinceTotalMinutes) actionTotalMinutes += 10080;
 
-                if (actionTotalMinutes > sinceTotalMinutes && actionTotalMinutes <= currentTotalMinutes) return true; 
+                if (actionTotalMinutes > sinceTotalMinutes && actionTotalMinutes <= currentTotalMinutes) return true;
             }
         }
 

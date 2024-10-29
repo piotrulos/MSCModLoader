@@ -5,18 +5,18 @@ namespace MSCLoader
     /// Base class for console commands
     /// </summary>
     public abstract class ConsoleCommand
-	{
+    {
         internal static ConsoleController cc;
 
-		/// <summary>
-		/// The name of the ConsoleCommand (What the user will have to type in console to trigger the command). Cannot contain spaces!
-		/// </summary>
-		public abstract string Name { get; }
+        /// <summary>
+        /// The name of the ConsoleCommand (What the user will have to type in console to trigger the command). Cannot contain spaces!
+        /// </summary>
+        public abstract string Name { get; }
 
-		/// <summary>
-		/// The help message that will be displayed for the command when the user types "help"
-		/// </summary>
-		public abstract string Help { get; }
+        /// <summary>
+        /// The help message that will be displayed for the command when the user types "help"
+        /// </summary>
+        public abstract string Help { get; }
 
         /// <summary>
         /// Show this command in help screen.
@@ -41,8 +41,8 @@ namespace MSCLoader
         /// </summary>
         /// <param name="cmd">The instance of the command to add.</param>
         public static void Add(ConsoleCommand cmd)
-		{
-            if(string.IsNullOrEmpty(cmd.Alias))
+        {
+            if (string.IsNullOrEmpty(cmd.Alias))
                 cc.RegisterCommand(cmd.Name.ToLower(), cmd.Run, cmd.Help, cmd.ShowInHelp);
             else
                 cc.RegisterCommand(cmd.Name.ToLower(), cmd.Run, cmd.Help, cmd.Alias.ToLower(), cmd.ShowInHelp);

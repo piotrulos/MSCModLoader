@@ -1,6 +1,6 @@
 ﻿global using UnityEngine;
-using HutongGames.PlayMaker;
 #if !Mini
+using HutongGames.PlayMaker;
 using System;
 using Newtonsoft.Json;
 using System.Collections;
@@ -41,7 +41,7 @@ public partial class ModLoader : MonoBehaviour
 
     internal static bool devMode = false;
     internal static string GetMetadataFolder(string fn) => Path.Combine(MetadataFolder, fn);
-   
+
     //Constructor version number
     static ModLoader()
     {
@@ -271,7 +271,7 @@ public partial class ModLoader : MonoBehaviour
         {
             UnpackUpdates();
         }
-        if (launchArgs.Contains("-mscloader-disable")) ModUI.ShowMessage("To use <color=yellow>-mscloader-disable</color> launch option, you need to update core module of MSCLoader, download latest version and launch <color=aqua>MSCPatcher.exe</color> to update","Outdated module");
+        if (launchArgs.Contains("-mscloader-disable")) ModUI.ShowMessage("To use <color=yellow>-mscloader-disable</color> launch option, you need to update core module of MSCLoader, download latest version and launch <color=aqua>MSCPatcher.exe</color> to update", "Outdated module");
     }
     void ContinueInit()
     {
@@ -524,7 +524,7 @@ public partial class ModLoader : MonoBehaviour
         }
         catch (Exception ex)
         {
-            string sp = Path.Combine(SettingsFolder, Path.Combine("MSCLoader_Settings","otk.bin"));
+            string sp = Path.Combine(SettingsFolder, Path.Combine("MSCLoader_Settings", "otk.bin"));
             if (e.Error != null)
             {
                 if (File.Exists(sp))
@@ -652,7 +652,7 @@ public partial class ModLoader : MonoBehaviour
         GameObject mb = GameObject.Instantiate(mbP);
         ModUI.messageBoxCv = mb.GetComponent<MessageBoxesCanvas>();
         DontDestroyOnLoad(mb);
- 
+
         GameObject loading = GameObject.Instantiate(loadingP);
         canvLoading = loading.GetComponent<MSCLoaderCanvasLoading>();
         canvLoading.lHeader.text = $"MSCLOADER <color=green>{MSCLoader_Ver}</color>";
@@ -871,7 +871,7 @@ public partial class ModLoader : MonoBehaviour
         FsmState curLock = curFSM.GetState("Update cursor");
         FsmState curUnLock = curFSM.GetState("In Menu");
         curLock.Actions[2] = new SetMouseCursorFix(true);
-        curUnLock.Actions[1] = new SetMouseCursorFix(false); 
+        curUnLock.Actions[1] = new SetMouseCursorFix(false);
     }
 
     IEnumerator LoadMods()
@@ -1126,7 +1126,7 @@ public partial class ModLoader : MonoBehaviour
         if (!devMode)
         {
 
-            string cleanupLast = Path.Combine(SettingsFolder, Path.Combine("MSCLoader_Settings","lastCleanupCheck"));
+            string cleanupLast = Path.Combine(SettingsFolder, Path.Combine("MSCLoader_Settings", "lastCleanupCheck"));
             if (File.Exists(cleanupLast))
             {
                 string lastCheckS = File.ReadAllText(cleanupLast);
@@ -1277,7 +1277,7 @@ public partial class ModLoader : MonoBehaviour
                         //Do not allow null/empty/whitespace modID.
                         Console.Write("Empty mod ID");
                         continue;
-                    }                    
+                    }
                     isMod = true;
                     if (addRef.Count > 0)
                         LoadMod(m, msVer, file, addRef.ToArray());
@@ -1545,7 +1545,7 @@ public partial class ModLoader : MonoBehaviour
             {
                 string windowsfixed = Sinfo;
                 int build = int.Parse(Sinfo.Split('(')[1].Split(')')[0].Split('.')[2]);
-                if(build > 21999)
+                if (build > 21999)
                 {
                     windowsfixed = $"Windows 11 (10.0.{build})";
                     if (Sinfo.Contains("64bit"))

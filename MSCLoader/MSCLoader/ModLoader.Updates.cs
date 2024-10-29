@@ -43,11 +43,11 @@ public partial class ModLoader : MonoBehaviour
         ModConsole.Print("Unpacking updates...");
         for (int i = 0; i < ModsUpdateDir.Length; i++)
         {
-            UnpackZipFile(ModsUpdateDir[i], ModsFolder); 
+            UnpackZipFile(ModsUpdateDir[i], ModsFolder);
         }
         for (int i = 0; i < RefsUpdateDir.Length; i++)
         {
-            UnpackZipFile(RefsUpdateDir[i], Path.Combine(ModsFolder, "References")); 
+            UnpackZipFile(RefsUpdateDir[i], Path.Combine(ModsFolder, "References"));
         }
         ModUI.ShowMessage("Updating mods finished.", "Update mods");
         ContinueInit();

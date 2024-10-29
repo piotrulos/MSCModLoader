@@ -1,13 +1,12 @@
 #if !Mini
-using System;
 using NAudio.Wave;
 using NVorbis;
+using System;
 using System.IO;
 
 namespace NAudio.Vorbis
 {
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-    public class VorbisWaveReader : WaveStream, ISampleProvider, IWaveProvider
+    internal class VorbisWaveReader : WaveStream, ISampleProvider, IWaveProvider
     {
         private VorbisReader _reader;
         private WaveFormat _waveFormat;
@@ -158,6 +157,5 @@ namespace NAudio.Vorbis
         // </summary>
         public IVorbisStreamStatus[] Stats => _reader.Stats;
     }
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }
 #endif

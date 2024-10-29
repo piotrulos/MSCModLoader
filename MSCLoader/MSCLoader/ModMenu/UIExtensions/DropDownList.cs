@@ -29,7 +29,7 @@ namespace MSCLoader
         private RectTransform _slidingAreaRT;
         //   private RectTransform scrollHandleRT;
         private RectTransform _itemsPanelRT;
-    //	private Canvas _canvas;
+        //	private Canvas _canvas;
         //private RectTransform _canvasRT;
 
         //private ScrollRect _scrollRect;
@@ -82,7 +82,7 @@ namespace MSCLoader
         IEnumerator DelayedUpdate()
         {
             yield return null;
-            UpdateSelected(); 
+            UpdateSelected();
         }
         private bool Initialize()
         {
@@ -245,15 +245,16 @@ namespace MSCLoader
             //update selected index color
             for (int i = 0; i < _itemsPanelRT.childCount; i++)
             {
-                if (_selectedIndex == i) {
-                //	_panelItems[i].btnImg.color = _mainButton.btn.colors.highlightedColor;
+                if (_selectedIndex == i)
+                {
+                    //	_panelItems[i].btnImg.color = _mainButton.btn.colors.highlightedColor;
                     _panelItems[i].btn.transition = Selectable.Transition.None;
 
 
                 }
                 else
                 {
-                //	_panelItems[i].btnImg.color = new Color(0, 0, 0, 255);
+                    //	_panelItems[i].btnImg.color = new Color(0, 0, 0, 255);
                     _panelItems[i].btn.transition = Selectable.Transition.ColorTint;
 
                 }
@@ -269,7 +270,7 @@ namespace MSCLoader
             {
                 _hasDrawnOnce = true;
                 //_mainButton.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, _rectTransform.sizeDelta.x);
-            //	_mainButton.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, _rectTransform.sizeDelta.y);
+                //	_mainButton.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, _rectTransform.sizeDelta.y);
                 //_mainButton.txt.rectTransform.offsetMax = new Vector2(4, 0);
 
                 //_scrollPanelRT.SetParent(transform, true);//break the scroll panel from the overlay
@@ -286,7 +287,7 @@ namespace MSCLoader
 
             if (Items.Count < 1) return;
 
-            float dropdownHeight = (25 * Mathf.Min(_itemsToDisplay, Items.Count))+5;
+            float dropdownHeight = (25 * Mathf.Min(_itemsToDisplay, Items.Count)) + 5;
             _scrollPanelRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, dropdownHeight);
             //_scrollPanelRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, _rectTransform.sizeDelta.x);
             _overlayRT.GetComponent<LayoutElement>().preferredHeight = dropdownHeight;

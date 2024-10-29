@@ -1,6 +1,4 @@
-﻿using MSCLoader;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine.UI;
 
 namespace MSCLoader
 {
@@ -72,7 +70,7 @@ namespace MSCLoader
             SearchBtn.SetActive(false);
             SearchField.SetActive(false);
             Title.gameObject.SetActive(true);
-            Title.text = $"{mod.Name} - Update File".ToUpper();                
+            Title.text = $"{mod.Name} - Update File".ToUpper();
         }
 #endif
         public void CloseView()

@@ -1,16 +1,13 @@
 ﻿#if !Mini
+using NAudio.Wave;
 using System;
 using System.IO;
 using System.Net;
 using System.Threading;
-using NAudio.Wave;
-using UnityEngine;
 
 namespace AudioLibrary.MP3_Streaming
 {
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-
-    public partial class MP3Stream : IDisposable
+    internal partial class MP3Stream : IDisposable
     {
         public enum StreamingPlaybackState
         {
@@ -27,7 +24,7 @@ namespace AudioLibrary.MP3_Streaming
         public volatile StreamingPlaybackState playbackState;
         private volatile bool fullyDownloaded;
         private HttpWebRequest webRequest;
-        private bool subbedToEvent =false;
+        private bool subbedToEvent = false;
         delegate void ShowErrorDelegate(string message);
         public void Dispose()
         {
@@ -134,7 +131,7 @@ namespace AudioLibrary.MP3_Streaming
                     decompressor.Dispose();
                     readFullyStream.Close();
                     readFullyStream.StreamTitleChanged -= ReadFullyStream_StreamTitleChanged; //Unsubscribe title event.
-                    readFullyStream.Dispose(); 
+                    readFullyStream.Dispose();
                 }
             }
             finally
@@ -142,7 +139,7 @@ namespace AudioLibrary.MP3_Streaming
                 if (decompressor != null)
                 {
                     decompressor.Dispose();
-                }                
+                }
             }
         }
 
@@ -260,7 +257,6 @@ namespace AudioLibrary.MP3_Streaming
             }
         }
     }
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
 }
 #endif

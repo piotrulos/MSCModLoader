@@ -1,6 +1,5 @@
 ﻿#if !Mini
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
@@ -29,8 +28,8 @@ public class SettingButton : MonoBehaviour
     public void SettingButtonC(Settings set)
     {
         setting = set;
-        if(set.SettingsElement != null)
-        nameText = set.SettingsElement.settingName;
+        if (set.SettingsElement != null)
+            nameText = set.SettingsElement.settingName;
     }
     public bool suspendActions = false;
     public Button.ButtonClickedEvent OnClick { get => button.onClick; set => button.onClick = value; }

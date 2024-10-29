@@ -1,9 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
 using UnityEngine.UI;
-using System;
 
 namespace MSCLoader
-{  
+{
     internal class ColorSlider : MonoBehaviour
     {
         public ColorPicker hsvpicker;

@@ -4,12 +4,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using UnityEngine;
 
-#pragma warning disable CS1591 
+
 namespace AudioLibrary
 {
-    public class Manager : MonoBehaviour
+    internal class Manager : MonoBehaviour
     {
         private class AudioInstance
         {
@@ -63,7 +62,7 @@ namespace AudioLibrary
         {
             if (!IsSupportedFormat(filePath))
             {
-                System.Console.WriteLine($"Could not load AudioClip at path '{ filePath }' it's extensions marks unsupported format, supported formats are: {string.Join(", ", Enum.GetNames(typeof(AudioFormat)))}");
+                System.Console.WriteLine($"Could not load AudioClip at path '{filePath}' it's extensions marks unsupported format, supported formats are: {string.Join(", ", Enum.GetNames(typeof(AudioFormat)))}");
                 return null;
             }
             AudioClip audioClip;
@@ -99,7 +98,7 @@ namespace AudioLibrary
                         reader.Read(target, 0, target.Length);
                     }, delegate (int target)
                     {
-                        if(audioInstance.channels == 1)
+                        if (audioInstance.channels == 1)
                             reader.Seek(target * 4, SeekOrigin.Begin);
                         else
                             reader.Seek(target * 8, SeekOrigin.Begin);
@@ -307,7 +306,7 @@ namespace AudioLibrary
             {
                 result = (AudioFormat)Enum.Parse(typeof(AudioFormat), GetExtension(filePath), true);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e);
             }
@@ -320,5 +319,5 @@ namespace AudioLibrary
         }
     }
 }
-#pragma warning restore CS1591
+
 #endif

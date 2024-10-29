@@ -8,7 +8,6 @@ using UnityEngine.EventSystems;
 namespace MSCLoader
 {
 
-#pragma warning disable CS1591
     //resize console UI by mouse
     public class ConsoleUIResizer : MonoBehaviour, IDragHandler
     {
@@ -39,7 +38,7 @@ namespace MSCLoader
         }
         public void OnDrag(PointerEventData eventData)
         {
-            #if !Mini
+#if !Mini
             ClampToBorder();
             if (Xresizer)
             {
@@ -161,6 +160,6 @@ namespace MSCLoader
             }
         }
 #endif
-#pragma warning restore CS1591
+
     }
 }

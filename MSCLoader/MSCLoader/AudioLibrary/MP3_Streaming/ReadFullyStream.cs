@@ -5,9 +5,8 @@ using System.Text;
 
 namespace AudioLibrary.MP3_Streaming
 {
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-    public delegate void StreamTitleChangedEventHandler(object sender, StreamTitleChangedEventArgs e);
-    public class StreamTitleChangedEventArgs : EventArgs
+    internal delegate void StreamTitleChangedEventHandler(object sender, StreamTitleChangedEventArgs e);
+    internal class StreamTitleChangedEventArgs : EventArgs
     {
         public readonly string Title;
 
@@ -16,7 +15,7 @@ namespace AudioLibrary.MP3_Streaming
             Title = title;
         }
     }
-    public class ReadFullyStream : Stream
+    internal class ReadFullyStream : Stream
     {
         public int MetaInt;
         private string StreamTitle;
@@ -57,8 +56,8 @@ namespace AudioLibrary.MP3_Streaming
             string newStreamTitle = metaString.Split(new string[] { "';" }, StringSplitOptions.None)[0].Replace("StreamTitle='", string.Empty);
             if (!newStreamTitle.Equals(StreamTitle))
             {
-               StreamTitle = newStreamTitle;
-               OnStreamTitleChanged();
+                StreamTitle = newStreamTitle;
+                OnStreamTitleChanged();
             }
         }
 
@@ -204,7 +203,6 @@ namespace AudioLibrary.MP3_Streaming
         // <param name="count"></param>
         public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
     }
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
 }
 #endif

@@ -2,7 +2,7 @@
 
 internal class References
 {
-    #if !Mini
+#if !Mini
     public string AssemblyID;
     public string AssemblyTitle;
     public string AssemblyDescription;
@@ -13,6 +13,6 @@ internal class References
     public bool Invalid = false;
     public string ExMessage;
     public RefVersion UpdateInfo;
-    #endif
+#endif
 }
 
