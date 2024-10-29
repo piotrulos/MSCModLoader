@@ -1107,10 +1107,10 @@ public partial class ModLoader : MonoBehaviour
         BC_ModList = actualModList.Where(x => !x.newFormat).ToArray();
 
         PLoadMods = BC_ModList.Where(x => CheckEmptyMethod(x, "PreLoad")).ToArray();
-        SecondPassMods = BC_ModList.Where(x => x.SecondPass || CheckEmptyMethod(x, "PostLoad")).ToArray();
-        OnGUImods = BC_ModList.Where(x => CheckEmptyMethod(x, "OnGUI") || CheckEmptyMethod(x, "MenuOnGUI")).ToArray();
-        UpdateMods = BC_ModList.Where(x => CheckEmptyMethod(x, "Update") || CheckEmptyMethod(x, "MenuUpdate")).ToArray();
-        FixedUpdateMods = BC_ModList.Where(x => CheckEmptyMethod(x, "FixedUpdate") || CheckEmptyMethod(x, "MenuFixedUpdate")).ToArray();
+        SecondPassMods = BC_ModList.Where(x => CheckEmptyMethod(x, "PostLoad") || CheckEmptyMethod(x, "SecondPassOnLoad")).ToArray();
+        OnGUImods = BC_ModList.Where(x => CheckEmptyMethod(x, "OnGUI")).ToArray();
+        UpdateMods = BC_ModList.Where(x => CheckEmptyMethod(x, "Update")).ToArray();
+        FixedUpdateMods = BC_ModList.Where(x => CheckEmptyMethod(x, "FixedUpdate")).ToArray();
         OnSaveMods = BC_ModList.Where(x => CheckEmptyMethod(x, "OnSave")).ToArray();
 
         Mod_OnNewGame = actualModList.Where(x => x.newFormat && x.A_OnNewGame != null).ToArray();
