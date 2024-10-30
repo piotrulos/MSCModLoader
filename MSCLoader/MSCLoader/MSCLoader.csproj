@@ -168,6 +168,11 @@
     <Compile Include="ModUI.cs" />
     <Compile Include="ModUIDrag.cs" />
     <Compile Include="ModCallbacks\BC_ModUpdate.cs" />
+    <Compile Include="MSCCoreLibrary\ActionScheduling\GameTime.cs" />
+    <Compile Include="MSCCoreLibrary\ActionScheduling\TimeScheduler.cs" />
+    <Compile Include="MSCCoreLibrary\UnifiedInteractionSystem\Interactable.cs" />
+    <Compile Include="MSCCoreLibrary\UnifiedInteractionSystem\InteractableHandler.cs" />
+    <Compile Include="MSCCoreLibrary\UnifiedInteractionSystem\MSCGUI.cs" />
     <Compile Include="MSCUnloader.cs" />
     <Compile Include="AudioLibrary\NAudio.Vorbis\VorbisWaveReader.cs" />
     <Compile Include="OBJLoader.cs" />
@@ -178,8 +183,6 @@
     <Compile Include="References.cs" />
     <Compile Include="SaveLoad.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="MSCLibrary\GameTime.cs" />
-    <Compile Include="MSCLibrary\TimeScheduler.cs" />
     <Compile Include="Settings.OldStuff.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,20 +1,4 @@
-﻿/*
- * This file is part of MSCLoader
- * 
- *  MSCLoader is is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or any later version.
- *  
- *  MSCLoader is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details. 
- * 
- * You should have received a copy of the GNU General Public License
- * along with MSCLoader. If not, see <http://www.gnu.org/licenses/>.
- */
-
-#if !Mini
+﻿#if !Mini
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -29,15 +13,15 @@ namespace MSCLoader;
 /// </summary>
 public class TimeScheduler : MonoBehaviour
 {
+    /// <summary>
+    /// Event you can subscribe your actions to to execute when time is skipped in any way. Hands over an int value telling the skipped time in minutes
+    /// </summary>
     public static event Action<int> OnTimeSkipped;
 
     static GameObject timeScheduler;
     static bool schedulerInstantiated = false;
     static bool executeActions = false;
 
-    /// <summary>
-    /// Create and init the Action Scheduler (only meant to be called on game scene load)
-    /// </summary>
     internal static void StartScheduler()
     {
         if (schedulerInstantiated) return;
@@ -47,9 +31,7 @@ public class TimeScheduler : MonoBehaviour
         schedulerInstantiated = true;
     }
 
-    /// <summary>
-    /// Disable and destroy the Action Scheduler (only meant to be called on game scene exit)
-    /// </summary>
+
     internal static void StopScheduler()
     {
         if (!schedulerInstantiated) return;
@@ -68,10 +50,15 @@ public class TimeScheduler : MonoBehaviour
     /// </summary>
     public class ScheduledAction
     {
+        /// <summary>Hour (0-23)</summary>
         public int Hour { get; }
+        /// <summary>Minute (0-59)</summary>
         public int Minute { get; }
+        /// <summary>Action to invoke</summary>
         public Action Action { get; }
+        /// <summary>Whether the action is only ran once and then unscheduled or not</summary>
         public bool OneTimeAction { get; }
+        /// <summary>Days the action is invoked on, also can be chained together using bitwise OR</summary>
         public GameTime.Days Day { get; }
 
         internal ScheduledAction(int hour, int minute, Action action, GameTime.Days day, bool oneTimeAction)
@@ -97,7 +84,7 @@ public class TimeScheduler : MonoBehaviour
     /// <param name="action">The action to execute</param>
     /// <param name="oneTimeAction">[Optional] Whether the action is ran only once (false on default)</param>
     /// <returns>Scheduled action</returns>
-    public static ScheduledAction ScheduleAction(int hour, int minute, Action action, GameTime.Days day = GameTime.Days.All, bool oneTimeAction = false)
+    public static ScheduledAction ScheduleAction(int hour, int minute, Action action, GameTime.Days day = GameTime.Days.All, bool oneTimeAction = false) 
     {
         ScheduledAction sa;
         ScheduledActions.Add(sa = new ScheduledAction(hour, minute, action, day, oneTimeAction));
@@ -192,11 +179,11 @@ public class TimeScheduler : MonoBehaviour
                 int actionTotalMinutes = CalcTotalMinutes(action.Hour, action.Minute, day);
 
                 // Week rollover
-                if (currentTotalMinutes < sinceTotalMinutes) currentTotalMinutes += 10080;
-
+                if (currentTotalMinutes < sinceTotalMinutes) currentTotalMinutes += 10080;  
+                
                 if (actionTotalMinutes < sinceTotalMinutes) actionTotalMinutes += 10080;
 
-                if (actionTotalMinutes > sinceTotalMinutes && actionTotalMinutes <= currentTotalMinutes) return true;
+                if (actionTotalMinutes > sinceTotalMinutes && actionTotalMinutes <= currentTotalMinutes) return true; 
             }
         }
 
