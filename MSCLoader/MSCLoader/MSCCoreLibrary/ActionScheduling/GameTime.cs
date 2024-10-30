@@ -1,20 +1,4 @@
-﻿/*
- * This file is part of MSCLoader
- * 
- *  MSCLoader is is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or any later version.
- *  
- *  MSCLoader is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details. 
- * 
- * You should have received a copy of the GNU General Public License
- * along with MSCLoader. If not, see <http://www.gnu.org/licenses/>.
- */
-
-#if !Mini
+﻿#if !Mini
 using HutongGames.PlayMaker;
 using System;
 
@@ -28,8 +12,7 @@ public static class GameTime
     /// <summary>
     /// Enum representing the days of the week from sunday to saturday, also containing <b>Week</b>, <b>Weekend</b>, and <b>All</b>.
     /// </summary>       
-    [Flags]
-    public enum Days
+    [Flags] public enum Days
     {
         Sunday = 1 << 0,
         Monday = 1 << 1,
