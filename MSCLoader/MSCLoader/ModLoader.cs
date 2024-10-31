@@ -1198,6 +1198,8 @@ public partial class ModLoader : MonoBehaviour
                 continue;
             try
             {
+                //TODO: We already know mod that it calls from, so we can pass it now (removes need for this in settings creation)
+
                 if (LoadedMods[i].newSettingsFormat)
                 {
                     if (LoadedMods[i].A_ModSettings != null)
@@ -1210,7 +1212,7 @@ public partial class ModLoader : MonoBehaviour
             }
             catch (Exception e)
             {
-                if (LoadedMods[i].proSettings) System.Console.WriteLine(e);
+                if (LoadedMods[i].proSettings) System.Console.WriteLine(e); // No need to spam console with pro settings errors.
                 else
                 {
                     ModConsole.Error($"Settings error for mod <b>{LoadedMods[i].ID}</b>{Environment.NewLine}<b>Details:</b> {e.Message}");
@@ -1220,7 +1222,7 @@ public partial class ModLoader : MonoBehaviour
                 }
             }
         }
-        ModMenu.LoadSettings();
+        ModMenu.LoadSettings(); //Maybe put that in same loop as load so we don't need do another loop.
     }
 
     private void LoadDLL(string file, byte[] byteFile = null)
