@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 
 namespace MSCLoader;
 
@@ -177,6 +178,7 @@ internal class ModMetadata
         string steamID;
         if (ModLoader.CheckSteam())
         {
+
             steamID = Steamworks.SteamUser.GetSteamID().ToString();
             string dwl = string.Empty;
             WebClient getdwl = new WebClient();
@@ -224,6 +226,11 @@ internal class ModMetadata
     }
     public static void CreateMetadata(Mod mod)
     {
+        if (!ModLoader.CheckSteam())
+        {
+            ModConsole.Error("No valid steam detected");
+            return;
+        }
         string steamID;
         string key;
         string auth = ModLoader.GetMetadataFolder("auth.bin");
@@ -232,93 +239,97 @@ internal class ModMetadata
             ModConsole.Error("No auth key detected. Please set auth first.");
             return;
         }
-        key = File.ReadAllText(auth);
         if (mod.ID.StartsWith("MSCLoader"))
         {
             ModConsole.Error("Not allowed ID pattern, ModID cannot start with MSCLoader.");
             return;
         }
-        if (ModLoader.CheckSteam())
+        try
         {
+            new Version(mod.Version);
+        }
+        catch
+        {
+            ModConsole.Error($"Invalid version: {mod.Version}{Environment.NewLine}Please use proper version format: (0.0 or 0.0.0 or 0.0.0.0)");
+            return;
+        }
+        steamID = Steamworks.SteamUser.GetSteamID().ToString();
+        key = File.ReadAllText(auth);
+        try
+        {
+            ModsManifest mm = new ModsManifest
+            {
+                modID = mod.ID,
+                description = "<i>No description provided...</i>",
+                sign = CalculateFileChecksum(mod.fileName),
+                sid_sign = ModLoader.SidChecksumCalculator(steamID + mod.ID),
+                type = 1
+            };
+            string path = ModLoader.GetMetadataFolder($"{mod.ID}.json");
+            string dwl = string.Empty;
+            Dictionary<string, string> data = new Dictionary<string, string> { { "steamID", steamID }, { "key",key }, { "modID", mm.modID }, { "version", mod.Version }, { "sign", mm.sign }, { "type", "mod" } };
+        
+            System.Collections.Specialized.NameValueCollection modvals = new System.Collections.Specialized.NameValueCollection
+            {
+                { "createData", JsonConvert.SerializeObject(data) }
+            };
+            WebClient getdwl = new WebClient();
+            getdwl.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
             try
             {
-                new Version(mod.Version);
-            }
-            catch
-            {
-                ModConsole.Error($"Invalid version: {mod.Version}{Environment.NewLine}Please use proper version format: (0.0 or 0.0.0 or 0.0.0.0)");
+              //  dwl = getdwl.DownloadString($"{ModLoader.serverURL}/meta_c.php?steam={steamID}&key={key}&modid={mm.modID}&ver={mod.Version}&sign={mm.sign}&sid={mm.sid_sign}");
+              byte[] sas = getdwl.UploadValues($"{ModLoader.serverURL}/mscl_create.php", "POST", modvals);
+              dwl = Encoding.UTF8.GetString(sas, 0, sas.Length);
+                ModConsole.Warning(dwl);
                 return;
-            }
-            steamID = Steamworks.SteamUser.GetSteamID().ToString();
-            try
-            {
-                ModsManifest mm = new ModsManifest
-                {
-                    modID = mod.ID,
-                    description = "<i>No description provided...</i>",
-                    sign = CalculateFileChecksum(mod.fileName),
-                    sid_sign = ModLoader.SidChecksumCalculator(steamID + mod.ID),
-                    type = 1
-                };
-                string path = ModLoader.GetMetadataFolder($"{mod.ID}.json");
-                string dwl = string.Empty;
-                WebClient getdwl = new WebClient();
-                getdwl.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
-                try
-                {
-                    dwl = getdwl.DownloadString($"{ModLoader.serverURL}/meta_c.php?steam={steamID}&key={key}&modid={mm.modID}&ver={mod.Version}&sign={mm.sign}&sid={mm.sid_sign}");
-                }
-                catch (Exception e)
-                {
-                    ModConsole.Error($"Failed to create mod metadata");
-                    Console.WriteLine(e);
-                    return;
-                }
-                string[] result = dwl.Split('|');
-                if (result[0] == "error")
-                {
-                    switch (result[1])
-                    {
-                        case "0":
-                            ModConsole.Error($"Invalid or non existent key");
-                            break;
-                        case "1":
-                            ModConsole.Error($"Database error");
-                            break;
-                        case "2":
-                            ModConsole.Error($"User not found");
-                            break;
-                        case "3":
-                            ModConsole.Error($"This Mod ID already exist in database");
-                            break;
-                        default:
-                            ModConsole.Error($"Unknown error");
-                            break;
-                    }
-                }
-                else if (result[0] == "ok")
-                {
-                    string serializedData = JsonConvert.SerializeObject(mm, Formatting.Indented);
-                    File.WriteAllText(path, serializedData);
-                    ModConsole.Print("<color=lime>Metadata created successfully</color>");
-                    ModConsole.Print("<color=lime>To edit details like description, links, conflicts, etc. go to metadata website.</color>");
-                    ModConsole.Print($"<color=lime>To upload update file just type <b>metadata update {mod.ID}</b>.</color>");
-                    if (!ModLoader.Instance.checkForUpdatesProgress)
-                        ModLoader.Instance.CheckForModsUpd(true);
-                }
-
             }
             catch (Exception e)
             {
-                ModConsole.Error(e.Message);
-                System.Console.WriteLine(e);
+                ModConsole.Error($"Failed to create mod metadata");
+                Console.WriteLine(e);
+                return;
             }
+            string[] result = dwl.Split('|');
+            if (result[0] == "error")
+            {
+                switch (result[1])
+                {
+                    case "0":
+                        ModConsole.Error($"Invalid or non existent key");
+                        break;
+                    case "1":
+                        ModConsole.Error($"Database error");
+                        break;
+                    case "2":
+                        ModConsole.Error($"User not found");
+                        break;
+                    case "3":
+                        ModConsole.Error($"This Mod ID already exist in database");
+                        break;
+                    default:
+                        ModConsole.Error($"Unknown error");
+                        break;
+                }
+            }
+            else if (result[0] == "ok")
+            {
+                string serializedData = JsonConvert.SerializeObject(mm, Formatting.Indented);
+                File.WriteAllText(path, serializedData);
+                ModConsole.Print("<color=lime>Metadata created successfully</color>");
+                ModConsole.Print("<color=lime>To edit details like description, links, conflicts, etc. go to metadata website.</color>");
+                ModConsole.Print($"<color=lime>To upload update file just type <b>metadata update {mod.ID}</b>.</color>");
+                if (!ModLoader.Instance.checkForUpdatesProgress)
+                    ModLoader.Instance.CheckForModsUpd(true);
+            }
+
         }
-        else
+        catch (Exception e)
         {
-            ModConsole.Error("No valid steam detected");
+            ModConsole.Error(e.Message);
+            System.Console.WriteLine(e);
         }
     }
+
     public static void CreateReference(References refs)
     {
         string steamID;
@@ -601,8 +612,6 @@ internal class ModMetadata
                         return;
                 }
             }
-            umm.type = 4;
-
             steamID = Steamworks.SteamUser.GetSteamID().ToString();
             string dwl = string.Empty;
             WebClient getdwl = new WebClient();
