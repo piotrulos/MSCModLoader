@@ -69,8 +69,10 @@ public partial class ModLoader : MonoBehaviour
         bool failed = false;
         yield return new WaitForSeconds(.3f);
         string modlist = string.Join(",", actualModList.Select(x => x.ID).ToArray());
-        System.Collections.Specialized.NameValueCollection modvals = new System.Collections.Specialized.NameValueCollection();
-        modvals.Add("mods", modlist);
+        System.Collections.Specialized.NameValueCollection modvals = new System.Collections.Specialized.NameValueCollection
+        {
+            { "mods", modlist }
+        };
         cfmuInProgress = true;
         WebClient webClient = new WebClient();
         webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
@@ -228,7 +230,7 @@ public partial class ModLoader : MonoBehaviour
             WebClient webClient = new WebClient();
             webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
             webClient.DownloadStringCompleted += cfmuDownloadCompl;
-            webClient.DownloadStringAsync(new Uri($"{metadataURL}/{MetadataUpdateList[i]}"));
+            webClient.DownloadStringAsync(new Uri($"{serverURL}/{metadataURL}/{MetadataUpdateList[i]}"));
             while (cfmuInProgress)
                 yield return null;
             if (cfmuErrored)

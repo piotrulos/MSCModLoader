@@ -62,11 +62,11 @@ public partial class ModLoader
     internal Animation menuInfoAnim;
     internal GUISkin guiskin;
 
-    internal static readonly string serverURL = "http://my-summer-car.ovh"; //Main url
+  //  internal static readonly string serverURL = "http://my-summer-car.ovh"; //Main url
     internal static readonly string serverURL2 = "http://my-summer-car.ml"; //Backup secondary url (if first fails)
-    internal static readonly string metadataURL = "http://my-summer-car.ovh/man_v2";
-    internal static readonly string earlyAccessURL = "http://my-summer-car.ovh/ea_test";
-    // internal static readonly string serverURL = "http://localhost/msc2"; //localhost for testing only
+    internal static readonly string metadataURL = $"man_v2";
+    internal static readonly string earlyAccessURL = $"ea_test";
+    internal static readonly string serverURL = "http://localhost/msc2"; //localhost for testing only
 
 
     internal bool IsModsLoading = false;

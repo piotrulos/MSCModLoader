@@ -1231,14 +1231,17 @@ public partial class ModLoader : MonoBehaviour
         HashSet<string> addRef = new HashSet<string>();
         try
         {
-            Assembly asm = null;
+            Assembly asm = null;         
             if (byteFile == null)
                 asm = Assembly.LoadFrom(file);
             else
                 asm = Assembly.Load(byteFile);
             bool isMod = false;
             AssemblyName[] list = asm.GetReferencedAssemblies();
-
+            string asmGuid = "unknown";
+            if (Attribute.IsDefined(asm, typeof(System.Runtime.InteropServices.GuidAttribute)))
+                asmGuid = ((System.Runtime.InteropServices.GuidAttribute)Attribute.GetCustomAttribute(asm, typeof(System.Runtime.InteropServices.GuidAttribute))).Value;
+            Console.WriteLine($"GUID: {asmGuid}");
             string msVer = null;
             for (int i = 0; i < list.Length; i++)
             {
@@ -1266,10 +1269,15 @@ public partial class ModLoader : MonoBehaviour
             if (!asm.ImageRuntimeVersion.Equals(Assembly.GetExecutingAssembly().ImageRuntimeVersion))
                 ModConsole.Warning($"File <b>{Path.GetFileName(file)}</b> is targeting runtime version <b>{asm.ImageRuntimeVersion}</b> which is different that current running version <b>{Assembly.GetExecutingAssembly().ImageRuntimeVersion}</b>. This may cause unexpected behaviours, check your target assembly.");
 
-            // Look through all public classes                
+            // Look through all public classes
             Type[] asmTypes = asm.GetTypes();
+
             for (int j = 0; j < asmTypes.Length; j++)
             {
+                if(asmTypes[j] == null) continue;
+
+                // Console.WriteLine($"{file} - {asmTypes[j].Name}"); //dbg
+
                 if (asmTypes[j].IsSubclassOf(typeof(Mod)))
                 {
                     Mod m = (Mod)Activator.CreateInstance(asmTypes[j]);
