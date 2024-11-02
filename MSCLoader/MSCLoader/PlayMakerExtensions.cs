@@ -86,6 +86,27 @@ public static class PlayMakerExtensions
     }
 
     /// <summary>
+    /// Get PlayMakerArrayListProxy from this object by Name
+    /// </summary>
+    /// <param name="obj">this game object</param>
+    /// <param name="proxyName">Name of the PlayMakerArrayListProxy</param>
+    /// <returns>PlayMakerArrayListProxy</returns>
+    public static PlayMakerArrayListProxy GetArrayListProxy(this GameObject obj, string proxyName)
+    {
+        PlayMakerArrayListProxy[] components = obj.GetComponents<PlayMakerArrayListProxy>();
+        if (components != null)
+        {
+            PlayMakerArrayListProxy playMakerArrayListProxy = components.FirstOrDefault(e => e.referenceName == proxyName);
+            if (playMakerArrayListProxy != null)
+                return playMakerArrayListProxy;
+            ModConsole.Error(string.Format("GetArrayListProxy: Cannot find <b>{0}</b> in GameObject <b>{1}</b>", proxyName, obj.name));
+            return null;
+        }
+        ModConsole.Error(string.Format("GetArrayListProxy: Cannot find any PlayMakerArrayListProxys in GameObject <b>{0}</b>", obj.name));
+        return null;
+    }
+
+    /// <summary>
     /// Get PlayMaker state from this object by Name
     /// </summary>
     /// <param name="obj">this game object</param>

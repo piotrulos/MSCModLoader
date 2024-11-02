@@ -162,14 +162,14 @@ internal class ModMetadata
             else
             {
                 if (!sl)
-                    ModConsole.Error($"Unknown server respnse");
+                    ModConsole.Error($"Unknown server response");
                 return false;
             }
         }
         else
         {
             if (!sl)
-                ModConsole.Error($"steam auth failed");
+                ModConsole.Error($"Steam auth failed");
             return false;
         }
     }
@@ -221,14 +221,14 @@ internal class ModMetadata
         }
         else
         {
-            ModConsole.Error("No valid steam detected");
+            ModConsole.Error("Steam not detected");
         }
     }
     public static void CreateMetadata(Mod mod)
     {
         if (!ModLoader.CheckSteam())
         {
-            ModConsole.Error("No valid steam detected");
+            ModConsole.Error("Steam not detected");
             return;
         }
         string steamID;
@@ -402,7 +402,7 @@ internal class ModMetadata
         }
         else
         {
-            ModConsole.Error("No valid steam detected");
+            ModConsole.Error("Steam not detected");
         }
     }
 
@@ -410,7 +410,7 @@ internal class ModMetadata
     {
         if (!File.Exists(ModLoader.GetMetadataFolder($"{mod.ID}.json")))
         {
-            ModConsole.Error("Metadata file doesn't exists, to create use create command");
+            ModConsole.Error("Metadata file doesn't exist, to create use <b>metadata create</b> command");
             return;
         }
         try
