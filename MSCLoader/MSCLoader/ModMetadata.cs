@@ -176,59 +176,58 @@ internal class ModMetadata
     public static void AuthMe(string key)
     {
         string steamID;
-        if (ModLoader.CheckSteam())
+        if (!ModLoader.CheckSteam())
         {
-
-            steamID = Steamworks.SteamUser.GetSteamID().ToString();
-            string dwl = string.Empty;
-            WebClient getdwl = new WebClient();
-            getdwl.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
-            try
+            ModConsole.Error($"Steam is required to use this feature");
+            return;
+        }
+        steamID = Steamworks.SteamUser.GetSteamID().ToString();
+        string dwl = string.Empty;
+        WebClient getdwl = new WebClient();
+        getdwl.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
+        try
+        {
+            dwl = getdwl.DownloadString($"{ModLoader.serverURL}/auth.php?steam={steamID}&key={key}");
+        }
+        catch (Exception e)
+        {
+            ModConsole.Error($"Failed to verify key");
+            Console.WriteLine(e);
+        }
+        string[] result = dwl.Split('|');
+        if (result[0] == "error")
+        {
+            //TODO: Update with current error codes 
+            switch (result[1])
             {
-                dwl = getdwl.DownloadString($"{ModLoader.serverURL}/auth.php?steam={steamID}&key={key}");
-            }
-            catch (Exception e)
-            {
-                ModConsole.Error($"Failed to verify key");
-                Console.WriteLine(e);
-            }
-            string[] result = dwl.Split('|');
-            if (result[0] == "error")
-            {
-                switch (result[1])
-                {
-                    case "0":
-                        ModConsole.Error($"Invalid or non existent key");
-                        break;
-                    case "1":
-                        ModConsole.Error($"Database error");
-                        break;
-                    case "2":
-                        ModConsole.Error($"User not found, login on webiste first.");
-                        break;
-                    default:
-                        ModConsole.Error($"Unknown error");
-                        break;
-                }
-            }
-            else if (result[0] == "ok")
-            {
-                string path = ModLoader.GetMetadataFolder("auth.bin");
-                if (File.Exists(path)) File.Delete(path);
-                File.WriteAllText(path, key);
-                ModConsole.Print("<color=lime>Key added successfully</color>");
+                case "0":
+                    ModConsole.Error($"Invalid or non existent key");
+                    break;
+                case "1":
+                    ModConsole.Error($"Database error");
+                    break;
+                case "2":
+                    ModConsole.Error($"User not found, login on webiste first.");
+                    break;
+                default:
+                    ModConsole.Error($"Unknown error");
+                    break;
             }
         }
-        else
+        else if (result[0] == "ok")
         {
-            ModConsole.Error("No valid steam detected");
+            string path = ModLoader.GetMetadataFolder("auth.bin");
+            if (File.Exists(path)) File.Delete(path);
+            File.WriteAllText(path, key);
+            ModConsole.Print("<color=lime>Key added successfully</color>");
         }
+        
     }
     public static void CreateMetadata(Mod mod)
     {
         if (!ModLoader.CheckSteam())
         {
-            ModConsole.Error("No valid steam detected");
+            ModConsole.Error($"Steam is required to use this feature");
             return;
         }
         string steamID;
@@ -267,19 +266,20 @@ internal class ModMetadata
             };
             string path = ModLoader.GetMetadataFolder($"{mod.ID}.json");
             string dwl = string.Empty;
-            Dictionary<string, string> data = new Dictionary<string, string> { { "steamID", steamID }, { "key",key }, { "modID", mm.modID }, { "version", mod.Version }, { "sign", mm.sign }, { "type", "mod" } };
+            Dictionary<string, string> data = new Dictionary<string, string> { { "steamID", steamID }, { "key",key }, { "resID", mm.modID }, { "version", mod.Version }, { "sign", mm.sign }, { "type", "mod" } };
         
             System.Collections.Specialized.NameValueCollection modvals = new System.Collections.Specialized.NameValueCollection
             {
-                { "createData", JsonConvert.SerializeObject(data) }
+                { "msclData", JsonConvert.SerializeObject(data) }
             };
+            /////////////// TODO: Make this separate func.
             WebClient getdwl = new WebClient();
             getdwl.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
             try
             {
-              //  dwl = getdwl.DownloadString($"{ModLoader.serverURL}/meta_c.php?steam={steamID}&key={key}&modid={mm.modID}&ver={mod.Version}&sign={mm.sign}&sid={mm.sid_sign}");
-              byte[] sas = getdwl.UploadValues($"{ModLoader.serverURL}/mscl_create.php", "POST", modvals);
-              dwl = Encoding.UTF8.GetString(sas, 0, sas.Length);
+                //  dwl = getdwl.DownloadString($"{ModLoader.serverURL}/meta_c.php?steam={steamID}&key={key}&modid={mm.modID}&ver={mod.Version}&sign={mm.sign}&sid={mm.sid_sign}");
+                byte[] sas = getdwl.UploadValues($"{ModLoader.serverURL}/mscl_create.php", "POST", modvals);
+                dwl = Encoding.UTF8.GetString(sas, 0, sas.Length);
                 ModConsole.Warning(dwl);
                 return;
             }
@@ -289,6 +289,7 @@ internal class ModMetadata
                 Console.WriteLine(e);
                 return;
             }
+            ///////////////
             string[] result = dwl.Split('|');
             if (result[0] == "error")
             {
