@@ -177,6 +177,7 @@
     <Compile Include="MSCCoreLibrary\UnifiedInteractionSystem\Interactable.cs" />
     <Compile Include="MSCCoreLibrary\UnifiedInteractionSystem\InteractableHandler.cs" />
     <Compile Include="MSCCoreLibrary\UnifiedInteractionSystem\MSCGUI.cs" />
+    <Compile Include="MSCLInternal.cs" />
     <Compile Include="MSCUnloader.cs" />
     <Compile Include="AudioLibrary\NAudio.Vorbis\VorbisWaveReader.cs" />
     <Compile Include="OBJLoader.cs" />
