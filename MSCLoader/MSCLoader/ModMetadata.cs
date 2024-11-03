@@ -128,8 +128,7 @@ internal class ModMetadata
             return false;
         }
         key = File.ReadAllText(auth);
-        string response = string.Empty;
-        response = MSCLInternal.MSCLDataRequest("mscl_owner.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key }, { "resID", ID }, { "type", reference ? "reference" : "mod" } });
+        string response = MSCLInternal.MSCLDataRequest("mscl_owner.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key }, { "resID", ID }, { "type", reference ? "reference" : "mod" } });
         string[] result = response.Split('|');
         switch (result[0])
         {
@@ -153,8 +152,7 @@ internal class ModMetadata
             return;
         }
         string steamID = Steamworks.SteamUser.GetSteamID().ToString();
-        string response = string.Empty;
-        response = MSCLInternal.MSCLDataRequest("mscl_auth.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key } });
+        string response = MSCLInternal.MSCLDataRequest("mscl_auth.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key } });
         string[] result = response.Split('|');
         switch (result[0])
         {
@@ -205,8 +203,7 @@ internal class ModMetadata
             type = 1
         };
         string path = ModLoader.GetMetadataFolder($"{mod.ID}.json");
-        string response = string.Empty;
-        response = MSCLInternal.MSCLDataRequest("mscl_create.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key }, { "resID", mscldata.modID }, { "version", mod.Version }, { "sign", mscldata.sign }, { "type", "mod" } });
+        string response = MSCLInternal.MSCLDataRequest("mscl_create.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key }, { "resID", mscldata.modID }, { "version", mod.Version }, { "sign", mscldata.sign }, { "type", "mod" } });
 
         string[] result = response.Split('|');
         switch (result[0])
@@ -251,10 +248,7 @@ internal class ModMetadata
         }
         if (!MSCLInternal.ValidateVersion(refs.AssemblyFileVersion)) return;
         key = File.ReadAllText(auth);
-
-
-        string response = string.Empty;
-        response = MSCLInternal.MSCLDataRequest("mscl_create.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key }, { "resID", refs.AssemblyID }, { "version", refs.AssemblyFileVersion }, { "type", "reference" } });
+        string response = MSCLInternal.MSCLDataRequest("mscl_create.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key }, { "resID", refs.AssemblyID }, { "version", refs.AssemblyFileVersion }, { "type", "reference" } });
 
         string[] result = response.Split('|');
         switch (result[0])
@@ -311,7 +305,7 @@ internal class ModMetadata
             Version v1 = new Version(mod.Version);
             Version v2 = new Version(mod.UpdateInfo.mod_version);
             if(v1.ToString() != mod.Version)
-                ModConsole.Warning($"Your set mod version <b>{mod.Version}</b> is actually read as <b>{v1.ToString()}</b>. Rememeber that stuff like leading zeros are ignored during version compare. You can ignore this warning if you want, this is just reminder.");
+                ModConsole.Warning($"Your set mod version <b>{mod.Version}</b> is actually read as <b>{v1}</b>. Rememeber that stuff like leading zeros are ignored during version compare. You can ignore this warning if you want, this is just reminder.");
             switch (v1.CompareTo(v2))
             {
                 case 0:
@@ -435,14 +429,14 @@ internal class ModMetadata
         ModLoader.Instance.UploadFileUpdate(refs.AssemblyID, key, true);
 
     }
-    public static void UpdateVersionNumber(Mod mod)
+    public static void UpdateModVersionNumber(Mod mod)
     {
         if (!ModLoader.CheckSteam())
         {
             ModConsole.Error($"Steam is required to use this feature");
             return;
         }
-        ModConsole.Print("Updating metadata version...");
+        ModConsole.Print("Updating version number...");
         string steamID = Steamworks.SteamUser.GetSteamID().ToString();
         string key;
         string auth = ModLoader.GetMetadataFolder("auth.bin");
@@ -477,9 +471,8 @@ internal class ModMetadata
                 return;
         }
 
-        steamID = Steamworks.SteamUser.GetSteamID().ToString();
-        string response = string.Empty;
-        response = MSCLInternal.MSCLDataRequest("mscl_setversion.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key }, { "resID", mod.ID }, { "version", mod.Version }, { "sign", umm.sign }, { "type", "mod" } });
+        
+        string response = MSCLInternal.MSCLDataRequest("mscl_setversion.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key }, { "resID", mod.ID }, { "version", mod.Version }, { "sign", umm.sign }, { "type", "mod" } });
 
         string[] result = response.Split('|');
         switch (result[0])
@@ -491,7 +484,7 @@ internal class ModMetadata
                 string metadataFile = ModLoader.GetMetadataFolder($"{mod.ID}.json");
                 string serializedData = JsonConvert.SerializeObject(umm, Formatting.Indented);
                 File.WriteAllText(metadataFile, serializedData);
-                ModConsole.Print("<color=lime>Metadata file updated successfully!</color>");
+                ModConsole.Print("<color=lime>Mod version number updated successfully!</color>");
                 if (!ModLoader.Instance.checkForUpdatesProgress)
                     ModLoader.Instance.CheckForModsUpd(true);
                 break;
@@ -502,9 +495,14 @@ internal class ModMetadata
     }
     public static void UpdateVersionNumberRef(string ID)
     {
+        if (!ModLoader.CheckSteam())
+        {
+            ModConsole.Error($"Steam is required to use this feature");
+            return;
+        }
         References refs = ModLoader.Instance.ReferencesList.Where(w => w.AssemblyID == ID).FirstOrDefault();
-        ModConsole.Print("Updating version...");
-        string steamID;
+        ModConsole.Print("Updating version number...");
+        string steamID = Steamworks.SteamUser.GetSteamID().ToString();
         string key;
         string auth = ModLoader.GetMetadataFolder("auth.bin");
         if (!File.Exists(auth))
@@ -512,63 +510,23 @@ internal class ModMetadata
             ModConsole.Error("No auth key detected. Please set auth first.");
             return;
         }
-        if (!VerifyOwnership(ID, true))
-            return;
+        if (!VerifyOwnership(ID, true)) return;
         key = File.ReadAllText(auth);
-        if (ModLoader.CheckSteam())
+        string response = MSCLInternal.MSCLDataRequest("mscl_setversion.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key }, { "resID",ID }, { "version", refs.AssemblyFileVersion }, { "type", "reference" } });      
+        string[] result = response.Split('|');
+        switch (result[0])
         {
-            steamID = Steamworks.SteamUser.GetSteamID().ToString();
-            string dwl = string.Empty;
-            WebClient getdwl = new WebClient();
-            getdwl.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
-            try
-            {
-                dwl = getdwl.DownloadString($"{ModLoader.serverURL}/meta_vr.php?steam={steamID}&key={key}&refid={ID}&ver={refs.AssemblyFileVersion}&type=1");
-            }
-            catch (Exception e)
-            {
-                ModConsole.Error($"Failed to verify key");
-                Console.WriteLine(e);
-            }
-            string[] result = dwl.Split('|');
-            if (result[0] == "error")
-            {
-                switch (result[1])
-                {
-                    case "0":
-                        ModConsole.Error($"Invalid or non existent key");
-                        break;
-                    case "1":
-                        ModConsole.Error($"Database error");
-                        break;
-                    case "2":
-                        ModConsole.Error($"User not found");
-                        break;
-                    case "3":
-                        ModConsole.Error($"This Reference ID doesn't exist in database");
-                        break;
-                    case "4":
-                        ModConsole.Error($"This is not your Reference.");
-                        break;
-                    default:
-                        ModConsole.Error($"Unknown error");
-                        break;
-                }
-            }
-            else if (result[0] == "ok")
-            {
-                ModConsole.Print("<color=lime>Reference info updated successfully!</color>");
+            case "error":
+                ModConsole.Error(result[1]);
+                break;
+            case "ok":
+                ModConsole.Print("<color=lime>Reference version number updated successfully!</color>");
                 if (!ModLoader.Instance.checkForUpdatesProgress)
                     ModLoader.Instance.CheckForModsUpd(true);
-            }
-            else
-            {
-                ModConsole.Error("Unknown response");
-            }
-        }
-        else
-        {
-            ModConsole.Error("Steam auth failed");
+                break;
+            default:
+                Console.WriteLine($"Invalid resposne: {response}"); //Log invalid response to output_log.txt
+                break;
         }
     }
     internal static void ReadUpdateInfo(ModVersions mv)
@@ -738,6 +696,7 @@ internal class ModMetadata
     {
         if (mod.metadata == null)
             return;
+        DownloadModIcon(mod.metadata);
         if (mod.metadata.type == 9)
         {
             //Disabled by reason
@@ -762,31 +721,15 @@ internal class ModMetadata
         }
         if (mod.metadata.type == 3)
         {
-            if (!ModLoader.CheckSteam())
+            if (mod.metadata.sign != CalculateFileChecksum(mod.fileName))
             {
-                if (mod.metadata.sign != CalculateFileChecksum(mod.fileName))
-                {
-                    if (!VerifyOwnership(mod.ID, false, true))
-                        CheckForUpdatedDescription(mod);
-                }
+                if (!VerifyOwnership(mod.ID, false, true))
+                    CheckForUpdatedDescription(mod);
             }
             mod.metadata.type = 4;
         }
         if (mod.metadata.type == 1 || mod.metadata.type == 4 || mod.metadata.type == 6)
         {
-            if (!string.IsNullOrEmpty(mod.metadata.icon.iconFileName))
-            {
-                if (mod.metadata.icon.isIconRemote)
-                {
-                    if (!File.Exists(Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", mod.metadata.icon.iconFileName))))
-                    {
-                        WebClient webClient = new WebClient();
-                        webClient.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
-                        webClient.DownloadFileCompleted += ModIcon_DownloadCompleted;
-                        webClient.DownloadFileAsync(new Uri($"{ModLoader.serverURL}/images/modicons/{mod.metadata.icon.iconFileName}"), Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", mod.metadata.icon.iconFileName)));
-                    }
-                }
-            }
             if (mod.metadata.minimumRequirements.MSCbuildID > 0)
             {
                 try
@@ -826,10 +769,10 @@ internal class ModMetadata
                     }
                 }
             }
-            if (!string.IsNullOrEmpty(mod.metadata.modConflicts.modIDs))
+            if (mod.metadata.modConflicts.modIDs.Count > 0)
             {
-                string[] modIDs = mod.metadata.modConflicts.modIDs.Trim().Split(',');
-                for (int i = 0; i < modIDs.Length; i++)
+                List<string> modIDs = mod.metadata.modConflicts.modIDs;
+                for (int i = 0; i < modIDs.Count; i++)
                 {
                     if (ModLoader.GetMod(modIDs[i], true) != null)
                     {
@@ -851,7 +794,7 @@ internal class ModMetadata
                     }
                 }
             }
-            if (!string.IsNullOrEmpty(mod.metadata.requiredMods.modID))
+          /*  if (!string.IsNullOrEmpty(mod.metadata.requiredMods.modID))
             {
                 string[] modIDs = mod.metadata.requiredMods.modID.Trim().Split(',');
                 string[] modIDvers = mod.metadata.requiredMods.minVer.Trim().Split(',');
@@ -888,6 +831,22 @@ internal class ModMetadata
                         }
                     }
                 }
+            }*/
+        }
+    }
+
+    private static void DownloadModIcon(MSCLData data)
+    {
+        if (!string.IsNullOrEmpty(data.icon))
+        {
+            if (!File.Exists(Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", data.icon))))
+            {
+                using (WebClient webClient = new WebClient())
+                {
+                    webClient.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
+                    webClient.DownloadFileCompleted += (sender, e) => { if (e.Error != null) Console.WriteLine(e.Error); };
+                    webClient.DownloadFileAsync(new Uri($"{ModLoader.serverURL}/images/modicons/{data.icon}"), Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", data.icon)));
+                }
             }
         }
     }
@@ -912,13 +871,13 @@ internal class ModMetadata
         ModUI.ShowMessage($"<color=yellow>{m.ID}</color> - Fatal crash when trying to read mod data.{Environment.NewLine}{Environment.NewLine}Error details: {Environment.NewLine}<color=aqua>{new BadImageFormatException().Message}</color>", "Crashed");
     }
 
-    internal static ModsManifest LoadMetadata(Mod mod)
+    internal static MSCLData LoadMetadata(Mod mod)
     {
         string metadataFile = ModLoader.GetMetadataFolder($"{mod.ID}.json");
         if (File.Exists(metadataFile))
         {
             string s = File.ReadAllText(metadataFile);
-            return JsonConvert.DeserializeObject<ModsManifest>(s);
+            return JsonConvert.DeserializeObject<MSCLData>(s);
         }
         return null;
     }
@@ -952,11 +911,7 @@ internal class ModMetadata
             }
         }
     }
-    private static void ModIcon_DownloadCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
-    {
-        if (e.Error != null)
-            System.Console.WriteLine(e.Error);
-    }
+
     static bool showedMissingModMessage = false;
     static void OpenRequiredDownloadPage(string m)
     {

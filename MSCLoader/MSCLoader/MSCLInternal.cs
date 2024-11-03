@@ -25,18 +25,20 @@ internal class MSCLInternal
     {
         System.Collections.Specialized.NameValueCollection msclData = new System.Collections.Specialized.NameValueCollection { { "msclData", JsonConvert.SerializeObject(data) } };
         string response = "";
-        WebClient MSCLDconn = new WebClient();
-        MSCLDconn.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
-        try
+        using (WebClient MSCLDconn = new WebClient())
         {
-            byte[] sas = MSCLDconn.UploadValues($"{ModLoader.serverURL}/{reqPath}", "POST", msclData);
-            response = Encoding.UTF8.GetString(sas, 0, sas.Length);
-        }
-        catch (Exception e)
-        {
-            ModConsole.Error($"Request failed with error: {e.Message}");
-            Console.WriteLine(e);
-            response = "error";
+            MSCLDconn.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
+            try
+            {
+                byte[] raw = MSCLDconn.UploadValues($"{ModLoader.serverURL}/{reqPath}", "POST", msclData);
+                response = Encoding.UTF8.GetString(raw, 0, raw.Length);
+            }
+            catch (Exception e)
+            {
+                ModConsole.Error($"Request failed with error: {e.Message}");
+                Console.WriteLine(e);
+                response = "error";
+            }
         }
         ModConsole.Warning(response); //TODO: debug remove this
         return response;

@@ -64,7 +64,7 @@ public partial class ModLoader
 
   //  internal static readonly string serverURL = "http://my-summer-car.ovh"; //Main url
     internal static readonly string serverURL2 = "http://my-summer-car.ml"; //Backup secondary url (if first fails)
-    internal static readonly string metadataURL = $"man_v2";
+    internal static readonly string metadataURL = $"man.php?v=3&modid=";
     internal static readonly string earlyAccessURL = $"ea_test";
     internal static readonly string serverURL = "http://localhost/msc2"; //localhost for testing only
 

@@ -61,7 +61,6 @@ internal class ModMenu : Mod
         Settings.AddHeader(this, "MSCLoader Credits", Color.black);
         Settings.AddText(this, "All source code contributors and used libraries are listed on GitHub");
         Settings.AddText(this, "Non-GitHub contributions:");
-        Settings.AddText(this, "<color=aqua>Horsey4</color> - Early Access feature backend code.");
         Settings.AddText(this, "<color=aqua>BrennFuchS</color> - New default mod icon and expanded PlayMaker extensions.");
 
         Settings.AddHeader(this, "Detailed Version Information", new Color32(0, 128, 0, 255));
@@ -74,15 +73,11 @@ internal class ModMenu : Mod
             $"<color=yellow>NAudio (Flac)</color>: <color=aqua>v{System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "NAudio.Flac.dll")).FileVersion}</color>{Environment.NewLine}" +
             $"<color=yellow>Newtonsoft.Json</color>: <color=aqua>v{System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "Newtonsoft.Json.dll")).FileVersion}</color>{Environment.NewLine}" +
             $"<color=yellow>INIFileParser</color>: <color=aqua>v{System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "INIFileParser.dll")).FileVersion}</color>");
-
-
     }
 
     private void Mod_SettingsLoaded()
     {
-
         IniData ini = new FileIniDataParser().ReadFile("doorstop_config.ini");
-        ini.Configuration.AssigmentSpacer = "";
         string skipIntro = ini["MSCLoader"]["skipIntro"];
         string skipCfg = ini["MSCLoader"]["skipConfigScreen"];
         bool introSkip, configSkip;
@@ -116,7 +111,6 @@ internal class ModMenu : Mod
     {
         FileIniDataParser parser = new FileIniDataParser();
         IniData ini = parser.ReadFile("doorstop_config.ini");
-        ini.Configuration.AssigmentSpacer = "";
         ini["MSCLoader"]["skipIntro"] = skipGameIntro.GetValue().ToString().ToLower();
         parser.WriteFile("doorstop_config.ini", ini, System.Text.Encoding.ASCII);
     }
@@ -130,7 +124,6 @@ internal class ModMenu : Mod
         }
         FileIniDataParser parser = new FileIniDataParser();
         IniData ini = parser.ReadFile("doorstop_config.ini");
-        ini.Configuration.AssigmentSpacer = "";
         ini["MSCLoader"]["skipConfigScreen"] = skipConfigScreen.GetValue().ToString().ToLower();
         parser.WriteFile("doorstop_config.ini", ini, System.Text.Encoding.ASCII);
     }

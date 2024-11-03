@@ -247,15 +247,15 @@ public partial class ModLoader : MonoBehaviour
                         switch (ed[1])
                         {
                             case "0":
-                                System.Console.WriteLine("No metadata for " + MetadataUpdateList[i]);
+                                Console.WriteLine("No metadata for " + MetadataUpdateList[i]);
                                 yield return null;
                                 continue;
                             case "1":
-                                System.Console.WriteLine("Database connection problem");
+                                Console.WriteLine("Database connection problem");
                                 yield return null;
                                 continue;
                             default:
-                                System.Console.WriteLine("Unknown error.");
+                                Console.WriteLine("Unknown error.");
                                 yield return null;
                                 continue;
                         }
@@ -273,7 +273,7 @@ public partial class ModLoader : MonoBehaviour
                     catch (Exception e)
                     {
                         ModConsole.Error(e.Message);
-                        System.Console.WriteLine(e);
+                        Console.WriteLine(e);
 
                     }
                     yield return null;
@@ -281,7 +281,7 @@ public partial class ModLoader : MonoBehaviour
                 }
                 else
                 {
-                    System.Console.WriteLine("Unknown response: " + cfmuResult);
+                    Console.WriteLine("Unknown response: " + cfmuResult);
                     yield return null;
                     continue;
                 }
@@ -448,7 +448,7 @@ public partial class ModLoader : MonoBehaviour
                     if (isRef)
                         ModMetadata.UpdateVersionNumberRef(ID);
                     else
-                        ModMetadata.UpdateVersionNumber(GetMod(ID, true));
+                        ModMetadata.UpdateModVersionNumber(GetMod(ID, true));
                 }
             }
         }

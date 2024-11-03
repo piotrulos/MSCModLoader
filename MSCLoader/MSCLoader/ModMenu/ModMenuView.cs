@@ -189,35 +189,35 @@ internal class ModMenuView : MonoBehaviour
         else
         {
             SettingsGroup header2 = CreateHeader(listView.transform, "Website Links", Color.yellow);
-            if (string.IsNullOrEmpty(mod.metadata.links.nexusLink) && string.IsNullOrEmpty(mod.metadata.links.rdLink) && string.IsNullOrEmpty(mod.metadata.links.githubLink))
+            if (string.IsNullOrEmpty(mod.metadata.links[0]) && string.IsNullOrEmpty(mod.metadata.links[1]) && string.IsNullOrEmpty(mod.metadata.links[2]))
             {
                 CreateText(header2.HeaderListView.transform, $"<color=yellow>This mod doesn't contain links</color>");
             }
             else
             {
-                if (!string.IsNullOrEmpty(mod.metadata.links.nexusLink))
+                if (!string.IsNullOrEmpty(mod.metadata.links[0]))
                 {
                     SettingsElement nexusBtn = CreateButton(header2.HeaderListView.transform, "SHOW ON <color=orange>NEXUSMODS.COM</color>", Color.white, new Color32(2, 35, 60, 255));
                     nexusBtn.settingName.alignment = TextAnchor.MiddleLeft;
                     nexusBtn.iconElement.texture = nexusBtn.iconPack[1];
                     nexusBtn.iconElement.gameObject.SetActive(true);
-                    nexusBtn.button.onClick.AddListener(() => OpenModLink(mod.metadata.links.nexusLink));
+                    nexusBtn.button.onClick.AddListener(() => OpenModLink(mod.metadata.links[0]));
                 }
-                if (!string.IsNullOrEmpty(mod.metadata.links.rdLink))
+                if (!string.IsNullOrEmpty(mod.metadata.links[1]))
                 {
                     SettingsElement rdBtn = CreateButton(header2.HeaderListView.transform, "SHOW ON <color=orange>RACEDEPARTMENT.COM</color>", Color.white, new Color32(2, 35, 49, 255));
                     rdBtn.settingName.alignment = TextAnchor.MiddleLeft;
                     rdBtn.iconElement.texture = rdBtn.iconPack[0];
                     rdBtn.iconElement.gameObject.SetActive(true);
-                    rdBtn.button.onClick.AddListener(() => OpenModLink(mod.metadata.links.rdLink));
+                    rdBtn.button.onClick.AddListener(() => OpenModLink(mod.metadata.links[1]));
                 }
-                if (!string.IsNullOrEmpty(mod.metadata.links.githubLink))
+                if (!string.IsNullOrEmpty(mod.metadata.links[2]))
                 {
                     SettingsElement ghBtn = CreateButton(header2.HeaderListView.transform, "SHOW ON <color=orange>GITHUB.COM</color>", Color.white, Color.black);
                     ghBtn.settingName.alignment = TextAnchor.MiddleLeft;
                     ghBtn.iconElement.texture = ghBtn.iconPack[2];
                     ghBtn.iconElement.gameObject.SetActive(true);
-                    ghBtn.button.onClick.AddListener(() => OpenModLink(mod.metadata.links.githubLink));
+                    ghBtn.button.onClick.AddListener(() => OpenModLink(mod.metadata.links[2]));
                 }
             }
             SettingsGroup header3 = CreateHeader(listView.transform, "Description", Color.yellow);
@@ -331,7 +331,7 @@ internal class ModMenuView : MonoBehaviour
         SettingsElement uploadBtn2 = CreateButton(header4.HeaderListView.transform, "Update Mod version only", Color.white, Color.black);
         uploadBtn2.button.onClick.AddListener(delegate
         {
-            ModMetadata.UpdateVersionNumber(mod);
+            ModMetadata.UpdateModVersionNumber(mod);
         });
     }
     internal static void OpenModLink(string url)

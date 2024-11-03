@@ -63,14 +63,14 @@ namespace MSCLoader
                         if (string.IsNullOrEmpty(mod.Description))
                             Description.text = mod.metadata.description;
                     }
-                    if (!string.IsNullOrEmpty(mod.metadata.icon.iconFileName))
+                    if (!string.IsNullOrEmpty(mod.metadata.icon))
                     {
-                        if (File.Exists(Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", mod.metadata.icon.iconFileName))))
+                        if (File.Exists(Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", mod.metadata.icon))))
                         {
                             try
                             {
                                 Texture2D t2d = new Texture2D(1, 1);
-                                t2d.LoadImage(File.ReadAllBytes(Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", mod.metadata.icon.iconFileName))));
+                                t2d.LoadImage(File.ReadAllBytes(Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", mod.metadata.icon))));
                                 icon.texture = t2d;
                             }
                             catch (Exception e)
@@ -261,19 +261,19 @@ namespace MSCLoader
                     if (string.IsNullOrEmpty(mod.Description))
                         Description.text = mod.metadata.description;
                 }
-                if (!string.IsNullOrEmpty(mod.metadata.links.nexusLink))
+                if (!string.IsNullOrEmpty(mod.metadata.links[0]))
                 {
-                    OpenDownloadWebsiteBtn.onClick.AddListener(() => Application.OpenURL(mod.metadata.links.nexusLink));
+                    OpenDownloadWebsiteBtn.onClick.AddListener(() => Application.OpenURL(mod.metadata.links[0]));
                     MoreInfoBtn.onClick.AddListener(() => ShowChangelog(mod.ID, mod.UpdateInfo.mod_version, mod.Name));
                 }
-                else if (!string.IsNullOrEmpty(mod.metadata.links.githubLink))
+                else if (!string.IsNullOrEmpty(mod.metadata.links[2]))
                 {
-                    OpenDownloadWebsiteBtn.onClick.AddListener(() => Application.OpenURL(mod.metadata.links.githubLink));
+                    OpenDownloadWebsiteBtn.onClick.AddListener(() => Application.OpenURL(mod.metadata.links[2]));
                     MoreInfoBtn.gameObject.SetActive(false);
                 }
-                else if (!string.IsNullOrEmpty(mod.metadata.links.rdLink))
+                else if (!string.IsNullOrEmpty(mod.metadata.links[1]))
                 {
-                    OpenDownloadWebsiteBtn.onClick.AddListener(() => Application.OpenURL(mod.metadata.links.rdLink));
+                    OpenDownloadWebsiteBtn.onClick.AddListener(() => Application.OpenURL(mod.metadata.links[1]));
                     MoreInfoBtn.gameObject.SetActive(false);
                 }
                 else
@@ -281,20 +281,20 @@ namespace MSCLoader
                     OpenDownloadWebsiteBtn.gameObject.SetActive(false);
                     MoreInfoBtn.gameObject.SetActive(false);
                 }
-                if (!string.IsNullOrEmpty(mod.metadata.icon.iconFileName))
+                if (!string.IsNullOrEmpty(mod.metadata.icon))
                 {
-                    if (File.Exists(Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", mod.metadata.icon.iconFileName))))
+                    if (File.Exists(Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", mod.metadata.icon))))
                     {
                         try
                         {
                             Texture2D t2d = new Texture2D(1, 1);
-                            t2d.LoadImage(File.ReadAllBytes(Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", mod.metadata.icon.iconFileName))));
+                            t2d.LoadImage(File.ReadAllBytes(Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", mod.metadata.icon))));
                             icon.texture = t2d;
                         }
                         catch (Exception e)
                         {
                             ModConsole.Error(e.Message);
-                            System.Console.WriteLine(e);
+                            Console.WriteLine(e);
                         }
                     }
                 }
@@ -312,7 +312,7 @@ namespace MSCLoader
                     catch (Exception e)
                     {
                         ModConsole.Error(e.Message);
-                        System.Console.WriteLine(e);
+                        Console.WriteLine(e);
                     }
 
                 }
