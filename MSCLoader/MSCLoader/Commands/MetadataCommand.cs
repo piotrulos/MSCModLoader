@@ -29,7 +29,7 @@ internal class MetadataCommand : ConsoleCommand
                     }
                     if (mod != null)
                     {
-                        ModMetadata.CreateMetadata(mod);
+                        ModMetadata.CreateModMetadata(mod);
                     }
                     else
                     {
@@ -39,7 +39,7 @@ internal class MetadataCommand : ConsoleCommand
                 case "create_ref":
                     if (refs != null)
                     {
-                        ModMetadata.CreateReference(refs);
+                        ModMetadata.CreateReferenceMetadata(refs);
                     }
                     else
                     {
