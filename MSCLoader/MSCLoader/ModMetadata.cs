@@ -1,4 +1,4 @@
-﻿#if !Mini
+#if !Mini
 using Ionic.Zip;
 using Newtonsoft.Json;
 using System;
@@ -172,7 +172,6 @@ internal class ModMetadata
                 break;
 
         }
-
     }
 
     public static void CreateModMetadata(Mod mod)
