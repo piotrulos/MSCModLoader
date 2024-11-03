@@ -111,7 +111,6 @@ namespace MSCLoader.Preloader
                 if (File.Exists("ModLoaderSettings.ini")) //Pro crap
                     File.Delete("ModLoaderSettings.ini");
                 IniData ini = new FileIniDataParser().ReadFile("doorstop_config.ini");
-                ini.Configuration.AssigmentSpacer = "";
                 cfg = ini["MSCLoader"]["mods"];
                 string skipIntro = ini["MSCLoader"]["skipIntro"];
                 if (!bool.TryParse(skipIntro, out introSkip))

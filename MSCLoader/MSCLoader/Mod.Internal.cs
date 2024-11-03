@@ -79,7 +79,7 @@ public partial class Mod
     internal int modErrors = 0;
     internal string compiledVersion;
     internal string fileName;
-    internal ModsManifest metadata;         //Local metadata
+    internal MSCLData metadata;             //Local metadata
     internal MetaVersion UpdateInfo;        //Update info
 
     //Action list
