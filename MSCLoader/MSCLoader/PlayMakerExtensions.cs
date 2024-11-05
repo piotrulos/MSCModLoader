@@ -47,7 +47,6 @@ public static class MSCExtensions
 /// </summary>
 public static class PlayMakerExtensions
 {
-
     /// <summary>
     /// Get PlayMaker from this object by Name
     /// </summary>
@@ -57,19 +56,16 @@ public static class PlayMakerExtensions
     public static PlayMakerFSM GetPlayMaker(this GameObject obj, string playMakerName)
     {
         PlayMakerFSM[] pm = obj.GetComponents<PlayMakerFSM>();
-        if (pm != null)
+        if (pm != null && pm.Length > 0)
         {
-            PlayMakerFSM fsm = pm.FirstOrDefault(x => x.FsmName == playMakerName);
-            if (fsm != null)
-                return fsm;
-            else
+            for (int i = 0; i < pm.Length; i++)
             {
-                ModConsole.Error(string.Format("GetPlayMaker: Cannot find <b>{0}</b> in GameObject <b>{1}</b>", playMakerName, obj.name));
-                return null;
+                if (pm[i].FsmName == playMakerName)
+                    return pm[i];
             }
+            return null;
 
         }
-        ModConsole.Error(string.Format("GetPlayMaker: Cannot find any Playmakers in GameObject <b>{0}</b>", obj.name));
         return null;
     }
 
@@ -94,33 +90,160 @@ public static class PlayMakerExtensions
     public static FsmState GetPlayMakerState(this GameObject obj, string stateName)
     {
         PlayMakerFSM[] pm = obj.GetComponents<PlayMakerFSM>();
-        if (pm != null)
+        if (pm != null && pm.Length > 0)
         {
             for (int i = 0; i < pm.Length; i++)
             {
-                FsmState state = pm[i].FsmStates.FirstOrDefault(x => x.Name == stateName);
-                if (state != null)
-                    return state;
+                for (int j = 0; j < pm[i].FsmStates.Length; j++)
+                {
+                    if (pm[i].FsmStates[j].Name == stateName)
+                        return pm[i].FsmStates[j];
+                }
             }
-            ModConsole.Error(string.Format("GetPlayMakerState: Cannot find <b>{0}</b> state in GameObject <b>{1}</b>", stateName, obj.name));
             return null;
+
         }
-        ModConsole.Error(string.Format("GetPlayMakerState: Cannot find any Playmakers in GameObject <b>{0}</b>", obj.name));
         return null;
     }
+
+    private class PM_Hook : FsmStateAction
+    {
+        public Action action;
+        public bool everyFrame = false;
+
+        public PM_Hook(Action action, bool everyFrame = false)
+        {
+            this.action = action;
+            this.everyFrame = everyFrame;
+        }
+
+        public override void OnEnter()
+        {
+            if (!everyFrame)
+            {
+                action?.Invoke();
+                Finish();
+            }
+        }
+
+        public override void OnUpdate()
+        {
+            if (everyFrame)
+                action?.Invoke();
+        }
+    }
+
     /// <summary>
     /// FSM Inject as extension (same as old FsmHook.FsmInject)
     /// </summary>
     /// <param name="gameObject">GameObject where to hook</param>
     /// <param name="stateName">Name of the state</param>
     /// <param name="hook">Your function to hook</param>
+    [Obsolete("Please use the other FsmInject overrides, as this one is unnecesarilly too slow.", false)]
     public static void FsmInject(this GameObject gameObject, string stateName, Action hook)
     {
-        FsmHook.FsmInject(gameObject, stateName, hook);
+        PlayMakerFSM[] pm = gameObject.GetComponents<PlayMakerFSM>();
+        if (pm != null && pm.Length > 0)
+        {
+            for (int i = 0; i < pm.Length; i++)
+            {
+                for (int j = 0; j < pm[i].FsmStates.Length; j++)
+                {
+                    if (pm[i].FsmStates[j].Name == stateName)
+                    {
+                        pm[i].FsmInject(stateName, hook);
+                    }
+                }
+            }
+        }
     }
 
+    /// <summary>
+    /// Insert custom Action to the Playmaker
+    /// </summary>
+    /// <param name="go">Owner gameobject</param>
+    /// <param name="playmakerName">Target Playmaker name</param>
+    /// <param name="stateName">Target state name</param>
+    /// <param name="hook">Action callback</param>
+    /// <param name="everyFrame">Execute this function every frame while the state is active</param>
+    /// <param name="index">The index where to insert the action</param>
+    /// <param name="replace">If true, replaces the action at specified index, otherwise inserts it.</param>
+    /// <returns>Whether the injection was successful</returns>
+    public static bool FsmInject(this GameObject go, string playmakerName, string stateName, Action hook, bool everyFrame = false, int index = -1, bool replace = false)
+    {
+        return FsmInject(go.GetPlayMaker(stateName), stateName, new PM_Hook(hook, everyFrame), index, replace);
+    }
+    /// <summary>
+    /// Insert custom Action to the Playmaker
+    /// </summary>
+    /// <param name="tf">Owner transform</param>
+    /// <param name="playmakerName">Target Playmaker name</param>
+    /// <param name="stateName">Target state name</param>
+    /// <param name="hook">Action callback</param>
+    /// <param name="everyFrame">Execute this function every frame while the state is active</param>
+    /// <param name="index">The index where to insert the action</param>
+    /// <param name="replace">If true, replaces the action at specified index, otherwise inserts it.</param>
+    /// <returns>Whether the injection was successful</returns>
+    public static bool FsmInject(this Transform tf, string playmakerName, string stateName, Action hook, bool everyFrame = false, int index = -1, bool replace = false)
+    {
+        return FsmInject(tf.GetPlayMaker(stateName), stateName, new PM_Hook(hook, everyFrame), index, replace);
+    }
+    /// <summary>
+    /// Insert custom Action to the Playmaker
+    /// </summary>
+    /// <param name="fsm">Target Playmaker</param>
+    /// <param name="stateName">Target state name</param>
+    /// <param name="hook">Action callback</param>
+    /// <param name="everyFrame">Execute this function every frame while the state is active</param>
+    /// <param name="index">The index where to insert the action</param>
+    /// <param name="replace">If true, replaces the action at specified index, otherwise inserts it.</param>
+    /// <returns>Whether the injection was successful</returns>
+    public static bool FsmInject(this PlayMakerFSM fsm, string stateName, Action hook, bool everyFrame = false, int index = -1, bool replace = false)
+    {
+        return FsmInject(fsm, stateName, new PM_Hook(hook, everyFrame), index, replace);
+    }
+    /// <summary>
+    /// Insert custom Action to the Playmaker
+    /// </summary>
+    /// <param name="fsm">Target Playmaker</param>
+    /// <param name="stateName">Target state name</param>
+    /// <param name="action">Custom FsmStateAction</param>
+    /// <param name="index">The index where to insert the action</param>
+    /// <param name="replace">If true, replaces the action at specified index, otherwise inserts it.</param>
+    /// <returns>Whether the injection was successful</returns>
+    public static bool FsmInject<T>(this PlayMakerFSM fsm, string stateName, T action, int index = -1, bool replace = false) where T : FsmStateAction
+    {
+        var fsmState = fsm.GetState(stateName);
+        if (fsmState == null) return false;
 
-    //------------------ BrennFuchS Playmaker Extensions ---------------------//       
+        var a = fsmState.Actions;
+        if (index < -1 || index >= a.Length) return false;
+        if (replace)
+        {
+            if (index == -1) return false;
+            a[index] = action;
+        }
+        else
+        {
+            var _a = new FsmStateAction[a.Length + 1];
+            if (index == -1)
+            {
+                _a[_a.Length - 1] = action;
+            }
+
+            for (int i = 0, j = 0; i < a.Length; i++, j++)
+            {
+                if (j == index)
+                {
+                    _a[j] = action;
+                    j++;
+                }
+                _a[j] = a[i];
+            }
+        }
+        fsmState.Actions = a;
+        return true;
+    }     
 
     /// <summary>
     /// Initialize a PlayMakerFSM
@@ -128,8 +251,33 @@ public static class PlayMakerExtensions
     /// <param name="pm">FSM to initialize</param>
     public static void InitializeFSM(this PlayMakerFSM pm)
     {
-        try { pm.Fsm.InitData(); }
-        catch (Exception ex) { ModConsole.Error(ex.ToString()); }
+        pm.Fsm.InitData();
+    }
+
+    /// <summary>
+    /// Get FsmEvent by name
+    /// </summary>
+    /// <param name="fsm">The target PlaymakerFSM</param>
+    /// <param name="eventName">Event name</param>
+    /// <returns></returns>
+    public static FsmEvent GetEvent(this PlayMakerFSM fsm, string eventName)
+    {
+        for (int i = 0; i < fsm.FsmEvents.Length; i++)
+        {
+            if (fsm.FsmEvents[i].Name == eventName)
+                return fsm.FsmEvents[i];
+        }
+        return null;
+    }
+
+    private static FsmEvent GetEvent(Fsm fsm, string name)
+    {
+        for (int i = 0; i < fsm.Events.Length; i++)
+        {
+            if (fsm.Events[i].Name == name)
+                return fsm.Events[i];
+        }
+        return null;
     }
 
     /// <summary>
@@ -140,15 +288,29 @@ public static class PlayMakerExtensions
     /// <param name="stateName">Name of the state</param>
     public static void AddGlobalTransition(this PlayMakerFSM pm, string eventName, string stateName)
     {
-        try
+        var fsmevent = GetEvent(pm, eventName);
+        if (fsmevent == null) return;
+        AddGlobalTransition(pm, fsmevent, stateName);
+    }
+
+    /// <summary>
+    /// Adds a GlobalTransition to the PlayMakerFSM
+    /// </summary>
+    /// <param name="pm">PlayMakerFSM</param>
+    /// <param name="fsmevent">The event</param>
+    /// <param name="stateName">Name of the state</param>
+    public static void AddGlobalTransition(this PlayMakerFSM pm, FsmEvent fsmevent, string stateName)
+    {
+        pm.InitializeFSM();
+        var gt = new FsmTransition[pm.FsmGlobalTransitions.Length + 1];
+        pm.FsmGlobalTransitions.CopyTo(gt, 0);
+        gt[pm.FsmGlobalTransitions.Length] = new FsmTransition
         {
-            pm.Fsm.InitData();
-            var gT = pm.Fsm.GlobalTransitions.ToList();
-            gT.Add(new FsmTransition { FsmEvent = pm.FsmEvents.First(x => x.Name == eventName), ToState = stateName });
-            pm.Fsm.GlobalTransitions = gT.ToArray();
-            pm.Fsm.InitData();
-        }
-        catch (Exception ex) { ModConsole.Error(ex.ToString()); }
+            FsmEvent = fsmevent,
+            ToState = stateName
+        };
+        pm.Fsm.GlobalTransitions = gt;
+        pm.InitializeFSM();
     }
 
     /// <summary>
@@ -159,14 +321,13 @@ public static class PlayMakerExtensions
     /// <returns>FsmTransition</returns>
     public static FsmTransition GetGlobalTransition(this PlayMakerFSM pm, string eventName)
     {
-        try
+        pm.InitializeFSM();
+        for (int i = 0; i < pm.FsmGlobalTransitions.Length; i++)
         {
-            pm.Fsm.InitData();
-            var gT = pm.Fsm.GlobalTransitions.First(x => x.EventName == eventName);
-            if (gT != null) return gT;
-            else return null;
+            if (pm.FsmGlobalTransitions[i].FsmEvent.Name == eventName)
+                return pm.FsmGlobalTransitions[i];
         }
-        catch (Exception ex) { ModConsole.Error(ex.ToString()); return null; }
+        return null;
     }
 
     /// <summary>
@@ -176,13 +337,13 @@ public static class PlayMakerExtensions
     /// <param name="fsmVariable">FsmFloat variable</param>
     public static void AddVariable(this PlayMakerFSM pm, FsmFloat fsmVariable)
     {
-        try
-        {
-            var vars = pm.Fsm.Variables.FloatVariables.ToList();
-            vars.Add(fsmVariable);
-            pm.Fsm.Variables.FloatVariables = vars.ToArray();
-        }
-        catch (Exception ex) { ModConsole.Error(ex.ToString()); }
+        pm.InitializeFSM();
+        var src = pm.FsmVariables.FloatVariables;
+        var vars = new FsmFloat[src.Length + 1];
+        src.CopyTo(vars, 0);
+        vars[src.Length] = fsmVariable;
+        pm.FsmVariables.FloatVariables = vars;
+        pm.InitializeFSM();
     }
     /// <summary>
     /// Add FsmInt variable to PlayMakerFSM
@@ -191,13 +352,13 @@ public static class PlayMakerExtensions
     /// <param name="fsmVariable">FsmInt variable</param>
     public static void AddVariable(this PlayMakerFSM pm, FsmInt fsmVariable)
     {
-        try
-        {
-            var vars = pm.Fsm.Variables.IntVariables.ToList();
-            vars.Add(fsmVariable);
-            pm.Fsm.Variables.IntVariables = vars.ToArray();
-        }
-        catch (Exception ex) { ModConsole.Error(ex.ToString()); }
+        pm.InitializeFSM();
+        var src = pm.FsmVariables.IntVariables;
+        var vars = new FsmInt[src.Length + 1];
+        src.CopyTo(vars, 0);
+        vars[src.Length] = fsmVariable;
+        pm.FsmVariables.IntVariables = vars;
+        pm.InitializeFSM();
     }
 
     /// <summary>
@@ -207,13 +368,13 @@ public static class PlayMakerExtensions
     /// <param name="fsmVariable">FsmBool variable</param>
     public static void AddVariable(this PlayMakerFSM pm, FsmBool fsmVariable)
     {
-        try
-        {
-            var vars = pm.Fsm.Variables.BoolVariables.ToList();
-            vars.Add(fsmVariable);
-            pm.Fsm.Variables.BoolVariables = vars.ToArray();
-        }
-        catch (Exception ex) { ModConsole.Error(ex.ToString()); }
+        pm.InitializeFSM();
+        var src = pm.FsmVariables.BoolVariables;
+        var vars = new FsmBool[src.Length + 1];
+        src.CopyTo(vars, 0);
+        vars[src.Length] = fsmVariable;
+        pm.FsmVariables.BoolVariables = vars;
+        pm.InitializeFSM();
     }
 
     /// <summary>
@@ -223,13 +384,13 @@ public static class PlayMakerExtensions
     /// <param name="fsmVariable">FsmGameObject variable</param>
     public static void AddVariable(this PlayMakerFSM pm, FsmGameObject fsmVariable)
     {
-        try
-        {
-            var vars = pm.Fsm.Variables.GameObjectVariables.ToList();
-            vars.Add(fsmVariable);
-            pm.Fsm.Variables.GameObjectVariables = vars.ToArray();
-        }
-        catch (Exception ex) { ModConsole.Error(ex.ToString()); }
+        pm.InitializeFSM();
+        var src = pm.FsmVariables.GameObjectVariables;
+        var vars = new FsmGameObject[src.Length + 1];
+        src.CopyTo(vars, 0);
+        vars[src.Length] = fsmVariable;
+        pm.FsmVariables.GameObjectVariables = vars;
+        pm.InitializeFSM();
     }
 
     /// <summary>
@@ -239,13 +400,13 @@ public static class PlayMakerExtensions
     /// <param name="fsmVariable">FsmString variable</param>
     public static void AddVariable(this PlayMakerFSM pm, FsmString fsmVariable)
     {
-        try
-        {
-            var vars = pm.Fsm.Variables.StringVariables.ToList();
-            vars.Add(fsmVariable);
-            pm.Fsm.Variables.StringVariables = vars.ToArray();
-        }
-        catch (Exception ex) { ModConsole.Error(ex.ToString()); }
+        pm.InitializeFSM();
+        var src = pm.FsmVariables.StringVariables;
+        var vars = new FsmString[src.Length + 1];
+        src.CopyTo(vars, 0);
+        vars[src.Length] = fsmVariable;
+        pm.FsmVariables.StringVariables = vars;
+        pm.InitializeFSM();
     }
 
     /// <summary>
@@ -255,13 +416,13 @@ public static class PlayMakerExtensions
     /// <param name="fsmVariable">FsmVector2 variable</param>
     public static void AddVariable(this PlayMakerFSM pm, FsmVector2 fsmVariable)
     {
-        try
-        {
-            var vars = pm.Fsm.Variables.Vector2Variables.ToList();
-            vars.Add(fsmVariable);
-            pm.Fsm.Variables.Vector2Variables = vars.ToArray();
-        }
-        catch (Exception ex) { ModConsole.Error(ex.ToString()); }
+        pm.InitializeFSM();
+        var src = pm.FsmVariables.Vector2Variables;
+        var vars = new FsmVector2[src.Length + 1];
+        src.CopyTo(vars, 0);
+        vars[src.Length] = fsmVariable;
+        pm.FsmVariables.Vector2Variables = vars;
+        pm.InitializeFSM();
     }
 
     /// <summary>
@@ -271,13 +432,13 @@ public static class PlayMakerExtensions
     /// <param name="fsmVariable">FsmVector3 variable</param>
     public static void AddVariable(this PlayMakerFSM pm, FsmVector3 fsmVariable)
     {
-        try
-        {
-            var vars = pm.Fsm.Variables.Vector3Variables.ToList();
-            vars.Add(fsmVariable);
-            pm.Fsm.Variables.Vector3Variables = vars.ToArray();
-        }
-        catch (Exception ex) { ModConsole.Error(ex.ToString()); }
+        pm.InitializeFSM();
+        var src = pm.FsmVariables.Vector3Variables;
+        var vars = new FsmVector3[src.Length + 1];
+        src.CopyTo(vars, 0);
+        vars[src.Length] = fsmVariable;
+        pm.FsmVariables.Vector3Variables = vars;
+        pm.InitializeFSM();
     }
 
     /// <summary>
@@ -287,13 +448,13 @@ public static class PlayMakerExtensions
     /// <param name="fsmVariable">FsmColor variable</param>
     public static void AddVariable(this PlayMakerFSM pm, FsmColor fsmVariable)
     {
-        try
-        {
-            var vars = pm.Fsm.Variables.ColorVariables.ToList();
-            vars.Add(fsmVariable);
-            pm.Fsm.Variables.ColorVariables = vars.ToArray();
-        }
-        catch (Exception ex) { ModConsole.Error(ex.ToString()); }
+        pm.InitializeFSM();
+        var src = pm.FsmVariables.ColorVariables;
+        var vars = new FsmColor[src.Length + 1];
+        src.CopyTo(vars, 0);
+        vars[src.Length] = fsmVariable;
+        pm.FsmVariables.ColorVariables = vars;
+        pm.InitializeFSM();
     }
 
     /// <summary>
@@ -303,13 +464,13 @@ public static class PlayMakerExtensions
     /// <param name="fsmVariable">FsmRect variable</param>
     public static void AddVariable(this PlayMakerFSM pm, FsmRect fsmVariable)
     {
-        try
-        {
-            var vars = pm.Fsm.Variables.RectVariables.ToList();
-            vars.Add(fsmVariable);
-            pm.Fsm.Variables.RectVariables = vars.ToArray();
-        }
-        catch (Exception ex) { ModConsole.Error(ex.ToString()); }
+        pm.InitializeFSM();
+        var src = pm.FsmVariables.RectVariables;
+        var vars = new FsmRect[src.Length + 1];
+        src.CopyTo(vars, 0);
+        vars[src.Length] = fsmVariable;
+        pm.FsmVariables.RectVariables = vars;
+        pm.InitializeFSM();
     }
 
     /// <summary>
@@ -319,13 +480,13 @@ public static class PlayMakerExtensions
     /// <param name="fsmVariable">FsmMaterial variable</param>
     public static void AddVariable(this PlayMakerFSM pm, FsmMaterial fsmVariable)
     {
-        try
-        {
-            var vars = pm.Fsm.Variables.MaterialVariables.ToList();
-            vars.Add(fsmVariable);
-            pm.Fsm.Variables.MaterialVariables = vars.ToArray();
-        }
-        catch (Exception ex) { ModConsole.Error(ex.ToString()); }
+        pm.InitializeFSM();
+        var src = pm.FsmVariables.MaterialVariables;
+        var vars = new FsmMaterial[src.Length + 1];
+        src.CopyTo(vars, 0);
+        vars[src.Length] = fsmVariable;
+        pm.FsmVariables.MaterialVariables = vars;
+        pm.InitializeFSM();
     }
 
     /// <summary>
@@ -335,13 +496,13 @@ public static class PlayMakerExtensions
     /// <param name="fsmVariable">FsmTexture variable</param>
     public static void AddVariable(this PlayMakerFSM pm, FsmTexture fsmVariable)
     {
-        try
-        {
-            var vars = pm.Fsm.Variables.TextureVariables.ToList();
-            vars.Add(fsmVariable);
-            pm.Fsm.Variables.TextureVariables = vars.ToArray();
-        }
-        catch (Exception ex) { ModConsole.Error(ex.ToString()); }
+        pm.InitializeFSM();
+        var src = pm.FsmVariables.TextureVariables;
+        var vars = new FsmTexture[src.Length + 1];
+        src.CopyTo(vars, 0);
+        vars[src.Length] = fsmVariable;
+        pm.FsmVariables.TextureVariables = vars;
+        pm.InitializeFSM();
     }
 
     /// <summary>
@@ -351,13 +512,13 @@ public static class PlayMakerExtensions
     /// <param name="fsmVariable">FsmQuaternion variable</param>
     public static void AddVariable(this PlayMakerFSM pm, FsmQuaternion fsmVariable)
     {
-        try
-        {
-            var vars = pm.Fsm.Variables.QuaternionVariables.ToList();
-            vars.Add(fsmVariable);
-            pm.Fsm.Variables.QuaternionVariables = vars.ToArray();
-        }
-        catch (Exception ex) { ModConsole.Error(ex.ToString()); }
+        pm.InitializeFSM();
+        var src = pm.FsmVariables.QuaternionVariables;
+        var vars = new FsmQuaternion[src.Length + 1];
+        src.CopyTo(vars, 0);
+        vars[src.Length] = fsmVariable;
+        pm.FsmVariables.QuaternionVariables = vars;
+        pm.InitializeFSM();
     }
 
     /// <summary>
@@ -367,13 +528,13 @@ public static class PlayMakerExtensions
     /// <param name="fsmVariable">FsmObject variable</param>
     public static void AddVariable(this PlayMakerFSM pm, FsmObject fsmVariable)
     {
-        try
-        {
-            var vars = pm.Fsm.Variables.ObjectVariables.ToList();
-            vars.Add(fsmVariable);
-            pm.Fsm.Variables.ObjectVariables = vars.ToArray();
-        }
-        catch (Exception ex) { ModConsole.Error(ex.ToString()); }
+        pm.InitializeFSM();
+        var src = pm.FsmVariables.ObjectVariables;
+        var vars = new FsmObject[src.Length + 1];
+        src.CopyTo(vars, 0);
+        vars[src.Length] = fsmVariable;
+        pm.FsmVariables.ObjectVariables = vars;
+        pm.InitializeFSM();
     }
 
     /// <summary>
@@ -418,25 +579,19 @@ public static class PlayMakerExtensions
     /// <returns>FsmState</returns>
     public static FsmState AddState(this PlayMakerFSM pm, string stateName)
     {
-        FsmState fs = null;
+        var state = GetState(pm, stateName);
+        if (state != null) return state;
 
-        try
-        {
-            pm.Fsm.InitData();
-            var fss = pm.FsmStates.ToList();
-            if (fss.First(x => x.Name == stateName) == null)
-            {
-                fs = new FsmState(pm.Fsm);
-                fs.Name = stateName;
-                fss.Add(fs);
-            }
-            return fs;
-        }
-        catch (Exception ex)
-        {
-            ModConsole.Error(ex.ToString());
-            return null;
-        }
+        pm.InitializeFSM();
+        var src = pm.FsmStates;
+        var vars = new FsmState[src.Length + 1];
+        src.CopyTo(vars, 0);
+        state = new FsmState(pm.Fsm);
+        state.Name = stateName;
+        vars[src.Length] = state;
+        pm.Fsm.States = vars;
+
+        return state;
     }
 
     /// <summary>
@@ -447,16 +602,13 @@ public static class PlayMakerExtensions
     /// <returns>FsmState</returns>
     public static FsmState GetState(this PlayMakerFSM pm, string stateName)
     {
-        try
+        pm.InitializeFSM();
+        for (int i = 0; i < pm.FsmStates.Length; i++)
         {
-            pm.Fsm.InitData();
-            return pm.FsmStates.First(x => x.Name == stateName);
+            if (pm.FsmStates[i].Name == stateName)
+                return pm.FsmStates[i];
         }
-        catch (Exception ex)
-        {
-            ModConsole.Error(ex.ToString());
-            return null;
-        }
+        return null;
     }
 
     /// <summary>
@@ -467,16 +619,8 @@ public static class PlayMakerExtensions
     /// <returns>FsmState</returns>
     public static FsmState GetState(this PlayMakerFSM pm, int index)
     {
-        try
-        {
-            pm.Fsm.InitData();
-            return pm.FsmStates[index];
-        }
-        catch (Exception ex)
-        {
-            ModConsole.Error(ex.ToString());
-            return null;
-        }
+        pm.InitializeFSM();
+        return pm.FsmStates[index];
     }
 
     /// <summary>
@@ -487,16 +631,14 @@ public static class PlayMakerExtensions
     /// <param name="stateName">Name of the state</param>
     public static void AddTransition(this FsmState fs, string eventName, string stateName)
     {
-        try
+        var gt = new FsmTransition[fs.Transitions.Length + 1];
+        fs.Transitions.CopyTo(gt, 0);
+        gt[fs.Transitions.Length] = new FsmTransition
         {
-            fs.Fsm.InitData();
-            var t = fs.Transitions.ToList();
-            if (t.First(x => x.EventName == eventName) == null) t.Add(new FsmTransition { FsmEvent = fs.Fsm.Events.First(x => x.Name == eventName), ToState = stateName });
-            else ModConsole.Error($"Transition for {eventName} in State {fs.Name} exists already!");
-            fs.Fsm.GlobalTransitions = t.ToArray();
-            fs.Fsm.InitData();
-        }
-        catch (Exception ex) { ModConsole.Error(ex.ToString()); }
+            FsmEvent = GetEvent(fs.Fsm, eventName),
+            ToState = stateName
+        };
+        fs.Transitions = gt;
     }
 
     /// <summary>
@@ -507,12 +649,12 @@ public static class PlayMakerExtensions
     /// <returns>FsmTransition</returns>
     public static FsmTransition GetTransition(this FsmState fs, string eventName)
     {
-        try
+        for (int i = 0; i < fs.Transitions.Length; i++)
         {
-            if (fs.Transitions.First(x => x.EventName == eventName) != null) return fs.Transitions.First(x => x.EventName == eventName);
-            else { ModConsole.Error($"Transition for {eventName} in State {fs.Name} doesn't exist!"); return null; }
+            if (fs.Transitions[i].FsmEvent.Name == eventName)
+                return fs.Transitions[i];
         }
-        catch (Exception ex) { ModConsole.Error(ex.ToString()); return null; }
+        return null;
     }
 
     /// <summary>
@@ -522,13 +664,10 @@ public static class PlayMakerExtensions
     /// <param name="action">FsmStateAction action</param>
     public static void AddAction(this FsmState fs, FsmStateAction action)
     {
-        try
-        {
-            var a = fs.Actions.ToList();
-            a.Add(action);
-            fs.Actions = a.ToArray();
-        }
-        catch (Exception ex) { ModConsole.Error(ex.ToString()); }
+        var gt = new FsmStateAction[fs.Actions.Length + 1];
+        fs.Actions.CopyTo(gt, 0);
+        gt[fs.Actions.Length] = action;
+        fs.Actions = gt;
     }
 
     /// <summary>
@@ -538,7 +677,10 @@ public static class PlayMakerExtensions
     /// <param name="actions">FsmStateAction collection</param>
     public static void AddActions(this FsmState fs, System.Collections.Generic.ICollection<FsmStateAction> actions)
     {
-        for (int i = 0; i < actions.Count; i++) fs.AddAction(actions.ToArray()[i]);
+        var gt = new FsmStateAction[fs.Actions.Length + actions.Count];
+        fs.Actions.CopyTo(gt, 0);
+        actions.CopyTo(gt, fs.Actions.Length);
+        fs.Actions = gt;
     }
 
     /// <summary>
@@ -548,10 +690,10 @@ public static class PlayMakerExtensions
     /// <param name="fs">FsmState</param>
     /// <param name="index">index in state array</param>
     /// <returns></returns>
-    public static T GetAction<T>(this FsmState fs, int index) where T : class, new()
+    public static T GetAction<T>(this FsmState fs, int index) where T : FsmStateAction
     {
-        try { return (T)((object)fs.Actions[index]); }
-        catch (Exception ex) { ModConsole.Error(ex.ToString()); return new T(); }
+        if (index >= fs.Actions.Length || index < 0) return null;
+        return fs.Actions[index] as T;
     }
 
     /// <summary>
@@ -561,13 +703,13 @@ public static class PlayMakerExtensions
     /// <param name="index">index in state array</param>
     public static void RemoveAction(this FsmState fs, int index)
     {
-        try
+        var a = new FsmStateAction[fs.Actions.Length - 1];
+        for (int i = 0, j = 0; i < a.Length; i++, j++)
         {
-            var a = fs.Actions.ToList();
-            a.RemoveAt(index);
-            fs.Actions = a.ToArray();
+            if (j == index) j++;
+            a[i] = fs.Actions[j];
         }
-        catch (Exception ex) { ModConsole.Error(ex.ToString()); }
+        fs.Actions = a;
     }
 
     /// <summary>
@@ -578,14 +720,7 @@ public static class PlayMakerExtensions
     /// <param name="action">FsmStateAction action</param>
     public static void ReplaceAction(this FsmState fs, int index, FsmStateAction action)
     {
-        try
-        {
-            var a = fs.Actions.ToList();
-            fs.RemoveAction(index);
-            a.Insert(index, action);
-            fs.Actions = a.ToArray();
-        }
-        catch (Exception ex) { ModConsole.Error(ex.ToString()); }
+        fs.Actions[index] = action;
     }
 
     /// <summary>
@@ -596,13 +731,22 @@ public static class PlayMakerExtensions
     /// <param name="action">FsmStateAction action</param>
     public static void InsertAction(this FsmState fs, int index, FsmStateAction action)
     {
-        try
+        var _a = new FsmStateAction[fs.Actions.Length + 1];
+        if (index < 0 || index >= fs.Actions.Length)
         {
-            var a = fs.Actions.ToList();
-            a.Insert(index, action);
-            fs.Actions = a.ToArray();
+            return;
         }
-        catch (Exception ex) { ModConsole.Error(ex.ToString()); }
+
+        for (int i = 0, j = 0; i < fs.Actions.Length; i++, j++)
+        {
+            if (j == index)
+            {
+                _a[j] = action;
+                j++;
+            }
+            _a[j] = fs.Actions[i];
+        }
+        fs.Actions = _a;
     }
 }
 
