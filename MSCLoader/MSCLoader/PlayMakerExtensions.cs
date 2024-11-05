@@ -239,6 +239,7 @@ public static class PlayMakerExtensions
                     j++;
                 }
                 _a[j] = a[i];
+                a = _a;
             }
         }
         fsmState.Actions = a;
