@@ -279,6 +279,42 @@ public static class PlayMakerExtensions
         }
         return null;
     }
+    
+    /// <summary>
+    /// Add event to PlayMakerFSM
+    /// </summary>
+    /// <param name="pm">PlayMakerFSM</param>
+    /// <param name="eventName">event name</param>
+    public static FsmEvent AddEvent(this PlayMakerFSM pm, string eventName)
+    {
+        pm.Initialize();
+        var src = pm.FsmEvents;
+        var vars = new FsmEvent[src.Length + 1];
+        src.CopyTo(vars, 0);
+        var e = new FsmEvent(eventName);
+        vars[src.Length] = e;
+        pm.Fsm.Events = vars;
+        pm.Initialize();
+        return e;
+    }
+    
+    /// <summary>
+    /// Add event to PlayMakerFSM
+    /// </summary>
+    /// <param name="pm">PlayMakerFSM</param>
+    /// <param name="eventName">event name</param>
+    public static FsmEvent AddEvent(this Fsm pm, string eventName)
+    {
+        pm.InitData();
+        var src = pm.Events;
+        var vars = new FsmEvent[src.Length + 1];
+        src.CopyTo(vars, 0);
+        var e = new FsmEvent(eventName);
+        vars[src.Length] = e;
+        pm.Events = vars;
+        pm.InitData();
+        return e;
+    }
 
     /// <summary>
     /// Adds a GlobalTransition to the PlayMakerFSM
@@ -288,9 +324,7 @@ public static class PlayMakerExtensions
     /// <param name="stateName">Name of the state</param>
     public static void AddGlobalTransition(this PlayMakerFSM pm, string eventName, string stateName)
     {
-        var fsmevent = GetEvent(pm, eventName);
-        if (fsmevent == null) return;
-        AddGlobalTransition(pm, fsmevent, stateName);
+        AddGlobalTransition(pm, GetEvent(pm, eventName) ?? AddEvent(pm, eventName), stateName);
     }
 
     /// <summary>
@@ -635,7 +669,7 @@ public static class PlayMakerExtensions
         fs.Transitions.CopyTo(gt, 0);
         gt[fs.Transitions.Length] = new FsmTransition
         {
-            FsmEvent = GetEvent(fs.Fsm, eventName),
+            FsmEvent = GetEvent(fs.Fsm, eventName) ?? AddEvent(fs.Fsm, eventName),
             ToState = stateName
         };
         fs.Transitions = gt;
