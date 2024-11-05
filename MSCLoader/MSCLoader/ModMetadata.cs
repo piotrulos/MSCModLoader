@@ -84,27 +84,27 @@ public class MSCLData
 {
     public string modID;
     public string description;
-    public List<string> links;
+    public List<string> links = new List<string>();
     public string icon;
-    public MinimumRequirements minimumRequirements;
-    public ModConflicts modConflicts;
+    public MinimumRequirements minimumRequirements = new MinimumRequirements();
+    public ModConflicts modConflicts = new ModConflicts();
     public string sign;
-    public int type;
+    public int type = 1;
     public string msg;
-    public int rev;
+    public int rev = 0;
 }
 public class MinimumRequirements
 {
     public string MSCLoaderVer;
-    public int MSCbuildID;
+    public int MSCbuildID = 0;
     public bool disableIfVer;
 }
 
 public class ModConflicts
 {
-    public List<string> modIDs;
+    public List<string> modIDs = new List<string>();
     public string customMessage;
-    public bool disableIfConflict;
+    public bool disableIfConflict = false;
 }
 
 internal class ModMetadata
@@ -203,7 +203,7 @@ internal class ModMetadata
             type = 1
         };
         string path = ModLoader.GetMetadataFolder($"{mod.ID}.json");
-        string response = MSCLInternal.MSCLDataRequest("mscl_create.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key }, { "resID", mscldata.modID }, { "version", mod.Version }, { "sign", mscldata.sign }, { "type", "mod" } });
+        string response = MSCLInternal.MSCLDataRequest("mscl_create.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key }, { "resID", mscldata.modID }, { "version", mod.Version }, { "sign", mscldata.sign }, { "asmGuid", mod.asmGuid }, { "type", "mod" } });
 
         string[] result = response.Split('|');
         switch (result[0])

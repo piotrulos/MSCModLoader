@@ -102,7 +102,7 @@ public partial class Mod
     internal List<Keybind> Keybinds = new List<Keybind>();
     internal List<Keybind> DefaultKeybinds = new List<Keybind>();
     internal string[] AdditionalReferences = new string[0];
-
+    internal string asmGuid = "";
     /// <summary>
     /// Setup selected function for your mod
     /// </summary>

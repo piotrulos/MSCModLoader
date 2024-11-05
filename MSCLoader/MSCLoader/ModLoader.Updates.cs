@@ -6,6 +6,7 @@ using System.Collections;
 using System.IO;
 using System.Linq;
 using System.Net;
+using UnityEngine.UI;
 
 namespace MSCLoader;
 public partial class ModLoader : MonoBehaviour
@@ -59,12 +60,11 @@ public partial class ModLoader : MonoBehaviour
     internal bool checkForUpdatesProgress = false;
     IEnumerator CheckForRefModUpdates()
     {
-        checkForUpdatesProgress = true;
-        canvLoading.uTitle.text = "Checking for mod updates...".ToUpper();
-        canvLoading.uProgress.maxValue = 3;
-        canvLoading.uStatus.text = "Connecting...";
-        canvLoading.modUpdateUI.transform.SetAsLastSibling();
-        canvLoading.modUpdateUI.SetActive(true);
+        ModConsole.Warning("cfrmu ");
+        checkForUpdatesProgress = true;    
+        canvLoading.SetUpdate("Checking for mod updates...", 0, 3, "Connecting...");
+        ModConsole.Warning("cfrmu 2");
+
         dnsaf = true;
         bool failed = false;
         yield return new WaitForSeconds(.3f);
@@ -75,12 +75,13 @@ public partial class ModLoader : MonoBehaviour
         };
         cfmuInProgress = true;
         WebClient webClient = new WebClient();
+     
         webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
         webClient.UploadValuesCompleted += ModsUpdateData;
         webClient.UploadProgressChanged += ModsUpdateDataProgress;
         webClient.UploadValuesAsync(new Uri($"{serverURL}/mods_ver.php"), "POST", modvals);
-        canvLoading.uProgress.value = 1;
-        canvLoading.uStatus.text = "Downloading mods update info...";
+        
+        canvLoading.SetUpdateProgress(1, "Downloading mods update info...");
         while (cfmuInProgress)
             yield return null;
         if (!cfmuErrored)
@@ -132,15 +133,14 @@ public partial class ModLoader : MonoBehaviour
                 ModMetadata.ReadUpdateInfo(v);
             }
         }
-        canvLoading.uTitle.text = "Checking for references updates...".ToUpper();
-        canvLoading.uProgress.value = 2;
+        canvLoading.SetUpdateTitle("Checking for references updates...");
         yield return null;
         cfmuInProgress = true;
         modlist = string.Join(",", ReferencesList.Select(x => x.AssemblyID).ToArray());
         modvals.Clear();
         modvals.Add("refs", modlist);
         webClient.UploadValuesAsync(new Uri($"{serverURL}/refs_ver.php"), "POST", modvals);
-        canvLoading.uStatus.text = "Downloading references update info...";
+        canvLoading.SetUpdateProgress(2, "Downloading references update info...");
         while (cfmuInProgress)
             yield return null;
         if (!cfmuErrored)
@@ -193,11 +193,10 @@ public partial class ModLoader : MonoBehaviour
             }
         }
 
-        canvLoading.uProgress.value = 3;
         if (failed)
-            canvLoading.uStatus.text = string.Format("<color=red>Failed getting update info</color>");
+            canvLoading.SetUpdateProgress(3, "<color=red>Failed getting update info</color>");
         else
-            canvLoading.uStatus.text = string.Format("Done!");
+            canvLoading.SetUpdateProgress(3, "Done!");
         checkForUpdatesProgress = false;
         dnsaf = false;
         if (MetadataUpdateList.Count > 0 && !failed)
@@ -208,7 +207,7 @@ public partial class ModLoader : MonoBehaviour
         {
             yield return new WaitForSeconds(3f);
             if (!dnsaf)
-                canvLoading.modUpdateUI.SetActive(false);
+                canvLoading.ToggleUpdateUI(false);
         }
     }
 
@@ -216,21 +215,18 @@ public partial class ModLoader : MonoBehaviour
     {
         while (checkForUpdatesProgress) yield return null;
         checkForUpdatesProgress = true;
-        canvLoading.uTitle.text = ("Updating metadata information...").ToUpper();
-        canvLoading.uProgress.maxValue = MetadataUpdateList.Count;
-        canvLoading.uStatus.text = "Connecting...";
-        canvLoading.modUpdateUI.transform.SetAsLastSibling();
-        canvLoading.modUpdateUI.SetActive(true);
+        canvLoading.SetUpdate("Downloading metadata files...", 0, MetadataUpdateList.Count, "Connecting...");
         dnsaf = true;
         for (int i = 0; i < MetadataUpdateList.Count; i++)
         {
-            canvLoading.uProgress.value = i + 1;
-            canvLoading.uStatus.text = $"({i + 1}/{MetadataUpdateList.Count}) - <color=aqua>{MetadataUpdateList[i]}</color>";
+            canvLoading.SetUpdateProgress(i + 1, $"({i + 1}/{MetadataUpdateList.Count}) - <color=aqua>{MetadataUpdateList[i]}</color>");
             cfmuInProgress = true;
-            WebClient webClient = new WebClient();
-            webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
-            webClient.DownloadStringCompleted += cfmuDownloadCompl;
-            webClient.DownloadStringAsync(new Uri($"{serverURL}/{metadataURL}/{MetadataUpdateList[i]}"));
+            using (WebClient webClient = new WebClient())
+            {
+                webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
+                webClient.DownloadStringCompleted += cfmuDownloadCompl;
+                webClient.DownloadStringAsync(new Uri($"{serverURL}/{metadataURL}{MetadataUpdateList[i]}"));
+            }
             while (cfmuInProgress)
                 yield return null;
             if (cfmuErrored)
@@ -287,14 +283,14 @@ public partial class ModLoader : MonoBehaviour
                 }
             }
         }
-        canvLoading.uStatus.text = "Done!";
+        canvLoading.SetUpdateProgress(MetadataUpdateList.Count,"Done!");
         if (cfmuErrored)
-            canvLoading.uStatus.text = "<color=red>Connection error!</color>";
+            canvLoading.SetUpdateStatus("<color=red>Connection error!</color>");
         checkForUpdatesProgress = false;
         dnsaf = false;
         yield return new WaitForSeconds(3f);
         if (!dnsaf)
-            canvLoading.modUpdateUI.SetActive(false);
+            canvLoading.ToggleUpdateUI(false);
     }
 
     private void cfmuDownloadCompl(object sender, DownloadStringCompletedEventArgs e)
@@ -410,6 +406,7 @@ public partial class ModLoader : MonoBehaviour
     IEnumerator UploadModFile(string ID, string key, bool isRef)
     {
         dnsaf = true;
+        string type = isRef ? "reference" : "mod";
         if (CheckSteam())
         {
             if (!File.Exists(Path.Combine("Updates", $"Meta_temp\\{ID}.zip")))
@@ -419,32 +416,26 @@ public partial class ModLoader : MonoBehaviour
             else
             {
                 steamID = Steamworks.SteamUser.GetSteamID().ToString();
-                WebClient Client = new WebClient();
-                Client.Headers.Add("Content-Type", "binary/octet-stream");
-                Client.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
-                Client.UploadFileCompleted += UploadModUpdateCompleted;
-                Client.UploadProgressChanged += UploadModUpdateProgress;
-                downloadInProgress = true;
-                canvLoading.uProgress.maxValue = 100;
-                if (isRef)
-                    Client.UploadFileAsync(new Uri($"{serverURL}/meta_fr.php?steam={steamID}&key={key}&refid={ID}"), "POST", Path.Combine("Updates", $"Meta_temp\\{ID}.zip"));
-                else
-                    Client.UploadFileAsync(new Uri($"{serverURL}/meta_f.php?steam={steamID}&key={key}&modid={ID}"), "POST", Path.Combine("Updates", $"Meta_temp\\{ID}.zip"));
+                using (WebClient Client = new WebClient())
+                {
+                    Client.Headers.Add("Content-Type", "binary/octet-stream");
+                    Client.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
+                    Client.UploadFileCompleted += UploadModUpdateCompleted;
+                    Client.UploadProgressChanged += UploadModUpdateProgress;
+                    downloadInProgress = true;
+                    Client.UploadFileAsync(new Uri($"{serverURL}/mscl_upfile.php?steam={steamID}&key={key}&resid={ID}&type={type}"), "POST", Path.Combine("Updates", $"Meta_temp\\{ID}.zip"));
+                }
                 ModConsole.Print("Uploading File...");
-                canvLoading.uTitle.text = string.Format("Uploading update file...").ToUpper();
-                canvLoading.uStatus.text = string.Format("Connecting...");
-                canvLoading.modUpdateUI.SetActive(true);
+                canvLoading.SetUpdate("Uploading update file...", 0, 100, "Connecting...");
                 while (downloadInProgress)
                 {
-                    canvLoading.uProgress.value = downloadPercentage;
-                    canvLoading.uStatus.text = $"(Uploading) <color=aqua>{ID}.zip</color> [<color=lime>{downloadPercentage}%</color>]";
+                    canvLoading.SetUpdateProgress(downloadPercentage, $"(Uploading) <color=aqua>{ID}.zip</color> [<color=lime>{downloadPercentage}%</color>]");
                     yield return null;
                 }
-                canvLoading.uProgress.value = 100;
                 File.Delete(Path.Combine("Updates", $"Meta_temp\\{ID}.zip"));
                 if (!downloadErrored)
                 {
-                    canvLoading.uStatus.text = string.Format($"<color=lime>Upload Complete</color>");
+                    canvLoading.SetUpdateProgress(100, $"<color=lime>Upload Complete</color>");
                     if (isRef)
                         ModMetadata.UpdateVersionNumberRef(ID);
                     else
@@ -454,13 +445,13 @@ public partial class ModLoader : MonoBehaviour
         }
         else
         {
-            ModConsole.Error("Steam auth failed!");
+            ModConsole.Error("Steam is required to use this feature");
             yield return null;
         }
         dnsaf = false;
         yield return new WaitForSeconds(3f);
         if (!dnsaf)
-            canvLoading.modUpdateUI.SetActive(false);
+            canvLoading.ToggleUpdateUI(false);
     }
 
     private void UploadModUpdateProgress(object sender, UploadProgressChangedEventArgs e)
@@ -548,29 +539,26 @@ public partial class ModLoader : MonoBehaviour
         while (checkForUpdatesProgress)
             yield return null;
         dnsaf = true;
+        canvLoading.SetUpdate("Downloading MSCLoader Updates...", 0, 100, "Connecting...");
         switch (type)
         {
             case 0:
-                canvLoading.uTitle.text = "Downloading MSCLoader Updates...".ToUpper();
-                canvLoading.uProgress.maxValue = 100;
-                canvLoading.uStatus.text = "Connecting...";
-                canvLoading.modUpdateUI.SetActive(true);
-                WebClient webClient = new WebClient();
-                webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
-                webClient.DownloadFileCompleted += DownloadModCompleted;
-                webClient.DownloadProgressChanged += DownlaodModProgress;
-                downloadInProgress = true;
-                webClient.DownloadFileAsync(new Uri($"{serverURL}/dwlc.php"), Path.Combine(Path.Combine("Updates", "Core"), $"update.zip"));
+                using (WebClient webClient = new WebClient())
+                {
+                    webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
+                    webClient.DownloadFileCompleted += DownloadModCompleted;
+                    webClient.DownloadProgressChanged += DownlaodModProgress;
+                    downloadInProgress = true;
+                    webClient.DownloadFileAsync(new Uri($"{serverURL}/dwlc.php"), Path.Combine(Path.Combine("Updates", "Core"), $"update.zip"));
+                }
                 ModConsole.Print($"Downloading: <color=aqua>update.zip</color>");
                 while (downloadInProgress)
                 {
-                    canvLoading.uProgress.value = downloadPercentage;
-                    canvLoading.uStatus.text = $"(ModLoader) <color=aqua>update.zip</color> [<color=lime>{downloadPercentage}%</color>]";
+                    canvLoading.SetUpdateProgress(downloadPercentage, $"(ModLoader) <color=aqua>update.zip</color> [<color=lime>{downloadPercentage}%</color>]");
                     yield return null;
                 }
                 yield return new WaitForSeconds(1f);
-                canvLoading.uProgress.value = 100;
-                canvLoading.uStatus.text = $"<color=lime>Download Complete</color>";
+                canvLoading.SetUpdateProgress(100, $"<color=lime>Download Complete</color>");
                 ModUI.ShowMessage("You have to restart the Game for the updates to take effect!", "download completed");
                 break;
             case 1:
@@ -578,16 +566,13 @@ public partial class ModLoader : MonoBehaviour
             case 3:
             case 4:
                 if (type == 2)
-                    canvLoading.uTitle.text = "Downloading required mods...".ToUpper();
+                    canvLoading.SetUpdateTitle("Downloading required mods...");
                 else if (type == 3)
-                    canvLoading.uTitle.text = "Downloading reference updates...".ToUpper();
+                    canvLoading.SetUpdateTitle("Downloading reference updates...");
                 else if (type == 4)
-                    canvLoading.uTitle.text = "Downloading required reference...".ToUpper();
+                    canvLoading.SetUpdateTitle("Downloading required reference...");
                 else
-                    canvLoading.uTitle.text = "Downloading mod updates...".ToUpper();
-                canvLoading.uProgress.maxValue = 100;
-                canvLoading.uStatus.text = "Connecting...";
-                canvLoading.modUpdateUI.SetActive(true);
+                    canvLoading.SetUpdateTitle("Downloading mod updates...");
                 yield return null;
                 bool failed = false;
                 string[] result;
@@ -617,20 +602,21 @@ public partial class ModLoader : MonoBehaviour
                 }
                 else if (result[0] == "ok")
                 {
-                    WebClient webClient2 = new WebClient();
-                    webClient2.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
-                    webClient2.DownloadFileCompleted += DownloadModCompleted;
-                    webClient2.DownloadProgressChanged += DownlaodModProgress;
-                    downloadInProgress = true;
-                    if (type == 3 || type == 4)
-                        webClient2.DownloadFileAsync(new Uri($"{serverURL}/{result[1]}"), Path.Combine(Path.Combine("Updates", "References"), $"{mod}.zip"));
-                    else
-                        webClient2.DownloadFileAsync(new Uri($"{serverURL}/{result[1]}"), Path.Combine(Path.Combine("Updates", "Mods"), $"{mod}.zip"));
+                    using (WebClient webClient2 = new WebClient())
+                    {
+                        webClient2.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
+                        webClient2.DownloadFileCompleted += DownloadModCompleted;
+                        webClient2.DownloadProgressChanged += DownlaodModProgress;
+                        downloadInProgress = true;
+                        if (type == 3 || type == 4)
+                            webClient2.DownloadFileAsync(new Uri($"{serverURL}/{result[1]}"), Path.Combine(Path.Combine("Updates", "References"), $"{mod}.zip"));
+                        else
+                            webClient2.DownloadFileAsync(new Uri($"{serverURL}/{result[1]}"), Path.Combine(Path.Combine("Updates", "Mods"), $"{mod}.zip"));
+                    }
                     ModConsole.Print($"Downloading: <color=aqua>{mod}.zip</color>");
                     while (downloadInProgress)
                     {
-                        canvLoading.uProgress.value = downloadPercentage;
-                        canvLoading.uStatus.text = $"<color=aqua>{mod}.zip</color> [<color=lime>{downloadPercentage}%</color>]";
+                        canvLoading.SetUpdateProgress(downloadPercentage, $"<color=aqua>{mod}.zip</color> [<color=lime>{downloadPercentage}%</color>]");
                         yield return null;
                     }
                     yield return new WaitForSeconds(1f);
@@ -643,8 +629,7 @@ public partial class ModLoader : MonoBehaviour
                 }
                 if (!failed)
                 {
-                    canvLoading.uProgress.value = 100;
-                    canvLoading.uStatus.text = $"<color=lime>Download Complete</color>";
+                    canvLoading.SetUpdateProgress(100, $"<color=lime>Download Complete</color>");
                     if (type == 2)
                         ModUI.ShowMessage("You need to restart the game if you want to install this mod.", "download completed");
                     else if (type == 4)
@@ -661,7 +646,7 @@ public partial class ModLoader : MonoBehaviour
                     else if (type == 4)
                         Application.OpenURL($"{serverURL}/refredir.php?ref={mod}");
                     else
-                        canvLoading.uStatus.text = $"<color=red>Download Failed</color>";
+                        canvLoading.SetUpdateStatus( $"<color=red>Download Failed</color>");
                 }
                 break;
             default:
@@ -678,10 +663,7 @@ public partial class ModLoader : MonoBehaviour
         while (checkForUpdatesProgress)
             yield return null;
         dnsaf = true;
-        canvLoading.uTitle.text = "Downloading mod updates...".ToUpper();
-        canvLoading.uProgress.maxValue = 100;
-        canvLoading.uStatus.text = "Connecting...";
-        canvLoading.modUpdateUI.SetActive(true);
+        canvLoading.SetUpdate("Downloading mod updates...", 0, 100, "Connecting...");
         yield return null;
         bool failed = false;
         for (int i = 0; i < ModSelfUpdateList.Count; i++)
@@ -708,17 +690,18 @@ public partial class ModLoader : MonoBehaviour
             }
             else if (result[0] == "ok")
             {
-                WebClient webClient = new WebClient();
-                webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
-                webClient.DownloadFileCompleted += DownloadModCompleted;
-                webClient.DownloadProgressChanged += DownlaodModProgress;
-                downloadInProgress = true;
-                webClient.DownloadFileAsync(new Uri($"{serverURL}/{result[1]}"), Path.Combine(Path.Combine("Updates", "Mods"), $"{ModSelfUpdateList[i]}.zip"));
+                using (WebClient webClient = new WebClient())
+                {
+                    webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
+                    webClient.DownloadFileCompleted += DownloadModCompleted;
+                    webClient.DownloadProgressChanged += DownlaodModProgress;
+                    downloadInProgress = true;
+                    webClient.DownloadFileAsync(new Uri($"{serverURL}/{result[1]}"), Path.Combine(Path.Combine("Updates", "Mods"), $"{ModSelfUpdateList[i]}.zip"));
+                }
                 ModConsole.Print($"Downloading: <color=aqua>{ModSelfUpdateList[i]}.zip</color>");
                 while (downloadInProgress)
                 {
-                    canvLoading.uProgress.value = downloadPercentage;
-                    canvLoading.uStatus.text = $"({i + 1}/{ModSelfUpdateList.Count}) <color=aqua>{ModSelfUpdateList[i]}.zip</color> [<color=lime>{downloadPercentage}%</color>]";
+                    canvLoading.SetUpdateProgress(downloadPercentage, $"({i + 1}/{ModSelfUpdateList.Count}) <color=aqua>{ModSelfUpdateList[i]}.zip</color> [<color=lime>{downloadPercentage}%</color>]");
                     yield return null;
                 }
                 yield return new WaitForSeconds(1f);
@@ -731,7 +714,7 @@ public partial class ModLoader : MonoBehaviour
             }
 
         }
-        canvLoading.uTitle.text = "Downloading references updates...".ToUpper();
+        canvLoading.SetUpdateTitle("Downloading references updates...");
         for (int i = 0; i < RefSelfUpdateList.Count; i++)
         {
             string[] result = DownloadInfo(RefSelfUpdateList[i], true).Split('|');
@@ -756,17 +739,18 @@ public partial class ModLoader : MonoBehaviour
             }
             else if (result[0] == "ok")
             {
-                WebClient webClient = new WebClient();
-                webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
-                webClient.DownloadFileCompleted += DownloadModCompleted;
-                webClient.DownloadProgressChanged += DownlaodModProgress;
-                downloadInProgress = true;
-                webClient.DownloadFileAsync(new Uri($"{serverURL}/{result[1]}"), Path.Combine(Path.Combine("Updates", "References"), $"{RefSelfUpdateList[i]}.zip"));
+                using (WebClient webClient = new WebClient())
+                {
+                    webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
+                    webClient.DownloadFileCompleted += DownloadModCompleted;
+                    webClient.DownloadProgressChanged += DownlaodModProgress;
+                    downloadInProgress = true;
+                    webClient.DownloadFileAsync(new Uri($"{serverURL}/{result[1]}"), Path.Combine(Path.Combine("Updates", "References"), $"{RefSelfUpdateList[i]}.zip"));
+                }
                 ModConsole.Print($"Downloading: <color=aqua>{RefSelfUpdateList[i]}.zip</color>");
                 while (downloadInProgress)
                 {
-                    canvLoading.uProgress.value = downloadPercentage;
-                    canvLoading.uStatus.text = $"({i + 1}/{RefSelfUpdateList.Count}) <color=aqua>{RefSelfUpdateList[i]}.zip</color> [<color=lime>{downloadPercentage}%</color>]";
+                    canvLoading.SetUpdateProgress(downloadPercentage, $"({i + 1}/{RefSelfUpdateList.Count}) <color=aqua>{RefSelfUpdateList[i]}.zip</color> [<color=lime>{downloadPercentage}%</color>]");                    
                     yield return null;
                 }
                 yield return new WaitForSeconds(1f);
@@ -781,18 +765,17 @@ public partial class ModLoader : MonoBehaviour
         }
         if (!failed)
         {
-            canvLoading.uProgress.value = 100;
-            canvLoading.uStatus.text = $"<color=lime>Download Complete</color>";
+            canvLoading.SetUpdateProgress(100, $"<color=lime>Download Complete</color>");
             ModUI.ShowMessage("You need to restart the game for the updates to take effect!", "download completed");
         }
         else
         {
-            canvLoading.uStatus.text = $"<color=red>Download Failed!</color>";
+            canvLoading.SetUpdateStatus($"<color=red>Download Failed!</color>");
         }
         dnsaf = false;
         yield return new WaitForSeconds(3f);
         if (!dnsaf)
-            canvLoading.modUpdateUI.SetActive(false);
+            canvLoading.ToggleUpdateUI(false);
     }
     int downloadPercentage = 0;
     private void DownlaodModProgress(object sender, DownloadProgressChangedEventArgs e)

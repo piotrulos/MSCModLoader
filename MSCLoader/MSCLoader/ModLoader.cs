@@ -41,6 +41,7 @@ public partial class ModLoader : MonoBehaviour
 
     internal static bool devMode = false;
     internal static string GetMetadataFolder(string fn) => Path.Combine(MetadataFolder, fn);
+    private MSCLoaderCanvasLoading canvLoading;
 
     //Constructor version number
     static ModLoader()
@@ -819,7 +820,7 @@ public partial class ModLoader : MonoBehaviour
         }
         Console.WriteLine(e);
     }
-    MSCLoaderCanvasLoading canvLoading;
+
     IEnumerator NewGameMods()
     {
         ModConsole.Print("<color=aqua>==== Resetting mods ====</color>");
@@ -1193,9 +1194,9 @@ public partial class ModLoader : MonoBehaviour
     {
         for (int i = 0; i < LoadedMods.Count; i++)
         {
-            ModMetadata.ReadMetadata(LoadedMods[i]);
             if (LoadedMods[i].ID.StartsWith("MSCLoader_"))
                 continue;
+            ModMetadata.ReadMetadata(LoadedMods[i]);
             try
             {
                 //TODO: We already know mod that it calls from, so we can pass it now (removes need for this in settings creation)
@@ -1288,6 +1289,7 @@ public partial class ModLoader : MonoBehaviour
                         Console.Write("Empty mod ID");
                         continue;
                     }
+                    m.asmGuid = asmGuid;
                     isMod = true;
                     if (addRef.Count > 0)
                         LoadMod(m, msVer, file, addRef.ToArray());
