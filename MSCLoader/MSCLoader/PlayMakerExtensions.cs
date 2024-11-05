@@ -171,7 +171,7 @@ public static class PlayMakerExtensions
     /// <returns>Whether the injection was successful</returns>
     public static bool FsmInject(this GameObject go, string playmakerName, string stateName, Action hook, bool everyFrame = false, int index = -1, bool replace = false)
     {
-        return FsmInject(go.GetPlayMaker(stateName), stateName, new PM_Hook(hook, everyFrame), index, replace);
+        return FsmInject(go.GetPlayMaker(playmakerName), stateName, new PM_Hook(hook, everyFrame), index, replace);
     }
     /// <summary>
     /// Insert custom Action to the Playmaker
@@ -186,7 +186,7 @@ public static class PlayMakerExtensions
     /// <returns>Whether the injection was successful</returns>
     public static bool FsmInject(this Transform tf, string playmakerName, string stateName, Action hook, bool everyFrame = false, int index = -1, bool replace = false)
     {
-        return FsmInject(tf.GetPlayMaker(stateName), stateName, new PM_Hook(hook, everyFrame), index, replace);
+        return FsmInject(tf.GetPlayMaker(playmakerName), stateName, new PM_Hook(hook, everyFrame), index, replace);
     }
     /// <summary>
     /// Insert custom Action to the Playmaker
