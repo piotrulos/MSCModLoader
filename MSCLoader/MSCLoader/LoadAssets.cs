@@ -198,7 +198,7 @@ public static class LoadAssets
     // TGALoader by https://gist.github.com/mikezila/10557162
     internal static Texture2D LoadTGA(string fileName)
     {
-        using (var imageFile = File.OpenRead(fileName))
+        using (FileStream imageFile = File.OpenRead(fileName))
         {
             return LoadTGA(imageFile);
         }

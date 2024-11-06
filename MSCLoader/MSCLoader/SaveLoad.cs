@@ -85,7 +85,7 @@ public class SaveLoad
                 switch (header.collectionType)
                 {
                     case ES2Keys.Key._NativeArray:
-                        saveFileData.loadedData.TryGetValue(tag, out var value2);
+                        saveFileData.loadedData.TryGetValue(tag, out object value2);
                         object[] stuff3 = value2 as object[];
                         w.WriteHeader(regex.Replace(tag, "||", 1), ES2Keys.Key._NativeArray, ES2TypeManager.GetES2Type(header.valueType), null);
                         w.Write(stuff3, ES2TypeManager.GetES2Type(header.valueType));
@@ -94,7 +94,7 @@ public class SaveLoad
                         w.Save();
                         break;
                     case ES2Keys.Key._List:
-                        saveFileData.loadedData.TryGetValue(tag, out var value);
+                        saveFileData.loadedData.TryGetValue(tag, out object value);
                         List<object> stuff2 = value as List<object>;
                         w.WriteHeader(regex.Replace(tag, "||", 1), ES2Keys.Key._List, ES2TypeManager.GetES2Type(header.valueType), null);
                         w.Write(stuff2, ES2TypeManager.GetES2Type(header.valueType));

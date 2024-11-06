@@ -65,7 +65,7 @@ namespace NAudio.Vorbis
             count -= count % _reader.Channels;
 
             // get the buffer, creating a new one if none exists or the existing one is too small
-            var cb = _conversionBuffer ?? (_conversionBuffer = new float[count]);
+            float[] cb = _conversionBuffer ?? (_conversionBuffer = new float[count]);
             if (cb.Length < count)
             {
                 cb = (_conversionBuffer = new float[count]);
@@ -95,7 +95,7 @@ namespace NAudio.Vorbis
         {
             if (!NextStreamIndex.HasValue)
             {
-                var idx = _reader.StreamCount;
+                int idx = _reader.StreamCount;
                 if (_reader.FindNextStream())
                 {
                     NextStreamIndex = idx;
