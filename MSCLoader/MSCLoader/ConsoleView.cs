@@ -76,7 +76,7 @@ internal class ConsoleView : MonoBehaviour
 #if !Mini
     private void FixedUpdate()
     {
-        if (inputField.text.Length > 0 && Input.GetKey(KeyCode.Return))
+        if (inputField.text.Length > 0 && (Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.KeypadEnter)))
         {
             RunCommand();
         }

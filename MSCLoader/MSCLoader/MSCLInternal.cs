@@ -40,7 +40,9 @@ internal class MSCLInternal
                 response = "error";
             }
         }
-        ModConsole.Warning(response); //TODO: debug remove this
+#if DEBUG
+        ModConsole.Warning(response);
+#endif
         return response;
     }
 }

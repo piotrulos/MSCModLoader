@@ -14,7 +14,7 @@ public class ModAudioStream : MonoBehaviour
     public AudioSource audioSource;
 
     /// <summary>
-    /// Song info readed from metadata (if available)
+    /// Song info from metadata (if available)
     /// </summary>
     public string songInfo;
 

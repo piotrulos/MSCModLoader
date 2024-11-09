@@ -116,7 +116,7 @@ namespace MSCLoader.Preloader
                 if (!bool.TryParse(skipIntro, out introSkip))
                 {
                     introSkip = false;
-                    MDebug.Log($"[FAIL] skipIntro - Parse failed, readed value: {skipIntro}, restoring default...");
+                    MDebug.Log($"[FAIL] skipIntro - Parse failed, value parsed as: {skipIntro}, restoring default...");
                     ini["MSCLoader"]["skipIntro"] = "false";
                     new FileIniDataParser().WriteFile("doorstop_config.ini", ini, System.Text.Encoding.ASCII);
                 }
@@ -124,7 +124,7 @@ namespace MSCLoader.Preloader
                 if (!bool.TryParse(skipCfg, out cfgScreenSkip))
                 {
                     cfgScreenSkip = false;
-                    MDebug.Log($"[FAIL] skipConfigScreen - Parse failed, readed value: {skipCfg}, restoring default...");
+                    MDebug.Log($"[FAIL] skipConfigScreen - Parse failed, value parsed as: {skipCfg}, restoring default...");
                     ini["MSCLoader"]["skipConfigScreen"] = "false";
                     new FileIniDataParser().WriteFile("doorstop_config.ini", ini, System.Text.Encoding.ASCII);
                 }

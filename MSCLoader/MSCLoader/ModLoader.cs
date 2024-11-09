@@ -249,7 +249,7 @@ public partial class ModLoader : MonoBehaviour
         LoadCoreAssets();
         if (CheckVortexBS())
         {
-            ModUI.ShowMessage($"<b><color=orange>DON'T use Vortex</color></b> to update MSCLoader, or to install tools or mods.{Environment.NewLine}<b><color=orange>Vortex isn't supported by MSCLoader</color></b>, because it's implementation is broken that breaks Mods folder by putting wrong files into it.{Environment.NewLine}{Environment.NewLine}MSCLoader will try to fix your mods folder now, <b><color=orange>please restart your game.</color></b>{Environment.NewLine}If this message shows again after restart, rebuild your Mods folder from scratch.", "Fatal Error");
+            ModUI.ShowMessage($"<b><color=orange>DON'T use Vortex</color></b> to update MSCLoader, or to install tools or mods.{Environment.NewLine}<b><color=orange>Vortex isn't supported by MSCLoader</color></b>, because it's implementation breaks Mods folder by putting wrong files into it.{Environment.NewLine}{Environment.NewLine}MSCLoader will try to fix your mods folder now, <b><color=orange>please restart your game.</color></b>{Environment.NewLine}If this message shows again after restart, rebuild your Mods folder from scratch.", "Fatal Error");
             return;
         }
         LoadMod(new ModConsole(), MSCLoader_Ver);
@@ -346,14 +346,14 @@ public partial class ModLoader : MonoBehaviour
         }
 
         if (devMode)
-            ModConsole.Warning("You are running ModLoader in <color=red><b>DevMode</b></color>, this mode is <b>only for modders</b> and shouldn't be use in normal gameplay.");
+            ModConsole.Warning("You are running ModLoader in <color=red><b>DevMode</b></color>, this mode is <b>only for modders</b> and shouldn't be used in normal gameplay.");
         System.Console.WriteLine(SystemInfoFix()); //operating system version to output_log.txt
 
         if (saveErrors != null)
         {
             if (saveErrors.Count > 0 && wasSaving)
             {
-                ModUI.ShowMessage($"Some mod thrown an error during saving{Environment.NewLine}Check console for more information!");
+                ModUI.ShowMessage($"Some mods have thrown an error during saving{Environment.NewLine}Check console for more information!");
                 for (int i = 0; i < saveErrors.Count; i++)
                 {
                     ModConsole.Error(saveErrors[i]);
@@ -808,9 +808,9 @@ public partial class ModLoader : MonoBehaviour
     {
         string errorDetails = $"{Environment.NewLine}<b>Details: </b>{e.Message} in <b>{new StackTrace(e, true).GetFrame(0).GetMethod()}</b>";
         if (save)
-            saveErrors.Add($"Mod <b>{mod.ID}</b> throw an error!{errorDetails}");
+            saveErrors.Add($"Mod <b>{mod.ID}</b> has thrown an error!{errorDetails}");
         else
-            ModConsole.Error($"Mod <b>{mod.ID}</b> throw an error!{errorDetails}");
+            ModConsole.Error($"Mod <b>{mod.ID}</b> has thrown an error!{errorDetails}");
         if (devMode)
         {
             if (save)
@@ -1268,7 +1268,7 @@ public partial class ModLoader : MonoBehaviour
 
             //Warn about wrong .net target, source of some mod crashes.
             if (!asm.ImageRuntimeVersion.Equals(Assembly.GetExecutingAssembly().ImageRuntimeVersion))
-                ModConsole.Warning($"File <b>{Path.GetFileName(file)}</b> is targeting runtime version <b>{asm.ImageRuntimeVersion}</b> which is different that current running version <b>{Assembly.GetExecutingAssembly().ImageRuntimeVersion}</b>. This may cause unexpected behaviours, check your target assembly.");
+                ModConsole.Warning($"File <b>{Path.GetFileName(file)}</b> is targeting runtime version <b>{asm.ImageRuntimeVersion}</b> which is different than current running version <b>{Assembly.GetExecutingAssembly().ImageRuntimeVersion}</b>. This may cause unexpected behaviours, check your target assembly.");
 
             // Look through all public classes
             Type[] asmTypes = asm.GetTypes();

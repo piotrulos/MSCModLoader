@@ -388,7 +388,7 @@ public partial class ModLoader : MonoBehaviour
         }
     }
 
-    internal void UploadFileUpdate(string ID, string key, bool isRef)
+    internal void UploadFileUpdate(string ID, string ver, string key, bool isRef)
     {
         if (downloadInProgress)
         {
@@ -397,19 +397,20 @@ public partial class ModLoader : MonoBehaviour
         }
         else
         {
-            StartCoroutine(UploadModFile(ID, key, isRef));
+            StartCoroutine(UploadModFile(ID, ver, key, isRef));
         }
     }
     internal bool downloadInProgress = false;
     private bool downloadErrored = false;
 
-    IEnumerator UploadModFile(string ID, string key, bool isRef)
+    IEnumerator UploadModFile(string ID, string ver, string key, bool isRef)
     {
         dnsaf = true;
         string type = isRef ? "reference" : "mod";
+        string tmpFolder = Path.Combine("Updates", "Meta_temp");
         if (CheckSteam())
         {
-            if (!File.Exists(Path.Combine("Updates", $"Meta_temp\\{ID}.zip")))
+            if (!File.Exists(Path.Combine(tmpFolder, $"{ID}.zip")))
             {
                 ModConsole.Error("Couldn't find zip file.");
             }
@@ -423,7 +424,7 @@ public partial class ModLoader : MonoBehaviour
                     Client.UploadFileCompleted += UploadModUpdateCompleted;
                     Client.UploadProgressChanged += UploadModUpdateProgress;
                     downloadInProgress = true;
-                    Client.UploadFileAsync(new Uri($"{serverURL}/mscl_upfile.php?steam={steamID}&key={key}&resid={ID}&type={type}"), "POST", Path.Combine("Updates", $"Meta_temp\\{ID}.zip"));
+                    Client.UploadFileAsync(new Uri($"{serverURL}/mscl_upfile.php?steam={steamID}&key={key}&resid={ID}&ver={ver}&type={type}"), "POST", Path.Combine(tmpFolder, $"{ID}.zip"));
                 }
                 ModConsole.Print("Uploading File...");
                 canvLoading.SetUpdate("Uploading update file...", 0, 100, "Connecting...");
@@ -432,7 +433,7 @@ public partial class ModLoader : MonoBehaviour
                     canvLoading.SetUpdateProgress(downloadPercentage, $"(Uploading) <color=aqua>{ID}.zip</color> [<color=lime>{downloadPercentage}%</color>]");
                     yield return null;
                 }
-                File.Delete(Path.Combine("Updates", $"Meta_temp\\{ID}.zip"));
+                File.Delete(Path.Combine(tmpFolder, $"{ID}.zip"));
                 if (!downloadErrored)
                 {
                     canvLoading.SetUpdateProgress(100, $"<color=lime>Upload Complete</color>");
@@ -474,34 +475,15 @@ public partial class ModLoader : MonoBehaviour
         else
         {
             string s = System.Text.Encoding.UTF8.GetString(e.Result, 0, e.Result.Length);
+#if DEBUG
+            ModConsole.Warning(s);
+#endif
             string[] result = s.Split('|');
             if (result[0] == "error")
             {
                 ModConsole.Error("Failed to upload mod update");
-                switch (result[1])
-                {
-                    case "0":
-                        ModConsole.Error($"Invalid or non-existent key!");
-                        break;
-                    case "1":
-                        ModConsole.Error($"Database error!");
-                        break;
-                    case "2":
-                        ModConsole.Error($"User not found!");
-                        break;
-                    case "3":
-                        ModConsole.Error($"This mod ID doesn't exist in the database!");
-                        break;
-                    case "4":
-                        ModConsole.Error($"This is not your mod!");
-                        break;
-                    case "5":
-                        ModConsole.Error($"File rejected by server!");
-                        break;
-                    default:
-                        ModConsole.Error($"Unknown error!");
-                        break;
-                }
+                ModConsole.Error(result[1]);
+                
             }
             else if (result[0] == "ok")
             {
@@ -509,7 +491,7 @@ public partial class ModLoader : MonoBehaviour
             }
             else
             {
-                ModConsole.Error($"Unknown response");
+                Console.WriteLine(s);
             }
         }
     }
@@ -635,7 +617,6 @@ public partial class ModLoader : MonoBehaviour
                     else if (type == 4)
                         ModUI.ShowMessage("You need to restart the game if you want to install this reference.", "download completed");
                     else
-
                         ModUI.ShowMessage("You need to restart the game to apply updates.", "download completed");
                 }
                 else

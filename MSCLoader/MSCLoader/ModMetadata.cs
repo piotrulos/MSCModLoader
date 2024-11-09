@@ -372,7 +372,7 @@ internal class ModMetadata
             return;
         }
 
-        ModLoader.Instance.UploadFileUpdate(mod.ID, key, false);
+        ModLoader.Instance.UploadFileUpdate(mod.ID, mod.Version, key, false);
     }
 
     public static void UploadUpdateRef(References refs)
@@ -426,7 +426,7 @@ internal class ModMetadata
             return;
         }
 
-        ModLoader.Instance.UploadFileUpdate(refs.AssemblyID, key, true);
+        ModLoader.Instance.UploadFileUpdate(refs.AssemblyID, refs.AssemblyFileVersion, key, true);
 
     }
     public static void UpdateModVersionNumber(Mod mod)
@@ -857,10 +857,12 @@ internal class ModMetadata
         result = ModLoader.Instance.DownloadInfo(mod.ID, false).Split('|');
         if (result[0] == "ok")
         {
-            using WebClient descritpion = new WebClient();
-            descritpion.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
-            descritpion.DownloadFileCompleted += DescritpionDownloadCompleted;
-            descritpion.DownloadFileAsync(new Uri($"{ModLoader.serverURL}/{result[1]}"), Path.Combine(Path.Combine("Updates", "Mods"), $"{mod}.zip"), mod);
+            using (WebClient descritpion = new WebClient())
+            {
+                descritpion.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
+                descritpion.DownloadFileCompleted += DescritpionDownloadCompleted;
+                descritpion.DownloadFileAsync(new Uri($"{ModLoader.serverURL}/{result[1]}"), Path.Combine(Path.Combine("Updates", "Mods"), $"{mod}.zip"), mod);
+            }
         }
     }
 

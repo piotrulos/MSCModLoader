@@ -107,7 +107,7 @@ public class ModUI
     /// Create Message Box Button for ShowCustomMessage(...);
     /// </summary>
     /// <param name="ButtonText">Text on the Button</param>
-    /// <param name="ifClicked">Action if button was clicked (leave null for just closing meesage box)</param>
+    /// <param name="ifClicked">Action if button was clicked (leave null for just closing message box)</param>
     /// <param name="noClosing">Don't close MessageBox when action is triggered</param>
     /// <returns>MsgBoxBtn</returns>
     public static MsgBoxBtn CreateMessageBoxBtn(string ButtonText, Action ifClicked = null, bool noClosing = false)
@@ -126,7 +126,7 @@ public class ModUI
     /// Create Message Box Button for ShowCustomMessage(...);
     /// </summary>
     /// <param name="ButtonText">Text on the Button</param>
-    /// <param name="ifClicked">Action if button was clicked (leave null for just closing meesage box)</param>
+    /// <param name="ifClicked">Action if button was clicked (leave null for just closing message box)</param>
     /// <param name="BackgroundColor">Button background color</param>
     /// <param name="TextColor">Text color</param>
     /// <param name="noClosing">Don't close MessageBox when action is triggered</param>
