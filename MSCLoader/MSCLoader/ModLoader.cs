@@ -1104,6 +1104,7 @@ public partial class ModLoader : MonoBehaviour
                 }
             }
         }
+        MSCLInternal.LoadMSCLDataFile();
         actualModList = LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")).ToArray();
         BC_ModList = actualModList.Where(x => !x.newFormat).ToArray();
 
@@ -1386,7 +1387,6 @@ public partial class ModLoader : MonoBehaviour
             {
                 ModException(e, mod);
             }
-            mod.metadata = ModMetadata.LoadMetadata(mod);
         }
         else
         {

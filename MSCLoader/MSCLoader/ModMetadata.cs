@@ -92,6 +92,8 @@ public class MSCLData
     public int type = 1;
     public string msg;
     public int rev = 0;
+
+
 }
 public class MinimumRequirements
 {
@@ -202,7 +204,6 @@ internal class ModMetadata
             sign = CalculateFileChecksum(mod.fileName),
             type = 1
         };
-        string path = ModLoader.GetMetadataFolder($"{mod.ID}.json");
         string response = MSCLInternal.MSCLDataRequest("mscl_create.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key }, { "resID", mscldata.modID }, { "version", mod.Version }, { "sign", mscldata.sign }, { "asmGuid", mod.asmGuid }, { "type", "mod" } });
 
         string[] result = response.Split('|');
@@ -212,13 +213,12 @@ internal class ModMetadata
                 ModConsole.Error(result[1]);
                 break;
             case "ok":
-                string serializedData = JsonConvert.SerializeObject(mscldata, Formatting.Indented);
-                File.WriteAllText(path, serializedData);
+                if (!ModLoader.Instance.checkForUpdatesProgress)
+                    ModLoader.Instance.CheckForModsUpd(true);
                 ModConsole.Print("<color=lime>Metadata created successfully</color>");
                 ModConsole.Print("<color=lime>To edit details like description, links, conflicts, etc. go to MSCLoader website.</color>");
                 ModConsole.Print($"<color=lime>To upload update file just type <b>metadata update {mod.ID}</b>.</color>");
-                if (!ModLoader.Instance.checkForUpdatesProgress)
-                    ModLoader.Instance.CheckForModsUpd(true);
+
                 break;
             default:
                 Console.WriteLine($"Invalid resposne: {response}"); //Log invalid response to output_log.txt
@@ -270,7 +270,7 @@ internal class ModMetadata
 
     public static void UploadUpdateMenu(Mod mod)
     {
-        if (!File.Exists(ModLoader.GetMetadataFolder($"{mod.ID}.json")))
+        if (!File.Exists(ModLoader.GetMetadataFolder($"{mod.ID}.json"))) //TODO change metadata json
         {
             ModConsole.Error("Metadata file doesn't exists, to create use create command");
             return;
@@ -305,7 +305,7 @@ internal class ModMetadata
             Version v1 = new Version(mod.Version);
             Version v2 = new Version(mod.UpdateInfo.mod_version);
             if(v1.ToString() != mod.Version)
-                ModConsole.Warning($"Your set mod version <b>{mod.Version}</b> is actually read as <b>{v1}</b>. Rememeber that stuff like leading zeros are ignored during version compare. You can ignore this warning if you want, this is just reminder.");
+                ModConsole.Warning($"Your mod version <b>{mod.Version}</b> is actually read as <b>{v1}</b>. Rememeber that stuff like leading zeros are ignored during version compare. You can ignore this warning, this is just reminder.");
             switch (v1.CompareTo(v2))
             {
                 case 0:
@@ -328,7 +328,7 @@ internal class ModMetadata
             if (assets)
             {
                 Directory.CreateDirectory(Path.Combine(dir, "Assets"));
-                DirectoryCopy(Path.Combine(ModLoader.AssetsFolder, mod.ID), Path.Combine(Path.Combine(dir, "Assets"), mod.ID), true);
+                MSCLInternal.DirectoryCopy(Path.Combine(ModLoader.AssetsFolder, mod.ID), Path.Combine(Path.Combine(dir, "Assets"), mod.ID), true);
             }
             if (references)
             {
@@ -481,7 +481,7 @@ internal class ModMetadata
                 ModConsole.Error(result[1]);
                 break;
             case "ok":
-                string metadataFile = ModLoader.GetMetadataFolder($"{mod.ID}.json");
+                string metadataFile = ModLoader.GetMetadataFolder($"{mod.ID}.json"); //TODO change metadata json
                 string serializedData = JsonConvert.SerializeObject(umm, Formatting.Indented);
                 File.WriteAllText(metadataFile, serializedData);
                 ModConsole.Print("<color=lime>Mod version number updated successfully!</color>");
@@ -873,7 +873,7 @@ internal class ModMetadata
         ModUI.ShowMessage($"<color=yellow>{m.ID}</color> - Fatal crash when trying to read mod data.{Environment.NewLine}{Environment.NewLine}Error details: {Environment.NewLine}<color=aqua>{new BadImageFormatException().Message}</color>", "Crashed");
     }
 
-    internal static MSCLData LoadMetadata(Mod mod)
+   /* internal static void LoadMetadata(Mod mod)
     {
         string metadataFile = ModLoader.GetMetadataFolder($"{mod.ID}.json");
         if (File.Exists(metadataFile))
@@ -882,37 +882,9 @@ internal class ModMetadata
             return JsonConvert.DeserializeObject<MSCLData>(s);
         }
         return null;
-    }
+    }*/
 
-    private static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
-    {
-        DirectoryInfo dir = new DirectoryInfo(sourceDirName);
-        if (!dir.Exists)
-        {
-            throw new DirectoryNotFoundException(
-                "Source directory does not exist or could not be found: "
-                + sourceDirName);
-        }
-        DirectoryInfo[] dirs = dir.GetDirectories();
 
-        Directory.CreateDirectory(destDirName);
-
-        FileInfo[] files = dir.GetFiles();
-        foreach (FileInfo file in files)
-        {
-            string tempPath = Path.Combine(destDirName, file.Name);
-            file.CopyTo(tempPath, false);
-        }
-
-        if (copySubDirs)
-        {
-            foreach (DirectoryInfo subdir in dirs)
-            {
-                string tempPath = Path.Combine(destDirName, subdir.Name);
-                DirectoryCopy(subdir.FullName, tempPath, copySubDirs);
-            }
-        }
-    }
 
     static bool showedMissingModMessage = false;
     static void OpenRequiredDownloadPage(string m)

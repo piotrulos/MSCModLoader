@@ -60,10 +60,9 @@ public partial class ModLoader : MonoBehaviour
     internal bool checkForUpdatesProgress = false;
     IEnumerator CheckForRefModUpdates()
     {
-        ModConsole.Warning("cfrmu ");
+
         checkForUpdatesProgress = true;    
         canvLoading.SetUpdate("Checking for mod updates...", 0, 3, "Connecting...");
-        ModConsole.Warning("cfrmu 2");
 
         dnsaf = true;
         bool failed = false;
@@ -262,8 +261,7 @@ public partial class ModLoader : MonoBehaviour
                     try
                     {
                         Mod m = GetMod(MetadataUpdateList[i], true);
-                        File.WriteAllText(GetMetadataFolder($"{MetadataUpdateList[i]}.json"), cfmuResult);
-                        m.metadata = ModMetadata.LoadMetadata(m);
+                        m.metadata = JsonConvert.DeserializeObject<MSCLData>(cfmuResult);
                         ModMetadata.ReadMetadata(m);
                     }
                     catch (Exception e)
