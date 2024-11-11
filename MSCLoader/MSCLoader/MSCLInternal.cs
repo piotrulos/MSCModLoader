@@ -83,7 +83,7 @@ internal class MSCLInternal
     {
         if (!ES2.Exists(ModLoader.GetMetadataFolder("MSCLData.bin")))
         {
-            ES2.Save(new byte[1] { 0x01 }, ModLoader.GetMetadataFolder("MSCLData.bin") + "?tag=MSCLData");
+            ES2.Save(new byte[1] { 0x01 }, $"{ModLoader.GetMetadataFolder("MSCLData.bin")}?tag=MSCLData");
         }
         using (ES2Writer writer = ES2Writer.Create(ModLoader.GetMetadataFolder("MSCLData.bin")))
         {
@@ -92,9 +92,9 @@ internal class MSCLInternal
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                 Formatting = Formatting.None
             };
-            for (int i = 0; i < ModLoader.Instance.actualModList.Length; i++)
+            for (int i = 0; i < ModLoader.Instance.MetadataUpdateList.Count; i++)
             {
-                Mod mod = ModLoader.Instance.actualModList[i];
+                Mod mod = ModLoader.GetModByID(ModLoader.Instance.MetadataUpdateList[i], true);
                 if(mod.metadata == null) continue;
                 string serializedData = JsonConvert.SerializeObject(mod.metadata, config);
                 byte[] bytes = Encoding.UTF8.GetBytes(serializedData);
@@ -103,12 +103,36 @@ internal class MSCLInternal
             writer.Save();
         }
     }
+    internal static void SaveMSCLDataFile(Mod mod)
+    {
+        if (!ES2.Exists(ModLoader.GetMetadataFolder("MSCLData.bin")))
+        {
+            ES2.Save(new byte[1] { 0x01 }, $"{ModLoader.GetMetadataFolder("MSCLData.bin")}?tag=MSCLData");
+        }
+        if (mod.metadata == null) return;
+        JsonSerializerSettings config = new JsonSerializerSettings
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            Formatting = Formatting.None
+        };
+        string serializedData = JsonConvert.SerializeObject(mod.metadata, config);
+        byte[] bytes = Encoding.UTF8.GetBytes(serializedData);
 
+        ES2.Save(bytes, $"{ModLoader.GetMetadataFolder("MSCLData.bin")}?tag={mod.ID}||metadata");
+    }
     internal static void LoadMSCLDataFile()
     {
         if (!ES2.Exists(ModLoader.GetMetadataFolder("MSCLData.bin")))
         {
-            ES2.Save(new byte[1] { 0x01 }, ModLoader.GetMetadataFolder("MSCLData.bin") + "?tag=MSCLData");
+            ES2.Save(new byte[1] { 0x01 }, $"{ModLoader.GetMetadataFolder("MSCLData.bin")}?tag=MSCLData");
+            string[] oldm = Directory.GetFiles(ModLoader.GetMetadataFolder(""), "*.json");
+            if (oldm.Length > 0)
+            {
+                for (int i = 0; i < oldm.Length; i++)
+                {
+                    File.Delete(oldm[i]);
+                }
+            }
             return;
         }
         using(ES2Reader reader = ES2Reader.Create(ModLoader.GetMetadataFolder("MSCLData.bin")))

@@ -84,6 +84,7 @@ public partial class ModLoader
     /// <param name="modID">Mod ID of other mod to check (Case sensitive)</param>
     /// <param name="ignoreEnabled">Include disabled mods [yes it's DUMB proloader variable name]</param>
     /// <returns>Mod class</returns>
+    [Obsolete("Proloader BS", true)]
     public static Mod GetMod(string modID, bool ignoreEnabled = false)
     {
         if (IsModPresent(modID))
@@ -97,6 +98,13 @@ public partial class ModLoader
         return null;
     }
 
+    internal static Mod GetModByID(string modID, bool includeDisabled = false)
+    {
+        Mod m = LoadedMods.Where(x => x.ID.Equals(modID)).FirstOrDefault();
+        if (includeDisabled) return m; //if include disabled is true then just return (can be null)
+        if (!m.isDisabled) return m; //if include disabled is false we go here to check if mod is not disabled and return it.
+        return null; //null if any above if is false
+    }
     /// <summary>
     /// Check if Reference of specified AssemblyID is present
     /// </summary>

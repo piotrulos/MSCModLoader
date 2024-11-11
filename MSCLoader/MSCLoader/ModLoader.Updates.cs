@@ -6,7 +6,6 @@ using System.Collections;
 using System.IO;
 using System.Linq;
 using System.Net;
-using UnityEngine.UI;
 
 namespace MSCLoader;
 public partial class ModLoader : MonoBehaviour
@@ -239,28 +238,16 @@ public partial class ModLoader : MonoBehaviour
                     string[] ed = cfmuResult.Split('|');
                     if (ed[0] == "error")
                     {
-                        switch (ed[1])
-                        {
-                            case "0":
-                                Console.WriteLine("No metadata for " + MetadataUpdateList[i]);
-                                yield return null;
-                                continue;
-                            case "1":
-                                Console.WriteLine("Database connection problem");
-                                yield return null;
-                                continue;
-                            default:
-                                Console.WriteLine("Unknown error.");
-                                yield return null;
-                                continue;
-                        }
+                        Console.WriteLine($"DownloadMetadataFiles() Error: {ed[1]}");
+                        yield return null;
+                        continue;
                     }
                 }
                 else if (cfmuResult.StartsWith("{"))
                 {
                     try
                     {
-                        Mod m = GetMod(MetadataUpdateList[i], true);
+                        Mod m = GetModByID(MetadataUpdateList[i], true);
                         m.metadata = JsonConvert.DeserializeObject<MSCLData>(cfmuResult);
                         ModMetadata.ReadMetadata(m);
                     }
@@ -281,11 +268,12 @@ public partial class ModLoader : MonoBehaviour
                 }
             }
         }
-        canvLoading.SetUpdateProgress(MetadataUpdateList.Count,"Done!");
+        canvLoading.SetUpdateProgress(MetadataUpdateList.Count, "Done!");
         if (cfmuErrored)
             canvLoading.SetUpdateStatus("<color=red>Connection error!</color>");
         checkForUpdatesProgress = false;
         dnsaf = false;
+        MSCLInternal.SaveMSCLDataFile();
         yield return new WaitForSeconds(3f);
         if (!dnsaf)
             canvLoading.ToggleUpdateUI(false);
@@ -300,7 +288,7 @@ public partial class ModLoader : MonoBehaviour
             cfmuResult = string.Empty;
             ModConsole.Error("Failed to check for mod updates!");
             ModConsole.Error(e.Error.Message);
-            System.Console.WriteLine(e.Error);
+            Console.WriteLine(e.Error);
         }
         else
         {
@@ -438,7 +426,7 @@ public partial class ModLoader : MonoBehaviour
                     if (isRef)
                         ModMetadata.UpdateVersionNumberRef(ID);
                     else
-                        ModMetadata.UpdateModVersionNumber(GetMod(ID, true));
+                        ModMetadata.UpdateModVersionNumber(GetModByID(ID, true));
                 }
             }
         }

@@ -328,6 +328,7 @@ public partial class ModLoader : MonoBehaviour
             ModConsole.Print($"<b><color=orange>Loaded <color=aqua>{actualModList.Length}</color> mods (<color=magenta>{InvalidMods.Count}</color> failed to load)!</color></b>{Environment.NewLine}");
         else
             ModConsole.Print($"<b><color=orange>Loaded <color=aqua>{actualModList.Length}</color> mods!</color></b>{Environment.NewLine}");
+        MSCLInternal.LoadMSCLDataFile();
         LoadModsSettings();
         ModMenu.LoadBinds();
         GameObject old_callbacks = new GameObject("BC Callbacks");
@@ -459,7 +460,7 @@ public partial class ModLoader : MonoBehaviour
         }
         else
         {
-            cfmuResult = System.Text.Encoding.UTF8.GetString(e.Result, 0, e.Result.Length);
+            cfmuResult = Encoding.UTF8.GetString(e.Result, 0, e.Result.Length);
         }
     }
 
@@ -1104,7 +1105,6 @@ public partial class ModLoader : MonoBehaviour
                 }
             }
         }
-        MSCLInternal.LoadMSCLDataFile();
         actualModList = LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")).ToArray();
         BC_ModList = actualModList.Where(x => !x.newFormat).ToArray();
 
@@ -1127,7 +1127,6 @@ public partial class ModLoader : MonoBehaviour
         //cleanup files if not in dev mode
         if (!devMode)
         {
-
             string cleanupLast = Path.Combine(SettingsFolder, Path.Combine("MSCLoader_Settings", "lastCleanupCheck"));
             if (File.Exists(cleanupLast))
             {

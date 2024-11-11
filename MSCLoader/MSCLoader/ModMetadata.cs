@@ -1,12 +1,10 @@
 ﻿#if !Mini
 using Ionic.Zip;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 
 namespace MSCLoader;
 
@@ -215,10 +213,10 @@ internal class ModMetadata
             case "ok":
                 if (!ModLoader.Instance.checkForUpdatesProgress)
                     ModLoader.Instance.CheckForModsUpd(true);
+                MSCLInternal.SaveMSCLDataFile(mod);
                 ModConsole.Print("<color=lime>Metadata created successfully</color>");
                 ModConsole.Print("<color=lime>To edit details like description, links, conflicts, etc. go to MSCLoader website.</color>");
                 ModConsole.Print($"<color=lime>To upload update file just type <b>metadata update {mod.ID}</b>.</color>");
-
                 break;
             default:
                 Console.WriteLine($"Invalid resposne: {response}"); //Log invalid response to output_log.txt
@@ -270,7 +268,7 @@ internal class ModMetadata
 
     public static void UploadUpdateMenu(Mod mod)
     {
-        if (!File.Exists(ModLoader.GetMetadataFolder($"{mod.ID}.json"))) //TODO change metadata json
+        if (!MSCLInternal.MSCLDataExists(mod.ID))
         {
             ModConsole.Error("Metadata file doesn't exists, to create use create command");
             return;
@@ -470,8 +468,7 @@ internal class ModMetadata
                 ModConsole.Error($"Mod version <b>{mod.Version}</b> is <b>LOWER</b> than current offered version <b>{mod.UpdateInfo.mod_version}</b>, cannot update.");
                 return;
         }
-
-        
+       
         string response = MSCLInternal.MSCLDataRequest("mscl_setversion.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key }, { "resID", mod.ID }, { "version", mod.Version }, { "sign", umm.sign }, { "type", "mod" } });
 
         string[] result = response.Split('|');
@@ -481,12 +478,10 @@ internal class ModMetadata
                 ModConsole.Error(result[1]);
                 break;
             case "ok":
-                string metadataFile = ModLoader.GetMetadataFolder($"{mod.ID}.json"); //TODO change metadata json
-                string serializedData = JsonConvert.SerializeObject(umm, Formatting.Indented);
-                File.WriteAllText(metadataFile, serializedData);
                 ModConsole.Print("<color=lime>Mod version number updated successfully!</color>");
                 if (!ModLoader.Instance.checkForUpdatesProgress)
                     ModLoader.Instance.CheckForModsUpd(true);
+                MSCLInternal.SaveMSCLDataFile(mod);
                 break;
             default:
                 Console.WriteLine($"Invalid resposne: {response}"); //Log invalid response to output_log.txt
@@ -540,7 +535,7 @@ internal class ModMetadata
         {
             try
             {
-                Mod mod = ModLoader.GetMod(mv.versions[i].mod_id, true);
+                Mod mod = ModLoader.GetModByID(mv.versions[i].mod_id, true);
                 if (mod == null) continue;
                 mod.UpdateInfo = mv.versions[i];
                 if (mv.versions[i].mod_type == 2 || mv.versions[i].mod_type == 9)
@@ -633,7 +628,7 @@ internal class ModMetadata
             Upd_list += $"Mods:{Environment.NewLine}";
             for (int i = 0; i < ModLoader.ModSelfUpdateList.Count; i++)
             {
-                Mod m = ModLoader.GetMod(ModLoader.ModSelfUpdateList[i], true);
+                Mod m = ModLoader.GetModByID(ModLoader.ModSelfUpdateList[i], true);
                 Upd_list += $"<color=yellow>{m.Name}</color>: <color=aqua>{m.Version}</color> => <color=lime>{m.UpdateInfo.mod_version}</color>{Environment.NewLine}";
             }
             Upd_list += Environment.NewLine;
@@ -669,7 +664,7 @@ internal class ModMetadata
 
         for (int i = 0; i < ModLoader.ModSelfUpdateList.Count; i++)
         {
-            Mod m = ModLoader.GetMod(ModLoader.ModSelfUpdateList[i], true);
+            Mod m = ModLoader.GetModByID(ModLoader.ModSelfUpdateList[i], true);
             idLists.Add(ModLoader.ModSelfUpdateList[i]);
             verLists.Add(m.UpdateInfo.mod_version);
             nameLists.Add(m.Name);
@@ -774,7 +769,7 @@ internal class ModMetadata
                 List<string> modIDs = mod.metadata.modConflicts.modIDs;
                 for (int i = 0; i < modIDs.Count; i++)
                 {
-                    if (ModLoader.GetMod(modIDs[i], true) != null)
+                    if (ModLoader.GetModByID(modIDs[i], true) != null)
                     {
                         if (mod.metadata.modConflicts.disableIfConflict)
                         {
