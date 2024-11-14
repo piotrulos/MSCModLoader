@@ -48,7 +48,7 @@ public class MSCUnloader : MonoBehaviour
             PlayMakerGlobals.Instance.Variables.FindFsmBool("SongImported").Value = false; //stupid variable name.
 
             ModLoader.unloader = false;
-            ModLoader.rtmm = true;
+            ModLoader.returnToMainMenu = true;
             Application.LoadLevel(Application.loadedLevelName);
             doReset = false;
         }

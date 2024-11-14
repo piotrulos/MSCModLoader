@@ -12,16 +12,18 @@ public partial class ModLoader
     internal static List<string> InvalidMods;
     internal static ModLoader Instance;
     internal static bool unloader = false;
-    internal static bool rtmm = false;
+    internal static bool returnToMainMenu = false;
     internal static List<string> saveErrors;
 
     internal Mod[] actualModList = new Mod[0];
     internal Mod[] BC_ModList = new Mod[0];
     internal static List<Mod> HasUpdateModList = new List<Mod>();
     internal static List<References> HasUpdateRefList = new List<References>();
-
+    internal List<string> crashedGuids = new List<string>();
+    internal List<string> modIDsReferences = new List<string>();
     internal List<References> ReferencesList = new List<References>();
     internal string[] stdRef = new string[] { "mscorlib", "System.Core", "UnityEngine", "PlayMaker", "MSCLoader", "System", "Assembly-CSharp", "Assembly-CSharp-firstpass", "Assembly-UnityScript", "Assembly-UnityScript-firstpass", "ES2", "Ionic.Zip", "UnityEngine.UI", "0Harmony", "cInput", "Newtonsoft.Json", "System.Xml" };
+  
     //Old stuff
     internal Mod[] PLoadMods = new Mod[0];
     internal Mod[] SecondPassMods = new Mod[0];
@@ -70,10 +72,8 @@ public partial class ModLoader
 
 
     internal bool IsModsLoading = false;
-    internal bool fullyLoaded = false;
     internal bool allModsLoaded = false;
     internal bool IsModsResetting = false;
-    internal bool IsModsDoneResetting = false;
     internal bool ModloaderUpdateMessage = false;
 }
 

@@ -53,16 +53,14 @@ public partial class ModLoader : MonoBehaviour
         ContinueInit();
     }
 
-    private bool cfmuErrored = false;
+   /* private bool cfmuErrored = false;
     private bool cfmuInProgress = false;
-    private string cfmuResult = string.Empty;
+    private string cfmuResult = string.Empty;*/
     internal bool checkForUpdatesProgress = false;
     IEnumerator CheckForRefModUpdates()
     {
-
         checkForUpdatesProgress = true;    
         canvLoading.SetUpdate("Checking for mod updates...", 0, 3, "Connecting...");
-
         dnsaf = true;
         bool failed = false;
         yield return new WaitForSeconds(.3f);
@@ -71,54 +69,34 @@ public partial class ModLoader : MonoBehaviour
         {
             { "mods", modlist }
         };
-        cfmuInProgress = true;
-        WebClient webClient = new WebClient();
-     
-        webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
-        webClient.UploadValuesCompleted += ModsUpdateData;
-        webClient.UploadProgressChanged += ModsUpdateDataProgress;
-        webClient.UploadValuesAsync(new Uri($"{serverURL}/mods_ver.php"), "POST", modvals);
-        
+
+        MSCLInternal.MSCLRequestAsync("mscl_versions.php", modvals);
         canvLoading.SetUpdateProgress(1, "Downloading mods update info...");
-        while (cfmuInProgress)
+        while (MSCLInternal.AsyncRequestInProgress)
             yield return null;
-        if (!cfmuErrored)
+        if (!MSCLInternal.AsyncRequestError)
         {
-            if (cfmuResult.StartsWith("error"))
+            string requestResult = MSCLInternal.AsyncRequestResult;
+            if (requestResult.StartsWith("error"))
             {
-                string[] ed = cfmuResult.Split('|');
+                string[] ed = requestResult.Split('|');
                 if (ed[0] == "error")
                 {
-                    switch (ed[1])
-                    {
-                        case "0":
-                            failed = true;
-                            ModConsole.Error("Failed to check for mod updates");
-                            ModConsole.Error("Invalid request");
-                            break;
-                        case "1":
-                            failed = true;
-                            ModConsole.Error("Failed to check for mod updates");
-                            ModConsole.Error("Database connection problem");
-                            break;
-                        case "2":
-                            //Not error just empty list
-                            ModMetadata.ReadUpdateInfo(new ModVersions());
-                            Console.WriteLine("No update info for selected mods");
-                            break;
-                        default:
-                            failed = true;
-                            ModConsole.Error("Failed to check for mod updates");
-                            ModConsole.Error("Unknown error.");
-                            break;
-                    }
+                    ModConsole.Error("Failed to check for mod updates");
+                    ModConsole.Error(ed[1]);
                 }
+                failed = true;
             }
-            else if (cfmuResult.StartsWith("{"))
+            else if (requestResult.StartsWith("{"))
             {
-                ModVersions v = JsonConvert.DeserializeObject<ModVersions>(cfmuResult);
-                File.WriteAllText(Path.Combine(SettingsFolder, Path.Combine("MSCLoader_Settings", "updateInfo.json")), cfmuResult);
+                ModVersions v = JsonConvert.DeserializeObject<ModVersions>(requestResult);
+                File.WriteAllText(Path.Combine(SettingsFolder, Path.Combine("MSCLoader_Settings", "updateInfo.json")), requestResult);
                 ModMetadata.ReadUpdateInfo(v);
+            }
+            else
+            {
+                Console.WriteLine(requestResult);
+                ModMetadata.ReadUpdateInfo(null);
             }
         }
         else
@@ -133,51 +111,36 @@ public partial class ModLoader : MonoBehaviour
         }
         canvLoading.SetUpdateTitle("Checking for references updates...");
         yield return null;
-        cfmuInProgress = true;
         modlist = string.Join(",", ReferencesList.Select(x => x.AssemblyID).ToArray());
         modvals.Clear();
-        modvals.Add("refs", modlist);
-        webClient.UploadValuesAsync(new Uri($"{serverURL}/refs_ver.php"), "POST", modvals);
+        modvals.Add("references", modlist);
+        MSCLInternal.MSCLRequestAsync("mscl_versions.php", modvals);
         canvLoading.SetUpdateProgress(2, "Downloading references update info...");
-        while (cfmuInProgress)
+        while (MSCLInternal.AsyncRequestInProgress)
             yield return null;
-        if (!cfmuErrored)
+        if (!MSCLInternal.AsyncRequestError)
         {
-            if (cfmuResult.StartsWith("error"))
+            string requestResult = MSCLInternal.AsyncRequestResult;
+            if (requestResult.StartsWith("error"))
             {
-                string[] ed = cfmuResult.Split('|');
+                string[] ed = requestResult.Split('|');
                 if (ed[0] == "error")
                 {
-                    switch (ed[1])
-                    {
-                        case "0":
-                            failed = true;
-                            ModConsole.Error("Failed to check for references updates");
-                            ModConsole.Error("Invalid request");
-                            break;
-                        case "1":
-                            failed = true;
-                            ModConsole.Error("Failed to check for references updates");
-                            ModConsole.Error("Database connection problem");
-                            break;
-                        case "2":
-                            //Not error just empty list
-                            ModMetadata.ReadRefUpdateInfo(new RefVersions());
-                            Console.WriteLine("No update info for selected references");
-                            break;
-                        default:
-                            failed = true;
-                            ModConsole.Error("Failed to check for references updates");
-                            ModConsole.Error("Unknown error.");
-                            break;
-                    }
+                    ModConsole.Error("Failed to check for mod updates");
+                    ModConsole.Error(ed[1]);
                 }
+                failed = true;
             }
-            else if (cfmuResult.StartsWith("{"))
+            else if (requestResult.StartsWith("{"))
             {
-                RefVersions v = JsonConvert.DeserializeObject<RefVersions>(cfmuResult);
-                File.WriteAllText(Path.Combine(SettingsFolder, Path.Combine("MSCLoader_Settings", "ref_updateInfo.json")), cfmuResult);
+                RefVersions v = JsonConvert.DeserializeObject<RefVersions>(requestResult);
+                File.WriteAllText(Path.Combine(SettingsFolder, Path.Combine("MSCLoader_Settings", "ref_updateInfo.json")), requestResult);
                 ModMetadata.ReadRefUpdateInfo(v);
+            }
+            else
+            {
+                Console.WriteLine(requestResult);
+                ModMetadata.ReadRefUpdateInfo(null);
             }
         }
         else
@@ -213,6 +176,8 @@ public partial class ModLoader : MonoBehaviour
     {
         while (checkForUpdatesProgress) yield return null;
         checkForUpdatesProgress = true;
+        bool cfmuErrored = false, cfmuInProgress;
+        string cfmuResult = string.Empty;
         canvLoading.SetUpdate("Downloading metadata files...", 0, MetadataUpdateList.Count, "Connecting...");
         dnsaf = true;
         for (int i = 0; i < MetadataUpdateList.Count; i++)
@@ -222,7 +187,22 @@ public partial class ModLoader : MonoBehaviour
             using (WebClient webClient = new WebClient())
             {
                 webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
-                webClient.DownloadStringCompleted += cfmuDownloadCompl;
+                webClient.DownloadStringCompleted += (sender, e) =>
+                {
+                    cfmuInProgress = false;
+                    if (e.Error != null)
+                    {
+                        cfmuErrored = true;
+                        cfmuResult = string.Empty;
+                        ModConsole.Error("Failed to check for mod updates!");
+                        ModConsole.Error(e.Error.Message);
+                        Console.WriteLine(e.Error);
+                    }
+                    else
+                    {
+                        cfmuResult = e.Result;
+                    }
+                };
                 webClient.DownloadStringAsync(new Uri($"{serverURL}/{metadataURL}{MetadataUpdateList[i]}"));
             }
             while (cfmuInProgress)
@@ -277,25 +257,6 @@ public partial class ModLoader : MonoBehaviour
         yield return new WaitForSeconds(3f);
         if (!dnsaf)
             canvLoading.ToggleUpdateUI(false);
-    }
-
-    private void cfmuDownloadCompl(object sender, DownloadStringCompletedEventArgs e)
-    {
-        if (e.Error != null)
-        {
-            cfmuErrored = true;
-            cfmuInProgress = false;
-            cfmuResult = string.Empty;
-            ModConsole.Error("Failed to check for mod updates!");
-            ModConsole.Error(e.Error.Message);
-            Console.WriteLine(e.Error);
-        }
-        else
-        {
-            cfmuErrored = false;
-            cfmuResult = e.Result;
-            cfmuInProgress = false;
-        }
     }
 
     private bool dnsaf = false;

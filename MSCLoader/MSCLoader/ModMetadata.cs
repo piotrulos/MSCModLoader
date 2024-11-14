@@ -7,6 +7,11 @@ using System.Linq;
 using System.Net;
 
 namespace MSCLoader;
+internal class RequiredList
+{
+    public List<string> mods;
+    public List<string> references;
+}
 
 internal class ModVersions
 {
@@ -529,7 +534,7 @@ internal class ModMetadata
         ModLoader.ModSelfUpdateList = new List<string>();
         ModLoader.Instance.MetadataUpdateList = new List<string>();
         ModLoader.HasUpdateModList = new List<Mod>();
-        if (mv is null) return;
+        if (mv == null) return;
 
         for (int i = 0; i < mv.versions.Count; i++)
         {
@@ -591,6 +596,8 @@ internal class ModMetadata
     {
         ModLoader.RefSelfUpdateList = new List<string>();
         ModLoader.HasUpdateRefList = new List<References>();
+        if (mv == null) return;
+
         for (int i = 0; i < mv.versions.Count; i++)
         {
             try
@@ -620,6 +627,9 @@ internal class ModMetadata
             }
         }
         ModMenu.instance.UI.transform.GetChild(0).GetComponent<ModMenuView>().RefreshTabs();
+    }
+    internal static void GetSelfUpdateList()
+    {
         bool upd = false;
         string Upd_list = string.Empty;
         if (ModLoader.ModSelfUpdateList.Count > 0)

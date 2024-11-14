@@ -4,13 +4,14 @@ using System;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
-using System.ComponentModel.Design;
-using UnityStandardAssets.Water;
 
 namespace MSCLoader;
 
 internal class MSCLInternal
 {
+    internal static bool AsyncRequestInProgress = false;
+    internal static bool AsyncRequestError = false;
+    internal static string AsyncRequestResult = string.Empty;
     internal static bool ValidateVersion(string version)
     {
         try
@@ -24,9 +25,8 @@ internal class MSCLInternal
         }
         return true;
     }
-    internal static string MSCLDataRequest(string reqPath, Dictionary<string, string> data)
+    internal static string MSCLDataRequest(string reqPath, System.Collections.Specialized.NameValueCollection msclData)
     {
-        System.Collections.Specialized.NameValueCollection msclData = new System.Collections.Specialized.NameValueCollection { { "msclData", JsonConvert.SerializeObject(data) } };
         string response = "";
         using (WebClient MSCLDconn = new WebClient())
         {
@@ -47,6 +47,50 @@ internal class MSCLInternal
         ModConsole.Warning(response);
 #endif
         return response;
+    }
+
+
+    internal static string MSCLDataRequest(string reqPath, Dictionary<string, string> data)
+    {
+        System.Collections.Specialized.NameValueCollection msclData = new System.Collections.Specialized.NameValueCollection { { "msclData", JsonConvert.SerializeObject(data) } };
+        return MSCLDataRequest(reqPath, msclData);
+    }
+
+    internal static string MSCLDataRequest(string reqPath, Dictionary<string, List<string>> data)
+    {
+        System.Collections.Specialized.NameValueCollection msclData = new System.Collections.Specialized.NameValueCollection { { "msclData", JsonConvert.SerializeObject(data) } };
+        return MSCLDataRequest(reqPath, msclData);
+    }
+    internal static void MSCLRequestAsync(string reqPath, System.Collections.Specialized.NameValueCollection msclData)
+    {
+        AsyncRequestInProgress = true;
+        using (WebClient webClient = new WebClient())
+        { 
+            webClient.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
+            webClient.UploadValuesCompleted += ModsUpdateData;
+            webClient.UploadProgressChanged += ModsUpdateDataProgress;
+            webClient.UploadValuesAsync(new Uri($"{ModLoader.serverURL}/{reqPath}"), "POST", msclData);
+        }
+    }
+    private static void ModsUpdateDataProgress(object sender, UploadProgressChangedEventArgs e)
+    {
+        AsyncRequestInProgress = true;
+    }
+    private static void ModsUpdateData(object sender, UploadValuesCompletedEventArgs e)
+    {
+        AsyncRequestInProgress = false;
+        if (e.Error != null)
+        {
+            ModConsole.Error("Failed to check for mods updates");
+            ModConsole.Error(e.Error.Message);
+            Console.WriteLine(e.Error);
+            AsyncRequestError = true;
+            return;
+        }
+        else
+        {
+            AsyncRequestResult = Encoding.UTF8.GetString(e.Result, 0, e.Result.Length);
+        }
     }
 
     internal static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
@@ -151,5 +195,7 @@ internal class MSCLInternal
     {
         return ES2.Exists($"{ModLoader.GetMetadataFolder("MSCLData.bin")}?tag={modID}||metadata");
     }
+
+
 }
 
