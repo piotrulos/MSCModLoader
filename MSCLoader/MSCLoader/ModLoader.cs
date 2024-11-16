@@ -1121,25 +1121,49 @@ public partial class ModLoader : MonoBehaviour
     }
     void GetRequiredFilesData()
     {
-      //  modIDsReferences = new List<string>();
+        //  modIDsReferences = new List<string>();
         if (modIDsReferences.Count == 0 && crashedGuids.Count == 0)
             return;
-        string response = MSCLInternal.MSCLDataRequest("mscl_required.php", new Dictionary<string, List<string>> { { "ModIDs", modIDsReferences }, { "guids", crashedGuids } });
+        List<string> missingModIDsReferences = new List<string>();
+        for (int i = 0; i < modIDsReferences.Count; i++)
+        {
+            if (!ReferencesArePresent(GetModByID(modIDsReferences[i]).AdditionalReferences))
+            {
+                missingModIDsReferences.Add(modIDsReferences[i]);
+            }
+        }
+        if (missingModIDsReferences.Count == 0 && crashedGuids.Count == 0)
+            return; 
+        string response = MSCLInternal.MSCLDataRequest("mscl_required.php", new Dictionary<string, List<string>> { { "ModIDs", missingModIDsReferences }, { "guids", crashedGuids } });
         //RequiredList
-        /*   string[] result = response.Split('|');
-           switch (result[0])
-           {
-               case "error":
-                   ModConsole.Error(result[1]);
-                   break;
-               case "ok":
-                   ModConsole.Print("<color=lime>Reference version number updated successfully!</color>");
-                   break;
-               default:
-                   Console.WriteLine($"Invalid resposne: {response}"); //Log invalid response to output_log.txt
-                   break;
-           }*/
+        if (response.StartsWith("error"))
+        {
+            string[] result = response.Split('|');
+            ModConsole.Error(result[1]);
+        }
+        else if (response.StartsWith("{"))
+        {
+            RequiredList list = JsonConvert.DeserializeObject<RequiredList>(response);
+            List<string> refsToDwl = new List<string>();
+            List<string> modsToDwl = new List<string>();
+            for (int i = 0; i < list.references.Count; i++)
+            {
+                if (!IsReferencePresent(list.references[i]))
+                    refsToDwl.Add(list.references[i]);
+            }
+            for (int i = 0; i < list.mods.Count; i++)
+            {
+                if (!IsModPresent(list.mods[i], true))
+                    modsToDwl.Add(list.mods[i]);
+            }
+            DownloadRequiredFiles(refsToDwl, modsToDwl);
+        }
+        else
+        {
+            Console.WriteLine(response);
+        }
     }
+
     void CleanupFolders()
     {
         string[] setFold = Directory.GetDirectories(SettingsFolder);
@@ -1342,7 +1366,21 @@ public partial class ModLoader : MonoBehaviour
         }
 
     }
-
+    private bool ReferencesArePresent(string[] refs)
+    {
+        int count = 0;
+        Assembly[] LoadedAsms = AppDomain.CurrentDomain.GetAssemblies();
+        for (int i = 0; i < LoadedAsms.Length; i++)
+        {
+            if (refs.Contains(LoadedAsms[i].GetName().Name))
+            {
+                count++;
+                if(count == refs.Length)
+                    return true;
+            }
+        }
+        return false;
+    }
     private void LoadMod(Mod mod, string msver, string fname = null, string[] additionalRef = null)
     {
         // Check if mod already exists
@@ -1359,7 +1397,9 @@ public partial class ModLoader : MonoBehaviour
             mod.fileName = fname;
             mod.AdditionalReferences = additionalRef;
             if (mod.AdditionalReferences != null)
+            {
                 modIDsReferences.Add(mod.ID);
+            }
             try
             {
                 mod.ModSetup();

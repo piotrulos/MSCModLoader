@@ -320,7 +320,7 @@ namespace MSCLoader
             }
         }
 
-        public void DownloadItemFill(DownloadableModList dml)
+      /*  public void DownloadItemFill(DownloadableModList dml)
         {
             //TODO: This shit needs more work, locked under only DevMode builds
             if (dml != null)
@@ -338,7 +338,7 @@ namespace MSCLoader
                     DownloadUpdateBtn.gameObject.SetActive(true);
                 }
             }
-        }
+        }*/
         public void DisableThisMod(bool ischecked)
         {
             if (mod.isDisabled != ischecked)

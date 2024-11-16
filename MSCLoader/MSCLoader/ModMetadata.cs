@@ -9,8 +9,8 @@ using System.Net;
 namespace MSCLoader;
 internal class RequiredList
 {
-    public List<string> mods;
-    public List<string> references;
+    public List<string> mods = new List<string>();
+    public List<string> references = new List<string>();
 }
 
 internal class ModVersions
@@ -890,17 +890,6 @@ internal class ModMetadata
     }*/
 
 
-
-    static bool showedMissingModMessage = false;
-    static void OpenRequiredDownloadPage(string m)
-    {
-        if (showedMissingModMessage) return;
-        showedMissingModMessage = true;
-        ModUI.ShowYesNoMessage($"Some of the mods requires mod <color=aqua>{m}</color> to be installed.{Environment.NewLine}{Environment.NewLine}Do you want to download this mod now?", "Missing mods", delegate
-        {
-            ModLoader.Instance.DownloadRequiredMod(m);
-        });
-    }
     internal static string CalculateFileChecksum(string fn)
     {
         byte[] hash = System.Security.Cryptography.MD5.Create().ComputeHash(File.ReadAllBytes(fn));
