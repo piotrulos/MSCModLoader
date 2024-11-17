@@ -3,6 +3,7 @@ using Ionic.Zip;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -282,31 +283,7 @@ public partial class ModLoader : MonoBehaviour
         }
         else
         {
-            StartCoroutine(DownloadSingleUpdateC(3, refer.AssemblyID));
-        }
-    }
-    internal void DownloadRequiredRef(string refer)
-    {
-        if (downloadInProgress)
-        {
-            ModUI.ShowMessage("Another download is already in progress!", "Mod Updates");
-            return;
-        }
-        else
-        {
-            StartCoroutine(DownloadSingleUpdateC(4, refer));
-        }
-    }
-    internal void DownloadRequiredMod(string mod)
-    {
-        if (downloadInProgress)
-        {
-            ModUI.ShowMessage("Another download is already in progress!", "Mod Updates");
-            return;
-        }
-        else
-        {
-            StartCoroutine(DownloadSingleUpdateC(2, mod));
+            StartCoroutine(DownloadSingleUpdateC(2, refer.AssemblyID));
         }
     }
     internal void DownloadModloaderUpdate()
@@ -443,7 +420,7 @@ public partial class ModLoader : MonoBehaviour
         }
     }
 
-    internal string DownloadInfo(string ID, bool isRef)
+    /*internal string DownloadInfo(string ID, bool isRef)
     {
         string dwl = string.Empty;
         WebClient getdwl = new WebClient();
@@ -462,25 +439,20 @@ public partial class ModLoader : MonoBehaviour
             return "error|0";
         }
         return dwl;
-    }
+    }*/
     IEnumerator DownloadSingleUpdateC(byte type, string mod = null)
     {
         while (checkForUpdatesProgress)
             yield return null;
+        while (downloadInProgress)
+            yield return null;
         dnsaf = true;
-        canvLoading.SetUpdate("Downloading MSCLoader Updates...", 0, 100, "Connecting...");
+        canvLoading.SetUpdate("Downloading MSCLoader Update...", 0, 100, "Connecting...");
         switch (type)
         {
             case 0:
-                using (WebClient webClient = new WebClient())
-                {
-                    webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
-                    webClient.DownloadFileCompleted += DownloadModCompleted;
-                    webClient.DownloadProgressChanged += DownlaodModProgress;
-                    downloadInProgress = true;
-                    webClient.DownloadFileAsync(new Uri($"{serverURL}/dwlc.php"), Path.Combine(Path.Combine("Updates", "Core"), $"update.zip"));
-                }
                 ModConsole.Print($"Downloading: <color=aqua>update.zip</color>");
+                DownloadFile("mscl_download.php?type=core&id=msc", Path.Combine(Path.Combine("Updates", "Core"), "update.zip"));
                 while (downloadInProgress)
                 {
                     canvLoading.SetUpdateProgress(downloadPercentage, $"(ModLoader) <color=aqua>update.zip</color> [<color=lime>{downloadPercentage}%</color>]");
@@ -492,90 +464,24 @@ public partial class ModLoader : MonoBehaviour
                 break;
             case 1:
             case 2:
-            case 3:
-            case 4:
+                if (type == 1)
+                {
+                    canvLoading.SetUpdateTitle("Downloading mod update...");
+                    DownloadFile($"mscl_download.php?type=mod&id={mod}", Path.Combine(Path.Combine("Updates", "Mods"), $"{mod}.zip"));
+                }
                 if (type == 2)
-                    canvLoading.SetUpdateTitle("Downloading required mods...");
-                else if (type == 3)
-                    canvLoading.SetUpdateTitle("Downloading reference updates...");
-                else if (type == 4)
-                    canvLoading.SetUpdateTitle("Downloading required reference...");
-                else
-                    canvLoading.SetUpdateTitle("Downloading mod updates...");
+                {
+                    canvLoading.SetUpdateTitle("Downloading reference update...");
+                    DownloadFile($"mscl_download.php?type=reference&id={mod}", Path.Combine(Path.Combine("Updates", "References"), $"{mod}.zip"));
+                }
                 yield return null;
-                bool failed = false;
-                string[] result;
-                if (type == 3 || type == 4)
-                    result = DownloadInfo(mod, true).Split('|');
-                else
-                    result = DownloadInfo(mod, false).Split('|');
-                if (result[0] == "error")
+                ModConsole.Print($"Downloading: <color=aqua>{mod}.zip</color>");
+                while (downloadInProgress)
                 {
-                    switch (result[1])
-                    {
-                        case "0":
-                            ModConsole.Error($"Failed to download updates: Invalid request");
-                            break;
-                        case "1":
-                            ModConsole.Error($"Failed to download updates: Database connection error");
-                            break;
-                        case "2":
-                            if (type != 2 && type != 4)
-                                ModConsole.Error($"Failed to download updates: File not found");
-                            break;
-                        default:
-                            ModConsole.Error($"Failed to download updates: Unknown error");
-                            break;
-                    }
-                    failed = true;
+                    canvLoading.SetUpdateProgress(downloadPercentage, $"<color=aqua>{mod}.zip</color> [<color=lime>{downloadPercentage}%</color>]");
+                    yield return null;
                 }
-                else if (result[0] == "ok")
-                {
-                    using (WebClient webClient2 = new WebClient())
-                    {
-                        webClient2.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
-                        webClient2.DownloadFileCompleted += DownloadModCompleted;
-                        webClient2.DownloadProgressChanged += DownlaodModProgress;
-                        downloadInProgress = true;
-                        if (type == 3 || type == 4)
-                            webClient2.DownloadFileAsync(new Uri($"{serverURL}/{result[1]}"), Path.Combine(Path.Combine("Updates", "References"), $"{mod}.zip"));
-                        else
-                            webClient2.DownloadFileAsync(new Uri($"{serverURL}/{result[1]}"), Path.Combine(Path.Combine("Updates", "Mods"), $"{mod}.zip"));
-                    }
-                    ModConsole.Print($"Downloading: <color=aqua>{mod}.zip</color>");
-                    while (downloadInProgress)
-                    {
-                        canvLoading.SetUpdateProgress(downloadPercentage, $"<color=aqua>{mod}.zip</color> [<color=lime>{downloadPercentage}%</color>]");
-                        yield return null;
-                    }
-                    yield return new WaitForSeconds(1f);
-                }
-                else
-                {
-                    Console.WriteLine($"Unknown: {result[0]}");
-                    ModConsole.Error($"Failed to download updates: Unknown server response.");
-                    failed = true;
-                }
-                if (!failed)
-                {
-                    canvLoading.SetUpdateProgress(100, $"<color=lime>Download Complete</color>");
-                    if (type == 2)
-                        ModUI.ShowMessage("You need to restart the game if you want to install this mod.", "download completed");
-                    else if (type == 4)
-                        ModUI.ShowMessage("You need to restart the game if you want to install this reference.", "download completed");
-                    else
-                        ModUI.ShowMessage("You need to restart the game to apply updates.", "download completed");
-                }
-                else
-                {
-                    //fallback if no file present
-                    if (type == 2)
-                        Application.OpenURL($"{serverURL}/redir.php?mod={mod}");
-                    else if (type == 4)
-                        Application.OpenURL($"{serverURL}/refredir.php?ref={mod}");
-                    else
-                        canvLoading.SetUpdateStatus( $"<color=red>Download Failed</color>");
-                }
+                yield return new WaitForSeconds(1f);
                 break;
             default:
                 yield return null;
@@ -590,122 +496,56 @@ public partial class ModLoader : MonoBehaviour
     {
         while (checkForUpdatesProgress)
             yield return null;
+        while (downloadInProgress)
+            yield return null;
         dnsaf = true;
         canvLoading.SetUpdate("Downloading mod updates...", 0, 100, "Connecting...");
         yield return null;
-        bool failed = false;
         for (int i = 0; i < ModSelfUpdateList.Count; i++)
         {
-            string[] result = DownloadInfo(ModSelfUpdateList[i], false).Split('|');
-            if (result[0] == "error")
+            ModConsole.Print($"Downloading: <color=aqua>{ModSelfUpdateList[i]}.zip</color>");
+            DownloadFile($"mscl_download.php?type=mod&id={ModSelfUpdateList[i]}", Path.Combine(Path.Combine("Updates", "Mods"), $"{ModSelfUpdateList[i]}.zip"));
+            while (downloadInProgress)
             {
-                switch (result[1])
-                {
-                    case "0":
-                        ModConsole.Error($"Failed to download updates: Invalid request");
-                        break;
-                    case "1":
-                        ModConsole.Error($"Failed to download updates: Database connection error");
-                        break;
-                    case "2":
-                        ModConsole.Error($"Failed to download updates: File not found");
-                        break;
-                    default:
-                        ModConsole.Error($"Failed to download updates: Unknown error");
-                        break;
-                }
-                failed = true;
+                canvLoading.SetUpdateProgress(downloadPercentage, $"({i + 1}/{ModSelfUpdateList.Count}) <color=aqua>{ModSelfUpdateList[i]}.zip</color> [<color=lime>{downloadPercentage}%</color>]");
+                yield return null;
             }
-            else if (result[0] == "ok")
-            {
-                using (WebClient webClient = new WebClient())
-                {
-                    webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
-                    webClient.DownloadFileCompleted += DownloadModCompleted;
-                    webClient.DownloadProgressChanged += DownlaodModProgress;
-                    downloadInProgress = true;
-                    webClient.DownloadFileAsync(new Uri($"{serverURL}/{result[1]}"), Path.Combine(Path.Combine("Updates", "Mods"), $"{ModSelfUpdateList[i]}.zip"));
-                }
-                ModConsole.Print($"Downloading: <color=aqua>{ModSelfUpdateList[i]}.zip</color>");
-                while (downloadInProgress)
-                {
-                    canvLoading.SetUpdateProgress(downloadPercentage, $"({i + 1}/{ModSelfUpdateList.Count}) <color=aqua>{ModSelfUpdateList[i]}.zip</color> [<color=lime>{downloadPercentage}%</color>]");
-                    yield return null;
-                }
-                yield return new WaitForSeconds(1f);
-            }
-            else
-            {
-                Console.WriteLine($"Unknown: {result[0]}");
-                ModConsole.Error($"Failed to download updates: Unknown server response.");
-                failed = true;
-            }
-
+            yield return new WaitForSeconds(1f);
         }
         canvLoading.SetUpdateTitle("Downloading references updates...");
         for (int i = 0; i < RefSelfUpdateList.Count; i++)
         {
-            string[] result = DownloadInfo(RefSelfUpdateList[i], true).Split('|');
-            if (result[0] == "error")
+            ModConsole.Print($"Downloading: <color=aqua>{RefSelfUpdateList[i]}.zip</color>");
+            DownloadFile($"mscl_download.php?type=reference&id={RefSelfUpdateList[i]}", Path.Combine(Path.Combine("Updates", "References"), $"{RefSelfUpdateList[i]}.zip"));
+            while (downloadInProgress)
             {
-                switch (result[1])
-                {
-                    case "0":
-                        ModConsole.Error($"Failed to download updates: Invalid request");
-                        break;
-                    case "1":
-                        ModConsole.Error($"Failed to download updates: Database connection error");
-                        break;
-                    case "2":
-                        ModConsole.Error($"Failed to download updates: File not found");
-                        break;
-                    default:
-                        ModConsole.Error($"Failed to download updates: Unknown error");
-                        break;
-                }
-                failed = true;
+                canvLoading.SetUpdateProgress(downloadPercentage, $"({i + 1}/{RefSelfUpdateList.Count}) <color=aqua>{RefSelfUpdateList[i]}.zip</color> [<color=lime>{downloadPercentage}%</color>]");
+                yield return null;
             }
-            else if (result[0] == "ok")
-            {
-                using (WebClient webClient = new WebClient())
-                {
-                    webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
-                    webClient.DownloadFileCompleted += DownloadModCompleted;
-                    webClient.DownloadProgressChanged += DownlaodModProgress;
-                    downloadInProgress = true;
-                    webClient.DownloadFileAsync(new Uri($"{serverURL}/{result[1]}"), Path.Combine(Path.Combine("Updates", "References"), $"{RefSelfUpdateList[i]}.zip"));
-                }
-                ModConsole.Print($"Downloading: <color=aqua>{RefSelfUpdateList[i]}.zip</color>");
-                while (downloadInProgress)
-                {
-                    canvLoading.SetUpdateProgress(downloadPercentage, $"({i + 1}/{RefSelfUpdateList.Count}) <color=aqua>{RefSelfUpdateList[i]}.zip</color> [<color=lime>{downloadPercentage}%</color>]");                    
-                    yield return null;
-                }
-                yield return new WaitForSeconds(1f);
-            }
-            else
-            {
-                Console.WriteLine($"Unknown: {result[0]}");
-                ModConsole.Error($"Failed to download updates: Unknown server response.");
-                failed = true;
-            }
-
+            yield return new WaitForSeconds(1f);
         }
-        if (!failed)
-        {
-            canvLoading.SetUpdateProgress(100, $"<color=lime>Download Complete</color>");
-            ModUI.ShowMessage("You need to restart the game for the updates to take effect!", "download completed");
-        }
-        else
-        {
-            canvLoading.SetUpdateStatus($"<color=red>Download Failed!</color>");
-        }
+        canvLoading.SetUpdateProgress(100, $"<color=lime>Download Complete</color>");
+        ModUI.ShowMessage("You need to restart the game for the updates to take effect!", "download completed");
         dnsaf = false;
         yield return new WaitForSeconds(3f);
         if (!dnsaf)
             canvLoading.ToggleUpdateUI(false);
     }
     int downloadPercentage = 0;
+    internal void DownloadFile(string url, string path, bool desc = false)
+    {
+        using (WebClient webClient = new WebClient())
+        {
+            webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
+            if (desc)
+                webClient.DownloadFileCompleted += ModMetadata.DescritpionDownloadCompleted;
+            else
+                webClient.DownloadFileCompleted += DownloadModCompleted;
+            webClient.DownloadProgressChanged += DownlaodModProgress;
+            downloadInProgress = true;
+            webClient.DownloadFileAsync(new Uri($"{serverURL}/{url}"), path);
+        }
+    }
     private void DownlaodModProgress(object sender, DownloadProgressChangedEventArgs e)
     {
         downloadInProgress = true;
@@ -716,16 +556,77 @@ public partial class ModLoader : MonoBehaviour
     {
         downloadPercentage = 100;
         downloadInProgress = false;
-        if (e.Error != null)
-        {
-            ModConsole.Error("Failed to download update file!");
+        if (e.Error != null)        {
+           
+            ModConsole.Error("Failed to download file!");
             ModConsole.Error(e.Error.Message);
-            System.Console.WriteLine(e.Error);
+            Console.WriteLine(e.Error);
         }
         else
-        {
+        {            
             ModConsole.Print($"Download finished");
         }
     }
+
+    private void DownloadRequiredFiles(List<string> refs, List<string> mods)
+    {
+        //mods = new List<string>() { "wtf", "wtf2", "wtf23", "nfghsdngklgmdsalg" }; //test
+        if(refs.Count == 0 && mods.Count == 0) return;
+        ModUI.ShowYesNoMessage($"<color=yellow>Installed mods are missing required files!</color> {Environment.NewLine}{Environment.NewLine}{(refs.Count != 0 ? $"Missing References: <color=aqua>{string.Join(", ",refs.ToArray())}</color>{Environment.NewLine}" : "")}{(mods.Count != 0 ? $"Missing Mods: <color=aqua>{string.Join(", ", mods.ToArray())}</color>{Environment.NewLine}" : "")} {Environment.NewLine}These files are REQUIRED to run the mods correctly!{Environment.NewLine}Do you want to download these files now?", "Missing required files", delegate
+        {
+            StartCoroutine(DownloadRequiredFilesC(refs, mods));
+        });
+    }
+    IEnumerator DownloadRequiredFilesC(List<string> refs, List<string> mods)
+    {
+        while (checkForUpdatesProgress)
+            yield return null;
+        while (downloadInProgress)
+            yield return null;
+        int totalCount = refs.Count + mods.Count;
+        int currentCount = 0;
+        dnsaf = true;
+        canvLoading.SetUpdate("Downloading required files...", 0, 100, "Connecting...");
+        yield return new WaitForSeconds(1f);
+        for (int i = 0; i < mods.Count; i++)
+        {
+            ModConsole.Print($"Downloading: <color=aqua>{mods[i]}.zip</color>");
+            DownloadFile($"mscl_download.php?type=mod&id={mods[i]}", Path.Combine(Path.Combine("Updates", "Mods"), $"{mods[i]}.zip"));
+            currentCount++;
+            while (downloadInProgress)
+            {
+                canvLoading.SetUpdateProgress(downloadPercentage, $"({currentCount}/{totalCount}) <color=aqua>{mods[i]}.zip</color> [<color=lime>{downloadPercentage}%</color>]");
+                yield return null;
+            }
+            yield return new WaitForSeconds(1f);
+        }
+
+        for (int i = 0; i < refs.Count; i++)
+        {
+            ModConsole.Print($"Downloading: <color=aqua>{refs[i]}.zip</color>");
+            DownloadFile($"mscl_download.php?type=reference&id={refs[i]}", Path.Combine(Path.Combine("Updates", "References"), $"{refs[i]}.zip"));
+            currentCount++;
+            while (downloadInProgress)
+            {
+                canvLoading.SetUpdateProgress(downloadPercentage, $"({currentCount}/{totalCount}) <color=aqua>{refs[i]}.zip</color> [<color=lime>{downloadPercentage}%</color>]");
+                yield return null;
+            }
+            yield return new WaitForSeconds(1f);
+        }
+        canvLoading.SetUpdateProgress(100, $"<color=lime>Download Complete</color>");
+        ModUI.ShowMessage("You need to restart the game for the updates to take effect!", "download completed");
+        dnsaf = false;
+        yield return new WaitForSeconds(3f);
+        if (!dnsaf)
+            canvLoading.ToggleUpdateUI(false);
+    }
+   /* void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Keypad5))
+        {
+            DownloadFile($"mscl_download.php?type=mod&id=faf", Path.Combine(Path.Combine("Updates", "Mods"), $"faf.zip"));
+        }
+    }*/
+
 }
 #endif

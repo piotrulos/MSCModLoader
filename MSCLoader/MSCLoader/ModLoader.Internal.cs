@@ -56,8 +56,8 @@ public partial class ModLoader
     internal static string AssetsFolder = Path.Combine(ModsFolder, "Assets");
     internal string[] ModsUpdateDir;
     internal string[] RefsUpdateDir;
-    internal static List<string> ModSelfUpdateList;
-    internal static List<string> RefSelfUpdateList;
+    internal static List<string> ModSelfUpdateList = new List<string>();
+    internal static List<string> RefSelfUpdateList = new List<string>();
 
     internal List<string> MetadataUpdateList = new List<string>();
     internal GameObject mainMenuInfo;

@@ -858,20 +858,10 @@ internal class ModMetadata
 
     private static void CheckForUpdatedDescription(Mod mod)
     {
-        string[] result;
-        result = ModLoader.Instance.DownloadInfo(mod.ID, false).Split('|');
-        if (result[0] == "ok")
-        {
-            using (WebClient descritpion = new WebClient())
-            {
-                descritpion.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
-                descritpion.DownloadFileCompleted += DescritpionDownloadCompleted;
-                descritpion.DownloadFileAsync(new Uri($"{ModLoader.serverURL}/{result[1]}"), Path.Combine(Path.Combine("Updates", "Mods"), $"{mod}.zip"), mod);
-            }
-        }
+        ModLoader.Instance.DownloadFile($"mscl_download.php?type=mod&id={mod}", Path.Combine(Path.Combine("Updates", "Mods"), $"{mod}.zip"),true);
     }
 
-    private static void DescritpionDownloadCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+    internal static void DescritpionDownloadCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
     {
         Mod m = (Mod)e.UserState;
         m.isDisabled = true;
