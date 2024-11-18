@@ -320,25 +320,6 @@ namespace MSCLoader
             }
         }
 
-      /*  public void DownloadItemFill(DownloadableModList dml)
-        {
-            //TODO: This shit needs more work, locked under only DevMode builds
-            if (dml != null)
-            {
-                Title.text = $"<color=lime>{dml.mod_id}</color>";
-                Author.text = $"by <color=orange>Placeholder</color> (<color=aqua>{dml.mod_version}</color>)";
-                Description.text = dml.mod_description;
-                if (!ModLoader.Instance.actualModList.Where(x => x.ID == dml.mod_id).Any())
-                {
-                    DownloadInfoTxt.text = string.Empty;
-                    DownloadUpdateBtn.onClick.AddListener(delegate
-                    {
-                        ModLoader.Instance.DownloadRequiredMod(dml.mod_id);
-                    });
-                    DownloadUpdateBtn.gameObject.SetActive(true);
-                }
-            }
-        }*/
         public void DisableThisMod(bool ischecked)
         {
             if (mod.isDisabled != ischecked)

@@ -1,4 +1,6 @@
 ﻿global using UnityEngine;
+using static ES2Keys;
+
 #if !Mini
 using HutongGames.PlayMaker;
 using System;
@@ -1001,67 +1003,51 @@ public partial class ModLoader : MonoBehaviour
         MethodInfo method = mod.GetType().GetMethod(methodName);
         return (method.IsVirtual && method.DeclaringType == mod.GetType() && method.GetMethodBody().GetILAsByteArray().Length > 2);
     }
+
     private void LoadEADll(string file)
     {
         if (!CheckSteam()) return;
-        string dwl = string.Empty;
-        WebClient getdwl = new WebClient();
-        getdwl.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
-        try
+        string response = string.Empty;
+        response = MSCLInternal.MSCLDataRequest("mscl_ea.php", new Dictionary<string, string> { { "steamID", steamID }, { "file", Path.GetFileNameWithoutExtension(file) } });
+        string[] result = response.Split('|');
+        switch (result[0])
         {
-            dwl = getdwl.DownloadString($"{earlyAccessURL}?steam={steamID}&file={Path.GetFileNameWithoutExtension(file)}");
-        }
-        catch (Exception e)
-        {
-            ModConsole.Error($"Failed to check early access info for mod {Path.GetFileNameWithoutExtension(file)}");
-            Console.WriteLine(e);
-        }
-        string[] result = dwl.Split('|');
-        if (result[0] == "error")
-        {
-            switch (result[1])
-            {
-                case "0":
-                    ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - Failed to check early access info: Invalid request{Environment.NewLine}");
-                    break;
-                case "1":
-                    ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - You are not whitelisted to use this mod{Environment.NewLine}");
-                    break;
-                case "2":
-                    ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - File not registered/Early Access ended{Environment.NewLine}");
-                    break;
-                default:
-                    ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - Failed to check early access info: Unknown error{Environment.NewLine}");
-                    break;
-            }
-        }
-        else if (result[0] == "ok")
-        {
-            byte[] input = File.ReadAllBytes(file);
-            byte[] key = Encoding.ASCII.GetBytes(result[1]);
-            LoadDLL($"{Path.GetFileNameWithoutExtension(file)}.dll", input.Cry_ScrambleByteRightDec(key));
+            case "error":
+                ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - {result[1]}");
+                break;
+            case "ok":
+                byte[] input;
+                using (BinaryReader reader = new BinaryReader(File.OpenRead(file)))
+                {
+                    reader.BaseStream.Seek(3, SeekOrigin.Begin);
+                    input = new byte[reader.BaseStream.Length - 3];
+                    reader.Read(input, 0, input.Length);
+                }
+                byte[] key = Encoding.ASCII.GetBytes(result[1]);
+                LoadDLL($"{Path.GetFileNameWithoutExtension(file)}.dll", input.Cry_ScrambleByteRightDec(key));
+                break;
+            default:
+                Console.WriteLine(result);
+                break;
         }
     }
+
     private void PreLoadMods()
     {
         // Load .dll files
         string[] files = Directory.GetFiles(ModsFolder);
         for (int i = 0; i < files.Length; i++)
         {
+           // files.by
             if (files[i].EndsWith(".dll"))
             {
-                LoadDLL(files[i]);
-            }
-            //TODO: Change to dll with header check
-            if (files[i].EndsWith(".dII"))
-            {
-                if (files.Contains(files[i].Replace(".dII", ".dll")))
+                if (MSCLInternal.IsEAFile(files[i]))
                 {
-                    ModConsole.Error($"<b>{Path.GetFileName(files[i])}</b> - normal .dll version of this .dii file already exists in Mods folder, please delete one to avoid issues. <b>(skipping loading .dii version)</b>{Environment.NewLine}");
+                    LoadEADll(files[i]);
                 }
                 else
                 {
-                    LoadEADll(files[i]);
+                    LoadDLL(files[i]);
                 }
             }
         }
@@ -1084,7 +1070,6 @@ public partial class ModLoader : MonoBehaviour
         Mod_OnGUI = actualModList.Where(x => x.newFormat && x.A_OnGUI != null).ToArray();
         Mod_Update = LoadedMods.Where(x => x.newFormat && x.A_Update != null).ToArray();
         Mod_FixedUpdate = actualModList.Where(x => x.newFormat && x.A_FixedUpdate != null).ToArray();
-        crashedGuids.Add("e900b1b9-4b4b-42a4-bd60-9ef5630c49bd");//TODO: Remove 
         GetRequiredFilesData();
         //cleanup files if not in dev mode
         if (!devMode)

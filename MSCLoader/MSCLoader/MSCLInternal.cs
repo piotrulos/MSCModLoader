@@ -196,6 +196,164 @@ internal class MSCLInternal
         return ES2.Exists($"{ModLoader.GetMetadataFolder("MSCLData.bin")}?tag={modID}||metadata");
     }
 
+    internal static bool IsEAFile(string path)
+    {
+        byte[] bytes = new byte[3];
+        try
+        {
+            using (BinaryReader reader = new BinaryReader(File.Open(path,FileMode.Open,FileAccess.Read,FileShare.ReadWrite)))
+            {
+                reader.Read(bytes, 0, 3);
+                reader.Close();
+                return bytes[0] == 0x45 && bytes[1] == 0x41 && bytes[2] == 0x4D;
+            }
+        }
+        catch(Exception ex) 
+        {
+            ModConsole.Error(ex.Message);
+            return false; 
+        }
+    }
 
 }
 
+//GPL-3 licensed ByteArrayExtensions by Bruno Tabbia
+internal static class ByteArrayExtensions
+{
+    const int bitsinbyte = 8;
+
+    public static byte[] Cry_ScrambleByteRightEnc(this byte[] cleardata, byte[] password)
+    {
+        long cdlen = cleardata.LongLength;
+        byte[] cryptdata = new byte[cdlen];
+        // first loop: fill crypt array with bytes from cleardata 
+        // corresponding to the '1' in passwords bit
+        long ci = 0;
+        for (long b = cdlen - 1; b >= 0; b--)
+        {
+            if (password.GetBitR(b))
+            {
+                cryptdata[ci] = cleardata[b];
+                ci++;
+            }
+        }
+        // second loop: fill crypt array with bytes from cleardata 
+        // corresponding to the '0' in passwords bit
+        for (long b = cdlen - 1; b >= 0; b--)
+        {
+            if (!password.GetBitR(b))
+            {
+                cryptdata[ci] = cleardata[b];
+                ci++;
+            }
+        }
+        return cryptdata;
+    }
+
+    public static byte[] Cry_ScrambleByteRightDec(this byte[] cryptdata, byte[] password)
+    {
+        long cdlen = cryptdata.LongLength;
+        byte[] cleardata = new byte[cdlen];
+        long ci = 0;
+        for (long b = cdlen - 1; b >= 0; b--)
+        {
+            if (password.GetBitR(b))
+            {
+                cleardata[b] = cryptdata[ci];
+                ci++;
+            }
+        }
+        for (long b = cdlen - 1; b >= 0; b--)
+        {
+            if (!password.GetBitR(b))
+            {
+                cleardata[b] = cryptdata[ci];
+                ci++;
+            }
+        }
+        return cleardata;
+    }
+
+    // --------------------------------------------------------------------------------------
+
+    public static byte[] Cry_ScrambleBitRightEnc(this byte[] cleardata, byte[] password)
+    {
+        long cdlen = cleardata.LongLength;
+        byte[] cryptdata = new byte[cdlen];
+        // first loop: fill crypt array with bits from cleardata 
+        // corresponding to the '1' in passwords bit
+        long ci = 0;
+
+        for (long b = cdlen * bitsinbyte - 1; b >= 0; b--)
+        {
+            if (password.GetBitR(b))
+            {
+                SetBitR(cryptdata, ci, cleardata.GetBitR(b));
+                ci++;
+            }
+        }
+        // second loop: fill crypt array with bits from cleardata 
+        // corresponding to the '0' in passwords bit
+        for (long b = cdlen * bitsinbyte - 1; b >= 0; b--)
+        {
+            if (!password.GetBitR(b))
+            {
+                SetBitR(cryptdata, ci, cleardata.GetBitR(b));
+                ci++;
+            }
+        }
+        return cryptdata;
+    }
+    public static byte[] Cry_ScrambleBitRightDec(this byte[] cryptdata, byte[] password)
+    {
+        long cdlen = cryptdata.LongLength;
+        byte[] cleardata = new byte[cdlen];
+        long ci = 0;
+
+        for (long b = cdlen * bitsinbyte - 1; b >= 0; b--)
+        {
+            if (password.GetBitR(b))
+            {
+                SetBitR(cleardata, b, cryptdata.GetBitR(ci));
+                ci++;
+            }
+        }
+        for (long b = cdlen * bitsinbyte - 1; b >= 0; b--)
+        {
+            if (!password.GetBitR(b))
+            {
+                SetBitR(cleardata, b, cryptdata.GetBitR(ci));
+                ci++;
+            }
+        }
+        return cleardata;
+    }
+
+    // -----------------------------------------------------------------------------------
+
+    public static bool GetBitR(this byte[] bytearray, long bit)
+    {
+        return ((bytearray[(bit / bitsinbyte) % bytearray.LongLength] >>
+                ((int)bit % bitsinbyte)) & 1) == 1;
+    }
+
+    public static void SetBitR(byte[] bytearray, long bit, bool set)
+    {
+        long bytepos = bit / bitsinbyte;
+        if (bytepos < bytearray.LongLength)
+        {
+            int bitpos = (int)bit % bitsinbyte;
+            byte adder;
+            if (set)
+            {
+                adder = (byte)(1 << bitpos);
+                bytearray[bytepos] = (byte)(bytearray[bytepos] | adder);
+            }
+            else
+            {
+                adder = (byte)(byte.MaxValue ^ (byte)(1 << bitpos));
+                bytearray[bytepos] = (byte)(bytearray[bytepos] & adder);
+            }
+        }
+    }
+}
