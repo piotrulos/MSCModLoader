@@ -300,10 +300,12 @@ public partial class ModLoader : MonoBehaviour
             Steamworks.SteamAPI.Init();
             steamID = Steamworks.SteamUser.GetSteamID().ToString();
             ModConsole.Print($"<b><color=orange>Hello <color=lime>{Steamworks.SteamFriends.GetPersonaName()}</color>!</color></b>");
-            WebClient webClient = new WebClient();
-            webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
-            webClient.DownloadStringCompleted += SAuthCheckCompleted;
-            webClient.DownloadStringAsync(new Uri($"{serverURL}/sauth.php?sid={steamID}"));
+            using (WebClient webClient = new WebClient())
+            {
+                webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
+                webClient.DownloadStringCompleted += SAuthCheckCompleted;
+                webClient.DownloadStringAsync(new Uri($"{serverURL}/sauth.php?sid={steamID}"));
+            }
             if (LoadedMods.Count >= 100)
                 Steamworks.SteamFriends.SetRichPresence("status", $"This madman is playing with {actualModList.Length} mods.");
             else if (LoadedMods.Count >= 50)
@@ -442,7 +444,11 @@ public partial class ModLoader : MonoBehaviour
         try
         {
             if (e.Error != null)
-                throw new Exception(e.Error.Message);
+            {
+                ModConsole.Error(e.Error.Message);
+                Console.WriteLine(e.Error);
+                return;
+            }
 
             string result = e.Result;
 
@@ -660,21 +666,25 @@ public partial class ModLoader : MonoBehaviour
         info = mainMenuInfo.transform.GetChild(0).gameObject.GetComponent<Text>();
         mf = mainMenuInfo.transform.GetChild(1).gameObject.GetComponent<Text>();
         info.text = $"Mod Loader MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready! (<color=orange>Checking for updates...</color>)";
-        WebClient client = new WebClient();
-        client.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
-
-        //client.Proxy = new WebProxy("127.0.0.1:8888"); //ONLY FOR TESTING
-        client.DownloadStringCompleted += VersionCheckCompleted;
-        string branch = "unknown";
-        if (experimental)
-            branch = "exp";
-        else
-            branch = "stable";
-        client.DownloadStringAsync(new Uri($"{serverURL}/ver.php?core={branch}"));
-
+        CheckMSCLoaderVersion();
         mf.text = $"<color=orange>Mods folder:</color> {ModsFolder}";
         MainMenuPath();
         mainMenuInfo.transform.SetParent(ModUI.GetCanvas(0).transform, false);
+    }
+
+    private void CheckMSCLoaderVersion()
+    {
+        using (WebClient client = new WebClient())
+        {
+            client.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
+            client.DownloadStringCompleted += VersionCheckCompleted;
+            string branch = "unknown";
+            if (experimental)
+                branch = "msc_exp";
+            else
+                branch = "msc_stable";
+            client.DownloadStringAsync(new Uri($"{serverURL}/mscl_corever.php?core={branch}"));
+        }
     }
 
     private void VersionCheckCompleted(object sender, DownloadStringCompletedEventArgs e)
@@ -683,59 +693,44 @@ public partial class ModLoader : MonoBehaviour
         try
         {
             if (e.Error != null)
+            {
                 throw new Exception(e.Error.Message);
+            }
 
             string[] result = e.Result.Split('|');
-            if (result[0] == "error")
+            switch (result[0])
             {
-                switch (result[1])
-                {
-                    case "0":
-                        throw new Exception("Unknown branch");
-                    case "1":
-                        throw new Exception("Database connection error");
-                    default:
-                        throw new Exception("Unknown error");
-                }
+                case "error":
+                    throw new Exception(result[1]);
+                case "ok":
+                    int newBuild = 0;
+                    try
+                    {
+                        newBuild = int.Parse(result[2]);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                        throw new Exception("Failed to parse build number");
+                    }
 
-            }
-            else if (result[0] == "ok")
-            {
-                int newBuild = 0;
-                try
-                {
-                    newBuild = int.Parse(result[2]);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                    throw new Exception("Failed to parse build number");
-                }
-
-                if (newBuild > currentBuild)
-                {
-                    newVersion = result[1];
-                    if (experimental)
-                        info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready! [<color=magenta>Experimental</color> <color=lime>build {currentBuild}</color>] (<color=aqua>Update is available</color>)";
+                    if (newBuild > currentBuild)
+                    {
+                        newVersion = result[1];
+                        info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready!{(experimental ? $" [<color=magenta>Experimental</color> <color=lime>build {currentBuild}</color>]" : "")} (<color=aqua>Update is available</color>)";
+                        ModloaderUpdateMessage = true;
+                        MsgBoxBtn[] btn1 = { ModUI.CreateMessageBoxBtn("YES", DownloadModloaderUpdate), ModUI.CreateMessageBoxBtn("NO") };
+                        MsgBoxBtn[] btn2 = { ModUI.CreateMessageBoxBtn("Show Changelog", ShowChangelog, new Color32(0, 0, 80, 255), Color.white, true) };
+                        ModUI.ShowCustomMessage($"New ModLoader version is available{Environment.NewLine}<color=yellow>{MSCLoader_Ver} build {currentBuild}</color> => <color=lime>{newVersion} build {newBuild}</color>{Environment.NewLine}{Environment.NewLine}Do you want to download it now?", "MSCLoader update", btn1, btn2);
+                    }
                     else
-                        info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready! (<color=aqua>Update is available</color>)";
-                    ModloaderUpdateMessage = true;
-                    MsgBoxBtn[] btn1 = { ModUI.CreateMessageBoxBtn("YES", DownloadModloaderUpdate), ModUI.CreateMessageBoxBtn("NO") };
-                    MsgBoxBtn[] btn2 = { ModUI.CreateMessageBoxBtn("Show Changelog", ShowChangelog, new Color32(0, 0, 80, 255), Color.white, true) };
-                    ModUI.ShowCustomMessage($"New ModLoader version is available{Environment.NewLine}<color=yellow>{MSCLoader_Ver} build {currentBuild}</color> => <color=lime>{newVersion} build {newBuild}</color>{Environment.NewLine}{Environment.NewLine}Do you want to download it now?", "MSCLoader update", btn1, btn2);
-                }
-                else
-                {
-                    if (experimental)
-                        info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready! [<color=magenta>Experimental</color> <color=lime>build {currentBuild}</color>]";
-                    else
-                        info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready! (<color=lime>Up to date</color>)";
-                }
-            }
-            else
-            {
-                Console.WriteLine("Unknown: " + result[0]);
-                throw new Exception("Unknown server response.");
+                    {
+                        info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready!{(experimental ? $" [<color=magenta>Experimental</color> <color=lime>build {currentBuild}</color>]" : "")} (<color=lime>Up to date</color>)";
+                    }
+                    break;
+                default:
+                    Console.WriteLine("Unknown: " + result[0]);
+                    throw new Exception("Unknown result");
             }
         }
         catch (Exception ex)
@@ -744,10 +739,7 @@ public partial class ModLoader : MonoBehaviour
             if (devMode)
                 ModConsole.Error(ex.ToString());
             Console.WriteLine(ex);
-            if (experimental)
-                info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready! [<color=magenta>Experimental</color> <color=lime>build {currentBuild}</color>]";
-            else
-                info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready!";
+            info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready!{(experimental ? $" [<color=magenta>Experimental</color> <color=lime>build {currentBuild}</color>]" : "")}";
         }
         if (devMode)
             info.text += " [<color=red><b>Dev Mode!</b></color>]";
@@ -1191,8 +1183,7 @@ public partial class ModLoader : MonoBehaviour
             ModMetadata.ReadMetadata(LoadedMods[i]);
             try
             {
-                //TODO: We already know mod that it calls from, so we can pass it now (removes need for this in settings creation)
-
+                Settings.ModSettings(LoadedMods[i]);
                 if (LoadedMods[i].newSettingsFormat)
                 {
                     if (LoadedMods[i].A_ModSettings != null)

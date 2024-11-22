@@ -316,7 +316,7 @@ internal class ModMenu : Mod
     }
 
     // Load all settings.
-    public static void LoadSettings()
+    internal static void LoadSettings()
     {
         for (int i = 0; i < ModLoader.LoadedMods.Count; i++)
         {

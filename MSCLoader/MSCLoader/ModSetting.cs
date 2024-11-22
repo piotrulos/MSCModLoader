@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine.UI;
 
 namespace MSCLoader;
 
@@ -12,12 +13,19 @@ public class ModSetting
     internal Action DoAction;
     internal SettingsType Type;
 
+    internal SettingsElement SettingsElement;
+    internal SettingsGroup SettingsHeader;
     internal ModSetting(string id, string name, Action doAction, SettingsType type)
     {
         ID = id;
         Name = name;
         DoAction = doAction;
         Type = type;
+    }
+    internal void SetElements(SettingsElement settingsElement, SettingsGroup header)
+    {
+        SettingsElement = settingsElement;
+        SettingsHeader = header;
     }
 }
 
@@ -28,6 +36,7 @@ public class ModSetting
 public class SettingsCheckBox : ModSetting
 {
     internal bool Value = false;
+    internal bool DefaultValue = false;
     /// <summary>
     /// Settings Instance (used for custom reset button)
     /// </summary>
@@ -59,9 +68,10 @@ public class SettingsCheckBox : ModSetting
         Instance.Value = value;
     }
 
-    internal SettingsCheckBox(string id, string name, bool value, Action doAction, SettingsType type, Settings setting) : base(id, name, doAction, type)
+    internal SettingsCheckBox(string id, string name, bool value, Action doAction, Settings setting) : base(id, name, doAction, SettingsType.CheckBox)
     {
         Value = value;
+        DefaultValue = value;
         Instance = setting;
     }
 }
@@ -69,8 +79,11 @@ public class SettingsCheckBox : ModSetting
 /// <summary>
 /// CheckBox group (aka radio button)
 /// </summary>
-public class SettingsCheckBoxGroup
+public class SettingsCheckBoxGroup : ModSetting
 {
+    internal bool Value = false;
+    internal bool DefaultValue = false;
+    internal string CheckBoxGroup = string.Empty;
     /// <summary>
     /// Settings Instance (used for custom reset button)
     /// </summary>
@@ -101,8 +114,11 @@ public class SettingsCheckBoxGroup
     {
         Instance.Value = value;
     }
-    internal SettingsCheckBoxGroup(Settings setting)
+    internal SettingsCheckBoxGroup(string id, string name, bool value, string group, Action doAction, Settings setting) : base(id, name, doAction, SettingsType.CheckBoxGroup)
     {
+        Value = value;
+        DefaultValue = value;
+        CheckBoxGroup = group;
         Instance = setting;
     }
 }
@@ -110,8 +126,14 @@ public class SettingsCheckBoxGroup
 /// <summary>
 /// Integer version of Settings Slider
 /// </summary>
-public class SettingsSliderInt
+public class SettingsSliderInt : ModSetting
 {
+    internal int Value = 0;
+    internal int DefaultValue = 0;
+    internal int MinValue = 0;
+    internal int MaxValue = 100;
+    internal string[] TextValues;
+    
     /// <summary>
     /// Settings Instance (used for custom reset button)
     /// </summary>
@@ -133,8 +155,13 @@ public class SettingsSliderInt
             return 0;
         }
     }
-    internal SettingsSliderInt(Settings s)
+    internal SettingsSliderInt(string id, string name, int value, int minValue, int maxValue,  Action onValueChanged, string[] textValues, Settings s) : base(id, name, onValueChanged, SettingsType.Slider)
     {
+        Value = value;
+        DefaultValue = value;
+        MinValue = minValue;
+        MaxValue = maxValue;
+        TextValues = textValues;
         Instance = s;
     }
 }
@@ -142,8 +169,13 @@ public class SettingsSliderInt
 /// <summary>
 /// Settings Slider
 /// </summary>
-public class SettingsSlider
+public class SettingsSlider : ModSetting
 {
+    internal float Value = 0;
+    internal float DefaultValue = 0;
+    internal float MinValue = 0;
+    internal float MaxValue = 100;
+    internal int DecimalPoints = 0;
     /// <summary>
     /// Settings Instance (used for custom reset button)
     /// </summary>
@@ -166,8 +198,13 @@ public class SettingsSlider
         }
     }
 
-    internal SettingsSlider(Settings s)
-    {
+    internal SettingsSlider(string id, string name, float value, float minValue, float maxValue, Action onValueChanged, int decimalPoints, Settings s) : base(id, name, onValueChanged, SettingsType.Slider)
+    {   
+        Value = value;
+        DefaultValue = value;
+        MinValue = minValue;
+        MaxValue = maxValue;
+        DecimalPoints = decimalPoints;
         Instance = s;
     }
 }
@@ -175,8 +212,13 @@ public class SettingsSlider
 /// <summary>
 /// Settings TextBox
 /// </summary>
-public class SettingsTextBox
+public class SettingsTextBox : ModSetting
 {
+    internal string Value = string.Empty;
+    internal string DefaultValue = string.Empty;
+    internal string Placeholder = string.Empty;
+    internal InputField.ContentType ContentType = InputField.ContentType.Standard;
+
     /// <summary>
     /// Settings Instance (used for custom reset button)
     /// </summary>
@@ -200,16 +242,24 @@ public class SettingsTextBox
         Instance.Value = value;
     }
 
-    internal SettingsTextBox(Settings s)
+    internal SettingsTextBox(string id, string name, string value, string placeholder, InputField.ContentType contentType, Settings s) : base(id, name, null, SettingsType.TextBox)
     {
+        Value = value;
+        DefaultValue = value;
+        Placeholder = placeholder;
+        ContentType = contentType;
         Instance = s;
     }
 }
 /// <summary>
 /// Settings DropDown List
 /// </summary>
-public class SettingsDropDownList
+public class SettingsDropDownList : ModSetting
 {
+    internal int Value = 0;
+    internal string[] ArrayOfItems = new string[0];
+    internal int DefaultValue = 0;
+
     /// <summary>
     /// Settings Instance (used for custom reset button)
     /// </summary>
@@ -250,16 +300,22 @@ public class SettingsDropDownList
         Instance.Value = value;
     }
 
-    internal SettingsDropDownList(Settings s)
+    internal SettingsDropDownList(string id, string name, string[] arrayOfItems, int defaultValue, Action onSelectionChanged, Settings s) : base(id, name, onSelectionChanged, SettingsType.DropDown)
     {
+        Value = defaultValue;
+        ArrayOfItems = arrayOfItems;
+        DefaultValue = defaultValue;
         Instance = s;
     }
 }
 /// <summary>
 /// Settings Color Picker
 /// </summary>
-public class SettingsColorPicker
+public class SettingsColorPicker : ModSetting
 {
+    internal string colorValue = "0,0,0,255";
+    internal String DefaultColorValue = "0,0,0,255";
+    internal bool ShowAlpha = false;
     /// <summary>
     /// Settings Instance (used for custom reset button)
     /// </summary>
@@ -285,12 +341,42 @@ public class SettingsColorPicker
         Instance.Value = $"{col.r},{col.g},{col.b},{col.a}";
     }
 
-    internal SettingsColorPicker(Settings s)
+    internal SettingsColorPicker(string id, string name, Color32 defaultColor, bool showAlpha, Action onColorChanged, Settings s) : base(id, name, onColorChanged, SettingsType.ColorPicker)
     {
+        colorValue = $"{defaultColor.r},{defaultColor.g},{defaultColor.b},{defaultColor.a}";
+        DefaultColorValue = $"{defaultColor.r},{defaultColor.g},{defaultColor.b},{defaultColor.a}";
+        ShowAlpha = showAlpha;
         Instance = s;
     }
 }
 
+public class SettingsHeader : ModSetting
+{
+    /// <summary>
+    /// Collapse this header
+    /// </summary>
+    public void Collapse() => Collapse(false);
+
+    /// <summary>
+    /// Collapse this header without animation
+    /// </summary>
+    /// <param name="skipAnimation">true = skip collapsing animation</param>
+    public void Collapse(bool skipAnimation)
+    {
+       /* if (Instance.header == null) return;
+        if (skipAnimation)
+        {
+            Instance.header.SetHeaderNoAnim(false);
+            return;
+        }
+        Instance.header.SetHeader(false);*/
+    }
+
+    public SettingsHeader(string id, string name, bool collapsedByDefault) : base(id, name, null, SettingsType.Header) 
+    { 
+
+    }
+}
 /// <summary>
 /// Settings Dynamic Header
 /// </summary>

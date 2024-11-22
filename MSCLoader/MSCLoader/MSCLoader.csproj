@@ -187,7 +187,8 @@
     <Compile Include="References.cs" />
     <Compile Include="SaveLoad.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="Settings.OldStuff.cs" />
+    <Compile Include="Settings.OldAncient.cs" />
+    <Compile Include="Settings.OldFormat.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CoreAssets\core.unity3d" Condition="!$(DefineConstants.Contains('Mini'))" />
