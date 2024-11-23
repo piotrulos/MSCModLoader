@@ -254,6 +254,7 @@ public partial class ModLoader : MonoBehaviour
             ModUI.ShowMessage($"<b><color=orange>DON'T use Vortex</color></b> to update MSCLoader, or to install tools or mods.{Environment.NewLine}<b><color=orange>Vortex isn't supported by MSCLoader</color></b>, because it's implementation breaks Mods folder by putting wrong files into it.{Environment.NewLine}{Environment.NewLine}MSCLoader will try to fix your mods folder now, <b><color=orange>please restart your game.</color></b>{Environment.NewLine}If this message shows again after restart, rebuild your Mods folder from scratch.", "Fatal Error");
             return;
         }
+        
         LoadMod(new ModConsole(), MSCLoader_Ver);
         LoadedMods[0].A_ModSettings.Invoke();
         LoadMod(new ModMenu(), MSCLoader_Ver);

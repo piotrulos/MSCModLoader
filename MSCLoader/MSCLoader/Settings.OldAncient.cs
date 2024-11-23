@@ -4,13 +4,41 @@ namespace MSCLoader
 {
     public partial class Settings
     {
-        //List of old obsolete Settings functions (used only as backwards compatibility)
+        //List of Ancient hard obsoleted Settings functions (used only as backwards compatibility)
+
+        internal ModSetting modSetting;
+      //  internal Settings(ModSetting setting) => modSetting = setting;
 
         /// <summary>
         /// Get value of setting.
         /// </summary>
         /// <returns>Raw value of setting</returns>
-        public object GetValue() => Value; //Return whatever is there
+        [System.Obsolete("Please switch to new settings format.", true)]
+        public object GetValue()
+        {
+            //Legacy Backwards compatibility
+            switch (modSetting.SettingType)
+            {
+                case SettingsType.CheckBoxGroup:
+                    return ((SettingsCheckBoxGroup)modSetting).GetValue();
+                case SettingsType.CheckBox:
+                    return ((SettingsCheckBox)modSetting).GetValue();
+                case SettingsType.Slider:
+                    return ((SettingsSlider)modSetting).GetValue();
+                case SettingsType.SliderInt:
+                    return ((SettingsSliderInt)modSetting).GetValue();
+                case SettingsType.TextBox:
+                    return ((SettingsTextBox)modSetting).GetValue();
+                case SettingsType.Header:
+                case SettingsType.Button:
+                case SettingsType.RButton:
+                case SettingsType.Text:
+                case SettingsType.DropDown:
+                case SettingsType.ColorPicker:
+                default:
+                    return null;
+            }
+        }
 
         /// <summary>
         /// Add checkbox to settings menu (only bool Value accepted)
@@ -22,18 +50,8 @@ namespace MSCLoader
         [System.Obsolete("Please switch to new settings format.", true)]
         public static void AddCheckBox(Mod mod, Settings setting)
         {
-            setting.Mod = mod;
-            mod.modSettingsDefault.Add(new Settings(setting.ID, setting.Name, setting.Value) { Mod = mod });
-
-            if (setting.Value is bool)
-            {
-                setting.SettingType = SettingsType.CheckBox;
-                mod.modSettingsList.Add(setting);
-            }
-            else
-            {
-                ModConsole.Error($"[<b>{mod.ID}</b>] AddCheckBox: non-bool value.");
-            }
+            SettingsCheckBox s = AddCheckBox(setting.ID, setting.Name,bool.Parse(setting.Value.ToString()), setting.DoAction);
+            setting.modSetting = s;
         }
         /// <summary>
         /// Add checkbox to settings menu with group, only one checkbox can be set to true in this group
@@ -45,20 +63,8 @@ namespace MSCLoader
         [System.Obsolete("Please switch to new settings format.", true)]
         public static void AddCheckBox(Mod mod, Settings setting, string group)
         {
-            setting.Mod = mod;
-            mod.modSettingsDefault.Add(new Settings(setting.ID, setting.Name, setting.Value) { Mod = mod });
-            setting.Vals = new object[1];
-
-            if (setting.Value is bool)
-            {
-                setting.SettingType = SettingsType.CheckBoxGroup;
-                setting.Vals[0] = group;
-                mod.modSettingsList.Add(setting);
-            }
-            else
-            {
-                ModConsole.Error($"[<b>{mod.ID}</b>] AddCheckBox: non-bool value.");
-            }
+            SettingsCheckBoxGroup s = AddCheckBoxGroup(setting.ID, setting.Name, bool.Parse(setting.Value.ToString()), group, setting.DoAction);
+            setting.modSetting = s;
         }
 
         /// <summary>
@@ -98,22 +104,7 @@ namespace MSCLoader
         [System.Obsolete("Please switch to new settings format.", true)]
         public static void AddButton(Mod mod, Settings setting, UnityEngine.Color normalColor, UnityEngine.Color highlightedColor, UnityEngine.Color pressedColor, UnityEngine.Color buttonTextColor, string description = null)
         {
-            setting.Mod = mod;
-            setting.Vals = new object[2];
-            if (string.IsNullOrEmpty(description))
-                description = string.Empty;
-
-            if (setting.DoAction != null || setting.DoUnityAction != null)
-            {
-                setting.SettingType = SettingsType.Button;
-                setting.Vals[0] = normalColor;
-                setting.Vals[1] = buttonTextColor;
-                mod.modSettingsList.Add(setting);
-            }
-            else
-            {
-                ModConsole.Error($"[<b>{mod.ID}</b>] AddButton: Action cannot be null.");
-            }
+            AddButton(setting.Name, setting.DoAction, normalColor, buttonTextColor);            
         }
 
         /// <summary>
@@ -139,36 +130,8 @@ namespace MSCLoader
         [System.Obsolete("Please switch to new settings format.", true)]
         public static void AddSlider(Mod mod, Settings setting, int minValue, int maxValue, string[] textValues)
         {
-            setting.Mod = mod;
-            mod.modSettingsDefault.Add(new Settings(setting.ID, setting.Name, setting.Value) { Mod = mod });
-            setting.Vals = new object[4];
-
-            //sometimes is double or Single (this should fix that, exclude types)
-            if (setting.Value.GetType() != typeof(float) || setting.Value.GetType() != typeof(string))
-            {
-                setting.SettingType = SettingsType.Slider;
-                setting.Vals[0] = minValue;
-                setting.Vals[1] = maxValue;
-                setting.Vals[2] = true;
-                if (textValues == null)
-                {
-                    setting.Vals[3] = null;
-                }
-                else
-                {
-                    setting.Vals[3] = textValues;
-                    if (textValues.Length <= (maxValue - minValue))
-                    {
-                        ModConsole.Error($"[<b>{mod.ID}</b>] AddSlider: array of textValues is smaller than slider range (min to max).");
-                    }
-                }
-
-                mod.modSettingsList.Add(setting);
-            }
-            else
-            {
-                ModConsole.Error($"[<b>{mod.ID}</b>] AddSlider: only int allowed here");
-            }
+            SettingsSliderInt s = AddSlider(setting.ID, setting.Name, minValue, maxValue, int.Parse(setting.Value.ToString()), setting.DoAction, textValues);
+            setting.modSetting = s;
         }
 
         /// <summary>
@@ -195,28 +158,8 @@ namespace MSCLoader
         [System.Obsolete("Please switch to new settings format.", true)]
         public static void AddSlider(Mod mod, Settings setting, float minValue, float maxValue, int decimalPoints)
         {
-            setting.Mod = mod;
-            mod.modSettingsDefault.Add(new Settings(setting.ID, setting.Name, setting.Value) { Mod = mod });
-            setting.Vals = new object[5];
-
-            if (setting.Value is float || setting.Value is double)
-            {
-                setting.SettingType = SettingsType.Slider;
-                setting.Vals[0] = minValue;
-                setting.Vals[1] = maxValue;
-                setting.Vals[2] = false;
-                setting.Vals[3] = null;
-                setting.Vals[4] = decimalPoints;
-                mod.modSettingsList.Add(setting);
-            }
-            else
-            {
-                ModConsole.Error($"[<b>{mod.ID}</b>] AddSlider: only float allowed here");
-            }
-            if (decimalPoints < 0)
-            {
-                ModConsole.Error($"[<b>{mod.ID}</b>] AddSlider: decimalPoints cannot be negative.");
-            }
+            SettingsSlider s = AddSlider(setting.ID, setting.Name, minValue, maxValue, float.Parse(setting.Value.ToString()), setting.DoAction, decimalPoints);
+            setting.modSetting = s;            
         }
 
         /// <summary>
@@ -252,15 +195,8 @@ namespace MSCLoader
         [System.Obsolete("Please switch to new settings format.", true)]
         public static void AddTextBox(Mod mod, Settings setting, string placeholderText, UnityEngine.Color titleTextColor, InputField.ContentType contentType)
         {
-            setting.Mod = mod;
-            mod.modSettingsDefault.Add(new Settings(setting.ID, setting.Name, setting.Value) { Mod = mod });
-
-            setting.Vals = new object[3];
-            setting.SettingType = SettingsType.TextBox;
-            setting.Vals[0] = placeholderText;
-            setting.Vals[1] = titleTextColor;
-            setting.Vals[2] = contentType;
-            mod.modSettingsList.Add(setting);
+            SettingsTextBox s = AddTextBox(setting.ID, setting.Name, setting.Value.ToString(), placeholderText, contentType);
+            setting.modSetting = s;
         }
 
         //internal shit for pro compatibility
@@ -273,7 +209,7 @@ namespace MSCLoader
             setting.Vals[0] = HeaderTitle;
             setting.Vals[1] = backgroundColor;
             setting.Vals[2] = textColor;
-            mod.modSettingsList.Add(setting);
+            mod.modSettingsListOld.Add(setting);
         }
     }
 }

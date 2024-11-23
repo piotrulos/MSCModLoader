@@ -97,8 +97,9 @@ public partial class Mod
     internal Action A_ModSettings;          //Create mod settings from here.
     internal Action A_ModSettingsLoaded;    //When mod settings have been loaded from file
 
-    internal List<Settings> modSettingsList = new List<Settings>();
-    internal List<Settings> modSettingsDefault = new List<Settings>();
+    internal List<Settings> modSettingsListOld = new List<Settings>();
+    internal List<Settings> modSettingsDefaultOld = new List<Settings>();
+    internal List<ModSetting> modSettingsList = new List<ModSetting>(); //new format
     internal List<Keybind> Keybinds = new List<Keybind>();
     internal List<Keybind> DefaultKeybinds = new List<Keybind>();
     internal string[] AdditionalReferences = new string[0];

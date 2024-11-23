@@ -361,6 +361,9 @@ internal class ModMenuView : MonoBehaviour
     }
     public void ModSettingsList(GameObject listView, Mod mod)
     {
+        bool Ancient = false;
+        if(Settings.Get(mod).Count > 0) Ancient = false;
+        else if(Settings.GetOld(mod).Count > 0) Ancient = true;
         RemoveChildren(listView.transform);
         listView.GetComponentInParent<ScrollRect>().verticalNormalizedPosition = 0;
         Transform currentTransform = null;
@@ -371,19 +374,40 @@ internal class ModMenuView : MonoBehaviour
             header.HeaderBackground.color = Color.red;
             CreateText(header.HeaderListView.transform, $"<color=aqua>Incompatible settings format! Settings below may not load or work correctly.</color>{Environment.NewLine}Report that to mod author to use proper settings format.");
         }
-        if (Settings.Get(mod)[0].SettingType != SettingsType.Header)
+        if (Ancient)
         {
-            SettingsGroup header = CreateHeader(listView.transform, "Settings", Color.cyan);
-            currentTransform = header.HeaderListView.transform;
-        }
-
-        for (int i = 0; i < Settings.Get(mod).Count; i++)
-        {
-            if (Settings.Get(mod)[i].SettingType == SettingsType.Header)
-                currentTransform = SettingsHeader(Settings.Get(mod)[i], listView.transform);
-            else
+            if (Settings.GetOld(mod)[0].SettingType != SettingsType.Header)
             {
-                SettingsList(Settings.Get(mod)[i], currentTransform);
+                SettingsGroup header = CreateHeader(listView.transform, "Settings", Color.cyan);
+                currentTransform = header.HeaderListView.transform;
+            }
+
+            for (int i = 0; i < Settings.GetOld(mod).Count; i++)
+            {
+                if (Settings.GetOld(mod)[i].SettingType == SettingsType.Header)
+                    currentTransform = SettingsHeaderOld(Settings.GetOld(mod)[i], listView.transform);
+                else
+                {
+                    SettingsListOld(Settings.GetOld(mod)[i], currentTransform);
+                }
+            }
+        }
+        else
+        {
+            if (Settings.Get(mod)[0].SettingType != SettingsType.Header)
+            {
+                SettingsGroup header = CreateHeader(listView.transform, "Settings", Color.cyan);
+                currentTransform = header.HeaderListView.transform;
+            }
+
+            for (int i = 0; i < Settings.Get(mod).Count; i++)
+            {
+                if (Settings.Get(mod)[i].SettingType == SettingsType.Header)
+                    currentTransform = SettingsHeader(Settings.Get(mod)[i], listView.transform);
+                else
+                {
+                    SettingsList(Settings.Get(mod)[i], currentTransform);
+                }
             }
         }
         if (!mod.hideResetAllSettings)
@@ -438,7 +462,214 @@ internal class ModMenuView : MonoBehaviour
             universalView.FillKeybinds(mod);
         });
     }
-    Transform SettingsHeader(Settings setting, Transform listView)
+    private Transform SettingsHeader(ModSetting set, Transform listView)
+    {
+        SettingsHeader setting = (SettingsHeader)set;
+        SettingsGroup header = CreateHeader(listView.transform, setting.Name, setting.TextColor);
+        header.HeaderBackground.color = setting.BackgroundColor;
+        setting.HeaderElement = header;
+        if (setting.CollapsedByDefault) header.SetHeaderNoAnim(false);
+        return header.HeaderListView.transform;
+    }
+
+    private void SettingsList(ModSetting set, Transform listView)
+    {
+        switch (set.SettingType)
+        {
+            case SettingsType.CheckBox:
+                SettingsCheckBox settingCheckBox = (SettingsCheckBox)set;
+                GameObject checkboxP = Instantiate(CheckBoxPrefab);
+                SettingsElement checkbox = checkboxP.GetComponent<SettingsElement>();
+                settingCheckBox.SettingsElement = checkbox;
+                checkbox.settingName.text = settingCheckBox.Name;
+                checkbox.checkBox.isOn = settingCheckBox.Value;
+                checkbox.checkBox.onValueChanged.AddListener(delegate
+                {
+                    settingCheckBox.Value = checkbox.checkBox.isOn;
+                    if (settingCheckBox.DoAction != null)
+                        settingCheckBox.DoAction.Invoke();
+                });
+                checkbox.transform.SetParent(listView, false);
+                break;
+            case SettingsType.CheckBoxGroup:
+                SettingsCheckBoxGroup settingsCheckBoxGroup = (SettingsCheckBoxGroup)set;
+                GameObject group;
+                if (listView.FindChild(settingsCheckBoxGroup.CheckBoxGroup) == null)
+                {
+                    group = new GameObject(settingsCheckBoxGroup.CheckBoxGroup);
+                    group.AddComponent<ToggleGroup>();
+                    group.transform.SetParent(listView, false);
+                }
+                else
+                    group = listView.FindChild(settingsCheckBoxGroup.CheckBoxGroup).gameObject;
+                GameObject checkboxGP = Instantiate(CheckBoxPrefab);
+                SettingsElement checkboxG = checkboxGP.GetComponent<SettingsElement>();
+                settingsCheckBoxGroup.SettingsElement = checkboxG;
+                checkboxG.settingName.text = settingsCheckBoxGroup.Name;
+                checkboxG.checkBox.group = group.GetComponent<ToggleGroup>();
+                checkboxG.checkBox.isOn = settingsCheckBoxGroup.Value;
+
+                if (settingsCheckBoxGroup.Value)
+                    checkboxG.checkBox.group.NotifyToggleOn(checkboxG.checkBox);
+                checkboxG.checkBox.onValueChanged.AddListener(delegate
+                {
+                    settingsCheckBoxGroup.Value = checkboxG.checkBox.isOn;
+                    if (settingsCheckBoxGroup.DoAction != null)
+                        settingsCheckBoxGroup.DoAction.Invoke();
+                });
+                checkboxG.transform.SetParent(listView, false);
+                break;
+            case SettingsType.Button:
+                SettingsButton settingBtn = (SettingsButton)set;
+                GameObject btnP = Instantiate(ButtonPrefab);
+                SettingsElement btn = btnP.GetComponent<SettingsElement>();
+                settingBtn.SettingsElement = btn;
+                btn.settingName.text = settingBtn.Name.ToUpper();
+                btn.settingName.color = settingBtn.TextColor;
+                btn.button.GetComponent<Image>().color = settingBtn.BackgroundColor;
+                btn.button.onClick.AddListener(settingBtn.DoAction.Invoke);
+                btn.transform.SetParent(listView, false);
+                break;
+            /*    case SettingsType.RButton:
+                   GameObject rbtnP = Instantiate(ButtonPrefab);
+                   SettingsElement rbtn = rbtnP.GetComponent<SettingsElement>();
+                   setting.SettingsElement = rbtn;
+                   rbtn.settingName.text = setting.Name.ToUpper();
+                   rbtn.settingName.color = Color.white;
+                   rbtn.button.GetComponent<Image>().color = Color.black;
+                   rbtn.button.onClick.AddListener(delegate
+                   {
+                       ModMenu.ResetSpecificSettings(setting.Mod, (Settings[])setting.Vals[0]);
+                       universalView.FillSettings(setting.Mod);
+                       if (setting.Mod.newSettingsFormat)
+                       {
+                           if (setting.Mod.A_ModSettingsLoaded != null)
+                           {
+                               setting.Mod.A_ModSettingsLoaded.Invoke();
+                           }
+                       }
+                       else
+                           setting.Mod.ModSettingsLoaded();
+                   });
+                   rbtn.transform.SetParent(listView, false);
+                   break;*/
+            case SettingsType.SliderInt:
+                SettingsSliderInt settingSliderInt = (SettingsSliderInt)set;
+                GameObject slidrIntP = Instantiate(SliderPrefab);
+                SettingsElement slidrInt = slidrIntP.GetComponent<SettingsElement>();
+                settingSliderInt.SettingsElement = slidrInt;
+                slidrInt.settingName.text = settingSliderInt.Name;
+                slidrInt.value.text = settingSliderInt.Value.ToString();
+                slidrInt.slider.wholeNumbers = true;
+                slidrInt.slider.minValue = settingSliderInt.MinValue;
+                slidrInt.slider.maxValue = settingSliderInt.MaxValue;
+                slidrInt.slider.value = settingSliderInt.Value;
+                if (settingSliderInt.TextValues != null)
+                {
+                    slidrInt.value.text = settingSliderInt.TextValues[settingSliderInt.Value];
+                }
+                slidrInt.slider.onValueChanged.AddListener(delegate
+                {
+                    settingSliderInt.SetValue((int)slidrInt.slider.value);
+                    if (settingSliderInt.TextValues != null)
+                    {
+                        slidrInt.value.text = settingSliderInt.TextValues[settingSliderInt.Value];
+                    }
+                    if (settingSliderInt.DoAction != null)
+                        settingSliderInt.DoAction.Invoke();
+                });
+                slidrInt.transform.SetParent(listView, false);
+                break;
+            case SettingsType.Slider:
+                SettingsSlider settingSlider = (SettingsSlider)set;
+                GameObject slidrP = Instantiate(SliderPrefab);
+                SettingsElement slidr = slidrP.GetComponent<SettingsElement>();
+                settingSlider.SettingsElement = slidr;
+                slidr.settingName.text = settingSlider.Name;
+                slidr.value.text = settingSlider.Value.ToString();
+                slidr.slider.minValue = settingSlider.MinValue;
+                slidr.slider.maxValue = settingSlider.MaxValue;
+                slidr.slider.value = settingSlider.Value;
+                slidr.slider.wholeNumbers = false;
+                slidr.slider.onValueChanged.AddListener(delegate
+                {
+                    settingSlider.SetValue((float)Math.Round(slidr.slider.value, settingSlider.DecimalPoints));
+                    if (settingSlider.DoAction != null)
+                        settingSlider.DoAction.Invoke();
+                });
+                slidr.transform.SetParent(listView, false);
+                break;
+            case SettingsType.TextBox:
+                SettingsTextBox settingTxtBox = (SettingsTextBox)set;
+                GameObject txtP = Instantiate(TextBoxPrefab);
+                SettingsElement txt = txtP.GetComponent<SettingsElement>();
+                settingTxtBox.SettingsElement = txt;
+                txt.settingName.text = settingTxtBox.Name;
+                txt.settingName.color = Color.white;
+                txt.placeholder.text = settingTxtBox.Placeholder;
+                txt.textBox.contentType = settingTxtBox.ContentType;
+                txt.textBox.text = settingTxtBox.Value;
+                txt.textBox.onValueChange.AddListener(delegate
+                {
+                    settingTxtBox.Value = txt.textBox.text;
+                });
+                txt.transform.SetParent(listView, false);
+                break;
+            case SettingsType.DropDown:
+                SettingsDropDownList settingDropDown = (SettingsDropDownList)set;
+                GameObject ddlP = Instantiate(DropDownListPrefab);
+                SettingsElement ddl = ddlP.GetComponent<SettingsElement>();
+                settingDropDown.SettingsElement = ddl;
+                ddl.settingName.text = settingDropDown.Name;
+                ddl.dropDownList.Items = new List<DropDownListItem>();
+                for (int i = 0; i < settingDropDown.ArrayOfItems.Length; i++)
+                {
+                    string s = settingDropDown.ArrayOfItems[i];
+                    DropDownListItem ddli = new DropDownListItem(s, i.ToString());
+                    ddl.dropDownList.Items.Add(ddli);
+                }
+                ddl.dropDownList.SelectedIndex = settingDropDown.Value;
+                ddl.dropDownList.OnSelectionChanged = delegate
+                {
+                    settingDropDown.Value = ddl.dropDownList.SelectedIndex;
+                    if (settingDropDown.DoAction != null)
+                        settingDropDown.DoAction.Invoke();
+                };
+                ddl.transform.SetParent(listView, false);
+                break;
+            case SettingsType.ColorPicker:
+                SettingsColorPicker settingColorPicker = (SettingsColorPicker)set;
+                GameObject colpp = Instantiate(ColorPickerPrefab);
+                SettingsElement colp = colpp.GetComponent<SettingsElement>();
+                settingColorPicker.SettingsElement = colp;
+                colp.settingName.text = settingColorPicker.Name;
+                colp.colorPicker.CurrentColor = settingColorPicker.GetValue();
+                if (settingColorPicker.ShowAlpha)
+                {
+                    colp.colorPicker.AlphaSlider.SetActive(true);
+                }
+                colp.colorPicker.onValueChanged.AddListener((Color32 col) =>
+                {
+                    settingColorPicker.SetValue(col);
+                    if (settingColorPicker.DoAction != null)
+                        settingColorPicker.DoAction.Invoke();
+                });
+                colp.transform.SetParent(listView, false);
+                break;
+            case SettingsType.Text:
+                SettingsText settingText = (SettingsText)set;
+                GameObject tx = Instantiate(LabelPrefab);
+                SettingsElement label = tx.GetComponent<SettingsElement>();
+                settingText.SettingsElement = label;
+                label.settingName.text = settingText.Name;
+                tx.transform.SetParent(listView, false);
+                break;
+            case SettingsType.Header:
+                break;
+        }
+    }
+
+    Transform SettingsHeaderOld(Settings setting, Transform listView)
     {
         SettingsGroup header = CreateHeader(listView.transform, setting.Name, (Color)setting.Vals[2]);
         header.HeaderBackground.color = (Color)setting.Vals[1];
@@ -447,7 +678,7 @@ internal class ModMenuView : MonoBehaviour
         return header.HeaderListView.transform;
     }
 
-    public void SettingsList(Settings setting, Transform listView)
+    void SettingsListOld(Settings setting, Transform listView)
     {
         switch (setting.SettingType)
         {
@@ -658,6 +889,7 @@ internal class ModMenuView : MonoBehaviour
                 break;
         }
     }
+
     public void RemoveChildren(Transform parent)
     {
         if (parent.childCount > 0)

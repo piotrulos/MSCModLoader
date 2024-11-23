@@ -11,21 +11,49 @@ public class ModSetting
     internal string ID;
     internal string Name;
     internal Action DoAction;
-    internal SettingsType Type;
+    internal SettingsType SettingType;
 
     internal SettingsElement SettingsElement;
-    internal SettingsGroup SettingsHeader;
+    internal SettingsGroup HeaderElement;
     internal ModSetting(string id, string name, Action doAction, SettingsType type)
     {
         ID = id;
         Name = name;
         DoAction = doAction;
-        Type = type;
+        SettingType = type;
     }
-    internal void SetElements(SettingsElement settingsElement, SettingsGroup header)
+   /* internal void SetElements(SettingsElement settingsElement, SettingsGroup header)
     {
         SettingsElement = settingsElement;
-        SettingsHeader = header;
+        HeaderElement = header;
+    }*/
+    internal void UpdateName(string name)
+    {
+        Name = name;
+        if (SettingsElement == null) return;
+        if (SettingsElement.settingName != null)
+        {
+            SettingsElement.settingName.text = Name;
+        }
+    }
+    internal void UpdateValue(object Value)
+    {
+        if (SettingsElement == null) return;
+        if (SettingsElement.value != null)
+        {
+            switch (SettingType)
+            {
+                case SettingsType.TextBox:
+                    SettingsElement.textBox.text = Value.ToString();
+                    break;
+                case SettingsType.DropDown:
+                    SettingsElement.dropDownList.SelectedIndex = int.Parse(Value.ToString());
+                    break;
+                default:
+                    SettingsElement.value.text = Value.ToString();
+                    break;
+            }
+        }
     }
 }
 
@@ -48,15 +76,7 @@ public class SettingsCheckBox : ModSetting
     /// <returns>true/false</returns>
     public bool GetValue()
     {
-        try
-        {
-            return bool.Parse(Instance.GetValue().ToString());
-        }
-        catch (Exception ex)
-        {
-            ModConsole.Error($"Settings [ID: <b>{Instance.ID}</b>] Invalid value <b>{Instance.Value}</b>{Environment.NewLine}<b>Error details:</b> {ex.Message}");
-            return false;
-        }
+        return Value;
     }
 
     /// <summary>
@@ -65,14 +85,15 @@ public class SettingsCheckBox : ModSetting
     /// <param name="value">true/false</param>
     public void SetValue(bool value)
     {
-        Instance.Value = value;
+        Value = value;
+        UpdateValue(value);
     }
 
-    internal SettingsCheckBox(string id, string name, bool value, Action doAction, Settings setting) : base(id, name, doAction, SettingsType.CheckBox)
+    internal SettingsCheckBox(string id, string name, bool value, Action doAction) : base(id, name, doAction, SettingsType.CheckBox)
     {
         Value = value;
         DefaultValue = value;
-        Instance = setting;
+       // Instance = setting;
     }
 }
 
@@ -95,15 +116,7 @@ public class SettingsCheckBoxGroup : ModSetting
     /// <returns>true/false</returns>
     public bool GetValue()
     {
-        try
-        {
-            return bool.Parse(Instance.GetValue().ToString());
-        }
-        catch (Exception ex)
-        {
-            ModConsole.Error($"Settings [ID: <b>{Instance.ID}</b>] Invalid value <b>{Instance.Value}</b>{Environment.NewLine}<b>Error details:</b> {ex.Message}");
-            return false;
-        }
+        return Value;
     }
 
     /// <summary>
@@ -112,14 +125,15 @@ public class SettingsCheckBoxGroup : ModSetting
     /// <param name="value">true/false</param>
     public void SetValue(bool value)
     {
-        Instance.Value = value;
+        Value = value;
+        UpdateValue(value);
     }
-    internal SettingsCheckBoxGroup(string id, string name, bool value, string group, Action doAction, Settings setting) : base(id, name, doAction, SettingsType.CheckBoxGroup)
+    internal SettingsCheckBoxGroup(string id, string name, bool value, string group, Action doAction) : base(id, name, doAction, SettingsType.CheckBoxGroup)
     {
         Value = value;
         DefaultValue = value;
         CheckBoxGroup = group;
-        Instance = setting;
+       // Instance = setting;
     }
 }
 
@@ -132,7 +146,7 @@ public class SettingsSliderInt : ModSetting
     internal int DefaultValue = 0;
     internal int MinValue = 0;
     internal int MaxValue = 100;
-    internal string[] TextValues;
+    internal string[] TextValues = null;
     
     /// <summary>
     /// Settings Instance (used for custom reset button)
@@ -145,24 +159,27 @@ public class SettingsSliderInt : ModSetting
     /// <returns>slider value in int</returns>
     public int GetValue()
     {
-        try
-        {
-            return int.Parse(Instance.GetValue().ToString());
-        }
-        catch (Exception ex)
-        {
-            ModConsole.Error($"Settings [ID: <b>{Instance.ID}</b>] Invalid value <b>{Instance.Value}</b>{Environment.NewLine}<b>Error details:</b> {ex.Message}");
-            return 0;
-        }
+        return Value;
     }
-    internal SettingsSliderInt(string id, string name, int value, int minValue, int maxValue,  Action onValueChanged, string[] textValues, Settings s) : base(id, name, onValueChanged, SettingsType.Slider)
+
+    /// <summary>
+    /// Set value for slider
+    /// </summary>
+    /// <param name="value">value</param>
+    public void SetValue(int value)
+    {
+        Value = value;
+        UpdateValue(value);
+    }
+
+    internal SettingsSliderInt(string id, string name, int value, int minValue, int maxValue,  Action onValueChanged, string[] textValues) : base(id, name, onValueChanged, SettingsType.SliderInt)
     {
         Value = value;
         DefaultValue = value;
         MinValue = minValue;
         MaxValue = maxValue;
         TextValues = textValues;
-        Instance = s;
+      //  Instance = s;
     }
 }
 
@@ -187,25 +204,27 @@ public class SettingsSlider : ModSetting
     /// <returns>slider value in float</returns>
     public float GetValue()
     {
-        try
-        {
-            return float.Parse(Instance.GetValue().ToString());
-        }
-        catch (Exception ex)
-        {
-            ModConsole.Error($"Settings [ID: <b>{Instance.ID}</b>] Invalid value <b>{Instance.Value}</b>{Environment.NewLine}<b>Error details:</b> {ex.Message}");
-            return 0;
-        }
+        return Value;
     }
 
-    internal SettingsSlider(string id, string name, float value, float minValue, float maxValue, Action onValueChanged, int decimalPoints, Settings s) : base(id, name, onValueChanged, SettingsType.Slider)
+    /// <summary>
+    /// Set value for slider
+    /// </summary>
+    /// <param name="value">value</param>
+    public void SetValue(float value)
+    {
+        Value = value;
+        UpdateValue(value);
+    }
+
+    internal SettingsSlider(string id, string name, float value, float minValue, float maxValue, Action onValueChanged, int decimalPoints) : base(id, name, onValueChanged, SettingsType.Slider)
     {   
         Value = value;
         DefaultValue = value;
         MinValue = minValue;
         MaxValue = maxValue;
         DecimalPoints = decimalPoints;
-        Instance = s;
+     //   Instance = s;
     }
 }
 
@@ -230,7 +249,7 @@ public class SettingsTextBox : ModSetting
     /// <returns>TextBox string value</returns>
     public string GetValue()
     {
-        return Instance.GetValue().ToString();
+        return Value;
     }
 
     /// <summary>
@@ -239,16 +258,17 @@ public class SettingsTextBox : ModSetting
     /// <param name="value">value</param>
     public void SetValue(string value)
     {
-        Instance.Value = value;
+        Value = value;
+        UpdateValue(value);
     }
 
-    internal SettingsTextBox(string id, string name, string value, string placeholder, InputField.ContentType contentType, Settings s) : base(id, name, null, SettingsType.TextBox)
+    internal SettingsTextBox(string id, string name, string value, string placeholder, InputField.ContentType contentType) : base(id, name, null, SettingsType.TextBox)
     {
         Value = value;
         DefaultValue = value;
         Placeholder = placeholder;
         ContentType = contentType;
-        Instance = s;
+      //  Instance = s;
     }
 }
 /// <summary>
@@ -271,7 +291,7 @@ public class SettingsDropDownList : ModSetting
     /// <returns>DropDownList selectedIndex as int</returns>
     public int GetSelectedItemIndex()
     {
-        return int.Parse(Instance.GetValue().ToString());
+        return Value;
     }
 
     /// <summary>
@@ -280,15 +300,7 @@ public class SettingsDropDownList : ModSetting
     /// <returns>DropDownList selected item name as string</returns>
     public string GetSelectedItemName()
     {
-        if (Instance.SettingsElement != null)
-        {
-            return Instance.SettingsElement.value.text;
-        }
-        else
-        {
-            ModConsole.Error("[SettingsDropDownList] ItemName can only be obtained when settings are open.");
-            return null;
-        }
+        return ArrayOfItems[Value];
     }
 
     /// <summary>
@@ -297,15 +309,16 @@ public class SettingsDropDownList : ModSetting
     /// <param name="value">index</param>
     public void SetSelectedItemIndex(int value)
     {
-        Instance.Value = value;
+        Value = value;
+        UpdateValue(value);
     }
 
-    internal SettingsDropDownList(string id, string name, string[] arrayOfItems, int defaultValue, Action onSelectionChanged, Settings s) : base(id, name, onSelectionChanged, SettingsType.DropDown)
+    internal SettingsDropDownList(string id, string name, string[] arrayOfItems, int defaultValue, Action onSelectionChanged) : base(id, name, onSelectionChanged, SettingsType.DropDown)
     {
         Value = defaultValue;
         ArrayOfItems = arrayOfItems;
         DefaultValue = defaultValue;
-        Instance = s;
+     //   Instance = s;
     }
 }
 /// <summary>
@@ -313,8 +326,8 @@ public class SettingsDropDownList : ModSetting
 /// </summary>
 public class SettingsColorPicker : ModSetting
 {
-    internal string colorValue = "0,0,0,255";
-    internal String DefaultColorValue = "0,0,0,255";
+    internal string Value = "0,0,0,255";
+    internal string DefaultColorValue = "0,0,0,255";
     internal bool ShowAlpha = false;
     /// <summary>
     /// Settings Instance (used for custom reset button)
@@ -327,8 +340,7 @@ public class SettingsColorPicker : ModSetting
     /// <returns>TextBox string value</returns>
     public Color32 GetValue()
     {
-        string[] colb = Instance.GetValue().ToString().Split(',');
-        new Color32(byte.Parse(colb[0]), byte.Parse(colb[1]), byte.Parse(colb[2]), byte.Parse(colb[3]));
+        string[] colb = Value.Split(',');
         return new Color32(byte.Parse(colb[0]), byte.Parse(colb[1]), byte.Parse(colb[2]), byte.Parse(colb[3]));
     }
 
@@ -338,54 +350,27 @@ public class SettingsColorPicker : ModSetting
     /// <param name="col">value</param>
     public void SetValue(Color32 col)
     {
-        Instance.Value = $"{col.r},{col.g},{col.b},{col.a}";
+        Value = $"{col.r},{col.g},{col.b},{col.a}";
     }
 
-    internal SettingsColorPicker(string id, string name, Color32 defaultColor, bool showAlpha, Action onColorChanged, Settings s) : base(id, name, onColorChanged, SettingsType.ColorPicker)
+
+    internal SettingsColorPicker(string id, string name, Color32 defaultColor, bool showAlpha, Action onColorChanged) : base(id, name, onColorChanged, SettingsType.ColorPicker)
     {
-        colorValue = $"{defaultColor.r},{defaultColor.g},{defaultColor.b},{defaultColor.a}";
+        Value = $"{defaultColor.r},{defaultColor.g},{defaultColor.b},{defaultColor.a}";
         DefaultColorValue = $"{defaultColor.r},{defaultColor.g},{defaultColor.b},{defaultColor.a}";
         ShowAlpha = showAlpha;
-        Instance = s;
+      //  Instance = s;
     }
 }
 
+/// <summary>
+/// Settings Header
+/// </summary>
 public class SettingsHeader : ModSetting
 {
-    /// <summary>
-    /// Collapse this header
-    /// </summary>
-    public void Collapse() => Collapse(false);
-
-    /// <summary>
-    /// Collapse this header without animation
-    /// </summary>
-    /// <param name="skipAnimation">true = skip collapsing animation</param>
-    public void Collapse(bool skipAnimation)
-    {
-       /* if (Instance.header == null) return;
-        if (skipAnimation)
-        {
-            Instance.header.SetHeaderNoAnim(false);
-            return;
-        }
-        Instance.header.SetHeader(false);*/
-    }
-
-    public SettingsHeader(string id, string name, bool collapsedByDefault) : base(id, name, null, SettingsType.Header) 
-    { 
-
-    }
-}
-/// <summary>
-/// Settings Dynamic Header
-/// </summary>
-public class SettingsDynamicHeader
-{
-    /// <summary>
-    /// Settings Instance
-    /// </summary>
-    public Settings Instance;
+    internal Color BackgroundColor = new Color32(95, 34, 18, 255);
+    internal Color TextColor = new Color32(236, 229, 2, 255);
+    internal bool CollapsedByDefault = false;
 
     /// <summary>
     /// Collapse this header
@@ -398,13 +383,13 @@ public class SettingsDynamicHeader
     /// <param name="skipAnimation">true = skip collapsing animation</param>
     public void Collapse(bool skipAnimation)
     {
-        if (Instance.header == null) return;
+        if (HeaderElement == null) return;
         if (skipAnimation)
         {
-            Instance.header.SetHeaderNoAnim(false);
+            HeaderElement.SetHeaderNoAnim(false);
             return;
         }
-        Instance.header.SetHeader(false);
+        HeaderElement.SetHeader(false);
     }
 
     /// <summary>
@@ -418,13 +403,13 @@ public class SettingsDynamicHeader
     /// <param name="skipAnimation">true = skip expanding animation</param>
     public void Expand(bool skipAnimation)
     {
-        if (Instance.header == null) return;
+        if (HeaderElement == null) return;
         if (skipAnimation)
         {
-            Instance.header.SetHeaderNoAnim(true);
+            HeaderElement.SetHeaderNoAnim(true);
             return;
         }
-        Instance.header.SetHeader(true);
+        HeaderElement.SetHeader(true);
 
     }
 
@@ -433,8 +418,8 @@ public class SettingsDynamicHeader
     /// </summary>
     public void SetBackgroundColor(Color color)
     {
-        if (Instance.header == null) return;
-        Instance.header.HeaderBackground.color = color;
+        if (HeaderElement == null) return;
+        HeaderElement.HeaderBackground.color = color;
     }
 
     /// <summary>
@@ -442,33 +427,31 @@ public class SettingsDynamicHeader
     /// </summary>
     public void SetTextColor(Color color)
     {
-        if (Instance.header == null) return;
-        Instance.header.HeaderTitle.color = color;
+        if (HeaderElement == null) return;
+        HeaderElement.HeaderTitle.color = color;
     }
 
-    internal SettingsDynamicHeader(Settings s)
-    {
-        Instance = s;
+
+    internal SettingsHeader(string name, Color backgroundColor, Color textColor, bool collapsedByDefault) : base(null, name, null, SettingsType.Header)
+    { 
+        BackgroundColor = backgroundColor;
+        TextColor = textColor;
+        CollapsedByDefault = collapsedByDefault;
     }
 }
 
 /// <summary>
-/// Settings Dynamic Text
+/// Settings Text
 /// </summary>
-public class SettingsDynamicText
-{
+public class SettingsText : ModSetting
+{   
     /// <summary>
-    /// Settings Instance
-    /// </summary>
-    public Settings Instance;
-
-    /// <summary>
-    /// Get TextBox value
-    /// </summary>
-    /// <returns>TextBox string value</returns>
+     /// Get Text value
+     /// </summary>
+     /// <returns>TextBox string value</returns>
     public string GetValue()
     {
-        return Instance.Name;
+        return Name;
     }
 
     /// <summary>
@@ -477,12 +460,131 @@ public class SettingsDynamicText
     /// <param name="value">value</param>
     public void SetValue(string value)
     {
-        Instance.Name = value;
+        UpdateValue(value);
     }
 
-    internal SettingsDynamicText(Settings s)
-    {
-        Instance = s;
+    internal SettingsText(string name) : base(null, name, null, SettingsType.Text) { }
+
+}
+
+/// <summary>
+/// Settings Button 
+/// </summary>
+public class SettingsButton : ModSetting
+{
+    internal Color BackgroundColor = new Color32(85, 38, 0, 255);
+    internal Color TextColor = Color.white;
+
+    internal SettingsButton(string name, Action doAction, Color backgroundColor, Color textColor) : base(null, name, doAction, SettingsType.Button)
+    { 
+        BackgroundColor = backgroundColor;
+        TextColor = textColor;
     }
+}
+
+
+/// <summary>
+/// Settings Dynamic Header
+/// </summary>
+[Obsolete("Moved to => SettingsHeader",true)]
+public class SettingsDynamicHeader : ModSetting
+{
+    internal Color BackgroundColor = new Color32(95, 34, 18, 255);
+    internal Color TextColor = new Color32(236, 229, 2, 255);
+    internal bool CollapsedByDefault = false;
+
+    /// <summary>
+    /// Collapse this header
+    /// </summary>
+    public void Collapse() => Collapse(false);
+
+    /// <summary>
+    /// Collapse this header without animation
+    /// </summary>
+    /// <param name="skipAnimation">true = skip collapsing animation</param>
+    public void Collapse(bool skipAnimation)
+    {
+        if (HeaderElement == null) return;
+        if (skipAnimation)
+        {
+            HeaderElement.SetHeaderNoAnim(false);
+            return;
+        }
+        HeaderElement.SetHeader(false);
+    }
+
+    /// <summary>
+    /// Expand this Header
+    /// </summary>
+    public void Expand() => Expand(false);
+
+    /// <summary>
+    /// Expand this Header without animation
+    /// </summary>
+    /// <param name="skipAnimation">true = skip expanding animation</param>
+    public void Expand(bool skipAnimation)
+    {
+        if (HeaderElement == null) return;
+        if (skipAnimation)
+        {
+            HeaderElement.SetHeaderNoAnim(true);
+            return;
+        }
+        HeaderElement.SetHeader(true);
+
+    }
+
+    /// <summary>
+    /// Change title background color
+    /// </summary>
+    public void SetBackgroundColor(Color color)
+    {
+        if (HeaderElement == null) return;
+        HeaderElement.HeaderBackground.color = color;
+    }
+
+    /// <summary>
+    /// Change title text.
+    /// </summary>
+    public void SetTextColor(Color color)
+    {
+        if (HeaderElement == null) return;
+        HeaderElement.HeaderTitle.color = color;
+    }
+
+
+    internal SettingsDynamicHeader(string name, Color backgroundColor, Color textColor, bool collapsedByDefault) : base(null, name, null, SettingsType.Header)
+    {
+        BackgroundColor = backgroundColor;
+        TextColor = textColor;
+        CollapsedByDefault = collapsedByDefault;
+    }
+}
+
+/// <summary>
+/// Settings Dynamic Text
+/// </summary>
+[Obsolete("Moved to => SettingsText", true)]
+public class SettingsDynamicText : ModSetting
+{
+    /// <summary>
+    /// Get Text value
+    /// </summary>
+    /// <returns>TextBox string value</returns>
+    public string GetValue()
+    {
+        return Name;
+    }
+
+    /// <summary>
+    /// Set value for textbox
+    /// </summary>
+    /// <param name="value">value</param>
+    public void SetValue(string value)
+    {
+        UpdateValue(value);
+    }
+
+    internal SettingsDynamicText(string name) : base(null, name, null, SettingsType.Text) { }
 }
 

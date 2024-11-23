@@ -35,6 +35,7 @@ public class ModConsole : Mod
 
     private void Mod_Settings()
     {
+        Settings.ModSettings(this);
         consoleKey = Keybind.Add(this, "Open", "<color=lime>Open console key combination</color>", KeyCode.BackQuote);
         Settings.AddHeader(this, "MSCLoader info", Color.black);
         if (ModLoader.Instance.newBuild > ModLoader.Instance.currentBuild)
