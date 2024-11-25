@@ -22,11 +22,7 @@ public class ModSetting
         DoAction = doAction;
         SettingType = type;
     }
-   /* internal void SetElements(SettingsElement settingsElement, SettingsGroup header)
-    {
-        SettingsElement = settingsElement;
-        HeaderElement = header;
-    }*/
+
     internal void UpdateName(string name)
     {
         Name = name;
@@ -68,6 +64,7 @@ public class SettingsCheckBox : ModSetting
     /// <summary>
     /// Settings Instance (used for custom reset button)
     /// </summary>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public Settings Instance;
 
     /// <summary>
@@ -93,7 +90,7 @@ public class SettingsCheckBox : ModSetting
     {
         Value = value;
         DefaultValue = value;
-       // Instance = setting;
+        Instance = new Settings(this); //Compatibility only
     }
 }
 
@@ -108,6 +105,7 @@ public class SettingsCheckBoxGroup : ModSetting
     /// <summary>
     /// Settings Instance (used for custom reset button)
     /// </summary>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public Settings Instance;
 
     /// <summary>
@@ -133,7 +131,7 @@ public class SettingsCheckBoxGroup : ModSetting
         Value = value;
         DefaultValue = value;
         CheckBoxGroup = group;
-       // Instance = setting;
+        Instance = new Settings(this); //Compatibility only
     }
 }
 
@@ -147,10 +145,11 @@ public class SettingsSliderInt : ModSetting
     internal int MinValue = 0;
     internal int MaxValue = 100;
     internal string[] TextValues = null;
-    
+
     /// <summary>
     /// Settings Instance (used for custom reset button)
     /// </summary>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public Settings Instance;
 
     /// <summary>
@@ -179,7 +178,7 @@ public class SettingsSliderInt : ModSetting
         MinValue = minValue;
         MaxValue = maxValue;
         TextValues = textValues;
-      //  Instance = s;
+        Instance = new Settings(this); //Compatibility only
     }
 }
 
@@ -196,6 +195,7 @@ public class SettingsSlider : ModSetting
     /// <summary>
     /// Settings Instance (used for custom reset button)
     /// </summary>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public Settings Instance;
 
     /// <summary>
@@ -224,7 +224,8 @@ public class SettingsSlider : ModSetting
         MinValue = minValue;
         MaxValue = maxValue;
         DecimalPoints = decimalPoints;
-     //   Instance = s;
+        Instance = new Settings(this); //Compatibility only
+
     }
 }
 
@@ -241,6 +242,7 @@ public class SettingsTextBox : ModSetting
     /// <summary>
     /// Settings Instance (used for custom reset button)
     /// </summary>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public Settings Instance;
 
     /// <summary>
@@ -268,7 +270,7 @@ public class SettingsTextBox : ModSetting
         DefaultValue = value;
         Placeholder = placeholder;
         ContentType = contentType;
-      //  Instance = s;
+        Instance = new Settings(this); //Compatibility only
     }
 }
 /// <summary>
@@ -283,6 +285,7 @@ public class SettingsDropDownList : ModSetting
     /// <summary>
     /// Settings Instance (used for custom reset button)
     /// </summary>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public Settings Instance;
 
     /// <summary>
@@ -309,6 +312,10 @@ public class SettingsDropDownList : ModSetting
     /// <param name="value">index</param>
     public void SetSelectedItemIndex(int value)
     {
+        if(value >= ArrayOfItems.Length)
+        {
+            Value = DefaultValue;
+        }
         Value = value;
         UpdateValue(value);
     }
@@ -318,7 +325,7 @@ public class SettingsDropDownList : ModSetting
         Value = defaultValue;
         ArrayOfItems = arrayOfItems;
         DefaultValue = defaultValue;
-     //   Instance = s;
+        Instance = new Settings(this);
     }
 }
 /// <summary>
@@ -329,9 +336,11 @@ public class SettingsColorPicker : ModSetting
     internal string Value = "0,0,0,255";
     internal string DefaultColorValue = "0,0,0,255";
     internal bool ShowAlpha = false;
+
     /// <summary>
     /// Settings Instance (used for custom reset button)
     /// </summary>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public Settings Instance;
 
     /// <summary>
@@ -359,7 +368,7 @@ public class SettingsColorPicker : ModSetting
         Value = $"{defaultColor.r},{defaultColor.g},{defaultColor.b},{defaultColor.a}";
         DefaultColorValue = $"{defaultColor.r},{defaultColor.g},{defaultColor.b},{defaultColor.a}";
         ShowAlpha = showAlpha;
-      //  Instance = s;
+        Instance = new Settings(this); //Compatibility only
     }
 }
 
@@ -479,6 +488,32 @@ public class SettingsButton : ModSetting
     { 
         BackgroundColor = backgroundColor;
         TextColor = textColor;
+    }
+}
+
+public class SettingsResetButton : ModSetting
+{
+    internal ModSetting[] SettingsToReset;
+    internal Mod ThisMod;
+
+    internal void ResetSettings()
+    {
+        if (SettingsToReset == null)
+        {
+            ModConsole.Error($"[<b>{ThisMod}</b>] SettingsResetButton: no settings to reset");
+            return;
+        }
+        for (int i = 0; i < SettingsToReset.Length; i++)
+        {
+            ModMenu.ResetSpecificSetting(SettingsToReset[i]);
+        }
+        ModMenu.SaveSettings(ThisMod);
+    }
+
+    internal SettingsResetButton(Mod mod, string name, ModSetting[] sets) : base(null, name, null, SettingsType.RButton)
+    {
+        ThisMod = mod;
+        SettingsToReset = sets;
     }
 }
 

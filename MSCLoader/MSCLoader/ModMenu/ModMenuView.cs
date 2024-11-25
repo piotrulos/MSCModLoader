@@ -361,9 +361,6 @@ internal class ModMenuView : MonoBehaviour
     }
     public void ModSettingsList(GameObject listView, Mod mod)
     {
-        bool Ancient = false;
-        if(Settings.Get(mod).Count > 0) Ancient = false;
-        else if(Settings.GetOld(mod).Count > 0) Ancient = true;
         RemoveChildren(listView.transform);
         listView.GetComponentInParent<ScrollRect>().verticalNormalizedPosition = 0;
         Transform currentTransform = null;
@@ -374,42 +371,23 @@ internal class ModMenuView : MonoBehaviour
             header.HeaderBackground.color = Color.red;
             CreateText(header.HeaderListView.transform, $"<color=aqua>Incompatible settings format! Settings below may not load or work correctly.</color>{Environment.NewLine}Report that to mod author to use proper settings format.");
         }
-        if (Ancient)
-        {
-            if (Settings.GetOld(mod)[0].SettingType != SettingsType.Header)
-            {
-                SettingsGroup header = CreateHeader(listView.transform, "Settings", Color.cyan);
-                currentTransform = header.HeaderListView.transform;
-            }
 
-            for (int i = 0; i < Settings.GetOld(mod).Count; i++)
+        if (Settings.Get(mod)[0].SettingType != SettingsType.Header)
+        {
+            SettingsGroup header = CreateHeader(listView.transform, "Settings", Color.cyan);
+            currentTransform = header.HeaderListView.transform;
+        }
+
+        for (int i = 0; i < Settings.Get(mod).Count; i++)
+        {
+            if (Settings.Get(mod)[i].SettingType == SettingsType.Header)
+                currentTransform = SettingsHeader(Settings.Get(mod)[i], listView.transform);
+            else
             {
-                if (Settings.GetOld(mod)[i].SettingType == SettingsType.Header)
-                    currentTransform = SettingsHeaderOld(Settings.GetOld(mod)[i], listView.transform);
-                else
-                {
-                    SettingsListOld(Settings.GetOld(mod)[i], currentTransform);
-                }
+                SettingsList(Settings.Get(mod)[i], currentTransform);
             }
         }
-        else
-        {
-            if (Settings.Get(mod)[0].SettingType != SettingsType.Header)
-            {
-                SettingsGroup header = CreateHeader(listView.transform, "Settings", Color.cyan);
-                currentTransform = header.HeaderListView.transform;
-            }
 
-            for (int i = 0; i < Settings.Get(mod).Count; i++)
-            {
-                if (Settings.Get(mod)[i].SettingType == SettingsType.Header)
-                    currentTransform = SettingsHeader(Settings.Get(mod)[i], listView.transform);
-                else
-                {
-                    SettingsList(Settings.Get(mod)[i], currentTransform);
-                }
-            }
-        }
         if (!mod.hideResetAllSettings)
         {
             SettingsElement rbtn = CreateButton(listView.transform, "Reset all settings to default", Color.white, Color.black);
@@ -481,8 +459,7 @@ internal class ModMenuView : MonoBehaviour
                 GameObject checkboxP = Instantiate(CheckBoxPrefab);
                 SettingsElement checkbox = checkboxP.GetComponent<SettingsElement>();
                 settingCheckBox.SettingsElement = checkbox;
-                checkbox.settingName.text = settingCheckBox.Name;
-                checkbox.checkBox.isOn = settingCheckBox.Value;
+                checkbox.SetupCheckbox(settingCheckBox.Name, settingCheckBox.Value, null);
                 checkbox.checkBox.onValueChanged.AddListener(delegate
                 {
                     settingCheckBox.Value = checkbox.checkBox.isOn;
@@ -505,9 +482,7 @@ internal class ModMenuView : MonoBehaviour
                 GameObject checkboxGP = Instantiate(CheckBoxPrefab);
                 SettingsElement checkboxG = checkboxGP.GetComponent<SettingsElement>();
                 settingsCheckBoxGroup.SettingsElement = checkboxG;
-                checkboxG.settingName.text = settingsCheckBoxGroup.Name;
-                checkboxG.checkBox.group = group.GetComponent<ToggleGroup>();
-                checkboxG.checkBox.isOn = settingsCheckBoxGroup.Value;
+                checkboxG.SetupCheckbox(settingsCheckBoxGroup.Name, settingsCheckBoxGroup.Value, group.GetComponent<ToggleGroup>());
 
                 if (settingsCheckBoxGroup.Value)
                     checkboxG.checkBox.group.NotifyToggleOn(checkboxG.checkBox);
@@ -524,50 +499,38 @@ internal class ModMenuView : MonoBehaviour
                 GameObject btnP = Instantiate(ButtonPrefab);
                 SettingsElement btn = btnP.GetComponent<SettingsElement>();
                 settingBtn.SettingsElement = btn;
-                btn.settingName.text = settingBtn.Name.ToUpper();
-                btn.settingName.color = settingBtn.TextColor;
-                btn.button.GetComponent<Image>().color = settingBtn.BackgroundColor;
+                btn.SetupButton(settingBtn.Name.ToUpper(), settingBtn.TextColor, settingBtn.BackgroundColor);
                 btn.button.onClick.AddListener(settingBtn.DoAction.Invoke);
                 btn.transform.SetParent(listView, false);
                 break;
-            /*    case SettingsType.RButton:
-                   GameObject rbtnP = Instantiate(ButtonPrefab);
-                   SettingsElement rbtn = rbtnP.GetComponent<SettingsElement>();
-                   setting.SettingsElement = rbtn;
-                   rbtn.settingName.text = setting.Name.ToUpper();
-                   rbtn.settingName.color = Color.white;
-                   rbtn.button.GetComponent<Image>().color = Color.black;
-                   rbtn.button.onClick.AddListener(delegate
-                   {
-                       ModMenu.ResetSpecificSettings(setting.Mod, (Settings[])setting.Vals[0]);
-                       universalView.FillSettings(setting.Mod);
-                       if (setting.Mod.newSettingsFormat)
-                       {
-                           if (setting.Mod.A_ModSettingsLoaded != null)
-                           {
-                               setting.Mod.A_ModSettingsLoaded.Invoke();
-                           }
-                       }
-                       else
-                           setting.Mod.ModSettingsLoaded();
-                   });
-                   rbtn.transform.SetParent(listView, false);
-                   break;*/
+            case SettingsType.RButton:
+                SettingsResetButton settingRes = (SettingsResetButton)set;
+                GameObject rbtnP = Instantiate(ButtonPrefab);
+                SettingsElement rbtn = rbtnP.GetComponent<SettingsElement>();
+                settingRes.SettingsElement = rbtn;
+                rbtn.SetupButton(settingRes.Name.ToUpper(), Color.white, Color.black);
+                rbtn.button.onClick.AddListener(delegate
+                {
+                    settingRes.ResetSettings();
+                    universalView.FillSettings(settingRes.ThisMod);
+                    if (settingRes.ThisMod.newSettingsFormat)
+                    {
+                        if (settingRes.ThisMod.A_ModSettingsLoaded != null)
+                        {
+                            settingRes.ThisMod.A_ModSettingsLoaded.Invoke();
+                        }
+                    }
+                    else
+                        settingRes.ThisMod.ModSettingsLoaded();
+                });
+                rbtn.transform.SetParent(listView, false);
+                break;
             case SettingsType.SliderInt:
                 SettingsSliderInt settingSliderInt = (SettingsSliderInt)set;
                 GameObject slidrIntP = Instantiate(SliderPrefab);
                 SettingsElement slidrInt = slidrIntP.GetComponent<SettingsElement>();
                 settingSliderInt.SettingsElement = slidrInt;
-                slidrInt.settingName.text = settingSliderInt.Name;
-                slidrInt.value.text = settingSliderInt.Value.ToString();
-                slidrInt.slider.wholeNumbers = true;
-                slidrInt.slider.minValue = settingSliderInt.MinValue;
-                slidrInt.slider.maxValue = settingSliderInt.MaxValue;
-                slidrInt.slider.value = settingSliderInt.Value;
-                if (settingSliderInt.TextValues != null)
-                {
-                    slidrInt.value.text = settingSliderInt.TextValues[settingSliderInt.Value];
-                }
+                slidrInt.SetupSliderInt(settingSliderInt.Name, settingSliderInt.Value, settingSliderInt.MinValue, settingSliderInt.MaxValue, settingSliderInt.TextValues);
                 slidrInt.slider.onValueChanged.AddListener(delegate
                 {
                     settingSliderInt.SetValue((int)slidrInt.slider.value);
@@ -585,12 +548,7 @@ internal class ModMenuView : MonoBehaviour
                 GameObject slidrP = Instantiate(SliderPrefab);
                 SettingsElement slidr = slidrP.GetComponent<SettingsElement>();
                 settingSlider.SettingsElement = slidr;
-                slidr.settingName.text = settingSlider.Name;
-                slidr.value.text = settingSlider.Value.ToString();
-                slidr.slider.minValue = settingSlider.MinValue;
-                slidr.slider.maxValue = settingSlider.MaxValue;
-                slidr.slider.value = settingSlider.Value;
-                slidr.slider.wholeNumbers = false;
+                slidr.SetupSlider(settingSlider.Name, settingSlider.Value, settingSlider.MinValue, settingSlider.MaxValue);
                 slidr.slider.onValueChanged.AddListener(delegate
                 {
                     settingSlider.SetValue((float)Math.Round(slidr.slider.value, settingSlider.DecimalPoints));
@@ -604,11 +562,7 @@ internal class ModMenuView : MonoBehaviour
                 GameObject txtP = Instantiate(TextBoxPrefab);
                 SettingsElement txt = txtP.GetComponent<SettingsElement>();
                 settingTxtBox.SettingsElement = txt;
-                txt.settingName.text = settingTxtBox.Name;
-                txt.settingName.color = Color.white;
-                txt.placeholder.text = settingTxtBox.Placeholder;
-                txt.textBox.contentType = settingTxtBox.ContentType;
-                txt.textBox.text = settingTxtBox.Value;
+                txt.SetupTextBox(settingTxtBox.Name, settingTxtBox.Value, settingTxtBox.Placeholder, settingTxtBox.ContentType);
                 txt.textBox.onValueChange.AddListener(delegate
                 {
                     settingTxtBox.Value = txt.textBox.text;
@@ -664,228 +618,7 @@ internal class ModMenuView : MonoBehaviour
                 label.settingName.text = settingText.Name;
                 tx.transform.SetParent(listView, false);
                 break;
-            case SettingsType.Header:
-                break;
-        }
-    }
-
-    Transform SettingsHeaderOld(Settings setting, Transform listView)
-    {
-        SettingsGroup header = CreateHeader(listView.transform, setting.Name, (Color)setting.Vals[2]);
-        header.HeaderBackground.color = (Color)setting.Vals[1];
-        setting.header = header;
-        if ((bool)setting.Vals[3]) header.SetHeaderNoAnim(false);
-        return header.HeaderListView.transform;
-    }
-
-    void SettingsListOld(Settings setting, Transform listView)
-    {
-        switch (setting.SettingType)
-        {
-            case SettingsType.CheckBox:
-                GameObject checkboxP = Instantiate(CheckBoxPrefab);
-                SettingsElement checkbox = checkboxP.GetComponent<SettingsElement>();
-                setting.SettingsElement = checkbox;
-                checkbox.settingName.text = setting.Name;
-                try
-                {
-                    checkbox.checkBox.isOn = bool.Parse(setting.Value.ToString());
-                }
-                catch (Exception e)
-                {
-                    ModConsole.Error($"Settings [ID: <b>{setting.ID}</b>] Invalid value <b>{setting.Value}</b>{Environment.NewLine}<b>Error details:</b> {e.Message}");
-                    Console.WriteLine(e);
-                    checkbox.checkBox.isOn = false;
-                    setting.Value = false;
-                }
-                checkbox.checkBox.onValueChanged.AddListener(delegate
-                {
-                    setting.Value = checkbox.checkBox.isOn;
-                    if (setting.DoAction != null)
-                        setting.DoAction.Invoke();
-                });
-                checkbox.transform.SetParent(listView, false);
-                break;
-            case SettingsType.CheckBoxGroup:
-                GameObject group;
-                if (listView.FindChild(setting.Vals[0].ToString()) == null)
-                {
-                    group = new GameObject(setting.Vals[0].ToString());
-                    group.AddComponent<ToggleGroup>();
-                    group.transform.SetParent(listView, false);
-                }
-                else
-                    group = listView.FindChild(setting.Vals[0].ToString()).gameObject;
-                GameObject checkboxGP = Instantiate(CheckBoxPrefab);
-                SettingsElement checkboxG = checkboxGP.GetComponent<SettingsElement>();
-                setting.SettingsElement = checkboxG;
-                checkboxG.settingName.text = setting.Name;
-                checkboxG.checkBox.group = group.GetComponent<ToggleGroup>();
-                try
-                {
-                    checkboxG.checkBox.isOn = bool.Parse(setting.Value.ToString());
-                }
-                catch (Exception e)
-                {
-                    ModConsole.Error($"Settings [ID: <b>{setting.ID}</b>] Invalid value <b>{setting.Value}</b>{Environment.NewLine}<b>Error details:</b> {e.Message}");
-                    Console.WriteLine(e);
-                    checkboxG.checkBox.isOn = false;
-                    setting.Value = false;
-                }
-                if ((bool)setting.Value)
-                    checkboxG.checkBox.group.NotifyToggleOn(checkboxG.checkBox);
-                checkboxG.checkBox.onValueChanged.AddListener(delegate
-                {
-                    setting.Value = checkboxG.checkBox.isOn;
-                    if (setting.DoAction != null)
-                        setting.DoAction.Invoke();
-                    if (setting.DoUnityAction != null)
-                        setting.DoUnityAction.Invoke();
-                });
-                checkboxG.transform.SetParent(listView, false);
-                break;
-            case SettingsType.Button:
-                GameObject btnP = Instantiate(ButtonPrefab);
-                SettingsElement btn = btnP.GetComponent<SettingsElement>();
-                setting.SettingsElement = btn;
-                btn.settingName.text = setting.Name.ToUpper();
-                btn.settingName.color = (Color)setting.Vals[1];
-                btn.button.GetComponent<Image>().color = (Color)setting.Vals[0];
-                if (setting.Value.ToString() == "DoUnityAction")
-                    btn.button.onClick.AddListener(setting.DoUnityAction.Invoke);
-                else
-                    btn.button.onClick.AddListener(setting.DoAction.Invoke);
-                btn.transform.SetParent(listView, false);
-                break;
-            case SettingsType.RButton:
-                GameObject rbtnP = Instantiate(ButtonPrefab);
-                SettingsElement rbtn = rbtnP.GetComponent<SettingsElement>();
-                setting.SettingsElement = rbtn;
-                rbtn.settingName.text = setting.Name.ToUpper();
-                rbtn.settingName.color = Color.white;
-                rbtn.button.GetComponent<Image>().color = Color.black;
-                rbtn.button.onClick.AddListener(delegate
-                {
-                    ModMenu.ResetSpecificSettings(setting.Mod, (Settings[])setting.Vals[0]);
-                    universalView.FillSettings(setting.Mod);
-                    if (setting.Mod.newSettingsFormat)
-                    {
-                        if (setting.Mod.A_ModSettingsLoaded != null)
-                        {
-                            setting.Mod.A_ModSettingsLoaded.Invoke();
-                        }
-                    }
-                    else
-                        setting.Mod.ModSettingsLoaded();
-                });
-                rbtn.transform.SetParent(listView, false);
-                break;
-            case SettingsType.Slider:
-                GameObject slidrP = Instantiate(SliderPrefab);
-                SettingsElement slidr = slidrP.GetComponent<SettingsElement>();
-                setting.SettingsElement = slidr;
-                slidr.settingName.text = setting.Name;
-                slidr.value.text = setting.Value.ToString();
-                slidr.slider.minValue = float.Parse(setting.Vals[0].ToString());
-                slidr.slider.maxValue = float.Parse(setting.Vals[1].ToString());
-                try
-                {
-                    slidr.slider.value = float.Parse(setting.Value.ToString());
-                }
-                catch (Exception e)
-                {
-                    ModConsole.Error($"Settings [ID: <b>{setting.ID}</b>] Invalid value <b>{setting.Value}</b>{Environment.NewLine}<b>Error details:</b> {e.Message}");
-                    System.Console.WriteLine(e);
-                    setting.Value = 0;
-                }
-                slidr.slider.wholeNumbers = (bool)setting.Vals[2];
-                if (setting.Vals[3] != null)
-                {
-                    slidr.value.text = ((string[])setting.Vals[3])[int.Parse(setting.Value.ToString())];
-                }
-                slidr.slider.onValueChanged.AddListener(delegate
-                {
-                    if (slidr.slider.wholeNumbers)
-                        setting.Value = (int)slidr.slider.value;
-                    else
-                        setting.Value = Math.Round(slidr.slider.value, int.Parse(setting.Vals[4].ToString()));
-                    if (setting.Vals[3] == null)
-                        slidr.value.text = setting.Value.ToString();
-                    else
-                    {
-                        slidr.value.text = ((string[])setting.Vals[3])[int.Parse(setting.Value.ToString())];
-                    }
-                    if (setting.DoAction != null)
-                        setting.DoAction.Invoke();
-                    if (setting.DoUnityAction != null)
-                        setting.DoUnityAction.Invoke();
-                });
-                slidr.transform.SetParent(listView, false);
-                break;
-            case SettingsType.TextBox:
-                GameObject txtP = Instantiate(TextBoxPrefab);
-                SettingsElement txt = txtP.GetComponent<SettingsElement>();
-                setting.SettingsElement = txt;
-                txt.settingName.text = setting.Name;
-                txt.settingName.color = (Color)setting.Vals[1];
-                txt.placeholder.text = setting.Vals[0].ToString();
-                txt.textBox.contentType = (InputField.ContentType)setting.Vals[2];
-                txt.textBox.text = setting.Value.ToString();
-                txt.textBox.onValueChange.AddListener(delegate
-                {
-                    setting.Value = txt.textBox.text;
-                });
-                txt.transform.SetParent(listView, false);
-                break;
-            case SettingsType.DropDown:
-                GameObject ddlP = Instantiate(DropDownListPrefab);
-                SettingsElement ddl = ddlP.GetComponent<SettingsElement>();
-                setting.SettingsElement = ddl;
-                ddl.settingName.text = setting.Name;
-                ddl.dropDownList.Items = new List<DropDownListItem>();
-                int i = 0;
-                foreach (string s in (string[])setting.Vals[0])
-                {
-                    DropDownListItem ddli = new DropDownListItem(s, i.ToString());
-                    ddl.dropDownList.Items.Add(ddli);
-                    i++;
-                }
-                ddl.dropDownList.SelectedIndex = int.Parse(setting.Value.ToString());
-                ddl.dropDownList.OnSelectionChanged = delegate
-                {
-                    setting.Value = ddl.dropDownList.SelectedIndex;
-                    if (setting.DoAction != null)
-                        setting.DoAction.Invoke();
-                };
-                ddl.transform.SetParent(listView, false);
-                break;
-            case SettingsType.ColorPicker:
-                GameObject colpp = Instantiate(ColorPickerPrefab);
-                SettingsElement colp = colpp.GetComponent<SettingsElement>();
-                setting.SettingsElement = colp;
-                colp.settingName.text = setting.Name;
-                string[] colb = setting.Value.ToString().Split(',');
-                colp.colorPicker.CurrentColor = new Color32(byte.Parse(colb[0]), byte.Parse(colb[1]), byte.Parse(colb[2]), byte.Parse(colb[3]));
-                if ((bool)setting.Vals[0])
-                {
-                    colp.colorPicker.AlphaSlider.SetActive(true);
-                }
-                colp.colorPicker.onValueChanged.AddListener((Color32 col) =>
-                {
-                    setting.Value = $"{col.r},{col.g},{col.b},{col.a}";
-                    if (setting.DoAction != null)
-                        setting.DoAction.Invoke();
-                });
-                colp.transform.SetParent(listView, false);
-                break;
-            case SettingsType.Text:
-                GameObject tx = Instantiate(LabelPrefab);
-                SettingsElement label = tx.GetComponent<SettingsElement>();
-                setting.SettingsElement = label;
-                label.settingName.text = setting.Name;
-                tx.transform.SetParent(listView, false);
-                break;
-            case SettingsType.Header:
+            default:
                 break;
         }
     }

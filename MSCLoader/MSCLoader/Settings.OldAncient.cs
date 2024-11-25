@@ -7,7 +7,6 @@ namespace MSCLoader
         //List of Ancient hard obsoleted Settings functions (used only as backwards compatibility)
 
         internal ModSetting modSetting;
-      //  internal Settings(ModSetting setting) => modSetting = setting;
 
         /// <summary>
         /// Get value of setting.
@@ -16,7 +15,7 @@ namespace MSCLoader
         [System.Obsolete("Please switch to new settings format.", true)]
         public object GetValue()
         {
-            //Legacy Backwards compatibility
+            //Legacy Backwards compatibility with V3 settings
             switch (modSetting.SettingType)
             {
                 case SettingsType.CheckBoxGroup:
@@ -50,6 +49,7 @@ namespace MSCLoader
         [System.Obsolete("Please switch to new settings format.", true)]
         public static void AddCheckBox(Mod mod, Settings setting)
         {
+            settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
             SettingsCheckBox s = AddCheckBox(setting.ID, setting.Name,bool.Parse(setting.Value.ToString()), setting.DoAction);
             setting.modSetting = s;
         }
@@ -63,6 +63,7 @@ namespace MSCLoader
         [System.Obsolete("Please switch to new settings format.", true)]
         public static void AddCheckBox(Mod mod, Settings setting, string group)
         {
+            settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
             SettingsCheckBoxGroup s = AddCheckBoxGroup(setting.ID, setting.Name, bool.Parse(setting.Value.ToString()), group, setting.DoAction);
             setting.modSetting = s;
         }
@@ -104,6 +105,7 @@ namespace MSCLoader
         [System.Obsolete("Please switch to new settings format.", true)]
         public static void AddButton(Mod mod, Settings setting, UnityEngine.Color normalColor, UnityEngine.Color highlightedColor, UnityEngine.Color pressedColor, UnityEngine.Color buttonTextColor, string description = null)
         {
+            settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
             AddButton(setting.Name, setting.DoAction, normalColor, buttonTextColor);            
         }
 
@@ -130,6 +132,7 @@ namespace MSCLoader
         [System.Obsolete("Please switch to new settings format.", true)]
         public static void AddSlider(Mod mod, Settings setting, int minValue, int maxValue, string[] textValues)
         {
+            settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
             SettingsSliderInt s = AddSlider(setting.ID, setting.Name, minValue, maxValue, int.Parse(setting.Value.ToString()), setting.DoAction, textValues);
             setting.modSetting = s;
         }
@@ -158,6 +161,7 @@ namespace MSCLoader
         [System.Obsolete("Please switch to new settings format.", true)]
         public static void AddSlider(Mod mod, Settings setting, float minValue, float maxValue, int decimalPoints)
         {
+            settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
             SettingsSlider s = AddSlider(setting.ID, setting.Name, minValue, maxValue, float.Parse(setting.Value.ToString()), setting.DoAction, decimalPoints);
             setting.modSetting = s;            
         }
@@ -195,6 +199,7 @@ namespace MSCLoader
         [System.Obsolete("Please switch to new settings format.", true)]
         public static void AddTextBox(Mod mod, Settings setting, string placeholderText, UnityEngine.Color titleTextColor, InputField.ContentType contentType)
         {
+            settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
             SettingsTextBox s = AddTextBox(setting.ID, setting.Name, setting.Value.ToString(), placeholderText, contentType);
             setting.modSetting = s;
         }
@@ -202,14 +207,15 @@ namespace MSCLoader
         //internal shit for pro compatibility
         internal static void AddHeader(Mod mod, string HeaderTitle, UnityEngine.Color backgroundColor, UnityEngine.Color textColor, Settings set)
         {
-            Settings setting = set;
+            AddHeader(HeaderTitle, backgroundColor, textColor);
+           /* Settings setting = set;
             setting.Mod = mod;
             setting.Vals = new object[3];
             setting.SettingType = SettingsType.Header;
             setting.Vals[0] = HeaderTitle;
             setting.Vals[1] = backgroundColor;
             setting.Vals[2] = textColor;
-            mod.modSettingsListOld.Add(setting);
+            mod.modSettingsListOld.Add(setting);*/
         }
     }
 }

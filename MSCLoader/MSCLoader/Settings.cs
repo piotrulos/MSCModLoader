@@ -44,6 +44,8 @@ public partial class Settings
 {
     private static Mod settingsMod = null;
 
+    internal static List<ModSetting> Get(Mod mod) => mod.modSettingsList;
+
     internal static void ModSettings(Mod modEntry)
     {
         settingsMod = modEntry;
@@ -83,7 +85,7 @@ public partial class Settings
     {
         if(settingsMod == null)
         {
-            ModConsole.Error("AddHeader() error: unknown Mod instance, settings must be created inside your ModSettings function");
+            ModConsole.Error($"[<b>{settingsMod}</b>] AddHeader() error: unknown Mod instance, settings must be created inside your ModSettings function");
             return null;
         }
 
@@ -101,7 +103,7 @@ public partial class Settings
     {
         if (settingsMod == null)
         {
-            ModConsole.Error("AddText() error: unknown Mod instance, settings must be created inside your ModSettings function");
+            ModConsole.Error($"[<b>{settingsMod}</b>] AddText() error: unknown Mod instance, settings must be created inside your ModSettings function");
             return null;
         }
         SettingsText s = new SettingsText(text);
@@ -127,7 +129,7 @@ public partial class Settings
     {
         if(settingsMod == null)
         {
-            ModConsole.Error("AddButton() error: unknown Mod instance, settings must be created inside your ModSettings function");
+            ModConsole.Error($"[<b>{settingsMod}</b>] AddButton() error: unknown Mod instance, settings must be created inside your ModSettings function");
             return null;
         }
         SettingsButton s = new SettingsButton(name, onClick, btnColor, buttonTextColor);
@@ -148,7 +150,7 @@ public partial class Settings
     {
         if (settingsMod == null)
         {
-            ModConsole.Error("AddCheckBox() error: unknown Mod instance, settings must be created inside your ModSettings function");
+            ModConsole.Error($"[<b>{settingsMod}</b>] AddCheckBox() error: unknown Mod instance, settings must be created inside your ModSettings function");
             return null;
         }
         SettingsCheckBox s = new SettingsCheckBox(settingID, name, value, onValueChanged);
@@ -170,7 +172,7 @@ public partial class Settings
     {
         if(settingsMod == null)
         {
-            ModConsole.Error("AddCheckBoxGroup() error: unknown Mod instance, settings must be created inside your ModSettings function");
+            ModConsole.Error($"[<b>{settingsMod}</b>] AddCheckBoxGroup() error: unknown Mod instance, settings must be created inside your ModSettings function");
             return null;
         }
         SettingsCheckBoxGroup s = new SettingsCheckBoxGroup(settingID, name, value, group, onValueChanged);
@@ -193,8 +195,12 @@ public partial class Settings
     {
         if (settingsMod == null)
         {
-            ModConsole.Error("AddSlider() error: unknown Mod instance, settings must be created inside your ModSettings function");
+            ModConsole.Error($"[<b>{settingsMod}</b>] AddSlider() error: unknown Mod instance, settings must be created inside your ModSettings function");
             return null;
+        }
+        if(textValues != null && textValues.Length <= (maxValue - minValue))
+        {
+            ModConsole.Error($"[<b>{settingsMod}</b>] AddSlider() error: textValues array is smaller than slider range (min to max).");
         }
         SettingsSliderInt s = new SettingsSliderInt(settingID, name, value, minValue, maxValue, onValueChanged, textValues);
         settingsMod.modSettingsList.Add(s);
@@ -216,8 +222,13 @@ public partial class Settings
     {
         if (settingsMod == null)
         {
-            ModConsole.Error("AddSlider() error: unknown Mod instance, settings must be created inside your ModSettings function");
+            ModConsole.Error($"[<b>{settingsMod}</b>] AddSlider() error: unknown Mod instance, settings must be created inside your ModSettings function");
             return null;
+        }
+        if (decimalPoints < 0)
+        {
+            ModConsole.Error($"[<b>{settingsMod}</b>] AddSlider() error: decimalPoints cannot be negative (defaulting to 2)");
+            decimalPoints = 2;
         }
         SettingsSlider s = new SettingsSlider(settingID, name, value, minValue, maxValue, onValueChanged, decimalPoints);
         settingsMod.modSettingsList.Add(s);
@@ -247,7 +258,7 @@ public partial class Settings
     {
         if (settingsMod == null)
         {
-            ModConsole.Error("AddTextBox() error: unknown Mod instance, settings must be created inside your ModSettings function");
+            ModConsole.Error($"[<b>{settingsMod}</b>] AddTextBox() error: unknown Mod instance, settings must be created inside your ModSettings function");
             return null;
         }
         SettingsTextBox s = new SettingsTextBox(settingID, name, value, placeholderText, contentType);
@@ -268,7 +279,7 @@ public partial class Settings
     {
         if(settingsMod == null)
         {
-            ModConsole.Error("AddDropDownList() error: unknown Mod instance, settings must be created inside your ModSettings function");
+            ModConsole.Error($"[<b>{settingsMod}</b>] AddDropDownList() error: unknown Mod instance, settings must be created inside your ModSettings function");
             return null;
         }
         SettingsDropDownList s = new SettingsDropDownList(settingID, name, arrayOfItems, defaultSelected, OnSelectionChanged);
@@ -318,11 +329,56 @@ public partial class Settings
     {
         if (settingsMod == null)
         {
-            ModConsole.Error("AddColorPicker() error: unknown Mod instance, settings must be created inside your ModSettings function");
+            ModConsole.Error($"[<b>{settingsMod}</b>] AddColorPicker() error: unknown Mod instance, settings must be created inside your ModSettings function");
             return null;
         }
 
         SettingsColorPicker s = new SettingsColorPicker(settingID, name, defaultColor, showAlphaSlider, OnColorChanged);
+        settingsMod.modSettingsList.Add(s);
+        return s;
+    }
+
+    /// <summary>
+    /// Add Reset button to reset your mod's save file (only works when using unified save system)
+    /// </summary>
+    /// <param name="mod">Your mod instance</param>
+    public static void AddSaveResetButton(Mod mod)
+    {
+        AddButton("Reset Save File", delegate
+        {
+            if (ModLoader.CurrentScene != CurrentScene.MainMenu)
+            {
+                ModUI.ShowMessage("You can only use this in Main Menu");
+                return;
+            }
+            ModUI.ShowYesNoMessage("Are you sure you want to reset this mod save file?", delegate
+            {
+                SaveLoad.ResetSaveForMod(mod);
+                ModUI.ShowMessage("Save file for this mod has been reset");
+            });
+        });
+    }
+
+    /// <summary>
+    /// Add custom reset to default button
+    /// </summary>
+    /// <param name="mod">Your mod instance</param>
+    /// <param name="name">Button name</param>
+    /// <param name="sets">array of settings to reset</param>
+    public static SettingsResetButton AddResetButton(string name, ModSetting[] sets)
+    {
+        if (settingsMod == null)
+        {
+            ModConsole.Error($"[<b>{settingsMod}</b>] AddResetButton() error: unknown Mod instance, settings must be created inside your ModSettings function");
+            return null;
+        }
+
+        if (sets == null)
+        {
+            ModConsole.Error($"[<b>{settingsMod}</b>] AddResetButton() error: provide at least one setting to reset.");
+            return null;
+        }
+        SettingsResetButton s = new SettingsResetButton(settingsMod, name, sets);
         settingsMod.modSettingsList.Add(s);
         return s;
     }

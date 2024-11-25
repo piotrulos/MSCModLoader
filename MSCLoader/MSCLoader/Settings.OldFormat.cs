@@ -77,9 +77,6 @@ namespace MSCLoader
             }
         }
 
-        internal static List<ModSetting> Get(Mod mod) => mod.modSettingsList;
-        internal static List<Settings> GetOld(Mod mod) => mod.modSettingsListOld;
-        internal static List<Settings> GetDefaultOld(Mod mod) => mod.modSettingsDefaultOld;
 
 
         /// <summary>
@@ -152,7 +149,10 @@ namespace MSCLoader
             SettingType = type;
         }
 
-
+        internal Settings(ModSetting set)
+        {
+            modSetting = set;
+        }
         /// <summary>
         /// Add checkbox to settings menu
         /// Can execute action when its value is changed.
@@ -166,6 +166,7 @@ namespace MSCLoader
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public static SettingsCheckBox AddCheckBox(Mod mod, string settingID, string name, bool value = false, Action onValueChanged = null)
         {
+            settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
             return AddCheckBox(settingID, name, value, onValueChanged);
         }
         /// <summary>
@@ -182,6 +183,7 @@ namespace MSCLoader
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public static SettingsCheckBoxGroup AddCheckBoxGroup(Mod mod, string settingID, string name, bool value = false, string group = null, Action onValueChanged = null)
         {
+            settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
             return AddCheckBoxGroup(settingID, name, value, group, onValueChanged);
         }
 
@@ -200,6 +202,7 @@ namespace MSCLoader
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public static SettingsSliderInt AddSlider(Mod mod, string settingID, string name, int minValue, int maxValue, int value = 0, Action onValueChanged = null, string[] textValues = null)
         {
+            settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
             return AddSlider(settingID, name, minValue, maxValue, value, onValueChanged, textValues);
         }
 
@@ -218,6 +221,7 @@ namespace MSCLoader
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public static SettingsSlider AddSlider(Mod mod, string settingID, string name, float minValue, float maxValue, float value = 0f, Action onValueChanged = null, int decimalPoints = 2)
         {
+            settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
             return AddSlider(settingID, name, minValue, maxValue, value, onValueChanged, decimalPoints);
         }
 
@@ -244,6 +248,7 @@ namespace MSCLoader
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public static SettingsTextBox AddTextBox(Mod mod, string settingID, string name, string value, string placeholderText, InputField.ContentType contentType)
         {
+            settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
             return AddTextBox(settingID, name, value, placeholderText, contentType);
         }
 
@@ -260,6 +265,7 @@ namespace MSCLoader
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public static SettingsDropDownList AddDropDownList(Mod mod, string settingID, string name, string[] arrayOfItems, int defaultSelected = 0, Action OnSelectionChanged = null)
         {
+            settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
             return AddDropDownList(settingID, name, arrayOfItems, defaultSelected, OnSelectionChanged);
         }
         /// <summary>
@@ -308,6 +314,7 @@ namespace MSCLoader
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         internal static SettingsColorPicker AddColorPickerRGBInternal(Mod mod, string settingID, string name, Color32 defaultColor, Action OnColorChanged, bool showAlphaSlider)
         {
+            settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
             return AddColorPickerRGBAInternal(settingID, name, defaultColor, OnColorChanged, showAlphaSlider);
         }
         /// <summary>
@@ -353,6 +360,7 @@ namespace MSCLoader
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public static void AddButton(Mod mod, string settingID, string name, Action onClick, Color btnColor, Color buttonTextColor)
         {
+            settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
             AddButton(name, onClick, btnColor, buttonTextColor);
         }
 
@@ -363,41 +371,20 @@ namespace MSCLoader
         /// <param name="name">Button name</param>
         /// <param name="sets">array of settings to reset</param>
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [Obsolete("Use other overload instead",true)]
         public static void AddResetButton(Mod mod, string name, Settings[] sets)
         {
-            if (sets != null)
+            //Backward compatibility
+            if (sets == null) return;           
+            List<ModSetting> list = new List<ModSetting>();
+            for(int i = 0; i < sets.Length; i++)
             {
-                Settings set = new Settings(mod, "MSCL_ResetSpecificMod", name, "DoAction", null, SettingsType.RButton);
-                set.Vals = new object[1] { sets };
-                mod.modSettingsListOld.Add(set);
+                list.Add(sets[i].modSetting);
             }
-            else
-            {
-                ModConsole.Error($"[<b>{mod.ID}</b>] AddResetButton: provide at least one setting to reset.");
-            }
+            AddResetButton(name, list.ToArray());
         }
 
-        /// <summary>
-        /// Add Reset button to reset your mod's save file (only works when using unified save system)
-        /// </summary>
-        /// <param name="mod">Your mod instance</param>
-        
-        public static void AddSaveResetButton(Mod mod)
-        {
-            AddButton(mod, "Reset Save File", delegate
-            {
-                if (ModLoader.CurrentScene != CurrentScene.MainMenu)
-                {
-                    ModUI.ShowMessage("You can only use this in Main Menu");
-                    return;
-                }
-                ModUI.ShowYesNoMessage("Are you sure you want to reset this mod save file?", delegate
-                {
-                    SaveLoad.ResetSaveForMod(mod);
-                    ModUI.ShowMessage("Save file for this mod has been reset");
-                });
-            });
-        }
+
         /// <summary>
         /// Add Header, header groups settings together
         /// </summary>
@@ -455,6 +442,7 @@ namespace MSCLoader
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public static void AddHeader(Mod mod, string HeaderTitle, Color backgroundColor, Color textColor, bool collapsedByDefault = false)
         {
+            settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
             AddHeader(HeaderTitle, backgroundColor, textColor, collapsedByDefault);
         }
 
@@ -469,12 +457,7 @@ namespace MSCLoader
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public static SettingsDynamicHeader AddDynamicHeader(Mod mod, string HeaderTitle, bool collapsedByDefault = false)
         {
-            if (settingsMod == null)
-            {
-                ModConsole.Error("AddHeader() error: unknown Mod instance, settings must be created inside your ModSettings function");
-                return null;
-            }
-
+            settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
             SettingsDynamicHeader s = new SettingsDynamicHeader(HeaderTitle, new Color32(95, 34, 18, 255), new Color32(236, 229, 2, 255), collapsedByDefault);
             settingsMod.modSettingsList.Add(s);
             return s;
@@ -488,6 +471,7 @@ namespace MSCLoader
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public static void AddText(Mod mod, string text)
         {
+            settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
             AddText(text);
         }
 
@@ -501,11 +485,7 @@ namespace MSCLoader
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public static SettingsDynamicText AddDynamicText(Mod mod, string text)
         {
-            if (settingsMod == null)
-            {
-                ModConsole.Error("AddText() error: unknown Mod instance, settings must be created inside your ModSettings function");
-                return null;
-            }
+            settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
             SettingsDynamicText s = new SettingsDynamicText(text);
             settingsMod.modSettingsList.Add(s);
             return s;

@@ -225,104 +225,95 @@ internal class ModMenu : Mod
     // Reset settings
     public static void ResetSettings(Mod mod)
     {
-        //TODO: Update
-       /* if (mod != null)
+        if (mod == null) return;
+        for (int i = 0; i < Settings.Get(mod).Count; i++)
         {
-            // Revert settings
-            Settings[] set = Settings.Get(mod).ToArray();
-            for (int i = 0; i < set.Length; i++)
-            {
-                Settings original = Settings.GetDefault(mod).Find(x => x.ID == set[i].ID);
-
-                if (original != null)
-                {
-                    set[i].Value = original.Value;
-                }
-            }
-
-            // Save settings
-            SaveSettings(mod);
-        }*/
+            ResetSpecificSetting(Settings.Get(mod)[i]);
+        }
+        SaveSettings(mod);   
     }
-    public static void ResetSpecificSettings(Mod mod, Settings[] sets)
+    internal static void ResetSpecificSetting(ModSetting set)
     {
-        if (mod != null)
+        switch (set.SettingType)
         {
-            // Revert settings
-            for (int i = 0; i < sets.Length; i++)
-            {
-                Settings original = Settings.GetDefaultOld(mod).Find(x => x.ID == sets[i].ID);
-
-                if (original != null)
-                {
-                    sets[i].Value = original.Value;
-                }
-            }
-
-            // Save settings
-            SaveSettings(mod);
+            case SettingsType.CheckBoxGroup:
+                SettingsCheckBoxGroup scbg = (SettingsCheckBoxGroup)set;
+                scbg.Value = scbg.DefaultValue;
+                break;
+            case SettingsType.CheckBox:
+                SettingsCheckBox scb = (SettingsCheckBox)set;
+                scb.Value = scb.DefaultValue;
+                break;
+            case SettingsType.Slider:
+                SettingsSlider ss = (SettingsSlider)set;
+                ss.Value = ss.DefaultValue;
+                break;
+            case SettingsType.SliderInt:
+                SettingsSliderInt ssi = (SettingsSliderInt)set;
+                ssi.Value = ssi.DefaultValue;
+                break;
+            case SettingsType.TextBox:
+                SettingsTextBox stb = (SettingsTextBox)set;
+                stb.Value = stb.DefaultValue;
+                break;
+            case SettingsType.DropDown:
+                SettingsDropDownList sddl = (SettingsDropDownList)set;
+                sddl.Value = sddl.DefaultValue;
+                break;
+            case SettingsType.ColorPicker:
+                SettingsColorPicker scp = (SettingsColorPicker)set;
+                scp.Value = scp.DefaultColorValue;
+                break;
+            default:
+                break;
         }
     }
 
     // Save settings for a single mod to config file.
-    public static void SaveSettings(Mod mod)
+    internal static void SaveSettings(Mod mod)
     {
         SettingsList list = new SettingsList();
         list.isDisabled = mod.isDisabled;
         string path = Path.Combine(ModLoader.GetModSettingsFolder(mod), "settings.json");
 
-        if (Settings.Get(mod).Count > 0)
+        for (int i = 0; i < Settings.Get(mod).Count; i++)
         {
-            for (int i = 0; i < Settings.Get(mod).Count; i++)
+            switch (Settings.Get(mod)[i].SettingType)
             {
-                switch (Settings.Get(mod)[i].SettingType)
-                {
-                    case SettingsType.Button:
-                    case SettingsType.RButton:
-                    case SettingsType.Header:
-                    case SettingsType.Text:
-                        continue;
-                    case SettingsType.CheckBoxGroup:
-                        SettingsCheckBoxGroup group = (SettingsCheckBoxGroup)Settings.Get(mod)[i];
-                        list.settings.Add(new Setting(group.ID, group.Value));
-                        break;
-                    case SettingsType.CheckBox:
-                        SettingsCheckBox check = (SettingsCheckBox)Settings.Get(mod)[i];
-                        list.settings.Add(new Setting(check.ID, check.Value));
-                        break;
-                    case SettingsType.Slider:
-                        SettingsSlider slider = (SettingsSlider)Settings.Get(mod)[i];
-                        list.settings.Add(new Setting(slider.ID, slider.Value));
-                        break;
-                    case SettingsType.SliderInt:
-                        SettingsSliderInt sliderInt = (SettingsSliderInt)Settings.Get(mod)[i];
-                        list.settings.Add(new Setting(sliderInt.ID, sliderInt.Value));
-                        break;
-                    case SettingsType.TextBox:
-                        SettingsTextBox textBox = (SettingsTextBox)Settings.Get(mod)[i];
-                        list.settings.Add(new Setting(textBox.ID, textBox.Value));
-                        break;
-                    case SettingsType.DropDown:
-                        SettingsDropDownList dropDown = (SettingsDropDownList)Settings.Get(mod)[i];
-                        list.settings.Add(new Setting(dropDown.ID, dropDown.Value));
-                        break;
-                    case SettingsType.ColorPicker:
-                        SettingsColorPicker colorPicker = (SettingsColorPicker)Settings.Get(mod)[i];
-                        list.settings.Add(new Setting(colorPicker.ID, colorPicker.Value));
-                        break;
-                }
-            }
-        }
-        else
-        {
-            Settings[] set = Settings.GetOld(mod).ToArray();
-            for (int i = 0; i < set.Length; i++)
-            {
-                if (set[i].SettingType == SettingsType.Button || set[i].SettingType == SettingsType.RButton || set[i].SettingType == SettingsType.Header || set[i].SettingType == SettingsType.Text)
+                case SettingsType.Button:
+                case SettingsType.RButton:
+                case SettingsType.Header:
+                case SettingsType.Text:
                     continue;
-                list.settings.Add(new Setting(set[i].ID, set[i].Value));
+                case SettingsType.CheckBoxGroup:
+                    SettingsCheckBoxGroup group = (SettingsCheckBoxGroup)Settings.Get(mod)[i];
+                    list.settings.Add(new Setting(group.ID, group.Value));
+                    break;
+                case SettingsType.CheckBox:
+                    SettingsCheckBox check = (SettingsCheckBox)Settings.Get(mod)[i];
+                    list.settings.Add(new Setting(check.ID, check.Value));
+                    break;
+                case SettingsType.Slider:
+                    SettingsSlider slider = (SettingsSlider)Settings.Get(mod)[i];
+                    list.settings.Add(new Setting(slider.ID, slider.Value));
+                    break;
+                case SettingsType.SliderInt:
+                    SettingsSliderInt sliderInt = (SettingsSliderInt)Settings.Get(mod)[i];
+                    list.settings.Add(new Setting(sliderInt.ID, sliderInt.Value));
+                    break;
+                case SettingsType.TextBox:
+                    SettingsTextBox textBox = (SettingsTextBox)Settings.Get(mod)[i];
+                    list.settings.Add(new Setting(textBox.ID, textBox.Value));
+                    break;
+                case SettingsType.DropDown:
+                    SettingsDropDownList dropDown = (SettingsDropDownList)Settings.Get(mod)[i];
+                    list.settings.Add(new Setting(dropDown.ID, dropDown.Value));
+                    break;
+                case SettingsType.ColorPicker:
+                    SettingsColorPicker colorPicker = (SettingsColorPicker)Settings.Get(mod)[i];
+                    list.settings.Add(new Setting(colorPicker.ID, colorPicker.Value));
+                    break;
             }
-            
         }
 
         string serializedData = JsonConvert.SerializeObject(list, Formatting.Indented);
@@ -401,60 +392,49 @@ internal class ModMenu : Mod
                     ModLoader.ModException(e, ModLoader.LoadedMods[i]);
                 }
             }
-            if (Settings.Get(ModLoader.LoadedMods[i]).Count == 0 && Settings.GetOld(ModLoader.LoadedMods[i]).Count == 0)
+            if (Settings.Get(ModLoader.LoadedMods[i]).Count == 0)
                 continue;
 
             for (int j = 0; j < settings.settings.Count; j++)
             {
-                if (Settings.Get(ModLoader.LoadedMods[i]).Count > 0)
+                ModSetting ms = Settings.Get(ModLoader.LoadedMods[i]).Find(x => x.ID == settings.settings[j].ID);
+                if (ms == null)
+                    continue;
+                switch (ms.SettingType)
                 {
-                    ModSetting ms = Settings.Get(ModLoader.LoadedMods[i]).Find(x => x.ID == settings.settings[j].ID);
-                    if (ms == null)
+                    case SettingsType.Button:
+                    case SettingsType.RButton:
+                    case SettingsType.Header:
+                    case SettingsType.Text:
                         continue;
-                    switch (ms.SettingType)
-                    {
-                        case SettingsType.Button:
-                        case SettingsType.RButton:
-                        case SettingsType.Header:
-                        case SettingsType.Text:
-                            continue;
-                        case SettingsType.CheckBoxGroup:
-                            SettingsCheckBoxGroup group = (SettingsCheckBoxGroup)ms;
-                            group.SetValue(bool.Parse(settings.settings[j].Value.ToString()));
-                            break;
-                        case SettingsType.CheckBox:
-                            SettingsCheckBox check = (SettingsCheckBox)ms;
-                            check.SetValue(bool.Parse(settings.settings[j].Value.ToString()));
-                            break;
-                        case SettingsType.Slider:
-                            SettingsSlider slider = (SettingsSlider)ms;
-                            slider.SetValue(float.Parse(settings.settings[j].Value.ToString()));
-                            break;
-                        case SettingsType.SliderInt:
-                            SettingsSliderInt sliderInt = (SettingsSliderInt)ms;
-                            sliderInt.SetValue(int.Parse(settings.settings[j].Value.ToString()));
-                            break;
-                        case SettingsType.TextBox:
-                            SettingsTextBox textBox = (SettingsTextBox)ms;
-                            textBox.SetValue(settings.settings[j].Value.ToString());
-                            break;
-                        case SettingsType.DropDown:
-                            SettingsDropDownList dropDown = (SettingsDropDownList)ms;
-                            dropDown.SetSelectedItemIndex(int.Parse(settings.settings[j].Value.ToString()));
-                            break;
-                        case SettingsType.ColorPicker:
-                            SettingsColorPicker colorPicker = (SettingsColorPicker)ms;
-                            colorPicker.Value = settings.settings[j].Value.ToString();
-                            break;
-                    }
-                }
-                else
-                {
-                    Settings set = Settings.GetOld(ModLoader.LoadedMods[i]).Find(x => x.ID == settings.settings[j].ID);
-                    if (set == null)
-                        continue;
-                    //TODO: Add checks for values that no longer exists (like in dropdowns that are based on file list)
-                    set.Value = settings.settings[j].Value;                   
+                    case SettingsType.CheckBoxGroup:
+                        SettingsCheckBoxGroup group = (SettingsCheckBoxGroup)ms;
+                        group.SetValue(bool.Parse(settings.settings[j].Value.ToString()));
+                        break;
+                    case SettingsType.CheckBox:
+                        SettingsCheckBox check = (SettingsCheckBox)ms;
+                        check.SetValue(bool.Parse(settings.settings[j].Value.ToString()));
+                        break;
+                    case SettingsType.Slider:
+                        SettingsSlider slider = (SettingsSlider)ms;
+                        slider.SetValue(float.Parse(settings.settings[j].Value.ToString()));
+                        break;
+                    case SettingsType.SliderInt:
+                        SettingsSliderInt sliderInt = (SettingsSliderInt)ms;
+                        sliderInt.SetValue(int.Parse(settings.settings[j].Value.ToString()));
+                        break;
+                    case SettingsType.TextBox:
+                        SettingsTextBox textBox = (SettingsTextBox)ms;
+                        textBox.SetValue(settings.settings[j].Value.ToString());
+                        break;
+                    case SettingsType.DropDown:
+                        SettingsDropDownList dropDown = (SettingsDropDownList)ms;
+                        dropDown.SetSelectedItemIndex(int.Parse(settings.settings[j].Value.ToString()));
+                        break;
+                    case SettingsType.ColorPicker:
+                        SettingsColorPicker colorPicker = (SettingsColorPicker)ms;
+                        colorPicker.Value = settings.settings[j].Value.ToString();
+                        break;
                 }
             }
             try
@@ -494,12 +474,6 @@ internal class ModMenu : Mod
             modMenuUI.SetActive(true);
             //    StartCoroutine(CursorPM());
         }
-        /*  IEnumerator CursorPM()
-          {
-              yield return new WaitForSeconds(0.5f);
-              //Fix that shitty custom playmaker cursor to regular system one.
-              Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
-          }*/
         void OnDisable()
         {
             if (isApplicationQuitting) return;
