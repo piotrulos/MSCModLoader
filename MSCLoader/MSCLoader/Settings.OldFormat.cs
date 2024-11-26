@@ -34,7 +34,6 @@ namespace MSCLoader
         /// </summary>
         public Action DoAction;
 
-        internal UnityAction DoUnityAction;
         /// <summary>
         /// Type of setting.
         /// </summary>
@@ -108,14 +107,7 @@ namespace MSCLoader
             Value = "DoAction";
             DoAction = doAction;
         }
-        [Obsolete("No longer used", true)]
-        internal Settings(string id, string name, UnityAction doUnityAction, bool blockSuspension)
-        {
-            ID = id;
-            Name = name;
-            Value = "DoUnityAction";
-            DoUnityAction = doUnityAction;
-        }
+
         /// <summary>
         /// Constructor for Settings
         /// </summary>
@@ -132,13 +124,7 @@ namespace MSCLoader
             DoAction = doAction;
         }
 
-        internal Settings(string id, string name, object value, UnityAction doAction, bool blockSuspension)
-        {
-            ID = id;
-            Name = name;
-            Value = value;
-            DoUnityAction = doAction;
-        }
+
         internal Settings(Mod mod, string id, string name, object value, Action doAction, SettingsType type)
         {
             Mod = mod;

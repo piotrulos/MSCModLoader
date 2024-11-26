@@ -203,19 +203,5 @@ namespace MSCLoader
             SettingsTextBox s = AddTextBox(setting.ID, setting.Name, setting.Value.ToString(), placeholderText, contentType);
             setting.modSetting = s;
         }
-
-        //internal shit for pro compatibility
-        internal static void AddHeader(Mod mod, string HeaderTitle, UnityEngine.Color backgroundColor, UnityEngine.Color textColor, Settings set)
-        {
-            AddHeader(HeaderTitle, backgroundColor, textColor);
-           /* Settings setting = set;
-            setting.Mod = mod;
-            setting.Vals = new object[3];
-            setting.SettingType = SettingsType.Header;
-            setting.Vals[0] = HeaderTitle;
-            setting.Vals[1] = backgroundColor;
-            setting.Vals[2] = textColor;
-            mod.modSettingsListOld.Add(setting);*/
-        }
     }
 }
