@@ -1,4 +1,5 @@
-﻿namespace MSCLoader
+﻿#if !Mini
+namespace MSCLoader
 {
     /// <summary>
     /// Class inheriting from MonoBehaviour, add this to any game object to make it interactable. Override the functions you need.
@@ -119,3 +120,4 @@
         public virtual void scrollDown() { }
     }
 }
+#endif

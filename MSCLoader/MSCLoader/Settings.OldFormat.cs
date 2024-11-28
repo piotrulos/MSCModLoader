@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !Mini
+using System;
 using System.Collections.Generic;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -478,3 +479,4 @@ namespace MSCLoader
         }
     }
 }
+#endif

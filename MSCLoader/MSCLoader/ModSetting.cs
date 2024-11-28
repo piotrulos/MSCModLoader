@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !Mini 
+using System;
 using UnityEngine.UI;
 
 namespace MSCLoader;
@@ -623,3 +624,4 @@ public class SettingsDynamicText : ModSetting
     internal SettingsDynamicText(string name) : base(null, name, null, SettingsType.Text) { }
 }
 
+#endif

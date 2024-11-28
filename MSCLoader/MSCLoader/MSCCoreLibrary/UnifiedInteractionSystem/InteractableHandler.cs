@@ -1,4 +1,5 @@
-﻿namespace MSCLoader
+﻿#if !Mini
+namespace MSCLoader
 {
     internal class InteractableHandler : MonoBehaviour
     {
@@ -102,3 +103,4 @@
         }
     }
 }
+#endif

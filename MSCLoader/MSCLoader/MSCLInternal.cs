@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿#if !Mini 
+using System.Net;
 using System.Text;
 using System;
 using Newtonsoft.Json;
@@ -357,3 +358,4 @@ internal static class ByteArrayExtensions
         }
     }
 }
+#endif

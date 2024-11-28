@@ -1,4 +1,5 @@
-﻿using UnityEngine.UI;
+﻿#if !Mini
+using UnityEngine.UI;
 
 namespace MSCLoader
 {
@@ -205,3 +206,4 @@ namespace MSCLoader
         }
     }
 }
+#endif

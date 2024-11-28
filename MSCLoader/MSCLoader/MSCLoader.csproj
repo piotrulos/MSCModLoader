@@ -51,10 +51,10 @@
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="cInput">
+    <Reference Include="cInput" Condition="!$(DefineConstants.Contains('Mini'))">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\cInput.dll</HintPath>
     </Reference>
-    <Reference Include="ES2, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ES2, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" Condition="!$(DefineConstants.Contains('Mini'))">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\ES2.dll</HintPath>
       <Private>False</Private>

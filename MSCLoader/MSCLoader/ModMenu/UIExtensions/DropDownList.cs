@@ -39,7 +39,7 @@ namespace MSCLoader
         private GameObject _itemTemplate;
 
         [SerializeField]
-        private float _scrollBarWidth = 4.0f;
+        private float _scrollBarWidth = 8.0f;
         public float ScrollBarWidth
         {
             get { return _scrollBarWidth; }
@@ -264,7 +264,7 @@ namespace MSCLoader
 
         private void RedrawPanel()
         {
-            float scrollbarWidth = Items.Count > ItemsToDisplay ? _scrollBarWidth : 0f;
+            float scrollbarWidth = Items.Count > ItemsToDisplay ? _scrollBarWidth : 8f;
 
             if (!_hasDrawnOnce || _rectTransform.sizeDelta != _mainButton.rectTransform.sizeDelta)
             {
@@ -287,7 +287,7 @@ namespace MSCLoader
 
             if (Items.Count < 1) return;
 
-            float dropdownHeight = (25 * Mathf.Min(_itemsToDisplay, Items.Count)) + 5;
+            float dropdownHeight = (25 * Mathf.Min(_itemsToDisplay, Items.Count)) + (Items.Count > _itemsToDisplay ? 18 : 5);
             _scrollPanelRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, dropdownHeight);
             //_scrollPanelRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, _rectTransform.sizeDelta.x);
             _overlayRT.GetComponent<LayoutElement>().preferredHeight = dropdownHeight;

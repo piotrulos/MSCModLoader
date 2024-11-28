@@ -161,6 +161,7 @@ public partial class ModLoader : MonoBehaviour
             canvLoading.SetUpdateProgress(3, "Done!");
         checkForUpdatesProgress = false;
         dnsaf = false;
+        ModMetadata.GetSelfUpdateList();
         if (MetadataUpdateList.Count > 0 && !failed)
         {
             StartCoroutine(DownloadMetadataFiles());

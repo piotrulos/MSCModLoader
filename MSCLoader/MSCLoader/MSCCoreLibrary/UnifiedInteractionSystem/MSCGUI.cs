@@ -1,4 +1,5 @@
-﻿using HutongGames.PlayMaker;
+﻿#if !Mini 
+using HutongGames.PlayMaker;
 using System;
 using System.Collections.Generic;
 
@@ -49,3 +50,4 @@ namespace MSCLoader
         #endregion FsmVariables
     }
 }
+#endif
