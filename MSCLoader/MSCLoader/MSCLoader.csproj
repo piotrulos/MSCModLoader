@@ -12,7 +12,7 @@
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
-    <LangVersion>10</LangVersion>
+    <LangVersion>12</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'MSC_Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -66,6 +66,9 @@
     <Reference Include="Ionic.Zip" Condition="!$(DefineConstants.Contains('Mini'))">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Ionic.Zip.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="MSCCoreLibrary">
+      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\Mods\References\MSCCoreLibrary.dll</HintPath>
     </Reference>
     <Reference Include="MSCLoader.Helpers" Condition="!$(DefineConstants.Contains('Mini'))">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\Mods\References\MSCLoader.Helpers.dll</HintPath>
@@ -171,11 +174,6 @@
     <Compile Include="ModUI.cs" />
     <Compile Include="ModUIDrag.cs" />
     <Compile Include="ModCallbacks\BC_ModUpdate.cs" />
-    <Compile Include="MSCCoreLibrary\ActionScheduling\GameTime.cs" />
-    <Compile Include="MSCCoreLibrary\ActionScheduling\TimeScheduler.cs" />
-    <Compile Include="MSCCoreLibrary\UnifiedInteractionSystem\Interactable.cs" />
-    <Compile Include="MSCCoreLibrary\UnifiedInteractionSystem\InteractableHandler.cs" />
-    <Compile Include="MSCCoreLibrary\UnifiedInteractionSystem\MSCGUI.cs" />
     <Compile Include="MSCLInternal.cs" />
     <Compile Include="MSCUnloader.cs" />
     <Compile Include="AudioLibrary\NAudio.Vorbis\VorbisWaveReader.cs" />

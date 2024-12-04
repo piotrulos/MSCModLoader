@@ -136,7 +136,8 @@ public partial class ModLoader : MonoBehaviour
                     unloader = true;
                     return;
                 }
-                TimeScheduler.StopScheduler();
+                if(IsReferencePresent("MSCCoreLibrary"))
+                    MSCCoreLibrary.TimeScheduler.StopScheduler();
                 break;
             case "Intro":
                 CurrentScene = CurrentScene.NewGameIntro;
@@ -153,13 +154,15 @@ public partial class ModLoader : MonoBehaviour
                     QualitySettings.vSyncCount = 0;
 
                 menuInfoAnim.Play("fade_out");
-                TimeScheduler.StartScheduler();
+                if (IsReferencePresent("MSCCoreLibrary"))
+                    MSCCoreLibrary.TimeScheduler.StartScheduler();
                 StartLoadingMods();
                 ModMenu.ModMenuHandle();
                 break;
             case "Ending":
                 CurrentScene = CurrentScene.Ending;
-                TimeScheduler.StopScheduler();
+                if (IsReferencePresent("MSCCoreLibrary"))
+                    MSCCoreLibrary.TimeScheduler.StopScheduler();
                 break;
         }
     }
@@ -934,7 +937,8 @@ public partial class ModLoader : MonoBehaviour
         yield return null;
         GameObject.Find("ITEMS").GetComponent<PlayMakerFSM>().FsmInject("Save game", SaveMods);
         ModConsole.Print("</color>");
-        TimeScheduler.LoadScheduler();
+        if (IsReferencePresent("MSCCoreLibrary"))
+            MSCCoreLibrary.TimeScheduler.LoadScheduler();
         yield return null;
         allModsLoaded = true;
         canvLoading.ToggleLoadingUI(false);
@@ -969,7 +973,8 @@ public partial class ModLoader : MonoBehaviour
                 ModException(e, OnSaveMods[i], true);
             }
         }
-        TimeScheduler.SaveScheduler();
+        if (IsReferencePresent("MSCCoreLibrary"))
+            MSCCoreLibrary.TimeScheduler.SaveScheduler();
     }
 
     internal static bool CheckEmptyMethod(Mod mod, string methodName)
