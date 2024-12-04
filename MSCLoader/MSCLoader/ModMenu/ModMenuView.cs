@@ -35,7 +35,7 @@ internal class ModMenuView : MonoBehaviour
     System.Collections.IEnumerator ModListAsync(GameObject listView, string search)
     {
         Mod[] filteredList = new Mod[0];
-        string[] filteredInvalidList = new string[0];
+        InvalidMods[] filteredInvalidList = new InvalidMods[0];
         if (search == string.Empty)
         {
             filteredList = ModLoader.Instance.actualModList;
@@ -44,7 +44,7 @@ internal class ModMenuView : MonoBehaviour
         else
         {
             filteredList = ModLoader.Instance.actualModList.Where(x => x.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 || x.ID.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0).ToArray();
-            filteredInvalidList = ModLoader.InvalidMods.Where(x => x.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0).ToArray();
+            filteredInvalidList = ModLoader.InvalidMods.Where(x => x.FileName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0).ToArray();
         }
         //  ModConsole.Warning(filteredList.Length.ToString());
         for (int i = 0; i < filteredList.Length; i++)

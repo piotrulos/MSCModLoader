@@ -358,4 +358,29 @@ internal static class ByteArrayExtensions
         }
     }
 }
+internal class InvalidMods
+{
+    public string FileName;
+    public bool IsManaged;
+    public string ErrorMessage;
+
+    //If isManaged
+    public List<string> AdditionalRefs = new List<string>();
+    public string AsmGuid = null;
+
+    internal InvalidMods(string fileName, bool isManaged, string errorMessage)
+    {
+        FileName = fileName;
+        IsManaged = isManaged;
+        ErrorMessage = errorMessage;
+    }
+    internal InvalidMods(string fileName, bool isManaged, string errorMessage, List<string> additionalRefs, string asmGuid)
+    {
+        FileName = fileName;
+        IsManaged = isManaged;
+        ErrorMessage = errorMessage;
+        AdditionalRefs = additionalRefs;
+        AsmGuid = asmGuid;
+    }
+}
 #endif

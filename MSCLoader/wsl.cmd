@@ -1,1 +1,0 @@
-C:\Windows\Sysnative\bash.exe -c /root/mscloader.sh

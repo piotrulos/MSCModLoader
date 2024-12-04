@@ -145,14 +145,26 @@ namespace MSCLoader
             });
 
         }
-        public void InvalidMod(string name)
+        public void InvalidMod(InvalidMods mod)
         {
-            Title.text = $"<color=red>{name}</color>";
+            Title.text = $"<color=red>{mod.FileName}</color>";
+            WarningBtn.gameObject.SetActive(true);
             WarningText.gameObject.SetActive(true);
             WarningText.text = "Failed to load";
             Author.text = string.Empty;
-            Description.text = "Failed to load this mod";
+            Description.text = $"Failed to load this mod{Environment.NewLine}Error: <color=yellow>{mod.ErrorMessage}</color>";
+            WarningInfo.text = $"<color=orange>This Mod failed to load.</color>{Environment.NewLine}Error: <color=yellow>{mod.ErrorMessage}</color>";
+            if (mod.IsManaged)
+            {
+                QuickInfo.text = $"<color=orange>This mod failed to load.</color>{Environment.NewLine}Guid: <color=yellow>{mod.AsmGuid}</color>";
+                if(mod.AdditionalRefs.Count > 0)
+                    QuickInfo.text += $"{Environment.NewLine}Additional references: <color=aqua>{string.Join(", ", mod.AdditionalRefs.ToArray())}</color>";
+            }
+            else
+                QuickInfo.text = $"<color=orange>This doesn't look like a valid mod file.</color>";
             icon.texture = invalidModIcon;
+            DisableMod.gameObject.SetActive(false);
+            MoreInfoBtn.gameObject.SetActive(false);
         }
         public void ReferenceInfoFill(References rf)
         {

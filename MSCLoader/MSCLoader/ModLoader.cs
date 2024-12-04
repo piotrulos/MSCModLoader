@@ -218,7 +218,7 @@ public partial class ModLoader : MonoBehaviour
         }
         allModsLoaded = false;
         LoadedMods = new List<Mod>();
-        InvalidMods = new List<string>();
+        InvalidMods = new List<InvalidMods>();
         mscUnloader.reset = false;
         if (!Directory.Exists(ModsFolder))
             Directory.CreateDirectory(ModsFolder);
@@ -932,7 +932,7 @@ public partial class ModLoader : MonoBehaviour
         canvLoading.SetLoadingProgress((int)canvLoading.lProgress.maxValue, (int)canvLoading.lProgress.maxValue);
         canvLoading.SetLoadingStatus("Finishing touches...");
         yield return null;
-        GameObject.Find("ITEMS").FsmInject("Save game", SaveMods);
+        GameObject.Find("ITEMS").GetComponent<PlayMakerFSM>().FsmInject("Save game", SaveMods);
         ModConsole.Print("</color>");
         TimeScheduler.LoadScheduler();
         yield return null;
@@ -1272,7 +1272,7 @@ public partial class ModLoader : MonoBehaviour
             {
                 crashedGuids.Add(asmGuid);
                 ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - doesn't look like a mod or missing Mod subclass!{Environment.NewLine}<b>Details:</b> File loaded correctly, but failed to find Mod methods.{Environment.NewLine}If this is a reference put this file into \"<b>References</b>\" folder.{Environment.NewLine}");
-                InvalidMods.Add(Path.GetFileName(file));
+                InvalidMods.Add(new InvalidMods(Path.GetFileName(file), true, "File loaded correctly, but failed to find Mod methods.", addRef.ToList(),asmGuid));
             }
         }
         catch (Exception e)
@@ -1280,28 +1280,33 @@ public partial class ModLoader : MonoBehaviour
             if (mscl)
             {
                 crashedGuids.Add(asmGuid);
-                ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - crashed during load.<b>Details:</b> {e.GetFullMessage()}{Environment.NewLine}");
-               /* if (addRef.Count > 0)
+                ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - crashed during load.<b>Details:</b> {e.GetFullMessage()}");
+                InvalidMods.Add(new InvalidMods(Path.GetFileName(file), true, e.GetFullMessage(), addRef.ToList(), asmGuid));
+                if (addRef.Count > 0)
                 {
-                    if (((addRef.Contains("MSCLoader.Features") && !ReferencesList.Select(x => x.AssemblyID).Contains("MSCLoader.Features"))) || ((addRef.Contains("MSCLoader.Helpers") && !ReferencesList.Select(x => x.AssemblyID).Contains("MSCLoader.Helpers"))))
-                        ModUI.ShowYesNoMessage($"<color=yellow>{Path.GetFileName(file)}</color> - looks like a mod, but It crashed trying to load.{Environment.NewLine}{Environment.NewLine}Detected additional references used by this mod: {Environment.NewLine}<color=aqua>{string.Join(", ", addRef.ToArray())}</color> {Environment.NewLine}{Environment.NewLine} Looks like missing compatibility pack.{Environment.NewLine} Open download page?", "Crashed", delegate
-                         {
-                             Application.OpenURL("https://www.nexusmods.com/mysummercar/mods/732");
-                         });
-                    else
-                    {
-                        // ModUI.ShowMessage($"<color=yellow>{Path.GetFileName(file)}</color> - looks like a mod, but It crashed trying to load.{Environment.NewLine} {Environment.NewLine}Detected additional references used by this mod: {Environment.NewLine}<color=aqua>{string.Join(", ", addRef.ToArray())}</color> {Environment.NewLine}{Environment.NewLine}Check mod download page for required references.", "Crashed");
-                        foreach (string r in addRef)
-                        {
-                            ModUI.ShowYesNoMessage($"<color=yellow>{Path.GetFileName(file)}</color> - looks like a mod, but It crashed trying to load.{Environment.NewLine}{Environment.NewLine}Detected additional references used by this mod: {Environment.NewLine}<color=aqua>{r}</color> {Environment.NewLine}{Environment.NewLine}Do you want to download this reference now?", "Crashed - Missing references", delegate
-                            {
-                                Instance.DownloadRequiredRef(r);
-                            });
-                        }
-                    }
+                    ModConsole.Print($"<color=red>Potential missing files: </color><color=aqua>{string.Join(", ", addRef.ToArray())}</color>{Environment.NewLine}");
                 }
-                else
-                    ModUI.ShowMessage($"<color=yellow>{Path.GetFileName(file)}</color> - looks like a mod, but It crashed trying to load.{Environment.NewLine}Reason: Unknown", "Crashed");*/
+                /* if (addRef.Count > 0)
+                 {
+                     if (((addRef.Contains("MSCLoader.Features") && !ReferencesList.Select(x => x.AssemblyID).Contains("MSCLoader.Features"))) || ((addRef.Contains("MSCLoader.Helpers") && !ReferencesList.Select(x => x.AssemblyID).Contains("MSCLoader.Helpers"))))
+                         ModUI.ShowYesNoMessage($"<color=yellow>{Path.GetFileName(file)}</color> - looks like a mod, but It crashed trying to load.{Environment.NewLine}{Environment.NewLine}Detected additional references used by this mod: {Environment.NewLine}<color=aqua>{string.Join(", ", addRef.ToArray())}</color> {Environment.NewLine}{Environment.NewLine} Looks like missing compatibility pack.{Environment.NewLine} Open download page?", "Crashed", delegate
+                          {
+                              Application.OpenURL("https://www.nexusmods.com/mysummercar/mods/732");
+                          });
+                     else
+                     {
+                         // ModUI.ShowMessage($"<color=yellow>{Path.GetFileName(file)}</color> - looks like a mod, but It crashed trying to load.{Environment.NewLine} {Environment.NewLine}Detected additional references used by this mod: {Environment.NewLine}<color=aqua>{string.Join(", ", addRef.ToArray())}</color> {Environment.NewLine}{Environment.NewLine}Check mod download page for required references.", "Crashed");
+                         foreach (string r in addRef)
+                         {
+                             ModUI.ShowYesNoMessage($"<color=yellow>{Path.GetFileName(file)}</color> - looks like a mod, but It crashed trying to load.{Environment.NewLine}{Environment.NewLine}Detected additional references used by this mod: {Environment.NewLine}<color=aqua>{r}</color> {Environment.NewLine}{Environment.NewLine}Do you want to download this reference now?", "Crashed - Missing references", delegate
+                             {
+                                 Instance.DownloadRequiredRef(r);
+                             });
+                         }
+                     }
+                 }
+                 else
+                     ModUI.ShowMessage($"<color=yellow>{Path.GetFileName(file)}</color> - looks like a mod, but It crashed trying to load.{Environment.NewLine}Reason: Unknown", "Crashed");*/
 
             }
             else
@@ -1309,6 +1314,7 @@ public partial class ModLoader : MonoBehaviour
                 if (byteFile != null)
                 {
                     ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - failed to load this as valid early access file. Most likely there is new updated file available!{Environment.NewLine}<b>Details:</b> {e.GetType().Name}{Environment.NewLine}");
+                    InvalidMods.Add(new InvalidMods(Path.GetFileName(file), false, "failed to load this as valid early access file. Most likely there is new updated file available!"));
                 }
                 else
                 {
@@ -1316,12 +1322,13 @@ public partial class ModLoader : MonoBehaviour
                         ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - doesn't look like a mod, remove this file from mods folder!{Environment.NewLine}<b>Details:</b> {e.GetType().Name}{Environment.NewLine}");
                     else
                         ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - doesn't look like a mod, remove this file from mods folder!{Environment.NewLine}<b>Details:</b> {e.GetFullMessage()}{Environment.NewLine}");
+                    InvalidMods.Add(new InvalidMods(Path.GetFileName(file), false, e.GetFullMessage()));
                 }
             }
             if (devMode)
                 ModConsole.Error(e.ToString());
             Console.WriteLine(e);
-            InvalidMods.Add(Path.GetFileName(file));
+            //InvalidMods.Add(Path.GetFileName(file));
         }
 
     }

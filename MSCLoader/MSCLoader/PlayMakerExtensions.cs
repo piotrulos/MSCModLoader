@@ -107,14 +107,14 @@ public static class PlayMakerExtensions
         return null;
     }
 
-    private class PM_Hook : FsmStateAction
-    {
+    private class MSCL_PMHook : FsmStateAction
+    {        
         public Action action;
         public bool everyFrame = false;
 
-        public PM_Hook(Action action, bool everyFrame = false)
+        public MSCL_PMHook(Action action, bool everyFrame = false)
         {
-            this.action = action;
+            this.action = action;            
             this.everyFrame = everyFrame;
         }
 
@@ -140,7 +140,7 @@ public static class PlayMakerExtensions
     /// <param name="gameObject">GameObject where to hook</param>
     /// <param name="stateName">Name of the state</param>
     /// <param name="hook">Your function to hook</param>
-    [Obsolete("Please use the other FsmInject overrides, as this one is unnecesarilly too slow.", false)]
+    [Obsolete("Please use the other FsmInject extension", true)]
     public static void FsmInject(this GameObject gameObject, string stateName, Action hook)
     {
         PlayMakerFSM[] pm = gameObject.GetComponents<PlayMakerFSM>();
@@ -172,7 +172,7 @@ public static class PlayMakerExtensions
     /// <returns>Whether the injection was successful</returns>
     public static bool FsmInject(this GameObject go, string playmakerName, string stateName, Action hook, bool everyFrame = false, int index = -1, bool replace = false)
     {
-        return FsmInject(go.GetPlayMaker(playmakerName), stateName, new PM_Hook(hook, everyFrame), index, replace);
+        return FsmInject(go.GetPlayMaker(playmakerName), stateName, new MSCL_PMHook(hook, everyFrame), index, replace);
     }
     /// <summary>
     /// Insert custom Action to the Playmaker
@@ -187,7 +187,7 @@ public static class PlayMakerExtensions
     /// <returns>Whether the injection was successful</returns>
     public static bool FsmInject(this Transform tf, string playmakerName, string stateName, Action hook, bool everyFrame = false, int index = -1, bool replace = false)
     {
-        return FsmInject(tf.GetPlayMaker(playmakerName), stateName, new PM_Hook(hook, everyFrame), index, replace);
+        return FsmInject(tf.GetPlayMaker(playmakerName), stateName, new MSCL_PMHook(hook, everyFrame), index, replace);
     }
     /// <summary>
     /// Insert custom Action to the Playmaker
@@ -201,7 +201,7 @@ public static class PlayMakerExtensions
     /// <returns>Whether the injection was successful</returns>
     public static bool FsmInject(this PlayMakerFSM fsm, string stateName, Action hook, bool everyFrame = false, int index = -1, bool replace = false)
     {
-        return FsmInject(fsm, stateName, new PM_Hook(hook, everyFrame), index, replace);
+        return FsmInject(fsm, stateName, new MSCL_PMHook(hook, everyFrame), index, replace);
     }
     /// <summary>
     /// Insert custom Action to the Playmaker

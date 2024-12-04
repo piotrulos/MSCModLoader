@@ -38,6 +38,7 @@ internal class SetMouseCursorFix : FsmStateAction
 /// <summary>
 /// Playmaker hook inject method.
 /// </summary>
+[Obsolete("Obsolete", true)]
 public class FsmHook
 {
     /// <summary>
@@ -46,7 +47,7 @@ public class FsmHook
     /// <param name="gameObject">GameObject where to hook</param>
     /// <param name="stateName">Name of the state</param>
     /// <param name="hook">Your function to hook</param>
-    [Obsolete("Please use the other FsmInject overrides, as this one is unnecesarilly too slow.", false)]
+    [Obsolete("Please use the other FsmInject override.", true)]
     public static void FsmInject(GameObject gameObject, string stateName, Action hook)
     {
         gameObject.FsmInject(stateName, hook);

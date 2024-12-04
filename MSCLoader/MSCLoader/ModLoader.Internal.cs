@@ -9,7 +9,7 @@ namespace MSCLoader;
 public partial class ModLoader
 {
     internal static bool LogAllErrors = false;
-    internal static List<string> InvalidMods;
+    internal static List<InvalidMods> InvalidMods;
     internal static ModLoader Instance;
     internal static bool unloader = false;
     internal static bool returnToMainMenu = false;
