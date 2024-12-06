@@ -13,15 +13,19 @@ public class ModSetting
     internal string Name;
     internal Action DoAction;
     internal SettingsType SettingType;
+    internal bool IsVisible = true;
+    internal bool DefaultVisibility = true;
 
     internal SettingsElement SettingsElement;
     internal SettingsGroup HeaderElement;
-    internal ModSetting(string id, string name, Action doAction, SettingsType type)
+    internal ModSetting(string id, string name, Action doAction, SettingsType type, bool visibleByDefault)
     {
         ID = id;
         Name = name;
         DoAction = doAction;
         SettingType = type;
+        DefaultVisibility = visibleByDefault;
+        IsVisible = visibleByDefault;
     }
 
     internal void UpdateName(string name)
@@ -52,6 +56,19 @@ public class ModSetting
             }
         }
     }
+    public void SetVisibility(bool value)
+    {
+        IsVisible = value;
+        if (SettingsElement != null)
+        {
+            SettingsElement.gameObject.SetActive(value);
+        }
+        if(HeaderElement != null)
+        {
+            HeaderElement.gameObject.SetActive(value);
+        }
+    }
+
 }
 
 
@@ -87,7 +104,7 @@ public class SettingsCheckBox : ModSetting
         UpdateValue(value);
     }
 
-    internal SettingsCheckBox(string id, string name, bool value, Action doAction) : base(id, name, doAction, SettingsType.CheckBox)
+    internal SettingsCheckBox(string id, string name, bool value, Action doAction, bool visibleByDefault) : base(id, name, doAction, SettingsType.CheckBox, visibleByDefault)
     {
         Value = value;
         DefaultValue = value;
@@ -127,7 +144,7 @@ public class SettingsCheckBoxGroup : ModSetting
         Value = value;
         UpdateValue(value);
     }
-    internal SettingsCheckBoxGroup(string id, string name, bool value, string group, Action doAction) : base(id, name, doAction, SettingsType.CheckBoxGroup)
+    internal SettingsCheckBoxGroup(string id, string name, bool value, string group, Action doAction, bool visibleByDefault) : base(id, name, doAction, SettingsType.CheckBoxGroup, visibleByDefault)
     {
         Value = value;
         DefaultValue = value;
@@ -172,7 +189,7 @@ public class SettingsSliderInt : ModSetting
         UpdateValue(value);
     }
 
-    internal SettingsSliderInt(string id, string name, int value, int minValue, int maxValue,  Action onValueChanged, string[] textValues) : base(id, name, onValueChanged, SettingsType.SliderInt)
+    internal SettingsSliderInt(string id, string name, int value, int minValue, int maxValue,  Action onValueChanged, string[] textValues, bool visibleByDefault) : base(id, name, onValueChanged, SettingsType.SliderInt, visibleByDefault)
     {
         Value = value;
         DefaultValue = value;
@@ -218,7 +235,7 @@ public class SettingsSlider : ModSetting
         UpdateValue(value);
     }
 
-    internal SettingsSlider(string id, string name, float value, float minValue, float maxValue, Action onValueChanged, int decimalPoints) : base(id, name, onValueChanged, SettingsType.Slider)
+    internal SettingsSlider(string id, string name, float value, float minValue, float maxValue, Action onValueChanged, int decimalPoints, bool visibleByDefault) : base(id, name, onValueChanged, SettingsType.Slider, visibleByDefault)
     {   
         Value = value;
         DefaultValue = value;
@@ -265,7 +282,7 @@ public class SettingsTextBox : ModSetting
         UpdateValue(value);
     }
 
-    internal SettingsTextBox(string id, string name, string value, string placeholder, InputField.ContentType contentType) : base(id, name, null, SettingsType.TextBox)
+    internal SettingsTextBox(string id, string name, string value, string placeholder, InputField.ContentType contentType, bool visibleByDefault) : base(id, name, null, SettingsType.TextBox, visibleByDefault)
     {
         Value = value;
         DefaultValue = value;
@@ -321,7 +338,7 @@ public class SettingsDropDownList : ModSetting
         UpdateValue(value);
     }
 
-    internal SettingsDropDownList(string id, string name, string[] arrayOfItems, int defaultValue, Action onSelectionChanged) : base(id, name, onSelectionChanged, SettingsType.DropDown)
+    internal SettingsDropDownList(string id, string name, string[] arrayOfItems, int defaultValue, Action onSelectionChanged, bool visibleByDefault) : base(id, name, onSelectionChanged, SettingsType.DropDown, visibleByDefault)
     {
         Value = defaultValue;
         ArrayOfItems = arrayOfItems;
@@ -364,7 +381,7 @@ public class SettingsColorPicker : ModSetting
     }
 
 
-    internal SettingsColorPicker(string id, string name, Color32 defaultColor, bool showAlpha, Action onColorChanged) : base(id, name, onColorChanged, SettingsType.ColorPicker)
+    internal SettingsColorPicker(string id, string name, Color32 defaultColor, bool showAlpha, Action onColorChanged, bool visibleByDefault) : base(id, name, onColorChanged, SettingsType.ColorPicker, visibleByDefault)
     {
         Value = $"{defaultColor.r},{defaultColor.g},{defaultColor.b},{defaultColor.a}";
         DefaultColorValue = $"{defaultColor.r},{defaultColor.g},{defaultColor.b},{defaultColor.a}";
@@ -442,7 +459,7 @@ public class SettingsHeader : ModSetting
     }
 
 
-    internal SettingsHeader(string name, Color backgroundColor, Color textColor, bool collapsedByDefault) : base(null, name, null, SettingsType.Header)
+    internal SettingsHeader(string name, Color backgroundColor, Color textColor, bool collapsedByDefault, bool visibleByDefault) : base(null, name, null, SettingsType.Header, visibleByDefault)
     { 
         BackgroundColor = backgroundColor;
         TextColor = textColor;
@@ -473,7 +490,7 @@ public class SettingsText : ModSetting
         UpdateValue(value);
     }
 
-    internal SettingsText(string name) : base(null, name, null, SettingsType.Text) { }
+    internal SettingsText(string name, bool visibleByDefault) : base(null, name, null, SettingsType.Text, visibleByDefault) { }
 
 }
 
@@ -484,11 +501,34 @@ public class SettingsButton : ModSetting
 {
     internal Color BackgroundColor = new Color32(85, 38, 0, 255);
     internal Color TextColor = Color.white;
+    internal ButtonIcon PredefinedIcon = ButtonIcon.None;
+    internal Texture2D CustomIcon = null;
 
-    internal SettingsButton(string name, Action doAction, Color backgroundColor, Color textColor) : base(null, name, doAction, SettingsType.Button)
+    public enum ButtonIcon
+    {
+        None = -2,
+        Custom = -1,
+        RaceDepartment,
+        NexusMods,
+        Github,
+        GoBack,
+        Bug,
+        Website,
+        Folder,
+        Download,
+        Info,
+        Search,
+        Settings,
+        Warning
+    }
+
+    internal SettingsButton(string name, Action doAction, Color backgroundColor, Color textColor, bool visibleByDefault, ButtonIcon icon, Texture2D customIcon) : base(null, name, doAction, SettingsType.Button, visibleByDefault)
     { 
         BackgroundColor = backgroundColor;
         TextColor = textColor;
+        PredefinedIcon = icon;
+        if(customIcon != null){ PredefinedIcon = ButtonIcon.Custom; } 
+        CustomIcon = customIcon;
     }
 }
 
@@ -511,7 +551,7 @@ public class SettingsResetButton : ModSetting
         ModMenu.SaveSettings(ThisMod);
     }
 
-    internal SettingsResetButton(Mod mod, string name, ModSetting[] sets) : base(null, name, null, SettingsType.RButton)
+    internal SettingsResetButton(Mod mod, string name, ModSetting[] sets) : base(null, name, null, SettingsType.RButton, true)
     {
         ThisMod = mod;
         SettingsToReset = sets;
@@ -589,7 +629,7 @@ public class SettingsDynamicHeader : ModSetting
     }
 
 
-    internal SettingsDynamicHeader(string name, Color backgroundColor, Color textColor, bool collapsedByDefault) : base(null, name, null, SettingsType.Header)
+    internal SettingsDynamicHeader(string name, Color backgroundColor, Color textColor, bool collapsedByDefault) : base(null, name, null, SettingsType.Header, true)
     {
         BackgroundColor = backgroundColor;
         TextColor = textColor;
@@ -621,7 +661,7 @@ public class SettingsDynamicText : ModSetting
         UpdateValue(value);
     }
 
-    internal SettingsDynamicText(string name) : base(null, name, null, SettingsType.Text) { }
+    internal SettingsDynamicText(string name) : base(null, name, null, SettingsType.Text, true) { }
 }
 
 #endif

@@ -136,8 +136,8 @@ public partial class ModLoader : MonoBehaviour
                     unloader = true;
                     return;
                 }
-                if(IsReferencePresent("MSCCoreLibrary"))
-                    MSCCoreLibrary.TimeScheduler.StopScheduler();
+                if (IsReferencePresent("MSCCoreLibrary"))
+                    TimeSchedulerCalls("stop");
                 break;
             case "Intro":
                 CurrentScene = CurrentScene.NewGameIntro;
@@ -155,18 +155,39 @@ public partial class ModLoader : MonoBehaviour
 
                 menuInfoAnim.Play("fade_out");
                 if (IsReferencePresent("MSCCoreLibrary"))
-                    MSCCoreLibrary.TimeScheduler.StartScheduler();
+                    TimeSchedulerCalls("start");
                 StartLoadingMods();
                 ModMenu.ModMenuHandle();
                 break;
             case "Ending":
                 CurrentScene = CurrentScene.Ending;
                 if (IsReferencePresent("MSCCoreLibrary"))
-                    MSCCoreLibrary.TimeScheduler.StopScheduler();
+                    TimeSchedulerCalls("stop");
                 break;
         }
     }
 
+    private void TimeSchedulerCalls(string call)
+    {
+        switch (call)
+        {
+            case "start":
+                MSCCoreLibrary.TimeScheduler.StartScheduler();
+                break;
+            case "stop":
+                MSCCoreLibrary.TimeScheduler.StopScheduler();
+                break;
+            case "load":
+                MSCCoreLibrary.TimeScheduler.LoadScheduler();
+                break;
+            case "save":
+                MSCCoreLibrary.TimeScheduler.SaveScheduler();
+                break;
+            default:
+                ModConsole.Error($"Invalid TimeScheduler call: {call}");
+                break;
+        }
+    }
     private void StartLoadingMods()
     {
         if (!allModsLoaded && !IsModsLoading)
@@ -938,7 +959,7 @@ public partial class ModLoader : MonoBehaviour
         GameObject.Find("ITEMS").GetComponent<PlayMakerFSM>().FsmInject("Save game", SaveMods);
         ModConsole.Print("</color>");
         if (IsReferencePresent("MSCCoreLibrary"))
-            MSCCoreLibrary.TimeScheduler.LoadScheduler();
+            TimeSchedulerCalls("load");
         yield return null;
         allModsLoaded = true;
         canvLoading.ToggleLoadingUI(false);
@@ -974,7 +995,7 @@ public partial class ModLoader : MonoBehaviour
             }
         }
         if (IsReferencePresent("MSCCoreLibrary"))
-            MSCCoreLibrary.TimeScheduler.SaveScheduler();
+            TimeSchedulerCalls("save");
     }
 
     internal static bool CheckEmptyMethod(Mod mod, string methodName)

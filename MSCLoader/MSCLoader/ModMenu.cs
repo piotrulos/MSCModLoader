@@ -239,30 +239,37 @@ internal class ModMenu : Mod
             case SettingsType.CheckBoxGroup:
                 SettingsCheckBoxGroup scbg = (SettingsCheckBoxGroup)set;
                 scbg.Value = scbg.DefaultValue;
+                scbg.IsVisible = scbg.DefaultVisibility;
                 break;
             case SettingsType.CheckBox:
                 SettingsCheckBox scb = (SettingsCheckBox)set;
                 scb.Value = scb.DefaultValue;
+                scb.IsVisible = scb.DefaultVisibility;
                 break;
             case SettingsType.Slider:
                 SettingsSlider ss = (SettingsSlider)set;
                 ss.Value = ss.DefaultValue;
+                ss.IsVisible = ss.DefaultVisibility;
                 break;
             case SettingsType.SliderInt:
                 SettingsSliderInt ssi = (SettingsSliderInt)set;
                 ssi.Value = ssi.DefaultValue;
+                ssi.IsVisible = ssi.DefaultVisibility;
                 break;
             case SettingsType.TextBox:
                 SettingsTextBox stb = (SettingsTextBox)set;
                 stb.Value = stb.DefaultValue;
+                stb.IsVisible = stb.DefaultVisibility;
                 break;
             case SettingsType.DropDown:
                 SettingsDropDownList sddl = (SettingsDropDownList)set;
                 sddl.Value = sddl.DefaultValue;
+                sddl.IsVisible = sddl.DefaultVisibility;
                 break;
             case SettingsType.ColorPicker:
                 SettingsColorPicker scp = (SettingsColorPicker)set;
                 scp.Value = scp.DefaultColorValue;
+                scp.IsVisible = scp.DefaultVisibility;
                 break;
             default:
                 break;

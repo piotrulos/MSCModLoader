@@ -447,6 +447,7 @@ internal class ModMenuView : MonoBehaviour
         header.HeaderBackground.color = setting.BackgroundColor;
         setting.HeaderElement = header;
         if (setting.CollapsedByDefault) header.SetHeaderNoAnim(false);
+        header.gameObject.SetActive(setting.IsVisible);
         return header.HeaderListView.transform;
     }
 
@@ -467,6 +468,7 @@ internal class ModMenuView : MonoBehaviour
                         settingCheckBox.DoAction.Invoke();
                 });
                 checkbox.transform.SetParent(listView, false);
+                checkbox.gameObject.SetActive(settingCheckBox.IsVisible);
                 break;
             case SettingsType.CheckBoxGroup:
                 SettingsCheckBoxGroup settingsCheckBoxGroup = (SettingsCheckBoxGroup)set;
@@ -493,6 +495,7 @@ internal class ModMenuView : MonoBehaviour
                         settingsCheckBoxGroup.DoAction.Invoke();
                 });
                 checkboxG.transform.SetParent(listView, false);
+                checkboxG.gameObject.SetActive(settingsCheckBoxGroup.IsVisible);
                 break;
             case SettingsType.Button:
                 SettingsButton settingBtn = (SettingsButton)set;
@@ -500,8 +503,26 @@ internal class ModMenuView : MonoBehaviour
                 SettingsElement btn = btnP.GetComponent<SettingsElement>();
                 settingBtn.SettingsElement = btn;
                 btn.SetupButton(settingBtn.Name.ToUpper(), settingBtn.TextColor, settingBtn.BackgroundColor);
+                if(settingBtn.PredefinedIcon != SettingsButton.ButtonIcon.None)
+                {
+                    btn.settingName.alignment = TextAnchor.MiddleLeft;
+                    if (settingBtn.PredefinedIcon == SettingsButton.ButtonIcon.Custom)
+                    {
+                        if (settingBtn.CustomIcon == null)
+                        {
+                            ModConsole.Error($"Custom icon for Button {settingBtn.Name} is null.");
+                        }
+                        btn.iconElement.texture = settingBtn.CustomIcon;
+                    }
+                    else
+                    {
+                        btn.iconElement.texture = btn.iconPack[(int)settingBtn.PredefinedIcon];
+                    }
+                    btn.iconElement.gameObject.SetActive(true);
+                }
                 btn.button.onClick.AddListener(settingBtn.DoAction.Invoke);
                 btn.transform.SetParent(listView, false);
+                btn.gameObject.SetActive(settingBtn.IsVisible);
                 break;
             case SettingsType.RButton:
                 SettingsResetButton settingRes = (SettingsResetButton)set;
@@ -524,6 +545,7 @@ internal class ModMenuView : MonoBehaviour
                         settingRes.ThisMod.ModSettingsLoaded();
                 });
                 rbtn.transform.SetParent(listView, false);
+                rbtn.gameObject.SetActive(settingRes.IsVisible);
                 break;
             case SettingsType.SliderInt:
                 SettingsSliderInt settingSliderInt = (SettingsSliderInt)set;
@@ -542,6 +564,7 @@ internal class ModMenuView : MonoBehaviour
                         settingSliderInt.DoAction.Invoke();
                 });
                 slidrInt.transform.SetParent(listView, false);
+                slidrInt.gameObject.SetActive(settingSliderInt.IsVisible);
                 break;
             case SettingsType.Slider:
                 SettingsSlider settingSlider = (SettingsSlider)set;
@@ -556,6 +579,7 @@ internal class ModMenuView : MonoBehaviour
                         settingSlider.DoAction.Invoke();
                 });
                 slidr.transform.SetParent(listView, false);
+                slidr.gameObject.SetActive(settingSlider.IsVisible);
                 break;
             case SettingsType.TextBox:
                 SettingsTextBox settingTxtBox = (SettingsTextBox)set;
@@ -568,6 +592,7 @@ internal class ModMenuView : MonoBehaviour
                     settingTxtBox.Value = txt.textBox.text;
                 });
                 txt.transform.SetParent(listView, false);
+                txt.gameObject.SetActive(settingTxtBox.IsVisible);
                 break;
             case SettingsType.DropDown:
                 SettingsDropDownList settingDropDown = (SettingsDropDownList)set;
@@ -590,6 +615,7 @@ internal class ModMenuView : MonoBehaviour
                         settingDropDown.DoAction.Invoke();
                 };
                 ddl.transform.SetParent(listView, false);
+                ddl.gameObject.SetActive(settingDropDown.IsVisible);
                 break;
             case SettingsType.ColorPicker:
                 SettingsColorPicker settingColorPicker = (SettingsColorPicker)set;
@@ -609,6 +635,7 @@ internal class ModMenuView : MonoBehaviour
                         settingColorPicker.DoAction.Invoke();
                 });
                 colp.transform.SetParent(listView, false);
+                colp.gameObject.SetActive(settingColorPicker.IsVisible);
                 break;
             case SettingsType.Text:
                 SettingsText settingText = (SettingsText)set;
@@ -617,6 +644,7 @@ internal class ModMenuView : MonoBehaviour
                 settingText.SettingsElement = label;
                 label.settingName.text = settingText.Name;
                 tx.transform.SetParent(listView, false);
+                label.gameObject.SetActive(settingText.IsVisible);
                 break;
             default:
                 break;

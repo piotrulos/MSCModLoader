@@ -37,7 +37,7 @@ namespace MSCLoader
             settingName.color = textColor;
             button.GetComponent<Image>().color = btnColor;
         }
-
+        
         internal void SetupSliderInt(string name, int val, int min, int max, string[] textValues)
         {
             value.text = textValues != null ? textValues[val] : val.ToString();
