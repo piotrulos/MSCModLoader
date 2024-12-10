@@ -22,7 +22,7 @@ public class ModConsole : Mod
     internal static ConsoleView console;
     internal static SettingsCheckBox typing;
     internal static SettingsSliderInt ConsoleFontSize;
-
+    internal static SettingsText versionText, lastCheckText;
     private GameObject UI;
     private Keybind consoleKey;
     public override void ModSetup()
@@ -37,33 +37,21 @@ public class ModConsole : Mod
     {
         Settings.ModSettings(this);
         consoleKey = Keybind.Add(this, "Open", "<color=lime>Open console key combination</color>", KeyCode.BackQuote);
-        Settings.AddHeader(this, "MSCLoader info", Color.black);
-        if (ModLoader.Instance.newBuild > ModLoader.Instance.currentBuild)
-        {
-            Settings.AddText(this, $"<color=orange>MSCLoader {ModLoader.MSCLoader_Ver} build {ModLoader.Instance.currentBuild}</color> -> <color=lime>MSCLoader {ModLoader.Instance.newVersion} build {ModLoader.Instance.newBuild}</color>");
-        }
-        else
-        {
-            Settings.AddText(this, $"<color=lime>MSCLoader {ModLoader.MSCLoader_Ver} build {ModLoader.Instance.currentBuild}</color>");
-        }
-        string sp = Path.Combine(ModLoader.SettingsFolder, Path.Combine("MSCLoader_Settings", "lastCheck"));
-        if (File.Exists(sp))
-        {
-            DateTime lastCheck;
-            string lastCheckS = File.ReadAllText(sp);
-            DateTime.TryParse(lastCheckS, out lastCheck);
-            Settings.AddText(this, $"Last checked for mod updates: <color=aqua>{lastCheck.ToString("dd.MM.yyyy HH:mm:ss")}</color>");
-
-        }
-        Settings.AddButton(this, "checkForUpd", "Check For Mods Updates", delegate
+        Settings.AddHeader("MSCLoader info", Color.black);
+        versionText = Settings.AddText($"<color=lime>MSCLoader {ModLoader.MSCLoader_Ver} build {ModLoader.Instance.currentBuild}</color>");
+        lastCheckText = Settings.AddText($"Last checked for mod updates: <color=aqua>Unknown</color>");
+        Settings.AddButton("Check For Mods Updates", delegate
         {
             if (!ModLoader.Instance.checkForUpdatesProgress)
+            {
                 ModLoader.Instance.CheckForModsUpd(true);
+                RefreshMainSettingsData();
+            }
         }, Color.black, Color.white);
-        Settings.AddHeader(this, "Console Settings");
-        Settings.AddText(this, "Basic settings for console");
-        typing = Settings.AddCheckBox(this, "MSCLoader_ConsoleTyping", "Start typing when you open console", false);
-        ConsoleFontSize = Settings.AddSlider(this, "MSCLoader_ConsoleFontSize", "Change console font size", 10, 20, 12, ChangeFontSize);
+        Settings.AddHeader("Console Settings");
+        Settings.AddText("Basic settings for console");
+        typing = Settings.AddCheckBox("MSCLoader_ConsoleTyping", "Start typing when you open console", false);
+        ConsoleFontSize = Settings.AddSlider("MSCLoader_ConsoleFontSize", "Change console font size", 10, 20, 12, ChangeFontSize);
     }
 
     private void Mod_SettingsLoaded()
@@ -71,10 +59,29 @@ public class ModConsole : Mod
         ChangeFontSize();
     }
 
-
     internal static void ChangeFontSize()
     {
         console.logTextArea.fontSize = ConsoleFontSize.GetValue();
+    }
+
+    internal static void RefreshMainSettingsData()
+    {
+        if (ModLoader.Instance.newBuild > ModLoader.Instance.currentBuild)
+        {
+            versionText.SetValue($"<color=orange>MSCLoader {ModLoader.MSCLoader_Ver} build {ModLoader.Instance.currentBuild}</color> -> <color=lime>MSCLoader {ModLoader.Instance.newVersion} build {ModLoader.Instance.newBuild}</color>");
+        }
+        else
+        {
+            versionText.SetValue($"<color=lime>MSCLoader {ModLoader.MSCLoader_Ver} build {ModLoader.Instance.currentBuild}</color>");
+        }
+        string sp = Path.Combine(ModLoader.SettingsFolder, Path.Combine("MSCLoader_Settings", "lastCheck"));
+        if (File.Exists(sp))
+        {
+            DateTime lastCheck;
+            string lastCheckS = File.ReadAllText(sp);
+            DateTime.TryParse(lastCheckS, out lastCheck);
+            lastCheckText.SetValue($"Last checked for mod updates: <color=aqua>{lastCheck:dd.MM.yyyy HH:mm:ss}</color>");
+        }
     }
 
     void CreateConsoleUI()

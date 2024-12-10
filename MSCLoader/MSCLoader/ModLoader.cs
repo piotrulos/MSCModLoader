@@ -633,7 +633,8 @@ public partial class ModLoader : MonoBehaviour
         if (Attribute.IsDefined(ass, typeof(System.Runtime.InteropServices.GuidAttribute)))
             reference.Guid = ((System.Runtime.InteropServices.GuidAttribute)Attribute.GetCustomAttribute(ass, typeof(System.Runtime.InteropServices.GuidAttribute))).Value;
         ReferencesList.Add(reference);
-
+        Console.WriteLine($"GUID: {reference.Guid}");
+        Console.WriteLine($"ReferenceID: {reference.AssemblyID} (v{reference.AssemblyFileVersion}) [{reference.AssemblyAuthor}]");
     }
     private void LoadCoreAssets()
     {
@@ -726,7 +727,6 @@ public partial class ModLoader : MonoBehaviour
                 case "error":
                     throw new Exception(result[1]);
                 case "ok":
-                    int newBuild = 0;
                     try
                     {
                         newBuild = int.Parse(result[2]);
@@ -1375,11 +1375,13 @@ public partial class ModLoader : MonoBehaviour
     }
     private void LoadMod(Mod mod, string msver, string fname = null, string[] additionalRef = null)
     {
+        string pm = string.Empty;
         // Check if mod already exists
         if (!LoadedMods.Contains(mod) && !LoadedMods.Select(x => x.ID).Contains(mod.ID))
         {
             LoadedMods.Add(mod);
-            Console.WriteLine($"Detected As: {mod.Name} (ID: {mod.ID}) v{mod.Version}");
+            if (mod.Description != null) pm = mod.Description.Contains(MSCLInternal.ProLoaderMagic()) ? "*" : "";
+            Console.WriteLine($"Detected As: {mod.Name} (ID: {mod.ID}) v{mod.Version} (by {mod.Author}) {pm}");
             // Create config folder
             if (!Directory.Exists(Path.Combine(SettingsFolder, mod.ID)))
             {

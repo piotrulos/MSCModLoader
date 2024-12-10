@@ -482,12 +482,12 @@ public class SettingsText : ModSetting
     }
 
     /// <summary>
-    /// Set value for textbox
+    /// Set value for Text
     /// </summary>
     /// <param name="value">value</param>
     public void SetValue(string value)
     {
-        UpdateValue(value);
+        UpdateName(value);
     }
 
     internal SettingsText(string name, bool visibleByDefault) : base(null, name, null, SettingsType.Text, visibleByDefault) { }
@@ -658,7 +658,7 @@ public class SettingsDynamicText : ModSetting
     /// <param name="value">value</param>
     public void SetValue(string value)
     {
-        UpdateValue(value);
+        UpdateName(value);
     }
 
     internal SettingsDynamicText(string name) : base(null, name, null, SettingsType.Text, true) { }

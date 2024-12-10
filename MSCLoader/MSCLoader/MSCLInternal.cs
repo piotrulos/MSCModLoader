@@ -50,6 +50,12 @@ internal class MSCLInternal
         return response;
     }
 
+    internal static string ProLoaderMagic()
+    {
+        byte[] magicbyte = { 97, 114, 97, 105, 107, 55, 49 };
+        return Encoding.UTF8.GetString(magicbyte);
+    }
+
 
     internal static string MSCLDataRequest(string reqPath, Dictionary<string, string> data)
     {

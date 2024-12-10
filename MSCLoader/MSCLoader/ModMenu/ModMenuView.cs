@@ -147,6 +147,7 @@ internal class ModMenuView : MonoBehaviour
             else
                 SettingsList(Settings.Get(ModLoader.LoadedMods[1])[i], currentTransform);
         }
+        ModConsole.RefreshMainSettingsData();
     }
     public void MetadataInfoList(GameObject listView, Mod mod)
     {

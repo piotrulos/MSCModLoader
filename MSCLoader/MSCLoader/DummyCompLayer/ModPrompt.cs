@@ -34,14 +34,11 @@ public class ModPrompt
     [System.Obsolete("=> ModUI.ShowRetryCancelMessage", true)]
     public static ModPrompt CreateRetryCancelPrompt(string message, string title, UnityAction onRetry, UnityAction onCancel = null, UnityAction onPromptClose = null)
     {
-
-        ModUI.ShowRetryCancelMessage(message, title, null, onRetry);
         return null;
     }
     [System.Obsolete("=> ModUI.ShowContinueAbortMessage", true)]
     public static ModPrompt CreateContinueAbortPrompt(string message, string title, UnityAction onContinue, UnityAction onAbort = null, UnityAction onPromptClose = null)
     {
-        ModUI.ShowContinueAbortMessage(message, title, null, onContinue);
         return null;
     }
 

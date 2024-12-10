@@ -23,6 +23,7 @@ internal class MetaVersion
     public string mod_version;
     public byte mod_type;
     public int mod_rev;
+    public string cached_date;
 }
 internal class RefVersions
 {
@@ -33,6 +34,8 @@ internal class RefVersion
     public string ref_id;
     public string ref_version;
     public byte ref_type;
+    public string cached_date;
+
 }
 /*internal class ModsManifest
 {
@@ -639,7 +642,7 @@ internal class ModMetadata
             for (int i = 0; i < ModLoader.ModSelfUpdateList.Count; i++)
             {
                 Mod m = ModLoader.GetModByID(ModLoader.ModSelfUpdateList[i], true);
-                Upd_list += $"<color=yellow>{m.Name}</color>: <color=aqua>{m.Version}</color> => <color=lime>{m.UpdateInfo.mod_version}</color>{Environment.NewLine}";
+                Upd_list += $"<color=yellow>{m.Name}</color>: <color=aqua>{m.Version}</color> => <color=lime>{m.UpdateInfo.mod_version}</color> (Updated: <color=aqua>{DateTime.Parse(m.UpdateInfo.cached_date, System.Globalization.CultureInfo.InvariantCulture):dd.MM.yyyy}</color>){Environment.NewLine}";
             }
             Upd_list += Environment.NewLine;
         }
@@ -650,7 +653,7 @@ internal class ModMetadata
             for (int i = 0; i < ModLoader.RefSelfUpdateList.Count; i++)
             {
                 References r = ModLoader.Instance.ReferencesList.Where(x => x.AssemblyID.Equals(ModLoader.RefSelfUpdateList[i])).FirstOrDefault();
-                Upd_list += $"<color=yellow>{r.AssemblyTitle}</color>: <color=aqua>{r.AssemblyFileVersion}</color> => <color=lime>{r.UpdateInfo.ref_version}</color>{Environment.NewLine}";
+                Upd_list += $"<color=yellow>{r.AssemblyTitle}</color>: <color=aqua>{r.AssemblyFileVersion}</color> => <color=lime>{r.UpdateInfo.ref_version}</color> (Updated: <color=aqua>{DateTime.Parse(r.UpdateInfo.cached_date, System.Globalization.CultureInfo.InvariantCulture):dd.MM.yyyy}</color>){Environment.NewLine}";
             }
             Upd_list += Environment.NewLine;
         }

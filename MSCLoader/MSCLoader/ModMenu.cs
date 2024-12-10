@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace MSCLoader;
 
@@ -27,6 +28,7 @@ internal class ModMenu : Mod
 
     public override void ModSetup()
     {
+        instance = this;
         SetupFunction(Setup.OnMenuLoad, Mod_OnMenuLoad);
         SetupFunction(Setup.ModSettings, Mod_Settings);
         SetupFunction(Setup.ModSettingsLoaded, Mod_SettingsLoaded);
@@ -34,41 +36,45 @@ internal class ModMenu : Mod
 
     private void Mod_Settings()
     {
-        instance = this;
         Settings.ModSettings(this);
         if (ModLoader.devMode)
         {
-            Settings.AddHeader(this, "DevMode Settings", new Color32(0, 0, 128, 255), Color.green);
-            dm_disabler = Settings.AddCheckBox(this, "MSCLoader_dm_disabler", "Disable mods throwing errors", false);
-            dm_logST = Settings.AddCheckBox(this, "MSCLoader_dm_logST", "Log-all stack trace (not recommended)", false);
-            dm_operr = Settings.AddCheckBox(this, "MSCLoader_dm_operr", "Log-all open console on error", false);
-            dm_warn = Settings.AddCheckBox(this, "MSCLoader_dm_warn", "Log-all open console on warning", false);
-            dm_pcon = Settings.AddCheckBox(this, "MSCLoader_dm_pcon", "Persistent console (sometimes may break font)", false);
+            Settings.AddHeader("DevMode Settings", new Color32(0, 0, 128, 255), Color.green);
+            dm_disabler = Settings.AddCheckBox("MSCLoader_dm_disabler", "Disable mods throwing errors", false);
+            dm_logST = Settings.AddCheckBox("MSCLoader_dm_logST", "Log-all stack trace (not recommended)", false);
+            dm_operr = Settings.AddCheckBox("MSCLoader_dm_operr", "Log-all open console on error", false);
+            dm_warn = Settings.AddCheckBox("MSCLoader_dm_warn", "Log-all open console on warning", false);
+            dm_pcon = Settings.AddCheckBox("MSCLoader_dm_pcon", "Persistent console (sometimes may break font)", false);
         }
-        Settings.AddHeader(this, "Basic Settings");
-        expWarning = Settings.AddCheckBox(this, "MSCLoader_expWarning", "Show experimental warning (experimental branch on Steam)", true);
-        modPath = Settings.AddCheckBox(this, "MSCLoader_modPath", "Show mods folder (top left corner)", true, ModLoader.MainMenuPath);
-        forceMenuVsync = Settings.AddCheckBox(this, "MSCLoader_forceMenuVsync", "60 FPS limit in Main Menu", true, VSyncSwitchCheckbox);
-        openLinksOverlay = Settings.AddCheckBox(this, "MSCLoader_openLinksOverlay", "Open URLs in Steam overlay", true);
-        Settings.AddText(this, "Skip stuff:");
-        skipGameIntro = Settings.AddCheckBox(this, "MSCLoader_skipGameIntro", "Skip game splash screen", false, SkipIntroSet);
-        skipConfigScreen = Settings.AddCheckBox(this, "MSCLoader_skipConfigScreen", "Skip configuration screen", false, SkipConfigScreen);
+        Settings.AddHeader("Basic Settings");
+        expWarning = Settings.AddCheckBox("MSCLoader_expWarning", "Show experimental warning (experimental branch on Steam)", true);
+        modPath = Settings.AddCheckBox("MSCLoader_modPath", "Show mods folder (top left corner)", true, ModLoader.MainMenuPath);
+        forceMenuVsync = Settings.AddCheckBox("MSCLoader_forceMenuVsync", "60 FPS limit in Main Menu", true, VSyncSwitchCheckbox);
+        openLinksOverlay = Settings.AddCheckBox("MSCLoader_openLinksOverlay", "Open URLs in Steam overlay", true);
+        Settings.AddText("Skip stuff:");
+        skipGameIntro = Settings.AddCheckBox("MSCLoader_skipGameIntro", "Skip game splash screen", false, SkipIntroSet);
+        skipConfigScreen = Settings.AddCheckBox("MSCLoader_skipConfigScreen", "Skip configuration screen", false, SkipConfigScreen);
 
-        Settings.AddHeader(this, "Update Settings");
-        Settings.AddText(this, "How often MSCLoader checks for Mod/References updates.");
-        checkLaunch = Settings.AddCheckBoxGroup(this, "MSCLoader_checkOnLaunch", "Every launch", true, "cfmu_set");
-        checkDaily = Settings.AddCheckBoxGroup(this, "MSCLoader_checkEveryDay", "Daily", false, "cfmu_set");
-        checkWeekly = Settings.AddCheckBoxGroup(this, "MSCLoader_checkEveryWeek", "Weekly", false, "cfmu_set");
+        Settings.AddHeader("Update Settings");
+        Settings.AddText("How often MSCLoader checks for Mod/References updates.");
+        checkLaunch = Settings.AddCheckBoxGroup("MSCLoader_checkOnLaunch", "Every launch", true, "cfmu_set");
+        checkDaily = Settings.AddCheckBoxGroup("MSCLoader_checkEveryDay", "Daily", false, "cfmu_set");
+        checkWeekly = Settings.AddCheckBoxGroup("MSCLoader_checkEveryWeek", "Weekly", false, "cfmu_set");
 
-        Settings.AddHeader(this, "MSCLoader Credits", Color.black);
-        Settings.AddText(this, "All source code contributors and used libraries are listed on GitHub");
-        Settings.AddText(this, "Non-GitHub contributions:");
-        Settings.AddText(this, "<color=aqua>BrennFuchS</color> - New default mod icon and expanded PlayMaker extensions.");
+        Settings.AddHeader("MSCLoader Credits", Color.black);
+        Settings.AddText("All source code contributors and used libraries are listed on GitHub");
+        Settings.AddText("Non-GitHub contributions:");
+        Settings.AddText("<color=aqua>BrennFuchS</color> - New default mod icon and expanded PlayMaker extensions.");
 
-        Settings.AddHeader(this, "Detailed Version Information", new Color32(0, 128, 0, 255));
+        Settings.AddHeader("Detailed Version Information", new Color32(0, 128, 0, 255));
         coreVer = System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "MSCLoader.Preloader.dll"));
-        Settings.AddText(this, $"MSCLoader modules:{Environment.NewLine}<color=yellow>MSCLoader.Preloader</color>: <color=aqua>v{coreVer.FileMajorPart}.{coreVer.FileMinorPart}.{coreVer.FileBuildPart} build {coreVer.FilePrivatePart}</color>{Environment.NewLine}<color=yellow>MSCLoader</color>: <color=aqua>v{ModLoader.MSCLoader_Ver} build {ModLoader.Instance.currentBuild}</color>");
-        Settings.AddText(this, $"Build-in libraries:{Environment.NewLine}<color=yellow>Harmony</color>: <color=aqua>v{System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "0Harmony.dll")).FileVersion}</color>{Environment.NewLine}" +
+        SettingsText modulesVer = Settings.AddText($"MSCLoader modules:{Environment.NewLine}<color=yellow>MSCLoader.Preloader</color>: <color=aqua>v{coreVer.FileMajorPart}.{coreVer.FileMinorPart}.{coreVer.FileBuildPart} build {coreVer.FilePrivatePart}</color>{Environment.NewLine}<color=yellow>MSCLoader</color>: <color=aqua>v{ModLoader.MSCLoader_Ver} build {ModLoader.Instance.currentBuild}</color>");
+        if (File.Exists(Path.Combine(ModLoader.ModsFolder, Path.Combine("References", "MSCCoreLibrary.dll"))))
+        {
+            System.Diagnostics.FileVersionInfo libVer = System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine(ModLoader.ModsFolder, Path.Combine("References", "MSCCoreLibrary.dll")));
+            modulesVer.SetValue(modulesVer.GetValue() + $"{Environment.NewLine}<color=yellow>MSCCoreLibrary</color>: <color=aqua>v{libVer.FileMajorPart}.{libVer.FileMinorPart}.{libVer.FileBuildPart} build {libVer.FilePrivatePart}</color>");
+        }
+        Settings.AddText($"Build-in libraries:{Environment.NewLine}<color=yellow>Harmony</color>: <color=aqua>v{System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "0Harmony.dll")).FileVersion}</color>{Environment.NewLine}" +
             $"<color=yellow>Ionic.Zip</color>: <color=aqua>v{System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "Ionic.Zip.dll")).FileVersion}</color>{Environment.NewLine}" +
             $"<color=yellow>NAudio</color>: <color=aqua>v{System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "NAudio.dll")).FileVersion}</color>{Environment.NewLine}" +
             $"<color=yellow>NAudio (Vorbis)</color>: <color=aqua>v{System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "NVorbis.dll")).FileVersion}</color>{Environment.NewLine}" +
@@ -160,6 +166,7 @@ internal class ModMenu : Mod
         GameObject.DontDestroyOnLoad(UI);
         GameObject.Destroy(UIp);
         ab.Unload(false);
+        ModUI.popupSettingController = UI.GetComponent<PopupSettingController>(); 
     }
 
     // Reset keybinds

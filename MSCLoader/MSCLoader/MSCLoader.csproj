@@ -156,8 +156,10 @@
     <Compile Include="ModMenu\MenuElementList.cs" />
     <Compile Include="ModMenu\ModMenuButton.cs" />
     <Compile Include="ModMenu\ModMenuView.cs" />
+    <Compile Include="ModMenu\PopupSettingController.cs" />
     <Compile Include="ModMenu\ScrollRectCulling.cs" />
     <Compile Include="ModMenu\SettingsElement.cs" />
+    <Compile Include="ModMenu\PopupSettingGroup.cs" />
     <Compile Include="ModMenu\SettingsGroup.cs" />
     <Compile Include="ModMenu\UIExtensions\ColorImage.cs" />
     <Compile Include="ModMenu\UIExtensions\ColorPicker.cs" />
