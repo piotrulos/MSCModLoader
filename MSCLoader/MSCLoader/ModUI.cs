@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -270,5 +273,167 @@ public class ModUI
         messageBoxCv.changelogWindow.SetActive(true);
         messageBoxCv.changelogWindow.transform.SetAsLastSibling();
     }
+
+    public static PopupSetting CreatePopupSetting(string title) => new PopupSetting(title);
+}
+
+/// <summary>
+/// Popup Setting Window
+/// </summary>
+public class PopupSetting
+{
+    internal string WindowTitle = "Popup Setting".ToUpper();
+    internal List<ModSetting> settingElements = new List<ModSetting>();
+    internal PopupSetting(string title) => WindowTitle = title;
+    internal void ReturnJsonString()
+    {
+        List<string> json = new List<string>();
+        foreach (ModSetting s in settingElements)
+        {
+            switch (s.SettingType)
+            {
+                case SettingsType.CheckBox:
+                    SettingsCheckBox ss = (SettingsCheckBox)s;
+                    json.Add($"\"{ss.ID}\":{ss.GetValue()}");
+                    break;
+                case SettingsType.Slider:
+                    SettingsSlider ss2 = (SettingsSlider)s;
+                    json.Add($"\"{ss2.ID}\":{ss2.GetValue()}");
+                    break;
+                case SettingsType.SliderInt:
+                    SettingsSliderInt ss3 = (SettingsSliderInt)s;
+                    json.Add($"\"{ss3.ID}\":{ss3.GetValue()}");
+                    break;
+                case SettingsType.TextBox:
+                    SettingsTextBox ss4 = (SettingsTextBox)s;
+                    json.Add($"\"{ss4.ID}\":\"{ss4.GetValue()}\"");
+                    break;
+                case SettingsType.DropDown:
+                    SettingsDropDownList ss5 = (SettingsDropDownList)s;
+                    json.Add($"\"{ss5.ID}\":{ss5.GetSelectedItemIndex()}");
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        ModConsole.Warning("{"+$"{string.Join(",", json.ToArray())}"+"}");
+    }
+    public void ShowPopup() => ModUI.popupSettingController.CreatePopupSetting(this);
+
+    /// <summary>
+    /// Add just a text (doesn't return anything on confirm)
+    /// </summary>
+    /// <param name="text">Just a text (supports unity rich text)</param>
+    public void AddText(string text)
+    {
+        SettingsText s = new SettingsText(text, true);
+        settingElements.Add(s);
+    }
+
+    /// <summary>
+    /// Add button to popup menu (doesn't return anything on confirm)
+    /// </summary>
+    /// <param name="name">Button name</param>
+    /// <param name="onClick">Do something when button is clicked</param>
+    /// <param name="predefinedIcon">Add optional icon</param>
+    public void AddButton(string name, Action onClick, SettingsButton.ButtonIcon predefinedIcon = SettingsButton.ButtonIcon.None)
+    {
+        SettingsButton s = new SettingsButton(name, onClick, Color.black, Color.white, true, predefinedIcon, null);
+        settingElements.Add(s);
+    }
+
+    /// <summary>
+    /// Add checkbox to popup menu (bool value returns on confirm)
+    /// </summary>
+    /// <param name="settingID">Unique settings ID for your mod</param>
+    /// <param name="name">Name of the setting</param>
+    /// <param name="value">Default Value for this setting</param>
+    public void AddCheckBox(string settingID, string name, bool value = false)
+    {
+        SettingsCheckBox s = new SettingsCheckBox(settingID, name, value, null, true);
+        settingElements.Add(s);
+    }
+
+    /// <summary>
+    /// Add Integer Slider to popup menu (int value returns on confirm)
+    /// </summary>
+    /// <param name="settingID">Unique settings ID for your mod</param>
+    /// <param name="name">Name of the setting</param>
+    /// <param name="minValue">minimum int value</param>
+    /// <param name="maxValue">maximum int value</param>
+    /// <param name="value">Default Value for this setting</param>
+    /// <param name="textValues">Optional text values array (array index = slider value)</param>
+    public void AddSlider(string settingID, string name, int minValue, int maxValue, int value = 0,  string[] textValues = null)
+    {
+
+        if (textValues != null && textValues.Length <= (maxValue - minValue))
+        {
+            ModConsole.Error($"[<b>{settingID}</b>] AddSlider() on popup menu error: textValues array is smaller than slider range (min to max).");
+        }
+        SettingsSliderInt s = new SettingsSliderInt(settingID, name, value, minValue, maxValue, null, textValues, true);
+        settingElements.Add(s);
+    }
+
+    /// <summary>
+    /// Add Slider to popup menu (float value returns on confirm)
+    /// </summary>
+    /// <param name="settingID">Unique settings ID for your mod</param>
+    /// <param name="name">Name of the setting</param>
+    /// <param name="minValue">minimum float value</param>
+    /// <param name="maxValue">maximum float value</param>
+    /// <param name="value">Default Value for this setting</param>
+    /// <param name="decimalPoints">Round value to number of decimal points</param>
+    public void AddSlider(string settingID, string name, float minValue, float maxValue, float value = 0f,  int decimalPoints = 2)
+    {
+
+        if (decimalPoints < 0)
+        {
+            ModConsole.Error($"[<b>{settingID}</b>] AddSlider()  on popup menu error: decimalPoints cannot be negative (defaulting to 2)");
+            decimalPoints = 2;
+        }
+        SettingsSlider s = new SettingsSlider(settingID, name, value, minValue, maxValue, null, decimalPoints, true);
+        settingElements.Add(s);
+    }
+
+    /// <summary>
+    /// Add TextBox where user can type any text (string value returns on confirm)
+    /// </summary>
+    /// <param name="settingID">Your unique settings ID</param>
+    /// <param name="name">Name of text box</param>
+    /// <param name="value">Default TextBox value</param>
+    /// <param name="placeholderText">Placeholder text (like "Enter text...")</param>
+    public void AddTextBox(string settingID, string name, string value, string placeholderText) => AddTextBox(settingID, name, value, placeholderText, InputField.ContentType.Standard);
+
+    /// <summary>
+    /// Add TextBox where user can type any text (string value returns on confirm)
+    /// </summary>
+    /// <param name="settingID">Your unique settings ID</param>
+    /// <param name="name">Name of text box</param>
+    /// <param name="value">Default TextBox value</param>
+    /// <param name="placeholderText">Placeholder text (like "Enter text...")</param>
+    /// <param name="contentType">InputField content type</param>
+    public void AddTextBox(string settingID, string name, string value, string placeholderText, InputField.ContentType contentType)
+    {
+        SettingsTextBox s = new SettingsTextBox(settingID, name, value, placeholderText, contentType, true);
+        settingElements.Add(s);
+    }
+
+    /// <summary>
+    /// Add DropDown List to popup menu (int [array index] value returns on confirm)
+    /// </summary>
+    /// <param name="settingID">unique settings ID</param>
+    /// <param name="name">Name of the dropdown list</param>
+    /// <param name="arrayOfItems">array of items that will be displayed in list</param>
+    /// <param name="defaultSelected">default selected Index ID (default 0)</param>
+    /// <param name="OnSelectionChanged">Action when item is selected</param>
+    /// <param name="visibleByDefault">Visible by default (default=true)</param>
+    /// <returns>SettingsDropDownList</returns>
+    public void AddDropDownList(string settingID, string name, string[] arrayOfItems, int defaultSelected = 0)
+    {
+        SettingsDropDownList s = new SettingsDropDownList(settingID, name, arrayOfItems, defaultSelected, null, true);
+        settingElements.Add(s);
+    }
+
 }
 #endif

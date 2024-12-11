@@ -452,7 +452,7 @@ internal class ModMenuView : MonoBehaviour
         return header.HeaderListView.transform;
     }
 
-    private void SettingsList(ModSetting set, Transform listView)
+    internal void SettingsList(ModSetting set, Transform listView)
     {
         switch (set.SettingType)
         {
