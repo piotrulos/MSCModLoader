@@ -1,5 +1,6 @@
 ﻿global using UnityEngine;
 
+
 #if !Mini
 using HutongGames.PlayMaker;
 using System;
@@ -277,7 +278,7 @@ public partial class ModLoader : MonoBehaviour
             ModUI.ShowMessage($"<b><color=orange>DON'T use Vortex</color></b> to update MSCLoader, or to install tools or mods.{Environment.NewLine}<b><color=orange>Vortex isn't supported by MSCLoader</color></b>, because it's implementation breaks Mods folder by putting wrong files into it.{Environment.NewLine}{Environment.NewLine}MSCLoader will try to fix your mods folder now, <b><color=orange>please restart your game.</color></b>{Environment.NewLine}If this message shows again after restart, rebuild your Mods folder from scratch.", "Fatal Error");
             return;
         }
-        
+
         LoadMod(new ModConsole(), MSCLoader_Ver);
         LoadedMods[0].A_ModSettings.Invoke();
         LoadMod(new ModMenu(), MSCLoader_Ver);
@@ -298,7 +299,7 @@ public partial class ModLoader : MonoBehaviour
         {
             UnpackUpdates();
         }
-        if (launchArgs.Contains("-mscloader-disable")) ModUI.ShowMessage("To use <color=yellow>-mscloader-disable</color> launch option, you need to update core module of MSCLoader, download latest version and launch <color=aqua>MSCPatcher.exe</color> to update", "Outdated module");
+        if (launchArgs.Contains("-mscloader-disable")) ModUI.ShowMessage("To use <color=yellow>-mscloader-disable</color> launch option, you need to update the core module of MSCLoader, download latest version and launch <color=aqua>MSCLInstaller.exe</color> to update", "Outdated module");
     }
     void ContinueInit()
     {
@@ -583,11 +584,22 @@ public partial class ModLoader : MonoBehaviour
             string[] files = Directory.GetFiles(Path.Combine(ModsFolder, "References"), "*.dll");
             string[] managedStuff = Directory.GetFiles(Path.Combine("mysummercar_Data", "Managed"), "*.dll");
             string[] alreadyIncluded = (from s in managedStuff select Path.GetFileName(s)).ToArray();
+            string[] unusedFiles = new string[0];
+            if (File.Exists(Path.Combine(Path.Combine(ModsFolder, "References"), "unused.txt")))
+            {
+                unusedFiles = File.ReadAllLines(Path.Combine(Path.Combine(ModsFolder, "References"), "unused.txt"));
+            }
             for (int i = 0; i < files.Length; i++)
             {
                 if (Path.GetFileName(files[i]) == "0Harmony12.dll" || Path.GetFileName(files[i]) == "0Harmony-1.2.dll" || alreadyIncluded.Contains(Path.GetFileName(files[i])))
                 {
                     ModConsole.Warning($"<b>{Path.GetFileName(files[i])}</b> already exist in <b>{Path.GetFullPath(Path.Combine("mysummercar_Data", "Managed"))}</b> - skipping");
+                    File.Delete(files[i]);
+                    continue;
+                }
+                if (unusedFiles.Contains(Path.GetFileName(files[i])))
+                {
+                    ModConsole.Print($"<b>{Path.GetFileName(files[i])}</b> is marked as no longer needed after update - deleting");
                     File.Delete(files[i]);
                     continue;
                 }
@@ -608,6 +620,10 @@ public partial class ModLoader : MonoBehaviour
                     };
                     ReferencesList.Add(reference);
                 }
+            }
+            if (File.Exists(Path.Combine(Path.Combine(ModsFolder, "References"), "unused.txt")))
+            {
+                File.Delete(Path.Combine(Path.Combine(ModsFolder, "References"), "unused.txt"));
             }
         }
         else
@@ -852,7 +868,7 @@ public partial class ModLoader : MonoBehaviour
     {
         ModConsole.Print("<color=aqua>==== Loading mods (Phase 1) ====</color><color=#505050ff>");
         int totalCount = PLoadMods.Length + BC_ModList.Length + SecondPassMods.Length + Mod_PreLoad.Length + Mod_OnLoad.Length + Mod_PostLoad.Length;
-        canvLoading.SetLoading("Loading mods - Phase 1", 0 ,totalCount, "Loading mods. Please wait...");
+        canvLoading.SetLoading("Loading mods - Phase 1", 0, totalCount, "Loading mods. Please wait...");
         yield return null;
         for (int i = 0; i < Mod_PreLoad.Length; i++)
         {
@@ -869,7 +885,7 @@ public partial class ModLoader : MonoBehaviour
             }
         }
         for (int i = 0; i < PLoadMods.Length; i++)
-        {            
+        {
             canvLoading.SetLoadingProgress(PLoadMods[i].ID);
             if (PLoadMods[i].isDisabled) continue;
             yield return null;
@@ -1037,9 +1053,19 @@ public partial class ModLoader : MonoBehaviour
     {
         // Load .dll files
         string[] files = Directory.GetFiles(ModsFolder);
+        string[] unusedFiles = new string[0];
+        if (File.Exists(Path.Combine(ModsFolder, "unused.txt")))
+        {
+            unusedFiles = File.ReadAllLines(Path.Combine(ModsFolder, "unused.txt"));
+        }
         for (int i = 0; i < files.Length; i++)
         {
-           // files.by
+            if (unusedFiles.Contains(Path.GetFileName(files[i])))
+            {
+                ModConsole.Print($"<b>{Path.GetFileName(files[i])}</b>: has been marked as no longer needed after update - deleting");
+                File.Delete(files[i]);
+                continue;
+            }
             if (files[i].EndsWith(".dll"))
             {
                 if (MSCLInternal.IsEAFile(files[i]))
@@ -1052,7 +1078,10 @@ public partial class ModLoader : MonoBehaviour
                 }
             }
         }
-
+        if (File.Exists(Path.Combine(ModsFolder, "unused.txt")))
+        {
+            File.Delete(Path.Combine(ModsFolder, "unused.txt"));
+        }
         actualModList = LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")).ToArray();
         BC_ModList = actualModList.Where(x => !x.newFormat).ToArray();
 
@@ -1119,7 +1148,7 @@ public partial class ModLoader : MonoBehaviour
             }
         }
         if (missingModIDsReferences.Count == 0 && crashedGuids.Count == 0)
-            return; 
+            return;
         string response = MSCLInternal.MSCLDataRequest("mscl_required.php", new Dictionary<string, List<string>> { { "ModIDs", missingModIDsReferences }, { "guids", crashedGuids } });
         //RequiredList
         if (response.StartsWith("error"))
@@ -1225,7 +1254,7 @@ public partial class ModLoader : MonoBehaviour
         string asmGuid = "unknown";
         try
         {
-            Assembly asm = null;         
+            Assembly asm = null;
             if (byteFile == null)
                 asm = Assembly.LoadFrom(file);
             else
@@ -1267,7 +1296,7 @@ public partial class ModLoader : MonoBehaviour
 
             for (int j = 0; j < asmTypes.Length; j++)
             {
-                if(asmTypes[j] == null) continue;
+                if (asmTypes[j] == null) continue;
 
                 // Console.WriteLine($"{file} - {asmTypes[j].Name}"); //dbg
 
@@ -1298,7 +1327,7 @@ public partial class ModLoader : MonoBehaviour
             {
                 crashedGuids.Add(asmGuid);
                 ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - doesn't look like a mod or missing Mod subclass!{Environment.NewLine}<b>Details:</b> File loaded correctly, but failed to find Mod methods.{Environment.NewLine}If this is a reference put this file into \"<b>References</b>\" folder.{Environment.NewLine}");
-                InvalidMods.Add(new InvalidMods(Path.GetFileName(file), true, "File loaded correctly, but failed to find Mod methods.", addRef.ToList(),asmGuid));
+                InvalidMods.Add(new InvalidMods(Path.GetFileName(file), true, "File loaded correctly, but failed to find Mod methods.", addRef.ToList(), asmGuid));
             }
         }
         catch (Exception e)
@@ -1367,7 +1396,7 @@ public partial class ModLoader : MonoBehaviour
             if (refs.Contains(LoadedAsms[i].GetName().Name))
             {
                 count++;
-                if(count == refs.Length)
+                if (count == refs.Length)
                     return true;
             }
         }

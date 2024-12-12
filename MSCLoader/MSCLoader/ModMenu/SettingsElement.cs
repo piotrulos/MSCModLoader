@@ -27,7 +27,7 @@ namespace MSCLoader
         {
             settingName.text = name;
             checkBox.isOn = value;
-            if(toggleGroup != null)
+            if (toggleGroup != null)
                 checkBox.group = toggleGroup;
         }
 
@@ -37,7 +37,7 @@ namespace MSCLoader
             settingName.color = textColor;
             button.GetComponent<Image>().color = btnColor;
         }
-        
+
         internal void SetupSliderInt(string name, int val, int min, int max, string[] textValues)
         {
             value.text = textValues != null ? textValues[val] : val.ToString();
@@ -57,10 +57,10 @@ namespace MSCLoader
             slider.maxValue = max;
             slider.value = val;
         }
-        
+
         internal void SetupTextBox(string name, string val, string plholder, InputField.ContentType contentType)
         {
-            settingName.text= name;
+            settingName.text = name;
             settingName.color = Color.white;
             placeholder.text = plholder;
             textBox.contentType = contentType;

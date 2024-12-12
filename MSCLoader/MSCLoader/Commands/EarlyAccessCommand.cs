@@ -49,7 +49,7 @@ internal class EarlyAccessCommand : ConsoleCommand
                 string s = args[2];
                 try
                 {
-                    GenerateFile(args[1], s);   
+                    GenerateFile(args[1], s);
                 }
                 catch (Exception e)
                 {

@@ -51,7 +51,7 @@ namespace MSCLoader
         public static void AddCheckBox(Mod mod, Settings setting)
         {
             settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
-            SettingsCheckBox s = AddCheckBox(setting.ID, setting.Name,bool.Parse(setting.Value.ToString()), setting.DoAction);
+            SettingsCheckBox s = AddCheckBox(setting.ID, setting.Name, bool.Parse(setting.Value.ToString()), setting.DoAction);
             setting.modSetting = s;
         }
         /// <summary>
@@ -107,7 +107,7 @@ namespace MSCLoader
         public static void AddButton(Mod mod, Settings setting, UnityEngine.Color normalColor, UnityEngine.Color highlightedColor, UnityEngine.Color pressedColor, UnityEngine.Color buttonTextColor, string description = null)
         {
             settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
-            AddButton(setting.Name, setting.DoAction, normalColor, buttonTextColor);            
+            AddButton(setting.Name, setting.DoAction, normalColor, buttonTextColor);
         }
 
         /// <summary>
@@ -164,7 +164,7 @@ namespace MSCLoader
         {
             settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
             SettingsSlider s = AddSlider(setting.ID, setting.Name, minValue, maxValue, float.Parse(setting.Value.ToString()), setting.DoAction, decimalPoints);
-            setting.modSetting = s;            
+            setting.modSetting = s;
         }
 
         /// <summary>

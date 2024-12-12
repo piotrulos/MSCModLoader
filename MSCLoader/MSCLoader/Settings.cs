@@ -18,7 +18,7 @@ internal class Setting
 
     public Setting(string id, object value)
     {
-        ID = id; 
+        ID = id;
         Value = value;
     }
 }
@@ -86,7 +86,7 @@ public partial class Settings
     /// <returns>SettingsHeader</returns>
     public static SettingsHeader AddHeader(string HeaderTitle, Color backgroundColor, Color textColor, bool collapsedByDefault = false, bool visibleByDefault = true)
     {
-        if(settingsMod == null)
+        if (settingsMod == null)
         {
             ModConsole.Error($"[<b>{settingsMod}</b>] AddHeader() error: unknown Mod instance, settings must be created inside your ModSettings function");
             return null;
@@ -225,7 +225,7 @@ public partial class Settings
     /// <returns>SettingsCheckBoxGroup</returns>
     public static SettingsCheckBoxGroup AddCheckBoxGroup(string settingID, string name, bool value = false, string group = null, Action onValueChanged = null, bool visibleByDefault = true)
     {
-        if(settingsMod == null)
+        if (settingsMod == null)
         {
             ModConsole.Error($"[<b>{settingsMod}</b>] AddCheckBoxGroup() error: unknown Mod instance, settings must be created inside your ModSettings function");
             return null;
@@ -254,7 +254,7 @@ public partial class Settings
             ModConsole.Error($"[<b>{settingsMod}</b>] AddSlider() error: unknown Mod instance, settings must be created inside your ModSettings function");
             return null;
         }
-        if(textValues != null && textValues.Length <= (maxValue - minValue))
+        if (textValues != null && textValues.Length <= (maxValue - minValue))
         {
             ModConsole.Error($"[<b>{settingsMod}</b>] AddSlider() error: textValues array is smaller than slider range (min to max).");
         }
@@ -337,7 +337,7 @@ public partial class Settings
     /// <returns>SettingsDropDownList</returns>
     public static SettingsDropDownList AddDropDownList(string settingID, string name, string[] arrayOfItems, int defaultSelected = 0, Action OnSelectionChanged = null, bool visibleByDefault = true)
     {
-        if(settingsMod == null)
+        if (settingsMod == null)
         {
             ModConsole.Error($"[<b>{settingsMod}</b>] AddDropDownList() error: unknown Mod instance, settings must be created inside your ModSettings function");
             return null;
@@ -375,7 +375,7 @@ public partial class Settings
     /// <param name="visibleByDefault">Visible by default (default=true)</param>
     /// <returns>SettingsColorPicker</returns>      
     public static SettingsColorPicker AddColorPickerRGB(string settingID, string name, Color32 defaultColor, Action OnColorChanged = null, bool visibleByDefault = true) => AddColorPickerRGBAInternal(settingID, name, defaultColor, OnColorChanged, false, visibleByDefault);
- 
+
     /// <summary>
     /// Add Color Picker with RGBA sliders
     /// </summary>

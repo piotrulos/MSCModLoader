@@ -25,7 +25,7 @@ public class ModSettings
         mod.proSettings = true;
         Settings.AddButton(mod, buttonText, delegate
         {
-            if(action != null) action.Invoke();
+            if (action != null) action.Invoke();
         });
         GameObject d = new GameObject("zzzDummyProShitIgnoreThat");
         return d.AddComponent<SettingButton>();
@@ -70,7 +70,7 @@ public class ModSettings
 
         SettingsSliderInt slider = Settings.AddSlider(mod, id, name, minValue, maxValue, value, delegate
         {
-            if(action != null) action.Invoke();
+            if (action != null) action.Invoke();
         });
         GameObject d = new GameObject("zzzDummyProShitIgnoreThat");
         d.AddComponent<SettingSlider>().setup2(slider);
@@ -106,7 +106,7 @@ public class ModSettings
     public SettingTextBox AddTextBox(string id, string name, string value, UnityAction action, string placeholder = "ENTER TEXT...", InputField.CharacterValidation inputType = InputField.CharacterValidation.None)
     {
         mod.proSettings = true;
-        SettingsTextBox set = Settings.AddTextBox(mod, id,name,value,placeholder);
+        SettingsTextBox set = Settings.AddTextBox(mod, id, name, value, placeholder);
         GameObject d = new GameObject("zzzDummyProShitIgnoreThat");
         d.AddComponent<SettingTextBox>().SettingTextBoxC(set);
         return d.GetComponent<SettingTextBox>();
@@ -116,9 +116,9 @@ public class ModSettings
     [System.Obsolete("=> Settings.AddCheckBox", true)]
     public SettingToggle AddToggle(string id, string name, bool value, UnityAction<bool> action)
     {
-        return AddToggle(id, name, value, delegate()
+        return AddToggle(id, name, value, delegate ()
         {
-            if(action != null) action.Invoke(value);
+            if (action != null) action.Invoke(value);
         });
     }
     [System.Obsolete("=> Settings.AddCheckBox", true)]
@@ -127,8 +127,8 @@ public class ModSettings
         mod.proSettings = true;
         SettingsCheckBox set = Settings.AddCheckBox(mod, id, name, value, delegate
         {
-            if(action != null) action.Invoke();
-        });      
+            if (action != null) action.Invoke();
+        });
 
         GameObject d = new GameObject("zzzDummyProShitIgnoreThat");
         d.AddComponent<SettingToggle>().SettingToggleC(set);

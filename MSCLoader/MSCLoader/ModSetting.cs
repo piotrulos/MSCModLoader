@@ -63,7 +63,7 @@ public class ModSetting
         {
             SettingsElement.gameObject.SetActive(value);
         }
-        if(HeaderElement != null)
+        if (HeaderElement != null)
         {
             HeaderElement.gameObject.SetActive(value);
         }
@@ -189,7 +189,7 @@ public class SettingsSliderInt : ModSetting
         UpdateValue(value);
     }
 
-    internal SettingsSliderInt(string id, string name, int value, int minValue, int maxValue,  Action onValueChanged, string[] textValues, bool visibleByDefault) : base(id, name, onValueChanged, SettingsType.SliderInt, visibleByDefault)
+    internal SettingsSliderInt(string id, string name, int value, int minValue, int maxValue, Action onValueChanged, string[] textValues, bool visibleByDefault) : base(id, name, onValueChanged, SettingsType.SliderInt, visibleByDefault)
     {
         Value = value;
         DefaultValue = value;
@@ -236,7 +236,7 @@ public class SettingsSlider : ModSetting
     }
 
     internal SettingsSlider(string id, string name, float value, float minValue, float maxValue, Action onValueChanged, int decimalPoints, bool visibleByDefault) : base(id, name, onValueChanged, SettingsType.Slider, visibleByDefault)
-    {   
+    {
         Value = value;
         DefaultValue = value;
         MinValue = minValue;
@@ -330,7 +330,7 @@ public class SettingsDropDownList : ModSetting
     /// <param name="value">index</param>
     public void SetSelectedItemIndex(int value)
     {
-        if(value >= ArrayOfItems.Length)
+        if (value >= ArrayOfItems.Length)
         {
             Value = DefaultValue;
         }
@@ -460,7 +460,7 @@ public class SettingsHeader : ModSetting
 
 
     internal SettingsHeader(string name, Color backgroundColor, Color textColor, bool collapsedByDefault, bool visibleByDefault) : base(null, name, null, SettingsType.Header, visibleByDefault)
-    { 
+    {
         BackgroundColor = backgroundColor;
         TextColor = textColor;
         CollapsedByDefault = collapsedByDefault;
@@ -471,11 +471,11 @@ public class SettingsHeader : ModSetting
 /// Settings Text
 /// </summary>
 public class SettingsText : ModSetting
-{   
+{
     /// <summary>
-     /// Get Text value
-     /// </summary>
-     /// <returns>TextBox string value</returns>
+    /// Get Text value
+    /// </summary>
+    /// <returns>TextBox string value</returns>
     public string GetValue()
     {
         return Name;
@@ -519,15 +519,20 @@ public class SettingsButton : ModSetting
         Info,
         Search,
         Settings,
-        Warning
+        Warning,
+        Close,
+        Reset,
+        Delete,
+        Update,
+        CloudArrow
     }
 
     internal SettingsButton(string name, Action doAction, Color backgroundColor, Color textColor, bool visibleByDefault, ButtonIcon icon, Texture2D customIcon) : base(null, name, doAction, SettingsType.Button, visibleByDefault)
-    { 
+    {
         BackgroundColor = backgroundColor;
         TextColor = textColor;
         PredefinedIcon = icon;
-        if(customIcon != null){ PredefinedIcon = ButtonIcon.Custom; } 
+        if (customIcon != null) { PredefinedIcon = ButtonIcon.Custom; }
         CustomIcon = customIcon;
     }
 }
@@ -562,7 +567,7 @@ public class SettingsResetButton : ModSetting
 /// <summary>
 /// Settings Dynamic Header
 /// </summary>
-[Obsolete("Moved to => SettingsHeader",true)]
+[Obsolete("Moved to => SettingsHeader", true)]
 public class SettingsDynamicHeader : ModSetting
 {
     internal Color BackgroundColor = new Color32(95, 34, 18, 255);

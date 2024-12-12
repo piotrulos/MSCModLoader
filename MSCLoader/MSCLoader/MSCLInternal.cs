@@ -72,7 +72,7 @@ internal class MSCLInternal
     {
         AsyncRequestInProgress = true;
         using (WebClient webClient = new WebClient())
-        { 
+        {
             webClient.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
             webClient.UploadValuesCompleted += ModsUpdateData;
             webClient.UploadProgressChanged += ModsUpdateDataProgress;
@@ -146,7 +146,7 @@ internal class MSCLInternal
             for (int i = 0; i < ModLoader.Instance.MetadataUpdateList.Count; i++)
             {
                 Mod mod = ModLoader.GetModByID(ModLoader.Instance.MetadataUpdateList[i], true);
-                if(mod.metadata == null) continue;
+                if (mod.metadata == null) continue;
                 string serializedData = JsonConvert.SerializeObject(mod.metadata, config);
                 byte[] bytes = Encoding.UTF8.GetBytes(serializedData);
                 writer.Write(bytes, $"{mod.ID}||metadata");
@@ -186,12 +186,12 @@ internal class MSCLInternal
             }
             return;
         }
-        using(ES2Reader reader = ES2Reader.Create(ModLoader.GetMetadataFolder("MSCLData.bin")))
+        using (ES2Reader reader = ES2Reader.Create(ModLoader.GetMetadataFolder("MSCLData.bin")))
         {
             for (int i = 0; i < ModLoader.Instance.actualModList.Length; i++)
             {
                 Mod mod = ModLoader.Instance.actualModList[i];
-                if(!reader.TagExists($"{mod.ID}||metadata")) continue; 
+                if (!reader.TagExists($"{mod.ID}||metadata")) continue;
                 byte[] bytes = reader.ReadArray<byte>($"{mod.ID}||metadata");
                 string serializedData = Encoding.UTF8.GetString(bytes);
                 mod.metadata = JsonConvert.DeserializeObject<MSCLData>(serializedData);
@@ -208,17 +208,17 @@ internal class MSCLInternal
         byte[] bytes = new byte[3];
         try
         {
-            using (BinaryReader reader = new BinaryReader(File.Open(path,FileMode.Open,FileAccess.Read,FileShare.ReadWrite)))
+            using (BinaryReader reader = new BinaryReader(File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)))
             {
                 reader.Read(bytes, 0, 3);
                 reader.Close();
                 return bytes[0] == 0x45 && bytes[1] == 0x41 && bytes[2] == 0x4D;
             }
         }
-        catch(Exception ex) 
+        catch (Exception ex)
         {
             ModConsole.Error(ex.Message);
-            return false; 
+            return false;
         }
     }
 

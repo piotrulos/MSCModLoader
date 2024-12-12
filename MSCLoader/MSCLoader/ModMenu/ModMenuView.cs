@@ -327,6 +327,9 @@ internal class ModMenuView : MonoBehaviour
         {
             ModMetadata.UploadUpdate(mod, assets, references, refList.ToArray());
         });
+        uploadBtn.settingName.alignment = TextAnchor.MiddleLeft;
+        uploadBtn.iconElement.texture = uploadBtn.iconPack[(int)SettingsButton.ButtonIcon.CloudArrow];
+        uploadBtn.iconElement.gameObject.SetActive(true);
         CreateText(header4.HeaderListView.transform, $"{Environment.NewLine}This button below updates mod's version only. Use this if you want to update version number only, without uploading update file. (mod will not be available as in-game update)");
 
         SettingsElement uploadBtn2 = CreateButton(header4.HeaderListView.transform, "Update Mod version only", Color.white, Color.black);
@@ -334,6 +337,9 @@ internal class ModMenuView : MonoBehaviour
         {
             ModMetadata.UpdateModVersionNumber(mod);
         });
+        uploadBtn2.settingName.alignment = TextAnchor.MiddleLeft;
+        uploadBtn2.iconElement.texture = uploadBtn2.iconPack[(int)SettingsButton.ButtonIcon.Update];
+        uploadBtn2.iconElement.gameObject.SetActive(true);
     }
     internal static void OpenModLink(string url)
     {
@@ -392,6 +398,9 @@ internal class ModMenuView : MonoBehaviour
         if (!mod.hideResetAllSettings)
         {
             SettingsElement rbtn = CreateButton(listView.transform, "Reset all settings to default", Color.white, Color.black);
+            rbtn.settingName.alignment = TextAnchor.MiddleLeft;
+            rbtn.iconElement.texture = rbtn.iconPack[(int)SettingsButton.ButtonIcon.Reset];
+            rbtn.iconElement.gameObject.SetActive(true);
             rbtn.button.onClick.AddListener(delegate
             {
                 ModMenu.ResetSettings(mod);
@@ -504,7 +513,7 @@ internal class ModMenuView : MonoBehaviour
                 SettingsElement btn = btnP.GetComponent<SettingsElement>();
                 settingBtn.SettingsElement = btn;
                 btn.SetupButton(settingBtn.Name.ToUpper(), settingBtn.TextColor, settingBtn.BackgroundColor);
-                if(settingBtn.PredefinedIcon != SettingsButton.ButtonIcon.None)
+                if (settingBtn.PredefinedIcon != SettingsButton.ButtonIcon.None)
                 {
                     btn.settingName.alignment = TextAnchor.MiddleLeft;
                     if (settingBtn.PredefinedIcon == SettingsButton.ButtonIcon.Custom)

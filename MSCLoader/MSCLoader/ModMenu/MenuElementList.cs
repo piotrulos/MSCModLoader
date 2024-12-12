@@ -157,7 +157,7 @@ namespace MSCLoader
             if (mod.IsManaged)
             {
                 QuickInfo.text = $"<color=orange>This mod failed to load.</color>{Environment.NewLine}Guid: <color=yellow>{mod.AsmGuid}</color>";
-                if(mod.AdditionalRefs.Count > 0)
+                if (mod.AdditionalRefs.Count > 0)
                     QuickInfo.text += $"{Environment.NewLine}Additional references: <color=aqua>{string.Join(", ", mod.AdditionalRefs.ToArray())}</color>";
             }
             else

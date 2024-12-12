@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿#if !Mini
+#endif
 using System;
 using System.Collections.Generic;
 using UnityEngine.Events;
@@ -273,8 +273,13 @@ public class ModUI
         messageBoxCv.changelogWindow.SetActive(true);
         messageBoxCv.changelogWindow.transform.SetAsLastSibling();
     }
-
-    public static PopupSetting CreatePopupSetting(string title) => new PopupSetting(title);
+    /// <summary>
+    /// Create Popup Setting Window
+    /// </summary>
+    /// <param name="title">Window title</param>
+    /// <param name="submitButtonText">Submit button text</param>
+    /// <returns>PopupSetting</returns>
+    public static PopupSetting CreatePopupSetting(string title, string submitButtonText) => new PopupSetting(title, submitButtonText);
 }
 
 /// <summary>
@@ -283,9 +288,14 @@ public class ModUI
 public class PopupSetting
 {
     internal string WindowTitle = "Popup Setting".ToUpper();
+    internal string SubmitButtonText = "Confirm".ToUpper();
     internal List<ModSetting> settingElements = new List<ModSetting>();
-    internal PopupSetting(string title) => WindowTitle = title;
-    internal void ReturnJsonString()
+    internal PopupSetting(string title, string buttonText)
+    {
+        WindowTitle = title;
+        SubmitButtonText = buttonText;
+    }
+    internal string ReturnJsonString()
     {
         List<string> json = new List<string>();
         foreach (ModSetting s in settingElements)
@@ -317,9 +327,13 @@ public class PopupSetting
             }
         }
 
-        ModConsole.Warning("{"+$"{string.Join(",", json.ToArray())}"+"}");
+        return "{" + $"{string.Join(",", json.ToArray())}" + "}";
     }
-    public void ShowPopup() => ModUI.popupSettingController.CreatePopupSetting(this);
+    /// <summary>
+    /// Show popup window
+    /// </summary>
+    /// <param name="OnSubmit">This will be called once confirm button is pressed to submit result</param>
+    public void ShowPopup(Action<string> OnSubmit) => ModUI.popupSettingController.CreatePopupSetting(this, OnSubmit);
 
     /// <summary>
     /// Add just a text (doesn't return anything on confirm)
@@ -364,7 +378,7 @@ public class PopupSetting
     /// <param name="maxValue">maximum int value</param>
     /// <param name="value">Default Value for this setting</param>
     /// <param name="textValues">Optional text values array (array index = slider value)</param>
-    public void AddSlider(string settingID, string name, int minValue, int maxValue, int value = 0,  string[] textValues = null)
+    public void AddSlider(string settingID, string name, int minValue, int maxValue, int value = 0, string[] textValues = null)
     {
 
         if (textValues != null && textValues.Length <= (maxValue - minValue))
@@ -384,7 +398,7 @@ public class PopupSetting
     /// <param name="maxValue">maximum float value</param>
     /// <param name="value">Default Value for this setting</param>
     /// <param name="decimalPoints">Round value to number of decimal points</param>
-    public void AddSlider(string settingID, string name, float minValue, float maxValue, float value = 0f,  int decimalPoints = 2)
+    public void AddSlider(string settingID, string name, float minValue, float maxValue, float value = 0f, int decimalPoints = 2)
     {
 
         if (decimalPoints < 0)

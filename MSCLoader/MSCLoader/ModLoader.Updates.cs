@@ -54,13 +54,13 @@ public partial class ModLoader : MonoBehaviour
         ContinueInit();
     }
 
-   /* private bool cfmuErrored = false;
-    private bool cfmuInProgress = false;
-    private string cfmuResult = string.Empty;*/
+    /* private bool cfmuErrored = false;
+     private bool cfmuInProgress = false;
+     private string cfmuResult = string.Empty;*/
     internal bool checkForUpdatesProgress = false;
     IEnumerator CheckForRefModUpdates()
     {
-        checkForUpdatesProgress = true;    
+        checkForUpdatesProgress = true;
         canvLoading.SetUpdate("Checking for mod updates...", 0, 3, "Connecting...");
         dnsaf = true;
         bool failed = false;
@@ -374,6 +374,7 @@ public partial class ModLoader : MonoBehaviour
             ModConsole.Error("Steam is required to use this feature");
             yield return null;
         }
+        ModConsole.Print("It may take a few minutes for the update file to be available for download. You can see the file status on MSCLoader website");
         dnsaf = false;
         yield return new WaitForSeconds(3f);
         if (!dnsaf)
@@ -408,7 +409,7 @@ public partial class ModLoader : MonoBehaviour
             {
                 ModConsole.Error("Failed to upload mod update");
                 ModConsole.Error(result[1]);
-                
+
             }
             else if (result[0] == "ok")
             {
@@ -461,7 +462,7 @@ public partial class ModLoader : MonoBehaviour
                 }
                 yield return new WaitForSeconds(1f);
                 canvLoading.SetUpdateProgress(100, $"<color=lime>Download Complete</color>");
-                ModUI.ShowMessage("You have to restart the Game for the updates to take effect!", "download completed");
+                ModUI.ShowMessage("You have to restart the game for the updates to take effect!", "download completed");
                 break;
             case 1:
             case 2:
@@ -557,14 +558,15 @@ public partial class ModLoader : MonoBehaviour
     {
         downloadPercentage = 100;
         downloadInProgress = false;
-        if (e.Error != null)        {
-           
+        if (e.Error != null)
+        {
+
             ModConsole.Error("Failed to download file!");
             ModConsole.Error(e.Error.Message);
             Console.WriteLine(e.Error);
         }
         else
-        {            
+        {
             ModConsole.Print($"Download finished");
         }
     }
@@ -572,8 +574,8 @@ public partial class ModLoader : MonoBehaviour
     private void DownloadRequiredFiles(List<string> refs, List<string> mods)
     {
         //mods = new List<string>() { "wtf", "wtf2", "wtf23", "nfghsdngklgmdsalg" }; //test
-        if(refs.Count == 0 && mods.Count == 0) return;
-        ModUI.ShowYesNoMessage($"<color=yellow>Installed mods are missing required files!</color> {Environment.NewLine}{Environment.NewLine}{(refs.Count != 0 ? $"Missing References: <color=aqua>{string.Join(", ",refs.ToArray())}</color>{Environment.NewLine}" : "")}{(mods.Count != 0 ? $"Missing Mods: <color=aqua>{string.Join(", ", mods.ToArray())}</color>{Environment.NewLine}" : "")} {Environment.NewLine}These files are REQUIRED to run the mods correctly!{Environment.NewLine}Do you want to download these files now?", "Missing required files", delegate
+        if (refs.Count == 0 && mods.Count == 0) return;
+        ModUI.ShowYesNoMessage($"<color=yellow>Installed mods are missing required files!</color> {Environment.NewLine}{Environment.NewLine}{(refs.Count != 0 ? $"Missing References: <color=aqua>{string.Join(", ", refs.ToArray())}</color>{Environment.NewLine}" : "")}{(mods.Count != 0 ? $"Missing Mods: <color=aqua>{string.Join(", ", mods.ToArray())}</color>{Environment.NewLine}" : "")} {Environment.NewLine}These files are REQUIRED to run the mods correctly!{Environment.NewLine}Do you want to download these files now?", "Missing required files", delegate
         {
             StartCoroutine(DownloadRequiredFilesC(refs, mods));
         });
@@ -621,13 +623,13 @@ public partial class ModLoader : MonoBehaviour
         if (!dnsaf)
             canvLoading.ToggleUpdateUI(false);
     }
-   /* void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Keypad5))
-        {
-            DownloadFile($"mscl_download.php?type=mod&id=faf", Path.Combine(Path.Combine("Updates", "Mods"), $"faf.zip"));
-        }
-    }*/
+    /* void Update()
+     {
+         if (Input.GetKeyDown(KeyCode.Keypad5))
+         {
+             DownloadFile($"mscl_download.php?type=mod&id=faf", Path.Combine(Path.Combine("Updates", "Mods"), $"faf.zip"));
+         }
+     }*/
 
 }
 #endif

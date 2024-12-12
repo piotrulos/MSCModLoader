@@ -1,7 +1,6 @@
 ﻿#if !Mini
 using HutongGames.PlayMaker;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace MSCLoader;
@@ -108,13 +107,13 @@ public static class PlayMakerExtensions
     }
 
     private class MSCL_PMHook : FsmStateAction
-    {        
+    {
         public Action action;
         public bool everyFrame = false;
 
         public MSCL_PMHook(Action action, bool everyFrame = false)
         {
-            this.action = action;            
+            this.action = action;
             this.everyFrame = everyFrame;
         }
 
@@ -245,7 +244,7 @@ public static class PlayMakerExtensions
         }
         fsmState.Actions = a;
         return true;
-    }     
+    }
 
     /// <summary>
     /// Initialize a PlayMakerFSM
@@ -281,7 +280,7 @@ public static class PlayMakerExtensions
         }
         return null;
     }
-    
+
     /// <summary>
     /// Add event to PlayMakerFSM
     /// </summary>
@@ -299,7 +298,7 @@ public static class PlayMakerExtensions
         pm.InitializeFSM();
         return e;
     }
-    
+
     /// <summary>
     /// Add event to PlayMakerFSM
     /// </summary>

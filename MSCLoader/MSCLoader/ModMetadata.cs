@@ -310,7 +310,7 @@ internal class ModMetadata
         {
             Version v1 = new Version(mod.Version);
             Version v2 = new Version(mod.UpdateInfo.mod_version);
-            if(v1.ToString() != mod.Version)
+            if (v1.ToString() != mod.Version)
                 ModConsole.Warning($"Your mod version <b>{mod.Version}</b> is actually read as <b>{v1}</b>. Rememeber that stuff like leading zeros are ignored during version compare. You can ignore this warning, this is just reminder.");
             switch (v1.CompareTo(v2))
             {
@@ -476,7 +476,7 @@ internal class ModMetadata
                 ModConsole.Error($"Mod version <b>{mod.Version}</b> is <b>LOWER</b> than current offered version <b>{mod.UpdateInfo.mod_version}</b>, cannot update.");
                 return;
         }
-       
+
         string response = MSCLInternal.MSCLDataRequest("mscl_setversion.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key }, { "resID", mod.ID }, { "version", mod.Version }, { "sign", umm.sign }, { "type", "mod" } });
 
         string[] result = response.Split('|');
@@ -515,7 +515,7 @@ internal class ModMetadata
         }
         if (!VerifyOwnership(ID, true)) return;
         key = File.ReadAllText(auth);
-        string response = MSCLInternal.MSCLDataRequest("mscl_setversion.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key }, { "resID",ID }, { "version", refs.AssemblyFileVersion }, { "type", "reference" } });      
+        string response = MSCLInternal.MSCLDataRequest("mscl_setversion.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key }, { "resID", ID }, { "version", refs.AssemblyFileVersion }, { "type", "reference" } });
         string[] result = response.Split('|');
         switch (result[0])
         {
@@ -802,44 +802,44 @@ internal class ModMetadata
                     }
                 }
             }
-          /*  if (!string.IsNullOrEmpty(mod.metadata.requiredMods.modID))
-            {
-                string[] modIDs = mod.metadata.requiredMods.modID.Trim().Split(',');
-                string[] modIDvers = mod.metadata.requiredMods.minVer.Trim().Split(',');
+            /*  if (!string.IsNullOrEmpty(mod.metadata.requiredMods.modID))
+              {
+                  string[] modIDs = mod.metadata.requiredMods.modID.Trim().Split(',');
+                  string[] modIDvers = mod.metadata.requiredMods.minVer.Trim().Split(',');
 
-                for (int i = 0; i < modIDs.Length; i++)
-                {
-                    if (ModLoader.GetMod(modIDs[i], true) == null)
-                    {
-                        mod.isDisabled = true;
-                        if (!string.IsNullOrEmpty(mod.metadata.requiredMods.customMessage))
-                            ModConsole.Error($"Mod <b>{mod.ID}</b> is missing required mod <b>{modIDs[i]}</b>. Author's message: {mod.metadata.requiredMods.customMessage}");
-                        else
-                            ModConsole.Error($"Mod <b>{mod.ID}</b> is missing required mod <b>{modIDs[i]}</b>.");
-                        OpenRequiredDownloadPage(modIDs[i]);
-                    }
-                    else
-                    {
-                        try
-                        {
-                            Version v1 = new Version(modIDvers[i]);
-                            Version v2 = new Version(ModLoader.GetMod(modIDs[i], true).Version);
-                            if (v1.CompareTo(v2) == 1)
-                            {
-                                if (!string.IsNullOrEmpty(mod.metadata.requiredMods.customMessage))
-                                    ModConsole.Warning($"Mod <b>{mod.ID}</b> requires mod <b>{modIDs[i]}</b> to be at least version <b>{v1}</b>. Author's message: {mod.metadata.requiredMods.customMessage}");
-                                else
-                                    ModConsole.Warning($"Mod <b>{mod.ID}</b> requires mod <b>{modIDs[i]}</b> to be at least version <b>{v1}</b>.");
-                                OpenRequiredDownloadPage(modIDs[i]);
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            System.Console.WriteLine(e);
-                        }
-                    }
-                }
-            }*/
+                  for (int i = 0; i < modIDs.Length; i++)
+                  {
+                      if (ModLoader.GetMod(modIDs[i], true) == null)
+                      {
+                          mod.isDisabled = true;
+                          if (!string.IsNullOrEmpty(mod.metadata.requiredMods.customMessage))
+                              ModConsole.Error($"Mod <b>{mod.ID}</b> is missing required mod <b>{modIDs[i]}</b>. Author's message: {mod.metadata.requiredMods.customMessage}");
+                          else
+                              ModConsole.Error($"Mod <b>{mod.ID}</b> is missing required mod <b>{modIDs[i]}</b>.");
+                          OpenRequiredDownloadPage(modIDs[i]);
+                      }
+                      else
+                      {
+                          try
+                          {
+                              Version v1 = new Version(modIDvers[i]);
+                              Version v2 = new Version(ModLoader.GetMod(modIDs[i], true).Version);
+                              if (v1.CompareTo(v2) == 1)
+                              {
+                                  if (!string.IsNullOrEmpty(mod.metadata.requiredMods.customMessage))
+                                      ModConsole.Warning($"Mod <b>{mod.ID}</b> requires mod <b>{modIDs[i]}</b> to be at least version <b>{v1}</b>. Author's message: {mod.metadata.requiredMods.customMessage}");
+                                  else
+                                      ModConsole.Warning($"Mod <b>{mod.ID}</b> requires mod <b>{modIDs[i]}</b> to be at least version <b>{v1}</b>.");
+                                  OpenRequiredDownloadPage(modIDs[i]);
+                              }
+                          }
+                          catch (Exception e)
+                          {
+                              System.Console.WriteLine(e);
+                          }
+                      }
+                  }
+              }*/
         }
     }
 
@@ -861,7 +861,7 @@ internal class ModMetadata
 
     private static void CheckForUpdatedDescription(Mod mod)
     {
-        ModLoader.Instance.DownloadFile($"mscl_download.php?type=mod&id={mod}", Path.Combine(Path.Combine("Updates", "Mods"), $"{mod}.zip"),true);
+        ModLoader.Instance.DownloadFile($"mscl_download.php?type=mod&id={mod}", Path.Combine(Path.Combine("Updates", "Mods"), $"{mod}.zip"), true);
     }
 
     internal static void DescritpionDownloadCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
@@ -871,16 +871,16 @@ internal class ModMetadata
         ModUI.ShowMessage($"<color=yellow>{m.ID}</color> - Fatal crash when trying to read mod data.{Environment.NewLine}{Environment.NewLine}Error details: {Environment.NewLine}<color=aqua>{new BadImageFormatException().Message}</color>", "Crashed");
     }
 
-   /* internal static void LoadMetadata(Mod mod)
-    {
-        string metadataFile = ModLoader.GetMetadataFolder($"{mod.ID}.json");
-        if (File.Exists(metadataFile))
-        {
-            string s = File.ReadAllText(metadataFile);
-            return JsonConvert.DeserializeObject<MSCLData>(s);
-        }
-        return null;
-    }*/
+    /* internal static void LoadMetadata(Mod mod)
+     {
+         string metadataFile = ModLoader.GetMetadataFolder($"{mod.ID}.json");
+         if (File.Exists(metadataFile))
+         {
+             string s = File.ReadAllText(metadataFile);
+             return JsonConvert.DeserializeObject<MSCLData>(s);
+         }
+         return null;
+     }*/
 
 
     internal static string CalculateFileChecksum(string fn)

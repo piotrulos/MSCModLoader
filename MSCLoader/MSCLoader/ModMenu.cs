@@ -3,10 +3,8 @@ using IniParser;
 using IniParser.Model;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace MSCLoader;
 
@@ -127,7 +125,7 @@ internal class ModMenu : Mod
     {
         if (coreVer.FilePrivatePart < 263)
         {
-            ModUI.ShowMessage("To use <color=yellow>Skip Configuration Screen</color> you need to update the core module of MSCLoader, download the latest version and launch <color=aqua>MSCPatcher.exe</color> to update", "Outdated module");
+            ModUI.ShowMessage("To use <color=yellow>Skip Configuration Screen</color> you need to update the core module of MSCLoader, download latest version and launch <color=aqua>MSCLInstaller.exe</color> to update", "Outdated module");
             return;
         }
         FileIniDataParser parser = new FileIniDataParser();
@@ -166,7 +164,7 @@ internal class ModMenu : Mod
         GameObject.DontDestroyOnLoad(UI);
         GameObject.Destroy(UIp);
         ab.Unload(false);
-        ModUI.popupSettingController = UI.GetComponent<PopupSettingController>(); 
+        ModUI.popupSettingController = UI.GetComponent<PopupSettingController>();
     }
 
     // Reset keybinds
@@ -237,7 +235,7 @@ internal class ModMenu : Mod
         {
             ResetSpecificSetting(Settings.Get(mod)[i]);
         }
-        SaveSettings(mod);   
+        SaveSettings(mod);
     }
     internal static void ResetSpecificSetting(ModSetting set)
     {

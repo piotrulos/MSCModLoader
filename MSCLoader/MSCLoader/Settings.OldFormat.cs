@@ -1,7 +1,6 @@
 ﻿#if !Mini
 using System;
 using System.Collections.Generic;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace MSCLoader
@@ -358,13 +357,13 @@ namespace MSCLoader
         /// <param name="name">Button name</param>
         /// <param name="sets">array of settings to reset</param>
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        [Obsolete("Use other overload instead",true)]
+        [Obsolete("Use other overload instead", true)]
         public static void AddResetButton(Mod mod, string name, Settings[] sets)
         {
             //Backward compatibility
-            if (sets == null) return;           
+            if (sets == null) return;
             List<ModSetting> list = new List<ModSetting>();
-            for(int i = 0; i < sets.Length; i++)
+            for (int i = 0; i < sets.Length; i++)
             {
                 list.Add(sets[i].modSetting);
             }
