@@ -1,6 +1,4 @@
-﻿#if !Mini
-#endif
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -179,9 +177,7 @@ public class ModUI
     /// <param name="message">Message content</param>
     /// <param name="title">Title of message</param>
     /// <param name="ifYes">What to do when user click yes</param>
-    public static void ShowYesNoMessage(string message, string title, Action ifYes) => ShowYesNoMessage(message, title, ifYes, null);
-
-    internal static void ShowYesNoMessage(string message, string title, Action ifYes, UnityAction ifYesUA = null)
+    public static void ShowYesNoMessage(string message, string title, Action ifYes)
     {
         GameObject mb = GameObject.Instantiate(messageBoxCv.messageBoxPrefab);
         MessageBoxHelper mbh = mb.GetComponent<MessageBoxHelper>();
@@ -191,10 +187,7 @@ public class ModUI
         btnNo.transform.SetParent(mbh.btnRow1.transform, false);
         mbh.messageBoxTitle.text = title.ToUpper();
         mbh.messageBoxContent.text = message;
-        if (ifYesUA != null)
-            btnYes.button.onClick.AddListener(() => { ifYesUA?.Invoke(); GameObject.Destroy(mb); });
-        else
-            btnYes.button.onClick.AddListener(() => { ifYes.Invoke(); GameObject.Destroy(mb); });
+        btnYes.button.onClick.AddListener(() => { ifYes.Invoke(); GameObject.Destroy(mb); });
         btnNo.button.onClick.AddListener(() => GameObject.Destroy(mb));
         mb.transform.SetParent(messageBoxCv.transform, false);
         mb.SetActive(true);

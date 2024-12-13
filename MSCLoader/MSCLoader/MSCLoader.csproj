@@ -70,10 +70,6 @@
     <Reference Include="MSCCoreLibrary">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\Mods\References\MSCCoreLibrary.dll</HintPath>
     </Reference>
-    <Reference Include="MSCLoader.Helpers" Condition="!$(DefineConstants.Contains('Mini'))">
-      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\Mods\References\MSCLoader.Helpers.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="NAudio" Condition="!$(DefineConstants.Contains('Mini'))">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\NAudio.dll</HintPath>
       <Private>False</Private>
@@ -104,6 +100,9 @@
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Xml">
+      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\System.Xml.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\UnityEngine.dll</HintPath>
       <Private>False</Private>

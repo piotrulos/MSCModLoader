@@ -331,6 +331,8 @@ internal class ModMetadata
         try
         {
             File.Copy(mod.fileName, Path.Combine(dir, Path.GetFileName(mod.fileName)));
+            if (File.Exists(mod.fileName.Replace(".dll", ".xml")))
+                File.Copy(mod.fileName.Replace(".dll", ".xml"), Path.Combine(dir, Path.GetFileName(mod.fileName.Replace(".dll", ".xml"))));
             if (assets)
             {
                 Directory.CreateDirectory(Path.Combine(dir, "Assets"));
@@ -360,8 +362,11 @@ internal class ModMetadata
                 zip.AddDirectory(Path.Combine(dir, "Assets"), "Assets");
             if (references)
                 zip.AddDirectory(Path.Combine(dir, "References"), "References");
-
+            if (File.Exists(Path.Combine(dir, Path.GetFileName(mod.fileName.Replace(".dll", ".xml")))))
+                zip.AddFile(Path.Combine(dir, Path.GetFileName(mod.fileName.Replace(".dll", ".xml"))), "");
             zip.AddFile(Path.Combine(dir, Path.GetFileName(mod.fileName)), "");
+            if (File.Exists(Path.Combine(dir, "unused.txt")))
+                zip.AddFile(Path.Combine(dir, "unused.txt"), "");
             zip.Save(Path.Combine(dir, $"{mod.ID}.zip"));
             if (assets)
                 Directory.Delete(Path.Combine(dir, "Assets"), true);
@@ -407,6 +412,8 @@ internal class ModMetadata
         try
         {
             File.Copy(refs.FileName, Path.Combine(dir, Path.GetFileName(refs.FileName)));
+            if(File.Exists(refs.FileName.Replace(".dll",".xml"))) 
+                File.Copy(refs.FileName.Replace(".dll", ".xml"), Path.Combine(dir, Path.GetFileName(refs.FileName.Replace(".dll", ".xml"))));
         }
         catch (Exception e)
         {
@@ -420,8 +427,13 @@ internal class ModMetadata
             ModConsole.Print("Zipping Files...");
             ZipFile zip = new ZipFile();
             zip.AddFile(Path.Combine(dir, Path.GetFileName(refs.FileName)), "");
+            if(File.Exists(Path.Combine(dir, Path.GetFileName(refs.FileName.Replace(".dll", ".xml")))))
+                zip.AddFile(Path.Combine(dir, Path.GetFileName(refs.FileName.Replace(".dll", ".xml"))), ""); //Add also docs if they exist
+            if(File.Exists(Path.Combine(dir, "unused.txt")))
+                zip.AddFile(Path.Combine(dir, "unused.txt"), "");
             zip.Save(Path.Combine(dir, $"{refs.AssemblyID}.zip"));
             File.Delete(Path.Combine(dir, Path.GetFileName(refs.FileName)));
+            File.Delete(Path.Combine(dir, Path.GetFileName(refs.FileName.Replace(".dll", ".xml"))));
             ModConsole.Print("Complete!");
 
         }
