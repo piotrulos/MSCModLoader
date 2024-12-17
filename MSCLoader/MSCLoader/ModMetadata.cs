@@ -37,53 +37,6 @@ internal class RefVersion
     public string cached_date;
 
 }
-/*internal class ModsManifest
-{
-    public string modID;
-    // public string version;
-    public string description;
-    public ManifestLinks links = new ManifestLinks();
-    public ManifestIcon icon = new ManifestIcon();
-    public ManifestMinReq minimumRequirements = new ManifestMinReq();
-    public ManifestModConflict modConflicts = new ManifestModConflict();
-    public ManifestModRequired requiredMods = new ManifestModRequired();
-    public string sign;
-    public string sid_sign;
-    public byte type;
-    public string msg = null;
-    public int rev = 0;
-
-}
-internal class ManifestLinks
-{
-    public string nexusLink = null;
-    public string rdLink = null;
-    public string githubLink = null;
-}
-internal class ManifestIcon
-{
-    public string iconFileName = null;
-    public bool isIconRemote = false;
-    // public bool isIconUrl = false;
-}
-internal class ManifestMinReq
-{
-    public string MSCLoaderVer = null;
-    public uint MSCbuildID = 0;
-    public bool disableIfVer = false;
-}
-internal class ManifestModConflict
-{
-    public string modIDs = null;
-    public string customMessage = null;
-    public bool disableIfConflict = false;
-}
-internal class ManifestModRequired
-{
-    public string modID = null;
-    public string minVer = null;
-    public string customMessage = null;
-}*/
 
 //Metadata V3
 public class MSCLData
@@ -210,6 +163,11 @@ internal class ModMetadata
             sign = CalculateFileChecksum(mod.fileName),
             type = 1
         };
+        if (mod.asmGuid == null)
+        {
+            ModConsole.Error("Your assembly is missing GUID");
+            return;
+        }
         string response = MSCLInternal.MSCLDataRequest("mscl_create.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key }, { "resID", mscldata.modID }, { "version", mod.Version }, { "sign", mscldata.sign }, { "asmGuid", mod.asmGuid }, { "type", "mod" } });
 
         string[] result = response.Split('|');
@@ -412,7 +370,7 @@ internal class ModMetadata
         try
         {
             File.Copy(refs.FileName, Path.Combine(dir, Path.GetFileName(refs.FileName)));
-            if(File.Exists(refs.FileName.Replace(".dll",".xml"))) 
+            if (File.Exists(refs.FileName.Replace(".dll", ".xml")))
                 File.Copy(refs.FileName.Replace(".dll", ".xml"), Path.Combine(dir, Path.GetFileName(refs.FileName.Replace(".dll", ".xml"))));
         }
         catch (Exception e)
@@ -427,9 +385,9 @@ internal class ModMetadata
             ModConsole.Print("Zipping Files...");
             ZipFile zip = new ZipFile();
             zip.AddFile(Path.Combine(dir, Path.GetFileName(refs.FileName)), "");
-            if(File.Exists(Path.Combine(dir, Path.GetFileName(refs.FileName.Replace(".dll", ".xml")))))
+            if (File.Exists(Path.Combine(dir, Path.GetFileName(refs.FileName.Replace(".dll", ".xml")))))
                 zip.AddFile(Path.Combine(dir, Path.GetFileName(refs.FileName.Replace(".dll", ".xml"))), ""); //Add also docs if they exist
-            if(File.Exists(Path.Combine(dir, "unused.txt")))
+            if (File.Exists(Path.Combine(dir, "unused.txt")))
                 zip.AddFile(Path.Combine(dir, "unused.txt"), "");
             zip.Save(Path.Combine(dir, $"{refs.AssemblyID}.zip"));
             File.Delete(Path.Combine(dir, Path.GetFileName(refs.FileName)));
@@ -814,44 +772,6 @@ internal class ModMetadata
                     }
                 }
             }
-            /*  if (!string.IsNullOrEmpty(mod.metadata.requiredMods.modID))
-              {
-                  string[] modIDs = mod.metadata.requiredMods.modID.Trim().Split(',');
-                  string[] modIDvers = mod.metadata.requiredMods.minVer.Trim().Split(',');
-
-                  for (int i = 0; i < modIDs.Length; i++)
-                  {
-                      if (ModLoader.GetMod(modIDs[i], true) == null)
-                      {
-                          mod.isDisabled = true;
-                          if (!string.IsNullOrEmpty(mod.metadata.requiredMods.customMessage))
-                              ModConsole.Error($"Mod <b>{mod.ID}</b> is missing required mod <b>{modIDs[i]}</b>. Author's message: {mod.metadata.requiredMods.customMessage}");
-                          else
-                              ModConsole.Error($"Mod <b>{mod.ID}</b> is missing required mod <b>{modIDs[i]}</b>.");
-                          OpenRequiredDownloadPage(modIDs[i]);
-                      }
-                      else
-                      {
-                          try
-                          {
-                              Version v1 = new Version(modIDvers[i]);
-                              Version v2 = new Version(ModLoader.GetMod(modIDs[i], true).Version);
-                              if (v1.CompareTo(v2) == 1)
-                              {
-                                  if (!string.IsNullOrEmpty(mod.metadata.requiredMods.customMessage))
-                                      ModConsole.Warning($"Mod <b>{mod.ID}</b> requires mod <b>{modIDs[i]}</b> to be at least version <b>{v1}</b>. Author's message: {mod.metadata.requiredMods.customMessage}");
-                                  else
-                                      ModConsole.Warning($"Mod <b>{mod.ID}</b> requires mod <b>{modIDs[i]}</b> to be at least version <b>{v1}</b>.");
-                                  OpenRequiredDownloadPage(modIDs[i]);
-                              }
-                          }
-                          catch (Exception e)
-                          {
-                              System.Console.WriteLine(e);
-                          }
-                      }
-                  }
-              }*/
         }
     }
 
@@ -882,18 +802,6 @@ internal class ModMetadata
         m.isDisabled = true;
         ModUI.ShowMessage($"<color=yellow>{m.ID}</color> - Fatal crash when trying to read mod data.{Environment.NewLine}{Environment.NewLine}Error details: {Environment.NewLine}<color=aqua>{new BadImageFormatException().Message}</color>", "Crashed");
     }
-
-    /* internal static void LoadMetadata(Mod mod)
-     {
-         string metadataFile = ModLoader.GetMetadataFolder($"{mod.ID}.json");
-         if (File.Exists(metadataFile))
-         {
-             string s = File.ReadAllText(metadataFile);
-             return JsonConvert.DeserializeObject<MSCLData>(s);
-         }
-         return null;
-     }*/
-
 
     internal static string CalculateFileChecksum(string fn)
     {

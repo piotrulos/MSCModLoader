@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
-using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -273,6 +273,18 @@ public class ModUI
     /// <param name="submitButtonText">Submit button text</param>
     /// <returns>PopupSetting</returns>
     public static PopupSetting CreatePopupSetting(string title, string submitButtonText) => new PopupSetting(title, submitButtonText);
+
+    /// <summary>
+    /// Parse popup response by deserializing it.
+    /// </summary>
+    /// <typeparam name="T">Your class</typeparam>
+    /// <param name="response">Popup response</param>
+    /// <returns>Deserialized response</returns>
+    public static T ParsePopupResponse<T>(string response) where T : new()
+    {
+        return JsonConvert.DeserializeObject<T>(response);
+    }
+
 }
 
 /// <summary>

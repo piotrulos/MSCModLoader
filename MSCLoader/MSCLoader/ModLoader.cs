@@ -378,7 +378,10 @@ public partial class ModLoader : MonoBehaviour
         if (devMode)
             ModConsole.Warning("You are running ModLoader in <color=red><b>DevMode</b></color>, this mode is <b>only for modders</b> and shouldn't be used in normal gameplay.");
         System.Console.WriteLine(SystemInfoFix()); //operating system version to output_log.txt
-
+        if (InvalidMods.Count > 0)
+        {
+            ModConsole.Error("Some files failed to load, scroll up to see more info.");
+        }
         if (saveErrors != null)
         {
             if (saveErrors.Count > 0 && wasSaving)
@@ -903,6 +906,7 @@ public partial class ModLoader : MonoBehaviour
         while (GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera") == null)
             yield return null;
         MouseFix();
+        GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera").AddComponent<UnifiedRaycast>();
         yield return null;
         canvLoading.SetLoadingTitle("Loading mods - Phase 2");
         canvLoading.SetLoadingStatus("Loading mods. Please wait...");
@@ -1052,7 +1056,7 @@ public partial class ModLoader : MonoBehaviour
     private void PreLoadMods()
     {
         // Load .dll files
-        string[] files = Directory.GetFiles(ModsFolder);
+        string[] files = Directory.GetFiles(ModsFolder, "*.dll");
         string[] unusedFiles = new string[0];
         if (File.Exists(Path.Combine(ModsFolder, "unused.txt")))
         {
@@ -1066,16 +1070,14 @@ public partial class ModLoader : MonoBehaviour
                 File.Delete(files[i]);
                 continue;
             }
-            if (files[i].EndsWith(".dll"))
+
+            if (MSCLInternal.IsEAFile(files[i]))
             {
-                if (MSCLInternal.IsEAFile(files[i]))
-                {
-                    LoadEADll(files[i]);
-                }
-                else
-                {
-                    LoadDLL(files[i]);
-                }
+                LoadEADll(files[i]);
+            }
+            else
+            {
+                LoadDLL(files[i]);
             }
         }
         if (File.Exists(Path.Combine(ModsFolder, "unused.txt")))
@@ -1337,32 +1339,20 @@ public partial class ModLoader : MonoBehaviour
                 crashedGuids.Add(asmGuid);
                 ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - crashed during load.<b>Details:</b> {e.GetFullMessage()}");
                 InvalidMods.Add(new InvalidMods(Path.GetFileName(file), true, e.GetFullMessage(), addRef.ToList(), asmGuid));
+
                 if (addRef.Count > 0)
                 {
-                    ModConsole.Print($"<color=red>Potential missing files: </color><color=aqua>{string.Join(", ", addRef.ToArray())}</color>{Environment.NewLine}");
+                    List<string> filteredRef = new List<string>();
+                    foreach (string s in addRef)
+                    {
+                        if (!AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name == s))
+                        {
+                            filteredRef.Add(s);
+                        }
+                    }
+                    if (filteredRef.Count > 0)
+                        ModConsole.Print($"<color=red>Potential missing files: </color><color=aqua>{string.Join(", ", filteredRef.ToArray())}</color>{Environment.NewLine}");
                 }
-                /* if (addRef.Count > 0)
-                 {
-                     if (((addRef.Contains("MSCLoader.Features") && !ReferencesList.Select(x => x.AssemblyID).Contains("MSCLoader.Features"))) || ((addRef.Contains("MSCLoader.Helpers") && !ReferencesList.Select(x => x.AssemblyID).Contains("MSCLoader.Helpers"))))
-                         ModUI.ShowYesNoMessage($"<color=yellow>{Path.GetFileName(file)}</color> - looks like a mod, but It crashed trying to load.{Environment.NewLine}{Environment.NewLine}Detected additional references used by this mod: {Environment.NewLine}<color=aqua>{string.Join(", ", addRef.ToArray())}</color> {Environment.NewLine}{Environment.NewLine} Looks like missing compatibility pack.{Environment.NewLine} Open download page?", "Crashed", delegate
-                          {
-                              Application.OpenURL("https://www.nexusmods.com/mysummercar/mods/732");
-                          });
-                     else
-                     {
-                         // ModUI.ShowMessage($"<color=yellow>{Path.GetFileName(file)}</color> - looks like a mod, but It crashed trying to load.{Environment.NewLine} {Environment.NewLine}Detected additional references used by this mod: {Environment.NewLine}<color=aqua>{string.Join(", ", addRef.ToArray())}</color> {Environment.NewLine}{Environment.NewLine}Check mod download page for required references.", "Crashed");
-                         foreach (string r in addRef)
-                         {
-                             ModUI.ShowYesNoMessage($"<color=yellow>{Path.GetFileName(file)}</color> - looks like a mod, but It crashed trying to load.{Environment.NewLine}{Environment.NewLine}Detected additional references used by this mod: {Environment.NewLine}<color=aqua>{r}</color> {Environment.NewLine}{Environment.NewLine}Do you want to download this reference now?", "Crashed - Missing references", delegate
-                             {
-                                 Instance.DownloadRequiredRef(r);
-                             });
-                         }
-                     }
-                 }
-                 else
-                     ModUI.ShowMessage($"<color=yellow>{Path.GetFileName(file)}</color> - looks like a mod, but It crashed trying to load.{Environment.NewLine}Reason: Unknown", "Crashed");*/
-
             }
             else
             {

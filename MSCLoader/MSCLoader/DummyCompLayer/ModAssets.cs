@@ -5,7 +5,7 @@ using System.IO;
 namespace MSCLoader;
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
-[System.Obsolete("Only used for compatibility with ModLoaderPro",true)]
+[System.Obsolete("Only used for compatibility with ModLoaderPro", true)]
 public static class ModAssets
 {
     [System.Obsolete("=> LoadAssets.LoadBundle()", true)]

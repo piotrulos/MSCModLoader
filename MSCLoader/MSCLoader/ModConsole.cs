@@ -16,7 +16,7 @@ public class ModConsole : Mod
     public override string ID => "MSCLoader_Console";
     public override string Name => "[INTERNAL] Console";
     public override string Version => ModLoader.MSCLoader_Ver;
-    public override string Author => "piotrulos";
+    public override string Author => "MSCLoader";
 
     internal static bool IsOpen;
     internal static ConsoleView console;
@@ -130,12 +130,9 @@ public class ModConsole : Mod
     /// <param name="str">Text to print to console.</param>
     public static void Print(string str)
     {
-        try
-        {
+        if (console != null)
             console.controller.AppendLogLine(str);
-        }
-        catch { }
-        System.Console.WriteLine($"MSCLoader Message: {Regex.Replace(str, "<.*?>", string.Empty)}");
+        Console.WriteLine($"MSCLoader Message: {Regex.Replace(str, "<.*?>", string.Empty)}");
     }
     /// <summary>
     /// Prints anything to console.
@@ -143,11 +140,8 @@ public class ModConsole : Mod
     /// <param name="obj">Text or object to print to console.</param>
     public static void Print(object obj)
     {
-        try
-        {
+        if (console != null)
             console.controller.AppendLogLine(obj.ToString());
-        }
-        catch { }
         System.Console.WriteLine($"MSCLoader Message: {obj}");
     }
 
@@ -157,12 +151,11 @@ public class ModConsole : Mod
     /// <param name="str">Text to print to error log.</param>
     public static void Error(string str)
     {
-        try
+        if (console != null)
         {
             console.SetVisibility(true);
             console.controller.AppendLogLine($"<color=red><b>Error: </b>{str}</color>");
         }
-        catch { }
         System.Console.WriteLine($"MSCLoader ERROR: {Regex.Replace(str, "<.*?>", string.Empty)}");
     }
 
@@ -172,12 +165,11 @@ public class ModConsole : Mod
     /// <param name="str">Text to print to error log.</param>
     public static void Warning(string str)
     {
-        try
+        if (console != null)
         {
             console.SetVisibility(true);
             console.controller.AppendLogLine($"<color=yellow><b>Warning: </b>{str}</color>");
         }
-        catch { }
         System.Console.WriteLine($"MSCLoader WARNING: {Regex.Replace(str, "<.*?>", string.Empty)}");
     }
 

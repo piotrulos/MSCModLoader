@@ -13,12 +13,12 @@ public partial class ModLoader : MonoBehaviour
 {
     void UnpackZipFile(string zip, string target)
     {
-        ModConsole.Print($"Unpacking {zip}");
+        ModConsole.Print($"<b><color=yellow>Unpacking:</color></b> <color=aqua>{zip}</color>");
         try
         {
             if (!ZipFile.IsZipFile(zip))
             {
-                ModConsole.Error($"Invalid zip file: {zip}");
+                ModConsole.Error($"Invalid zip file: <b{zip}</b>");
                 File.Delete(zip); //Delete if error (invalid zip file)
             }
             else
@@ -26,7 +26,7 @@ public partial class ModLoader : MonoBehaviour
                 ZipFile zipFile = ZipFile.Read(File.ReadAllBytes(zip));
                 foreach (ZipEntry zipEntry in zipFile)
                 {
-                    ModConsole.Print($"Copying new file: {zipEntry.FileName}");
+                    ModConsole.Print($"<b><color=yellow>Copying new file:</color></b> <color=aqua>{zipEntry.FileName}</color>");
                     zipEntry.Extract(target, ExtractExistingFileAction.OverwriteSilently);
                 }
             }
@@ -41,7 +41,7 @@ public partial class ModLoader : MonoBehaviour
     }
     void UnpackUpdates()
     {
-        ModConsole.Print("Unpacking updates...");
+        ModConsole.Print("<color=yellow>Unpacking updates...</color>");
         for (int i = 0; i < ModsUpdateDir.Length; i++)
         {
             UnpackZipFile(ModsUpdateDir[i], ModsFolder);
@@ -54,9 +54,6 @@ public partial class ModLoader : MonoBehaviour
         ContinueInit();
     }
 
-    /* private bool cfmuErrored = false;
-     private bool cfmuInProgress = false;
-     private string cfmuResult = string.Empty;*/
     internal bool checkForUpdatesProgress = false;
     IEnumerator CheckForRefModUpdates()
     {
@@ -422,26 +419,6 @@ public partial class ModLoader : MonoBehaviour
         }
     }
 
-    /*internal string DownloadInfo(string ID, bool isRef)
-    {
-        string dwl = string.Empty;
-        WebClient getdwl = new WebClient();
-        getdwl.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
-        try
-        {
-            if (isRef)
-                dwl = getdwl.DownloadString($"{serverURL}/dwlr.php?core={ID}");
-            else
-                dwl = getdwl.DownloadString($"{serverURL}/dwl.php?core={ID}");
-        }
-        catch (Exception e)
-        {
-            ModConsole.Error("Downloading update info failed!");
-            Console.WriteLine(e);
-            return "error|0";
-        }
-        return dwl;
-    }*/
     IEnumerator DownloadSingleUpdateC(byte type, string mod = null)
     {
         while (checkForUpdatesProgress)
@@ -623,13 +600,5 @@ public partial class ModLoader : MonoBehaviour
         if (!dnsaf)
             canvLoading.ToggleUpdateUI(false);
     }
-    /* void Update()
-     {
-         if (Input.GetKeyDown(KeyCode.Keypad5))
-         {
-             DownloadFile($"mscl_download.php?type=mod&id=faf", Path.Combine(Path.Combine("Updates", "Mods"), $"faf.zip"));
-         }
-     }*/
-
 }
 #endif

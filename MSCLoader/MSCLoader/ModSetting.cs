@@ -568,105 +568,17 @@ public class SettingsResetButton : ModSetting
 /// Settings Dynamic Header
 /// </summary>
 [Obsolete("Moved to => SettingsHeader", true)]
-public class SettingsDynamicHeader : ModSetting
+public class SettingsDynamicHeader : SettingsHeader
 {
-    internal Color BackgroundColor = new Color32(95, 34, 18, 255);
-    internal Color TextColor = new Color32(236, 229, 2, 255);
-    internal bool CollapsedByDefault = false;
-
-    /// <summary>
-    /// Collapse this header
-    /// </summary>
-    public void Collapse() => Collapse(false);
-
-    /// <summary>
-    /// Collapse this header without animation
-    /// </summary>
-    /// <param name="skipAnimation">true = skip collapsing animation</param>
-    public void Collapse(bool skipAnimation)
-    {
-        if (HeaderElement == null) return;
-        if (skipAnimation)
-        {
-            HeaderElement.SetHeaderNoAnim(false);
-            return;
-        }
-        HeaderElement.SetHeader(false);
-    }
-
-    /// <summary>
-    /// Expand this Header
-    /// </summary>
-    public void Expand() => Expand(false);
-
-    /// <summary>
-    /// Expand this Header without animation
-    /// </summary>
-    /// <param name="skipAnimation">true = skip expanding animation</param>
-    public void Expand(bool skipAnimation)
-    {
-        if (HeaderElement == null) return;
-        if (skipAnimation)
-        {
-            HeaderElement.SetHeaderNoAnim(true);
-            return;
-        }
-        HeaderElement.SetHeader(true);
-
-    }
-
-    /// <summary>
-    /// Change title background color
-    /// </summary>
-    public void SetBackgroundColor(Color color)
-    {
-        if (HeaderElement == null) return;
-        HeaderElement.HeaderBackground.color = color;
-    }
-
-    /// <summary>
-    /// Change title text.
-    /// </summary>
-    public void SetTextColor(Color color)
-    {
-        if (HeaderElement == null) return;
-        HeaderElement.HeaderTitle.color = color;
-    }
-
-
-    internal SettingsDynamicHeader(string name, Color backgroundColor, Color textColor, bool collapsedByDefault) : base(null, name, null, SettingsType.Header, true)
-    {
-        BackgroundColor = backgroundColor;
-        TextColor = textColor;
-        CollapsedByDefault = collapsedByDefault;
-    }
+    internal SettingsDynamicHeader(string name, Color backgroundColor, Color textColor, bool collapsedByDefault) : base(name, backgroundColor, textColor, collapsedByDefault, true) { }
 }
 
 /// <summary>
 /// Settings Dynamic Text
 /// </summary>
 [Obsolete("Moved to => SettingsText", true)]
-public class SettingsDynamicText : ModSetting
+public class SettingsDynamicText : SettingsText
 {
-    /// <summary>
-    /// Get Text value
-    /// </summary>
-    /// <returns>TextBox string value</returns>
-    public string GetValue()
-    {
-        return Name;
-    }
-
-    /// <summary>
-    /// Set value for textbox
-    /// </summary>
-    /// <param name="value">value</param>
-    public void SetValue(string value)
-    {
-        UpdateName(value);
-    }
-
-    internal SettingsDynamicText(string name) : base(null, name, null, SettingsType.Text, true) { }
+    internal SettingsDynamicText(string name) : base(name, true) { }
 }
-
 #endif

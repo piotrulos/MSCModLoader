@@ -13,7 +13,7 @@ internal class ModMenu : Mod
     public override string ID => "MSCLoader_Settings";
     public override string Name => "[INTERNAL] Mod Menu";
     public override string Version => ModLoader.MSCLoader_Ver;
-    public override string Author => "piotrulos";
+    public override string Author => "MSCLoader";
 
     internal GameObject UI;
     internal static byte cfmu_set = 0;

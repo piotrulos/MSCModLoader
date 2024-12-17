@@ -4,28 +4,27 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 
 namespace MSCLoader.Helper;
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE", true)]
 public static class ModHelper
 {
-    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE",true)]
+    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE", true)]
     public static void MakePickable(this GameObject gameObject, bool includeTag = true) => LoadAssets.MakeGameObjectPickable(gameObject);
-    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE",true)]
+    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE", true)]
     public static Transform GetTransform(string parentPath, string childPath) => GameObject.Find(parentPath)?.transform.Find(childPath);
-    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE",true)]
+    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE", true)]
     public static GameObject GetGameObject(string parentPath, string childPath) => GameObject.Find(parentPath)?.transform.Find(childPath).gameObject;
-    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE",true)]
+    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE", true)]
     public static void PlaySound3D(this Transform transform, string type, string variation, float volume = 1f, float pitch = 1f) => MasterAudio.PlaySound3DAndForget(type, transform, variationName: variation, volumePercentage: volume, pitch: pitch);
-    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE",true)]
+    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE", true)]
     public static void PlaySound3D(this Vector3 vector3, string type, string variation, float volume = 1f, float pitch = 1f) => MasterAudio.PlaySound3DAtVector3AndForget(type, vector3, variationName: variation, volumePercentage: volume, pitch: pitch);
-    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE",true)]
+    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE", true)]
     public static T SelectRandom<T>(this IList<T> list) => list[UnityEngine.Random.Range(0, list.Count)];
-    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE",true)]
+    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE", true)]
     public static bool InLayerMask(this LayerMask layerMask, int layer) => layerMask == (layerMask | (1 << layer));
-    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE",true)]
+    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE", true)]
     public static void SetParent(this Transform transform, Transform parent, Vector3 position, Vector3 rotation, Vector3 scale, string name = "")
     {
         if (name != "") transform.name = name;
@@ -35,9 +34,9 @@ public static class ModHelper
         transform.localEulerAngles = rotation;
         transform.localScale = scale;
     }
-    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE",true)]
+    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE", true)]
     public static void OpenWebsite(string url) => Application.OpenURL(url);
-    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE",true)]
+    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE", true)]
     public static string GetImagesFolder() => $@"{Path.GetFullPath(".")}\Images";
 }
 
@@ -90,9 +89,9 @@ public static class PlayMakerHelper
     }
     [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE", true)]
     public static PlayMakerFSM GetPlayMakerFSM(this GameObject gameObject, string fsmName) => gameObject.GetPlayMaker(fsmName);
-    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE",true)]
+    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE", true)]
     public static PlayMakerFSM GetPlayMakerFSM(this Transform transform, string fsmName) => transform.gameObject.GetPlayMakerFSM(fsmName);
-    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE",true)]
+    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE", true)]
     public static T GetAction<T>(this FsmState state, int actionIndex) where T : FsmStateAction
     {
         if (state.Actions[actionIndex] is T) return state.Actions[actionIndex] as T;
@@ -100,27 +99,27 @@ public static class PlayMakerHelper
     }
     [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE", true)]
     public static T GetAction<T>(this PlayMakerFSM fsm, string stateName, int actionIndex) where T : FsmStateAction => fsm.GetState(stateName).GetAction<T>(actionIndex);
-    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE",true)]
+    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE", true)]
     public static T GetAction<T>(this PlayMakerFSM fsm, int stateIndex, int actionIndex) where T : FsmStateAction => fsm.GetState(stateIndex).GetAction<T>(actionIndex);
-    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE",true)]
+    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE", true)]
     public static void InsertAction(this FsmState state, int actionIndex, FsmStateAction action)
     {
         List<FsmStateAction> actions = state.Actions.ToList();
         actions.Insert(actionIndex, action);
         state.Actions = actions.ToArray();
     }
-    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE",true)]
+    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE", true)]
     public static void InsertAction(this PlayMakerFSM fsm, string stateName, int actionIndex, FsmStateAction action) => fsm.GetState(stateName).InsertAction(actionIndex, action);
-    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE",true)]
+    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE", true)]
     public static void AddAction(this FsmState state, FsmStateAction action)
     {
         List<FsmStateAction> actions = state.Actions.ToList();
         actions.Add(action);
         state.Actions = actions.ToArray();
     }
-    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE",true)]
+    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE", true)]
     public static void AddAction(this PlayMakerFSM fsm, string stateName, FsmStateAction action) => fsm.GetState(stateName).AddAction(action);
-    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE",true)]
+    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE", true)]
     public static void ReplaceAction(this FsmState state, int actionIndex, FsmStateAction action)
     {
         List<FsmStateAction> actions = state.Actions.ToList();
@@ -128,9 +127,9 @@ public static class PlayMakerHelper
         actions[actionIndex] = action;
         state.Actions = actions.ToArray();
     }
-    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE",true)]
+    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE", true)]
     public static void ReplaceAction(this PlayMakerFSM fsm, string stateName, int actionIndex, FsmStateAction action) => fsm.GetState(stateName).ReplaceAction(actionIndex, action);
-    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE",true)]
+    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE", true)]
     public static void RemoveAction(this FsmState state, int actionIndex)
     {
         List<FsmStateAction> actions = state.Actions.ToList();
@@ -138,13 +137,13 @@ public static class PlayMakerHelper
         actions.RemoveAt(actionIndex);
         state.Actions = actions.ToArray();
     }
-    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE",true)]
+    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE", true)]
     public static void RemoveAction(this PlayMakerFSM fsm, string stateName, int actionIndex) => fsm.GetState(stateName).RemoveAction(actionIndex);
-    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE",true)]
+    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE", true)]
     public static T GetVariable<T>(this PlayMakerFSM fsm, string name) where T : NamedVariable => fsm.FsmVariables.FindVariable<T>(name);
-    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE",true)]
+    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE", true)]
     public static T GetGlobalVariable<T>(string name) where T : NamedVariable => FsmVariables.GlobalVariables.FindVariable<T>(name);
-    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE",true)]
+    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE", true)]
     public static T FindVariable<T>(this FsmVariables variables, string name) where T : NamedVariable
     {
         switch (typeof(T))
@@ -165,7 +164,7 @@ public static class PlayMakerHelper
             default: return null;
         }
     }
-    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE",true)]
+    [Obsolete("This namespace is only designed for ModLoaderPro compatibility pack, DO NOT USE", true)]
     public static void Initialize(this PlayMakerFSM fsm) => fsm.Fsm.InitData();
 }
 

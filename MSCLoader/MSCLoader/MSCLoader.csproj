@@ -127,6 +127,7 @@
     <Compile Include="ConsoleView.cs" />
     <Compile Include="CoreAssets\MessageBoxesCanvas.cs" />
     <Compile Include="CoreAssets\MSCLoaderCanvasLoading.cs" />
+    <Compile Include="CoreAssets\UnifiedRaycast.cs" />
     <Compile Include="DummyCompLayer\ModAssets.cs" />
     <Compile Include="DummyCompLayer\ModHelper.cs" />
     <Compile Include="DummyCompLayer\ModPrompt.cs" />
