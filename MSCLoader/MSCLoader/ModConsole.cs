@@ -13,7 +13,9 @@ namespace MSCLoader;
 public class ModConsole : Mod
 {
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public override string ID => "MSCLoader_Console";
+
     public override string Name => "[INTERNAL] Console";
     public override string Version => ModLoader.MSCLoader_Ver;
     public override string Author => "MSCLoader";
@@ -32,7 +34,7 @@ public class ModConsole : Mod
         SetupFunction(Setup.ModSettings, Mod_Settings);
         SetupFunction(Setup.ModSettingsLoaded, Mod_SettingsLoaded);
     }
-
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     private void Mod_Settings()
     {
         Settings.ModSettings(this);
@@ -115,7 +117,7 @@ public class ModConsole : Mod
         }
         ConsoleCommand.cc = console.controller;
         console.SetVisibility(false);
-        console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().LoadConsoleSize();
+        console.viewContainer.transform.GetChild(5).gameObject.GetComponent<ConsoleUIResizer>().LoadConsoleSize(this);
 
         //Add Console Commands
         ConsoleCommand.Add(new CommandVersion());

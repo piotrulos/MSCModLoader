@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 
 namespace MSCLoader;
-
+/// <summary>
+/// OBJLoader (obsoloete)
+/// </summary>
 public class OBJLoader
 {
     private struct meshStruct
@@ -21,7 +23,11 @@ public class OBJLoader
         public string fileName;
     }
 
-    // Use this for initialization
+    /// <summary>
+    /// Imports an OBJ file
+    /// </summary>
+    /// <param name="filePath"></param>
+    /// <returns></returns>
     public Mesh ImportFile(string filePath)
     {
         meshStruct newMesh = createMeshStruct(filePath);

@@ -44,9 +44,6 @@ internal class MSCLInternal
                 response = "error";
             }
         }
-#if DEBUG
-        ModConsole.Warning(response);
-#endif
         return response;
     }
 

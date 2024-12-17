@@ -14,13 +14,13 @@ A documentation for MSCLoader is avaliable [here](https://github.com/piotrulos/M
 
 ## Installation
 1. Download the latest release of MSCLoader from [here](https://github.com/piotrulos/MSCModLoader/releases)
-2. Unpack anywhere you want **outside game folder**
-3. Open MSCPatcher.exe and click on "MSC Folder" to select game folder (in \Steam\steamapps\common\My Summer Car\)
-4. MSCPatcher will detect what version of MSCLoader you have, and allow you to update.
-5. You can select location of Mods folder if you want, or leave default
-6. After successful instalation you can click "Launch MSC", this will run game on steam.
-7. Navigate to your selected Mods folder 
-8. Put your plugins in the mods folder and your ready!
+2. Unpack anywhere you want **(DO NOT unpack into any game folders)**
+3. Open MSCLInstaller.exe
+4. If MSC path wasn't found automatically, select path manually.
+5. Select "Install MSCLoader" and click "Select option" button
+6. Select whatever path you want to be your Mods folder (Game Folder is recommended)
+7. Wait for install to finish
+8. Unpack downloaded mods in the Mods folder you selected and you are ready!
 
 ## License
 MSCLoader is licensed under **GNU General Public License v3.0 (GPL v3)**   
@@ -30,7 +30,7 @@ If you want to port this to other games make sure to link original reposity in y
 * [NAudio](https://github.com/naudio/NAudio)/[NVorbis](https://github.com/ioctlLR/NVorbis) - **MIT License (MIT)**    
 * [Ionic.Zip](https://archive.codeplex.com/?p=dotnetzip) (DotNetZip) - **Microsoft Public License (Ms-PL)**   
 * [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json) - **MIT License (MIT)**    
-* [UnityDoorstop](https://github.com/NeighTools/UnityDoorstop) - **CC0 (Public Domain)**    
+* [UnityDoorstop](https://github.com/NeighTools/UnityDoorstop) - v3 - **CC0 (Public Domain)** / v4 - **LGPL-2.1 license (LGPL-2.1)**   
 * [INIFileParser](https://github.com/rickyah/ini-parser) - **MIT License (MIT)**    
 
 ## Like My Work?

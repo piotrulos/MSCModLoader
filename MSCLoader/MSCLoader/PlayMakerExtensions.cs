@@ -785,4 +785,52 @@ public static class PlayMakerExtensions
     }
 }
 
+/// <summary>
+/// Extension methods for PlayMakerArrayListProxy and PlayMakerHashTableProxy
+/// </summary>
+public static class PlayMakerProxyExtensions
+{
+    /// <summary>
+    /// Returns PlayMakerArrayListProxy with specified referenceName
+    /// </summary>
+    /// <param name="go">current gameObject</param>
+    /// <param name="referenceName">Reference name of the PlayMakerArrayListProxy</param>
+    /// <returns>PlayMakerArrayListProxy</returns>
+    public static PlayMakerArrayListProxy GetArrayListProxy(this GameObject go, string referenceName)
+    {
+        PlayMakerArrayListProxy[] pmalp = go.GetComponents<PlayMakerArrayListProxy>();
+
+        if (pmalp == null) return null;
+
+        for (int i = 0; i < pmalp.Length; i++)
+        {
+            if (pmalp[i].referenceName == referenceName) 
+                return pmalp[i];
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Returns PlayMakerHashTableProxy with specified referenceName
+    /// </summary>
+    /// <param name="go">current gameObject</param>
+    /// <param name="referenceName">Reference name of the PlayMakerHashTableProxy</param>
+    /// <returns>PlayMakerHashTableProxy</returns>
+    public static PlayMakerHashTableProxy GetHashTableProxy(this GameObject go, string referenceName)
+    {
+        PlayMakerHashTableProxy[] pmhtp = go.GetComponents<PlayMakerHashTableProxy>();
+
+        if (pmhtp == null) return null;
+
+        for (int i = 0; i < pmhtp.Length; i++)
+        {
+            if (pmhtp[i].referenceName == referenceName) 
+                return pmhtp[i];
+        }
+
+        return null;
+    }
+}
+
 #endif

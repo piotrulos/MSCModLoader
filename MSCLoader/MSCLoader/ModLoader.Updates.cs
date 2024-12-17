@@ -398,9 +398,6 @@ public partial class ModLoader : MonoBehaviour
         else
         {
             string s = System.Text.Encoding.UTF8.GetString(e.Result, 0, e.Result.Length);
-#if DEBUG
-            ModConsole.Warning(s);
-#endif
             string[] result = s.Split('|');
             if (result[0] == "error")
             {
@@ -460,6 +457,8 @@ public partial class ModLoader : MonoBehaviour
                     canvLoading.SetUpdateProgress(downloadPercentage, $"<color=aqua>{mod}.zip</color> [<color=lime>{downloadPercentage}%</color>]");
                     yield return null;
                 }
+                canvLoading.SetUpdateProgress(100, $"<color=lime>Download Complete</color>");
+                ModUI.ShowMessage("You have to restart the game for the updates to take effect!", "download completed");
                 yield return new WaitForSeconds(1f);
                 break;
             default:
@@ -522,7 +521,7 @@ public partial class ModLoader : MonoBehaviour
                 webClient.DownloadFileCompleted += DownloadModCompleted;
             webClient.DownloadProgressChanged += DownlaodModProgress;
             downloadInProgress = true;
-            webClient.DownloadFileAsync(new Uri($"{serverURL}/{url}"), path);
+            webClient.DownloadFileAsync(new Uri($"{serverURL}/{url}"), path, path);
         }
     }
     private void DownlaodModProgress(object sender, DownloadProgressChangedEventArgs e)
@@ -536,11 +535,12 @@ public partial class ModLoader : MonoBehaviour
         downloadPercentage = 100;
         downloadInProgress = false;
         if (e.Error != null)
-        {
-
+        {            
             ModConsole.Error("Failed to download file!");
             ModConsole.Error(e.Error.Message);
             Console.WriteLine(e.Error);
+            if(File.Exists(e.UserState.ToString()))
+                File.Delete(e.UserState.ToString());
         }
         else
         {
@@ -550,7 +550,6 @@ public partial class ModLoader : MonoBehaviour
 
     private void DownloadRequiredFiles(List<string> refs, List<string> mods)
     {
-        //mods = new List<string>() { "wtf", "wtf2", "wtf23", "nfghsdngklgmdsalg" }; //test
         if (refs.Count == 0 && mods.Count == 0) return;
         ModUI.ShowYesNoMessage($"<color=yellow>Installed mods are missing required files!</color> {Environment.NewLine}{Environment.NewLine}{(refs.Count != 0 ? $"Missing References: <color=aqua>{string.Join(", ", refs.ToArray())}</color>{Environment.NewLine}" : "")}{(mods.Count != 0 ? $"Missing Mods: <color=aqua>{string.Join(", ", mods.ToArray())}</color>{Environment.NewLine}" : "")} {Environment.NewLine}These files are REQUIRED to run the mods correctly!{Environment.NewLine}Do you want to download these files now?", "Missing required files", delegate
         {

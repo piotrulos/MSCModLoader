@@ -46,7 +46,7 @@ internal class ModMenuView : MonoBehaviour
             filteredList = ModLoader.Instance.actualModList.Where(x => x.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 || x.ID.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0).ToArray();
             filteredInvalidList = ModLoader.InvalidMods.Where(x => x.FileName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0).ToArray();
         }
-        //  ModConsole.Warning(filteredList.Length.ToString());
+
         for (int i = 0; i < filteredList.Length; i++)
         {
             GameObject mod = Instantiate(ModElementPrefab);
@@ -409,11 +409,15 @@ internal class ModMenuView : MonoBehaviour
                 {
                     if (mod.A_ModSettingsLoaded != null)
                     {
+                        Console.WriteLine($"Calling ModSettingsLoaded (for mod {mod.ID})");
                         mod.A_ModSettingsLoaded.Invoke();
                     }
                 }
                 else
+                {
+                    Console.WriteLine($"Calling ModSettingsLoaded [old format] (for mod {mod.ID})");
                     mod.ModSettingsLoaded();
+                }
             });
         }
     }

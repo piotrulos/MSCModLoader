@@ -56,6 +56,10 @@ public class ModSetting
             }
         }
     }
+    /// <summary>
+    /// Set visibility of selected settings element
+    /// </summary>
+    /// <param name="value">true/false</param>
     public void SetVisibility(bool value)
     {
         IsVisible = value;
@@ -504,26 +508,86 @@ public class SettingsButton : ModSetting
     internal ButtonIcon PredefinedIcon = ButtonIcon.None;
     internal Texture2D CustomIcon = null;
 
+    /// <summary>
+    /// Predefined button icons
+    /// </summary>
     public enum ButtonIcon
     {
+        /// <summary>
+        /// No icon
+        /// </summary>
         None = -2,
+        /// <summary>
+        /// Custom icon
+        /// </summary>
         Custom = -1,
+        /// <summary>
+        /// Race Department logo
+        /// </summary>
         RaceDepartment,
+        /// <summary>
+        /// NexusMods logo
+        /// </summary>
         NexusMods,
+        /// <summary>
+        /// Github logo
+        /// </summary>
         Github,
+        /// <summary>
+        /// Go Back icon
+        /// </summary>
         GoBack,
+        /// <summary>
+        /// Bug icon
+        /// </summary>
         Bug,
+        /// <summary>
+        /// Website icon
+        /// </summary>
         Website,
+        /// <summary>
+        /// Folder icon
+        /// </summary>
         Folder,
+        /// <summary>
+        /// Download icon
+        /// </summary>
         Download,
+        /// <summary>
+        /// Info icon
+        /// </summary>
         Info,
+        /// <summary>
+        /// Search icon
+        /// </summary>
         Search,
+        /// <summary>
+        /// Settings icon
+        /// </summary>
         Settings,
+        /// <summary>
+        /// Warning icon
+        /// </summary>
         Warning,
+        /// <summary>
+        /// Close (X) icon
+        /// </summary>
         Close,
+        /// <summary>
+        /// Reset icon
+        /// </summary>
         Reset,
+        /// <summary>
+        /// Delete (trash) icon
+        /// </summary>
         Delete,
+        /// <summary>
+        /// Update icon
+        /// </summary>
         Update,
+        /// <summary>
+        /// Upload icon
+        /// </summary>
         CloudArrow
     }
 
@@ -536,7 +600,9 @@ public class SettingsButton : ModSetting
         CustomIcon = customIcon;
     }
 }
-
+/// <summary>
+/// Settings Reset Button
+/// </summary>
 public class SettingsResetButton : ModSetting
 {
     internal ModSetting[] SettingsToReset;

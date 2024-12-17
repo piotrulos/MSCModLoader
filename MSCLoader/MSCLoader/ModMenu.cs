@@ -381,6 +381,7 @@ internal class ModMenu : Mod
                     {
                         if (ModLoader.LoadedMods[i].A_OnMenuLoad != null)
                         {
+                            Console.WriteLine($"Calling OnMenuLoad (for mod {ModLoader.LoadedMods[i].ID})");
                             ModLoader.LoadedMods[i].A_OnMenuLoad.Invoke();
                             ModLoader.LoadedMods[i].disableWarn = true;
                         }
@@ -389,11 +390,13 @@ internal class ModMenu : Mod
                     {
                         if (ModLoader.LoadedMods[i].LoadInMenu && ModLoader.LoadedMods[i].fileName != null)
                         {
+                            Console.WriteLine($"Calling OnMenuLoad [old format] (for mod {ModLoader.LoadedMods[i].ID})");
                             ModLoader.LoadedMods[i].OnMenuLoad();
                             ModLoader.LoadedMods[i].disableWarn = true;
                         }
                         if (ModLoader.CheckEmptyMethod(ModLoader.LoadedMods[i], "MenuOnLoad"))
                         {
+                            Console.WriteLine($"Calling OnMenuLoad [old format pro] (for mod {ModLoader.LoadedMods[i].ID})");
                             ModLoader.LoadedMods[i].MenuOnLoad();
                             ModLoader.LoadedMods[i].disableWarn = true;
                         }

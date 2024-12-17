@@ -7,9 +7,8 @@ using UnityEngine.EventSystems;
 
 namespace MSCLoader
 {
-
     //resize console UI by mouse
-    public class ConsoleUIResizer : MonoBehaviour, IDragHandler
+    internal class ConsoleUIResizer : MonoBehaviour, IDragHandler
     {
         private RectTransform canvasRectTransform;
         private RectTransform panelRectTransform;
@@ -21,6 +20,7 @@ namespace MSCLoader
         public Texture2D cursor;
         public bool Xresizer = false;
         private bool isApplicationQuitting = false;
+        private Mod modconsole = null;
         class ConsoleSizeSave
         {
             public int v = 1;
@@ -84,12 +84,13 @@ namespace MSCLoader
         {
             isApplicationQuitting = true;
         }
-        public void LoadConsoleSize()
+        public void LoadConsoleSize(Mod console)
         {
 
             if (!Xresizer) return;
             Start();
-            string path = ModLoader.GetModSettingsFolder(new ModConsole());
+            modconsole = console;
+            string path = ModLoader.GetModSettingsFolder(modconsole);
             if (File.Exists(Path.Combine(path, "consoleSize.data")))
             {
                 try
@@ -113,19 +114,16 @@ namespace MSCLoader
         }
         public void SaveConsoleSize()
         {
-
-            string path = ModLoader.GetModSettingsFolder(new ModConsole());
-            if (Xresizer)
+            if (modconsole == null) return;
+            if (!Xresizer) return;
+            string path = ModLoader.GetModSettingsFolder(modconsole);
+            ConsoleSizeSave css = new ConsoleSizeSave()
             {
-                ConsoleSizeSave css = new ConsoleSizeSave()
-                {
-                    v = 2,
-                    consoleSize = new float[] { m_consoleContainer.sizeDelta.x, m_consoleContainer.sizeDelta.y },
-                };
-                string serializedData = JsonConvert.SerializeObject(css, Formatting.Indented);
-                File.WriteAllText(Path.Combine(path, "consoleSize.data"), serializedData);
-            }
-
+                v = 2,
+                consoleSize = new float[] { m_consoleContainer.sizeDelta.x, m_consoleContainer.sizeDelta.y },
+            };
+            string serializedData = JsonConvert.SerializeObject(css, Formatting.Indented);
+            File.WriteAllText(Path.Combine(path, "consoleSize.data"), serializedData);
         }
         private void ClampToBorder()
         {

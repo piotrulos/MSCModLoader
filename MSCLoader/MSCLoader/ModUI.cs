@@ -445,8 +445,6 @@ public class PopupSetting
     /// <param name="name">Name of the dropdown list</param>
     /// <param name="arrayOfItems">array of items that will be displayed in list</param>
     /// <param name="defaultSelected">default selected Index ID (default 0)</param>
-    /// <param name="OnSelectionChanged">Action when item is selected</param>
-    /// <param name="visibleByDefault">Visible by default (default=true)</param>
     /// <returns>SettingsDropDownList</returns>
     public void AddDropDownList(string settingID, string name, string[] arrayOfItems, int defaultSelected = 0)
     {

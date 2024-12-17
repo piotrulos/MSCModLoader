@@ -830,6 +830,7 @@ public partial class ModLoader : MonoBehaviour
             yield return null;
             try
             {
+                Console.WriteLine($"Calling OnNewGame (for mod {Mod_OnNewGame[i].ID})");
                 Mod_OnNewGame[i].A_OnNewGame.Invoke();
             }
             catch (Exception e)
@@ -844,6 +845,7 @@ public partial class ModLoader : MonoBehaviour
             yield return null;
             try
             {
+                Console.WriteLine($"Calling OnNewGame [old] (for mod {BC_ModList[i].ID})");
                 BC_ModList[i].OnNewGame();
             }
             catch (Exception e)
@@ -880,6 +882,7 @@ public partial class ModLoader : MonoBehaviour
             yield return null;
             try
             {
+                Console.WriteLine($"Calling PreLoad (for mod {Mod_PreLoad[i].ID})");
                 Mod_PreLoad[i].A_PreLoad.Invoke();
             }
             catch (Exception e)
@@ -894,6 +897,7 @@ public partial class ModLoader : MonoBehaviour
             yield return null;
             try
             {
+                Console.WriteLine($"Calling PreLoad [old] (for mod {PLoadMods[i].ID})");
                 PLoadMods[i].PreLoad();
             }
             catch (Exception e)
@@ -919,6 +923,7 @@ public partial class ModLoader : MonoBehaviour
             yield return null;
             try
             {
+                Console.WriteLine($"Calling OnLoad (for mod {Mod_OnLoad[i].ID})");
                 Mod_OnLoad[i].A_OnLoad.Invoke();
             }
             catch (Exception e)
@@ -933,6 +938,7 @@ public partial class ModLoader : MonoBehaviour
             yield return null;
             try
             {
+                Console.WriteLine($"Calling OnLoad [old] (for mod {BC_ModList[i].ID})");
                 BC_ModList[i].OnLoad();
             }
             catch (Exception e)
@@ -952,6 +958,7 @@ public partial class ModLoader : MonoBehaviour
             yield return null;
             try
             {
+                Console.WriteLine($"Calling PostLoad (for mod {Mod_PostLoad[i].ID})");
                 Mod_PostLoad[i].A_PostLoad.Invoke();
             }
             catch (Exception e)
@@ -966,6 +973,7 @@ public partial class ModLoader : MonoBehaviour
             yield return null;
             try
             {
+                Console.WriteLine($"Calling SecondPassOnLoad (for mod {SecondPassMods[i].ID})");
                 SecondPassMods[i].SecondPassOnLoad();
             }
             catch (Exception e)
@@ -995,6 +1003,7 @@ public partial class ModLoader : MonoBehaviour
             if (Mod_OnSave[i].isDisabled) continue;
             try
             {
+                Console.WriteLine($"Calling OnSave (for mod {Mod_OnSave[i].ID})");
                 Mod_OnSave[i].A_OnSave.Invoke();
             }
             catch (Exception e)
@@ -1007,6 +1016,7 @@ public partial class ModLoader : MonoBehaviour
             if (OnSaveMods[i].isDisabled) continue;
             try
             {
+                Console.WriteLine($"Calling OnSave [old] (for mod {OnSaveMods[i].ID})");
                 OnSaveMods[i].OnSave();
             }
             catch (Exception e)
@@ -1415,9 +1425,11 @@ public partial class ModLoader : MonoBehaviour
             }
             try
             {
+                Console.WriteLine($"Calling ModSetup (for mod {mod.ID})");
                 mod.ModSetup();
                 if (mod.newFormat && mod.fileName == null)
                 {
+                    Console.WriteLine($"Calling OnMenuLoad (for mod {mod.ID})");
                     mod.A_OnMenuLoad?.Invoke();
                 }
             }

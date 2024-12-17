@@ -2,6 +2,9 @@
 
 namespace MSCLoader;
 
+/// <summary>
+/// Unified Raycast, use this to get interaction raycast results
+/// </summary>
 public class UnifiedRaycast : MonoBehaviour
 {
     private float ray = 1.35f;
@@ -27,6 +30,11 @@ public class UnifiedRaycast : MonoBehaviour
         isHit = Physics.Raycast(mainCam.ScreenPointToRay(Input.mousePosition), out hit, ray);
     }
 
+    void OnDestroy()
+    {
+        instance = null;
+    }
+
     /// <summary>
     /// Returns true if provided collider is hit as first element
     /// </summary>
@@ -34,6 +42,7 @@ public class UnifiedRaycast : MonoBehaviour
     /// <returns>true if hit</returns>
     public static bool GetHit(Collider collider)
     {
+        if (instance == null) return false;
         if (!instance.isHit) return false;
         if (instance.inMenu.Value) return false;
         if (instance.hit.collider == null) return false;
@@ -47,6 +56,7 @@ public class UnifiedRaycast : MonoBehaviour
     /// <returns>true if hit</returns>
     public static bool GetHitAll(Collider collider)
     {
+        if (instance == null) return false;
         if (instance.inMenu.Value) return false;
         if (instance.hits.Length == 0) return false;
         for (int i = 0; i < instance.hits.Length; i++)
@@ -62,6 +72,7 @@ public class UnifiedRaycast : MonoBehaviour
     /// <returns>name of the first raycast hit</returns>
     public static string GetHitName()
     {
+        if (instance == null) return string.Empty;
         if (!instance.isHit) return string.Empty;
         if (instance.inMenu.Value) return string.Empty;
         if (instance.hit.collider == null) return string.Empty;
@@ -74,6 +85,7 @@ public class UnifiedRaycast : MonoBehaviour
     /// <returns>names of all raycast hits</returns>
     public static string[] GetHitNames()
     {
+        if (instance == null) return new string[0];
         if (instance.inMenu.Value) return new string[0];
         if (instance.hits.Length == 0) return new string[0];
         string[] names = new string[instance.hits.Length];
@@ -82,5 +94,27 @@ public class UnifiedRaycast : MonoBehaviour
             names[i] = instance.hits[i].collider.name;
         }
         return names;
+    }
+
+    /// <summary>
+    /// Returns RaycastHit so you can parse it yourself
+    /// </summary>
+    /// <returns>RaycastHit</returns>
+    public static RaycastHit GetRaycastHit()
+    {
+        if (instance == null) return new RaycastHit();
+        if (instance.inMenu.Value) return new RaycastHit();
+        return instance.hit;
+    }
+
+    /// <summary>
+    /// Returns RaycastHit[] so you can parse it yourself
+    /// </summary>
+    /// <returns>RaycastHit[]</returns>
+    public static RaycastHit[] GetRaycastHits()
+    {
+        if (instance == null) return new RaycastHit[0];
+        if (instance.inMenu.Value) return new RaycastHit[0];
+        return instance.hits;
     }
 }

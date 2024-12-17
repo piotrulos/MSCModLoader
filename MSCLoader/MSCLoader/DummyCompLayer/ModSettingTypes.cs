@@ -10,7 +10,7 @@ namespace MSCLoader;
 [System.Obsolete("Useless", true)]
 public class SettingButton : MonoBehaviour
 {
-    Settings setting;
+    Settings setting = new Settings("Useless", "Useless", "Useless");
     public bool Enabled { get; set; }
     public string ID { get => setting.ID; set => setting.ID = value; }
     public string Name { get => setting.Vals[0].ToString(); set => setting.Vals[0] = value; }

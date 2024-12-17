@@ -39,7 +39,7 @@ internal class RefVersion
 }
 
 //Metadata V3
-public class MSCLData
+internal class MSCLData
 {
     public string modID;
     public string description;
@@ -54,14 +54,14 @@ public class MSCLData
 
 
 }
-public class MinimumRequirements
+internal class MinimumRequirements
 {
     public string MSCLoaderVer;
     public int MSCbuildID = 0;
     public bool disableIfVer;
 }
 
-public class ModConflicts
+internal class ModConflicts
 {
     public List<string> modIDs = new List<string>();
     public string customMessage;
@@ -717,6 +717,7 @@ internal class ModMetadata
                         if (mod.metadata.minimumRequirements.disableIfVer)
                         {
                             mod.isDisabled = true;
+                            ModMenu.SaveSettings(mod);
                             ModConsole.Error($"Mod <b>{mod.ID}</b> requires MSC build at least <b>{mod.metadata.minimumRequirements.MSCbuildID}</b>, your current build is <b>{Steamworks.SteamApps.GetAppBuildId()}</b>. Author marked this as required! Please update your game!");
                         }
                         else
@@ -739,6 +740,7 @@ internal class ModMetadata
                     if (mod.metadata.minimumRequirements.disableIfVer)
                     {
                         mod.isDisabled = true;
+                        ModMenu.SaveSettings(mod);
                         ModConsole.Error($"Mod <b>{mod.ID}</b> requires MSCLoader at least <b>{mod.metadata.minimumRequirements.MSCLoaderVer}</b>, your current version is <b>{ModLoader.MSCLoader_Ver}</b>. Author marked this as required!");
                     }
                     else
@@ -757,6 +759,7 @@ internal class ModMetadata
                         if (mod.metadata.modConflicts.disableIfConflict)
                         {
                             mod.isDisabled = true;
+                            ModMenu.SaveSettings(mod);
                             if (!string.IsNullOrEmpty(mod.metadata.modConflicts.customMessage))
                                 ModConsole.Error($"Mod <color=orange><b>{mod.ID}</b></color> is marked as conflict with installed mod <color=orange><b>{modIDs[i]}</b></color>. Author's message: {mod.metadata.modConflicts.customMessage}");
                             else
