@@ -3,6 +3,7 @@ using AudioLibrary;
 using System;
 using System.Collections;
 using System.IO;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace MSCLoader;
 
@@ -20,7 +21,7 @@ public class ModAudio : MonoBehaviour
     /// Load audio from file
     /// </summary>
     /// <param name="path">Full path to audio file</param>
-    /// <param name="doStream">Stream from HDD instead of loading to memory (recommended)</param>
+    /// <param name="doStream">Stream from HDD instead of loading to memory</param>
     /// <param name="background">Load file in background</param>
     public void LoadAudioFromFile(string path, bool doStream, bool background)
     {
@@ -52,6 +53,36 @@ public class ModAudio : MonoBehaviour
             audioSource.clip = null;
         }
 
+    }
+
+    /// <summary>
+    /// Load audio from file and return as AudioClip (supported formats: *.mp3, *.ogg, *.wav, *.aiff, *.flac)
+    /// </summary>
+    /// <param name="path">Path to audio file</param>
+    /// <param name="doStream">Stream from HDD instead of loading to memory</param>
+    /// <returns>AudioClip</returns>
+    public static AudioClip LoadAudioClipFromFile(string path, bool doStream)
+    {
+        Stream stream = new MemoryStream(File.ReadAllBytes(path));
+        AudioFormat format = Manager.GetAudioFormat(path);
+        string filename = Path.GetFileName(path);
+        if (format == AudioFormat.unknown)
+        {
+            ModConsole.Error($"LoadAudioClipFromFile(): Unknown audio format of file {filename}");
+        }
+        try
+        {
+           return Manager.Load(stream, format, filename, doStream, true, true);
+        }
+        catch (Exception e)
+        {
+            ModConsole.Error(e.Message);
+            if (ModLoader.devMode)
+                ModConsole.Error(e.ToString());
+            System.Console.WriteLine(e);
+            
+        }
+        return null;
     }
 
     /// <summary>

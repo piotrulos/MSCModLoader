@@ -15,6 +15,7 @@ public class ModSetting
     internal SettingsType SettingType;
     internal bool IsVisible = true;
     internal bool DefaultVisibility = true;
+    internal bool Popup_NoReturnValue = false;
 
     internal SettingsElement SettingsElement;
     internal SettingsGroup HeaderElement;
@@ -71,6 +72,14 @@ public class ModSetting
         {
             HeaderElement.gameObject.SetActive(value);
         }
+    }
+
+    /// <summary>
+    /// ONLY FOR POPUP SETTING WINDOW, marks this setting to not return value onnce popup form is submitted
+    /// </summary>
+    public void DontReturnValue()
+    {
+        Popup_NoReturnValue = true;
     }
 
 }

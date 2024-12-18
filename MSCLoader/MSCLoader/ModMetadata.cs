@@ -522,7 +522,7 @@ internal class ModMetadata
                     ModMenu.SaveSettings(mod);
                 }
                 Version v1 = new Version(mv.versions[i].mod_version);
-                Version v2 = new Version(mod.Version);
+                Version v2 = new Version(mod.Version.Replace("v",string.Empty));
                 switch (v1.CompareTo(v2))
                 {
                     case 1:

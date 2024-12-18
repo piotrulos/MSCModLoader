@@ -305,6 +305,7 @@ public class PopupSetting
         List<string> json = new List<string>();
         foreach (ModSetting s in settingElements)
         {
+            if (s.Popup_NoReturnValue) continue;
             switch (s.SettingType)
             {
                 case SettingsType.CheckBox:
@@ -344,10 +345,13 @@ public class PopupSetting
     /// Add just a text (doesn't return anything on confirm)
     /// </summary>
     /// <param name="text">Just a text (supports unity rich text)</param>
-    public void AddText(string text)
+    /// <param name="visibleByDefault">Should this setting be visible by default</param>
+    /// <returns>SettingsText</returns>
+    public SettingsText AddText(string text, bool visibleByDefault = true)
     {
-        SettingsText s = new SettingsText(text, true);
+        SettingsText s = new SettingsText(text, visibleByDefault);
         settingElements.Add(s);
+        return s;
     }
 
     /// <summary>
@@ -356,10 +360,13 @@ public class PopupSetting
     /// <param name="name">Button name</param>
     /// <param name="onClick">Do something when button is clicked</param>
     /// <param name="predefinedIcon">Add optional icon</param>
-    public void AddButton(string name, Action onClick, SettingsButton.ButtonIcon predefinedIcon = SettingsButton.ButtonIcon.None)
+    /// <param name="visibleByDefault">Should this setting be visible by default</param>
+    /// <returns>SettingsButton</returns>
+    public SettingsButton AddButton(string name, Action onClick, SettingsButton.ButtonIcon predefinedIcon = SettingsButton.ButtonIcon.None, bool visibleByDefault = true)
     {
-        SettingsButton s = new SettingsButton(name, onClick, Color.black, Color.white, true, predefinedIcon, null);
+        SettingsButton s = new SettingsButton(name, onClick, Color.black, Color.white, visibleByDefault, predefinedIcon, null);
         settingElements.Add(s);
+        return s;
     }
 
     /// <summary>
@@ -368,10 +375,14 @@ public class PopupSetting
     /// <param name="settingID">Unique settings ID for your mod</param>
     /// <param name="name">Name of the setting</param>
     /// <param name="value">Default Value for this setting</param>
-    public void AddCheckBox(string settingID, string name, bool value = false)
+    /// <param name="onValueChanged">Do something when value is changed</param>
+    /// <param name="visibleByDefault">Should this setting be visible by default</param>
+    /// <returns>SettingsCheckBox</returns>
+    public SettingsCheckBox AddCheckBox(string settingID, string name, bool value = false, Action onValueChanged = null, bool visibleByDefault = true)
     {
-        SettingsCheckBox s = new SettingsCheckBox(settingID, name, value, null, true);
+        SettingsCheckBox s = new SettingsCheckBox(settingID, name, value, onValueChanged, visibleByDefault);
         settingElements.Add(s);
+        return s;
     }
 
     /// <summary>
@@ -383,15 +394,19 @@ public class PopupSetting
     /// <param name="maxValue">maximum int value</param>
     /// <param name="value">Default Value for this setting</param>
     /// <param name="textValues">Optional text values array (array index = slider value)</param>
-    public void AddSlider(string settingID, string name, int minValue, int maxValue, int value = 0, string[] textValues = null)
+    /// <param name="onValueChanged">Do something when value is changed</param>
+    /// <param name="visibleByDefault">Should this setting be visible by default</param>
+    /// <returns>SettingsSliderInt</returns>
+    public SettingsSliderInt AddSlider(string settingID, string name, int minValue, int maxValue, int value = 0, string[] textValues = null, Action onValueChanged = null, bool visibleByDefault = true)
     {
 
         if (textValues != null && textValues.Length <= (maxValue - minValue))
         {
             ModConsole.Error($"[<b>{settingID}</b>] AddSlider() on popup menu error: textValues array is smaller than slider range (min to max).");
         }
-        SettingsSliderInt s = new SettingsSliderInt(settingID, name, value, minValue, maxValue, null, textValues, true);
+        SettingsSliderInt s = new SettingsSliderInt(settingID, name, value, minValue, maxValue, onValueChanged, textValues, visibleByDefault);
         settingElements.Add(s);
+        return s;
     }
 
     /// <summary>
@@ -403,7 +418,10 @@ public class PopupSetting
     /// <param name="maxValue">maximum float value</param>
     /// <param name="value">Default Value for this setting</param>
     /// <param name="decimalPoints">Round value to number of decimal points</param>
-    public void AddSlider(string settingID, string name, float minValue, float maxValue, float value = 0f, int decimalPoints = 2)
+    /// <param name="onValueChanged">Do something when value is changed</param>
+    /// <param name="visibleByDefault">Should this setting be visible by default</param>
+    /// <returns>SettingsSlider</returns>
+    public SettingsSlider AddSlider(string settingID, string name, float minValue, float maxValue, float value = 0f, int decimalPoints = 2, Action onValueChanged = null, bool visibleByDefault = true)
     {
 
         if (decimalPoints < 0)
@@ -411,8 +429,9 @@ public class PopupSetting
             ModConsole.Error($"[<b>{settingID}</b>] AddSlider()  on popup menu error: decimalPoints cannot be negative (defaulting to 2)");
             decimalPoints = 2;
         }
-        SettingsSlider s = new SettingsSlider(settingID, name, value, minValue, maxValue, null, decimalPoints, true);
+        SettingsSlider s = new SettingsSlider(settingID, name, value, minValue, maxValue, onValueChanged, decimalPoints, visibleByDefault);
         settingElements.Add(s);
+        return s;
     }
 
     /// <summary>
@@ -422,7 +441,9 @@ public class PopupSetting
     /// <param name="name">Name of text box</param>
     /// <param name="value">Default TextBox value</param>
     /// <param name="placeholderText">Placeholder text (like "Enter text...")</param>
-    public void AddTextBox(string settingID, string name, string value, string placeholderText) => AddTextBox(settingID, name, value, placeholderText, InputField.ContentType.Standard);
+    /// <param name="visibleByDefault">Show text box by default (default true)</param>
+    /// <returns>SettingsTextBox</returns>
+    public SettingsTextBox AddTextBox(string settingID, string name, string value, string placeholderText, bool visibleByDefault = true) => AddTextBox(settingID, name, value, placeholderText, InputField.ContentType.Standard,visibleByDefault);
 
     /// <summary>
     /// Add TextBox where user can type any text (string value returns on confirm)
@@ -432,10 +453,13 @@ public class PopupSetting
     /// <param name="value">Default TextBox value</param>
     /// <param name="placeholderText">Placeholder text (like "Enter text...")</param>
     /// <param name="contentType">InputField content type</param>
-    public void AddTextBox(string settingID, string name, string value, string placeholderText, InputField.ContentType contentType)
+    /// <param name="visibleByDefault">Show text box by default (default true)</param>
+    /// <returns>SettingsTextBox</returns>
+    public SettingsTextBox AddTextBox(string settingID, string name, string value, string placeholderText, InputField.ContentType contentType, bool visibleByDefault = true)
     {
-        SettingsTextBox s = new SettingsTextBox(settingID, name, value, placeholderText, contentType, true);
+        SettingsTextBox s = new SettingsTextBox(settingID, name, value, placeholderText, contentType, visibleByDefault);
         settingElements.Add(s);
+        return s;
     }
 
     /// <summary>
@@ -445,11 +469,14 @@ public class PopupSetting
     /// <param name="name">Name of the dropdown list</param>
     /// <param name="arrayOfItems">array of items that will be displayed in list</param>
     /// <param name="defaultSelected">default selected Index ID (default 0)</param>
+    /// <param name="onValueChanged">Do something when value is changed</param>
+    /// <param name="visibleByDefault">show dropdown list by default (default true)</param>    /// 
     /// <returns>SettingsDropDownList</returns>
-    public void AddDropDownList(string settingID, string name, string[] arrayOfItems, int defaultSelected = 0)
+    public SettingsDropDownList AddDropDownList(string settingID, string name, string[] arrayOfItems, int defaultSelected = 0, Action onValueChanged = null, bool visibleByDefault = true)
     {
-        SettingsDropDownList s = new SettingsDropDownList(settingID, name, arrayOfItems, defaultSelected, null, true);
+        SettingsDropDownList s = new SettingsDropDownList(settingID, name, arrayOfItems, defaultSelected, onValueChanged, visibleByDefault);
         settingElements.Add(s);
+        return s;
     }
 
 }

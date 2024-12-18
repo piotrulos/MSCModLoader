@@ -10,7 +10,7 @@ namespace AudioLibrary
     /// <summary>
     /// Audio format
     /// </summary>
-    public enum AudioFormat
+    internal enum AudioFormat
     {
         /// <summary>
         /// Wave format
