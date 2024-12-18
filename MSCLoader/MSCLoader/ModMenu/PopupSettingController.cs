@@ -8,12 +8,15 @@ internal class PopupSettingController : MonoBehaviour
 #if !Mini
     PopupSetting currentPopupSetting;
     Action<string> OnSubmit;
-    public void CreatePopupSetting(PopupSetting popupSetting, Action<string> onSubmit)
+    internal bool dontCloseOnSubmit = false;
+    GameObject activePopup = null;
+    public void CreatePopupSetting(PopupSetting popupSetting, Action<string> onSubmit, bool dontClose)
     {
         if (!alreadyCreated)
         {
             OnSubmit = onSubmit;
             currentPopupSetting = popupSetting;
+            dontCloseOnSubmit = dontClose;
             alreadyCreated = true;
             GameObject mWindow = Instantiate(popupSettingPrefab);
             mWindow.transform.SetParent(transform, false);
@@ -34,10 +37,13 @@ internal class PopupSettingController : MonoBehaviour
         alreadyCreated = false;
         currentPopupSetting = null;
         OnSubmit = null;
+        activePopup = null;
     }
-    public void ReturnJsonString()
+    public void ReturnJsonString(GameObject popup)
     {
         if (currentPopupSetting == null) return;
+        activePopup = popup;
+
         string result = currentPopupSetting.ReturnJsonString();
         if (OnSubmit != null)
         {
@@ -51,7 +57,18 @@ internal class PopupSettingController : MonoBehaviour
                 Console.WriteLine(e);
             }
         }
-        AfterDestroy();
+        if(!dontCloseOnSubmit)
+            AfterDestroy();
     }
+
+    public void DestroyActivePopup()
+    {
+        if (activePopup != null)
+        {
+            GameObject.Destroy(activePopup);
+            AfterDestroy();
+        }
+    }
+
 #endif
 }

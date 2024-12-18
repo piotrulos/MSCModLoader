@@ -339,7 +339,13 @@ public class PopupSetting
     /// Show popup window
     /// </summary>
     /// <param name="OnSubmit">This will be called once confirm button is pressed to submit result</param>
-    public void ShowPopup(Action<string> OnSubmit) => ModUI.popupSettingController.CreatePopupSetting(this, OnSubmit);
+    /// <param name="dontCloseOnConfirm">Don't close popup window on confirm</param>
+    public void ShowPopup(Action<string> OnSubmit, bool dontCloseOnConfirm = false) => ModUI.popupSettingController.CreatePopupSetting(this, OnSubmit, dontCloseOnConfirm);
+
+    /// <summary>
+    /// Close popup manually if you used dontCloseOnConfirm
+    /// </summary>
+    public void ClosePopup() => ModUI.popupSettingController.DestroyActivePopup();
 
     /// <summary>
     /// Add just a text (doesn't return anything on confirm)

@@ -7,7 +7,7 @@ internal class PopupSettingGroup : MonoBehaviour
     public Text PopupTitle, ConfirmButtonText;
     public Image PopupBackground;
     public GameObject PopupListView;
-    public void DestroyThis()
+    public void DestroyThis() //Close
     {
 #if !Mini
         popupSettingController.AfterDestroy();
@@ -15,12 +15,13 @@ internal class PopupSettingGroup : MonoBehaviour
 #endif
     }
 
-    public void OnConfirm()
+    public void OnConfirm() //Submit
     {
 #if !Mini
 
-        popupSettingController.ReturnJsonString();
-        GameObject.Destroy(gameObject);
+        popupSettingController.ReturnJsonString(gameObject);
+        if (!popupSettingController.dontCloseOnSubmit)
+            GameObject.Destroy(gameObject);
 #endif
     }
 

@@ -16,7 +16,7 @@ public class Playlists
     /// <returns>List of paths to files/urls</returns>
     public static List<string> plsPlaylist(string path)
     {
-        FileStream s1 = new FileStream(path, FileMode.Open);
+        FileStream s1 = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         return plsPlaylist(s1);
     }
 
@@ -71,7 +71,7 @@ public class Playlists
     /// <returns>List of paths to files/urls</returns>
     public static List<string> m3uPlaylist(string path)
     {
-        FileStream s1 = new FileStream(path, FileMode.Open);
+        FileStream s1 = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         return m3uPlaylist(s1);
     }
 
