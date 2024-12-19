@@ -123,7 +123,7 @@ namespace MSCLoader
 
         public void ModButtonsPrep(UniversalView uv)
         {
-            if (Settings.Get(mod).Count > 0)
+            if (Settings.GetModSettings(mod).Count > 0)
             {
                 SettingsBtn.gameObject.SetActive(true);
                 SettingsBtn.onClick.AddListener(delegate

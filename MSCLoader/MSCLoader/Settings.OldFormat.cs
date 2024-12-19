@@ -17,6 +17,7 @@ namespace MSCLoader
         /// <summary>
         /// Visible name for your setting.
         /// </summary>
+        [Obsolete("No longer used")]
         public string Name { get => settingName; set { settingName = value; UpdateName(); } }
 
         /// <summary>
@@ -27,7 +28,8 @@ namespace MSCLoader
         /// <summary>
         /// Default Value for setting.
         /// </summary>
-        public object Value { get => valueName; set { valueName = value; UpdateValue(); } }
+        [Obsolete("No longer used")]
+        public object Value { get { GetValue(); return valueName; } set { valueName = value; UpdateValue(); } }
 
         /// <summary>
         /// Action to execute for specifed setting.
@@ -48,6 +50,7 @@ namespace MSCLoader
         //internal Text ValueText;        
         internal SettingsElement SettingsElement;
         internal SettingsGroup header;
+        [Obsolete("No longer used")]
         void UpdateName()
         {
             if (SettingsElement == null) return;
@@ -56,6 +59,7 @@ namespace MSCLoader
                 SettingsElement.settingName.text = Name;
             }
         }
+        [Obsolete]
         void UpdateValue()
         {
             if (SettingsElement == null) return;
@@ -124,7 +128,7 @@ namespace MSCLoader
             DoAction = doAction;
         }
 
-
+        [Obsolete]
         internal Settings(Mod mod, string id, string name, object value, Action doAction, SettingsType type)
         {
             Mod = mod;

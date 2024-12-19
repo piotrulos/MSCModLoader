@@ -227,7 +227,8 @@ public class ModUI
             {
                 if (!buttons[i].noDestroy)
                 {
-                    buttons[i].button.onClick.AddListener(() => { buttons[i].IfClicked(); GameObject.Destroy(mb); });
+                    Action act = buttons[i].IfClicked;
+                    buttons[i].button.onClick.AddListener(() => { act(); GameObject.Destroy(mb); });
                 }
             }
             else

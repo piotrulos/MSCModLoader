@@ -231,9 +231,9 @@ internal class ModMenu : Mod
     public static void ResetSettings(Mod mod)
     {
         if (mod == null) return;
-        for (int i = 0; i < Settings.Get(mod).Count; i++)
+        for (int i = 0; i < Settings.GetModSettings(mod).Count; i++)
         {
-            ResetSpecificSetting(Settings.Get(mod)[i]);
+            ResetSpecificSetting(Settings.GetModSettings(mod)[i]);
         }
         SaveSettings(mod);
     }
@@ -288,9 +288,9 @@ internal class ModMenu : Mod
         list.isDisabled = mod.isDisabled;
         string path = Path.Combine(ModLoader.GetModSettingsFolder(mod), "settings.json");
 
-        for (int i = 0; i < Settings.Get(mod).Count; i++)
+        for (int i = 0; i < Settings.GetModSettings(mod).Count; i++)
         {
-            switch (Settings.Get(mod)[i].SettingType)
+            switch (Settings.GetModSettings(mod)[i].SettingType)
             {
                 case SettingsType.Button:
                 case SettingsType.RButton:
@@ -298,31 +298,31 @@ internal class ModMenu : Mod
                 case SettingsType.Text:
                     continue;
                 case SettingsType.CheckBoxGroup:
-                    SettingsCheckBoxGroup group = (SettingsCheckBoxGroup)Settings.Get(mod)[i];
+                    SettingsCheckBoxGroup group = (SettingsCheckBoxGroup)Settings.GetModSettings(mod)[i];
                     list.settings.Add(new Setting(group.ID, group.Value));
                     break;
                 case SettingsType.CheckBox:
-                    SettingsCheckBox check = (SettingsCheckBox)Settings.Get(mod)[i];
+                    SettingsCheckBox check = (SettingsCheckBox)Settings.GetModSettings(mod)[i];
                     list.settings.Add(new Setting(check.ID, check.Value));
                     break;
                 case SettingsType.Slider:
-                    SettingsSlider slider = (SettingsSlider)Settings.Get(mod)[i];
+                    SettingsSlider slider = (SettingsSlider)Settings.GetModSettings(mod)[i];
                     list.settings.Add(new Setting(slider.ID, slider.Value));
                     break;
                 case SettingsType.SliderInt:
-                    SettingsSliderInt sliderInt = (SettingsSliderInt)Settings.Get(mod)[i];
+                    SettingsSliderInt sliderInt = (SettingsSliderInt)Settings.GetModSettings(mod)[i];
                     list.settings.Add(new Setting(sliderInt.ID, sliderInt.Value));
                     break;
                 case SettingsType.TextBox:
-                    SettingsTextBox textBox = (SettingsTextBox)Settings.Get(mod)[i];
+                    SettingsTextBox textBox = (SettingsTextBox)Settings.GetModSettings(mod)[i];
                     list.settings.Add(new Setting(textBox.ID, textBox.Value));
                     break;
                 case SettingsType.DropDown:
-                    SettingsDropDownList dropDown = (SettingsDropDownList)Settings.Get(mod)[i];
+                    SettingsDropDownList dropDown = (SettingsDropDownList)Settings.GetModSettings(mod)[i];
                     list.settings.Add(new Setting(dropDown.ID, dropDown.Value));
                     break;
                 case SettingsType.ColorPicker:
-                    SettingsColorPicker colorPicker = (SettingsColorPicker)Settings.Get(mod)[i];
+                    SettingsColorPicker colorPicker = (SettingsColorPicker)Settings.GetModSettings(mod)[i];
                     list.settings.Add(new Setting(colorPicker.ID, colorPicker.Value));
                     break;
             }
@@ -407,12 +407,12 @@ internal class ModMenu : Mod
                     ModLoader.ModException(e, ModLoader.LoadedMods[i]);
                 }
             }
-            if (Settings.Get(ModLoader.LoadedMods[i]).Count == 0)
+            if (Settings.GetModSettings(ModLoader.LoadedMods[i]).Count == 0)
                 continue;
 
             for (int j = 0; j < settings.settings.Count; j++)
             {
-                ModSetting ms = Settings.Get(ModLoader.LoadedMods[i]).Find(x => x.ID == settings.settings[j].ID);
+                ModSetting ms = Settings.GetModSettings(ModLoader.LoadedMods[i]).Find(x => x.ID == settings.settings[j].ID);
                 if (ms == null)
                     continue;
                 switch (ms.SettingType)

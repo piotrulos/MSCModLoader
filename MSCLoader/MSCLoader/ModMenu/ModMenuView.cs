@@ -130,22 +130,22 @@ internal class ModMenuView : MonoBehaviour
     {
         RemoveChildren(listView.transform);
         Transform currentTransform = null;
-        for (int i = 0; i < Settings.Get(ModLoader.LoadedMods[0]).Count; i++)
+        for (int i = 0; i < Settings.GetModSettings(ModLoader.LoadedMods[0]).Count; i++)
         {
-            if (Settings.Get(ModLoader.LoadedMods[0])[i].SettingType == SettingsType.Header)
-                currentTransform = SettingsHeader(Settings.Get(ModLoader.LoadedMods[0])[i], listView.transform);
+            if (Settings.GetModSettings(ModLoader.LoadedMods[0])[i].SettingType == SettingsType.Header)
+                currentTransform = SettingsHeader(Settings.GetModSettings(ModLoader.LoadedMods[0])[i], listView.transform);
             else
-                SettingsList(Settings.Get(ModLoader.LoadedMods[0])[i], currentTransform);
+                SettingsList(Settings.GetModSettings(ModLoader.LoadedMods[0])[i], currentTransform);
         }
         GameObject keyBind = Instantiate(KeyBindPrefab);
         keyBind.GetComponent<KeyBinding>().LoadBind(ModLoader.LoadedMods[0].Keybinds[0], ModLoader.LoadedMods[0]);
         keyBind.transform.SetParent(currentTransform, false);
-        for (int i = 0; i < Settings.Get(ModLoader.LoadedMods[1]).Count; i++)
+        for (int i = 0; i < Settings.GetModSettings(ModLoader.LoadedMods[1]).Count; i++)
         {
-            if (Settings.Get(ModLoader.LoadedMods[1])[i].SettingType == SettingsType.Header)
-                currentTransform = SettingsHeader(Settings.Get(ModLoader.LoadedMods[1])[i], listView.transform);
+            if (Settings.GetModSettings(ModLoader.LoadedMods[1])[i].SettingType == SettingsType.Header)
+                currentTransform = SettingsHeader(Settings.GetModSettings(ModLoader.LoadedMods[1])[i], listView.transform);
             else
-                SettingsList(Settings.Get(ModLoader.LoadedMods[1])[i], currentTransform);
+                SettingsList(Settings.GetModSettings(ModLoader.LoadedMods[1])[i], currentTransform);
         }
         ModConsole.RefreshMainSettingsData();
     }
@@ -379,19 +379,19 @@ internal class ModMenuView : MonoBehaviour
             CreateText(header.HeaderListView.transform, $"<color=aqua>Incompatible settings format! Settings below may not load or work correctly.</color>{Environment.NewLine}Report that to mod author to use proper settings format.");
         }
 
-        if (Settings.Get(mod)[0].SettingType != SettingsType.Header)
+        if (Settings.GetModSettings(mod)[0].SettingType != SettingsType.Header)
         {
             SettingsGroup header = CreateHeader(listView.transform, "Settings", Color.cyan);
             currentTransform = header.HeaderListView.transform;
         }
 
-        for (int i = 0; i < Settings.Get(mod).Count; i++)
+        for (int i = 0; i < Settings.GetModSettings(mod).Count; i++)
         {
-            if (Settings.Get(mod)[i].SettingType == SettingsType.Header)
-                currentTransform = SettingsHeader(Settings.Get(mod)[i], listView.transform);
+            if (Settings.GetModSettings(mod)[i].SettingType == SettingsType.Header)
+                currentTransform = SettingsHeader(Settings.GetModSettings(mod)[i], listView.transform);
             else
             {
-                SettingsList(Settings.Get(mod)[i], currentTransform);
+                SettingsList(Settings.GetModSettings(mod)[i], currentTransform);
             }
         }
 

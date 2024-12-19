@@ -44,7 +44,45 @@ public partial class Settings
 {
     private static Mod settingsMod = null;
 
-    internal static List<ModSetting> Get(Mod mod) => mod.modSettingsList;
+    internal static List<ModSetting> GetModSettings(Mod mod) => mod.modSettingsList;
+
+    /// <summary>
+    /// Undocumented crap don't use
+    /// </summary>
+    /// <param name="mod"></param>
+    /// <returns></returns>
+    [Obsolete("Stop using undocumented crap", true)]
+    public static List<Settings> Get(Mod mod) 
+    { 
+        List<Settings> crap = new List<Settings>();
+        foreach (var setting in mod.modSettingsList)
+        {
+            switch (setting.SettingType)
+            {
+                case SettingsType.CheckBoxGroup:
+                    crap.Add(((SettingsCheckBoxGroup)setting).Instance);
+                    break;
+                case SettingsType.CheckBox:
+                    crap.Add(((SettingsCheckBox)setting).Instance);
+                    break;
+                case SettingsType.Slider:
+                    crap.Add(((SettingsSlider)setting).Instance);
+                    break;
+                case SettingsType.SliderInt:
+                    crap.Add(((SettingsSliderInt)setting).Instance);
+                    break;
+                case SettingsType.TextBox:
+                    crap.Add(((SettingsTextBox)setting).Instance);
+                    break;
+                    case SettingsType.DropDown:
+                    crap.Add(((SettingsDropDownList)setting).Instance);
+                    break;
+                default:
+                    break;
+            }
+        }
+        return crap;
+    }
 
     internal static void ModSettings(Mod modEntry)
     {

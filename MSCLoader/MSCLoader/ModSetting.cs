@@ -122,6 +122,7 @@ public class SettingsCheckBox : ModSetting
         Value = value;
         DefaultValue = value;
         Instance = new Settings(this); //Compatibility only
+        Instance.ID = id;
     }
 }
 
@@ -163,6 +164,7 @@ public class SettingsCheckBoxGroup : ModSetting
         DefaultValue = value;
         CheckBoxGroup = group;
         Instance = new Settings(this); //Compatibility only
+        Instance.ID = id;
     }
 }
 
@@ -210,6 +212,7 @@ public class SettingsSliderInt : ModSetting
         MaxValue = maxValue;
         TextValues = textValues;
         Instance = new Settings(this); //Compatibility only
+        Instance.ID = id;
     }
 }
 
@@ -256,7 +259,7 @@ public class SettingsSlider : ModSetting
         MaxValue = maxValue;
         DecimalPoints = decimalPoints;
         Instance = new Settings(this); //Compatibility only
-
+        Instance.ID = id;
     }
 }
 
@@ -302,6 +305,7 @@ public class SettingsTextBox : ModSetting
         Placeholder = placeholder;
         ContentType = contentType;
         Instance = new Settings(this); //Compatibility only
+        Instance.ID = id;
     }
 }
 /// <summary>
@@ -356,7 +360,8 @@ public class SettingsDropDownList : ModSetting
         Value = defaultValue;
         ArrayOfItems = arrayOfItems;
         DefaultValue = defaultValue;
-        Instance = new Settings(this);
+        Instance = new Settings(this); //Compatibility only
+        Instance.ID = id;
     }
 }
 /// <summary>
@@ -400,6 +405,7 @@ public class SettingsColorPicker : ModSetting
         DefaultColorValue = $"{defaultColor.r},{defaultColor.g},{defaultColor.b},{defaultColor.a}";
         ShowAlpha = showAlpha;
         Instance = new Settings(this); //Compatibility only
+        Instance.ID = id;
     }
 }
 

@@ -16,25 +16,35 @@ namespace MSCLoader
         [System.Obsolete("Please switch to new settings format.", true)]
         public object GetValue()
         {
+            if (modSetting == null) return string.Empty;
             //Legacy Backwards compatibility with V3 settings
             switch (modSetting.SettingType)
             {
                 case SettingsType.CheckBoxGroup:
+                    valueName = ((SettingsCheckBoxGroup)modSetting).GetValue();
                     return ((SettingsCheckBoxGroup)modSetting).GetValue();
                 case SettingsType.CheckBox:
+                    valueName = ((SettingsCheckBox)modSetting).GetValue();
                     return ((SettingsCheckBox)modSetting).GetValue();
                 case SettingsType.Slider:
+                    valueName = ((SettingsSlider)modSetting).GetValue();
                     return ((SettingsSlider)modSetting).GetValue();
                 case SettingsType.SliderInt:
+                    valueName = ((SettingsSliderInt)modSetting).GetValue();
                     return ((SettingsSliderInt)modSetting).GetValue();
                 case SettingsType.TextBox:
+                    valueName = ((SettingsTextBox)modSetting).GetValue();
                     return ((SettingsTextBox)modSetting).GetValue();
                 case SettingsType.Header:
                 case SettingsType.Button:
                 case SettingsType.RButton:
                 case SettingsType.Text:
                 case SettingsType.DropDown:
+                    valueName = ((SettingsDropDownList)modSetting).GetSelectedItemIndex();
+                    return ((SettingsDropDownList)modSetting).GetSelectedItemIndex();
                 case SettingsType.ColorPicker:
+                    valueName = ((SettingsColorPicker)modSetting).GetValue();
+                    return ((SettingsColorPicker)modSetting).GetValue();
                 default:
                     return null;
             }
