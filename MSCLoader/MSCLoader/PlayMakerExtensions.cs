@@ -151,7 +151,7 @@ public static class PlayMakerExtensions
                 {
                     if (pm[i].FsmStates[j].Name == stateName)
                     {
-                        pm[i].FsmInject(stateName, hook);
+                        pm[i].FsmInject(stateName, hook, false, 0);
                     }
                 }
             }
