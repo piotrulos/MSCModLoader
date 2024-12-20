@@ -17,7 +17,7 @@ namespace MSCLoader
         /// <summary>
         /// Visible name for your setting.
         /// </summary>
-        [Obsolete("No longer used")]
+        [Obsolete("No longer used", true)]
         public string Name { get => settingName; set { settingName = value; UpdateName(); } }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace MSCLoader
         /// <summary>
         /// Default Value for setting.
         /// </summary>
-        [Obsolete("No longer used")]
+        [Obsolete("No longer used", true)]
         public object Value { get { GetValue(); return valueName; } set { valueName = value; UpdateValue(); } }
 
         /// <summary>

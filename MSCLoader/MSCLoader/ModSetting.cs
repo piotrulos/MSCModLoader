@@ -93,7 +93,7 @@ public class SettingsCheckBox : ModSetting
     internal bool Value = false;
     internal bool DefaultValue = false;
     /// <summary>
-    /// Settings Instance (used for custom reset button)
+    /// Not used anymore
     /// </summary>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public Settings Instance;
@@ -135,7 +135,7 @@ public class SettingsCheckBoxGroup : ModSetting
     internal bool DefaultValue = false;
     internal string CheckBoxGroup = string.Empty;
     /// <summary>
-    /// Settings Instance (used for custom reset button)
+    /// Not used anymore
     /// </summary>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public Settings Instance;
@@ -180,7 +180,7 @@ public class SettingsSliderInt : ModSetting
     internal string[] TextValues = null;
 
     /// <summary>
-    /// Settings Instance (used for custom reset button)
+    /// Not used anymore
     /// </summary>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public Settings Instance;
@@ -227,7 +227,7 @@ public class SettingsSlider : ModSetting
     internal float MaxValue = 100;
     internal int DecimalPoints = 0;
     /// <summary>
-    /// Settings Instance (used for custom reset button)
+    /// Not used anymore
     /// </summary>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public Settings Instance;
@@ -274,7 +274,7 @@ public class SettingsTextBox : ModSetting
     internal InputField.ContentType ContentType = InputField.ContentType.Standard;
 
     /// <summary>
-    /// Settings Instance (used for custom reset button)
+    /// Not used anymore
     /// </summary>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public Settings Instance;
@@ -318,7 +318,7 @@ public class SettingsDropDownList : ModSetting
     internal int DefaultValue = 0;
 
     /// <summary>
-    /// Settings Instance (used for custom reset button)
+    /// Not used anymore
     /// </summary>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public Settings Instance;
@@ -374,7 +374,7 @@ public class SettingsColorPicker : ModSetting
     internal bool ShowAlpha = false;
 
     /// <summary>
-    /// Settings Instance (used for custom reset button)
+    /// Not used anymore
     /// </summary>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public Settings Instance;
@@ -597,13 +597,21 @@ public class SettingsButton : ModSetting
         /// </summary>
         Delete,
         /// <summary>
-        /// Update icon
+        /// "Update" icon
         /// </summary>
         Update,
         /// <summary>
-        /// Upload icon
+        /// "Upload" icon
         /// </summary>
-        CloudArrow
+        CloudArrow,
+        /// <summary>
+        /// "Add" icon
+        /// </summary>
+        Add,
+        /// <summary>
+        /// "Edit" icon
+        /// </summary>
+        Edit
     }
 
     internal SettingsButton(string name, Action doAction, Color backgroundColor, Color textColor, bool visibleByDefault, ButtonIcon icon, Texture2D customIcon) : base(null, name, doAction, SettingsType.Button, visibleByDefault)
@@ -660,6 +668,17 @@ public class SettingsDynamicHeader : SettingsHeader
 [Obsolete("Moved to => SettingsText", true)]
 public class SettingsDynamicText : SettingsText
 {
-    internal SettingsDynamicText(string name) : base(name, true) { }
+    /// <summary>
+    /// Not used anymore
+    /// </summary>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    public Settings Instance;
+    internal SettingsDynamicText(string name) : base(name, true) 
+    { 
+        Instance = new Settings(this);
+        Instance.ID = name;
+        Instance.Name = name;
+        Instance.Value = name;
+    }
 }
 #endif

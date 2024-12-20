@@ -323,7 +323,7 @@ public class PopupSetting
                     break;
                 case SettingsType.TextBox:
                     SettingsTextBox ss4 = (SettingsTextBox)s;
-                    json.Add($"\"{ss4.ID}\":\"{ss4.GetValue()}\"");
+                    json.Add($"\"{ss4.ID}\":{JsonConvert.ToString(ss4.GetValue())}");
                     break;
                 case SettingsType.DropDown:
                     SettingsDropDownList ss5 = (SettingsDropDownList)s;
