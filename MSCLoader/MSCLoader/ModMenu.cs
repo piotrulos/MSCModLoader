@@ -409,51 +409,51 @@ internal class ModMenu : Mod
             }
             if (Settings.GetModSettings(ModLoader.LoadedMods[i]).Count == 0)
                 continue;
-
-            for (int j = 0; j < settings.settings.Count; j++)
-            {
-                ModSetting ms = Settings.GetModSettings(ModLoader.LoadedMods[i]).Find(x => x.ID == settings.settings[j].ID);
-                if (ms == null)
-                    continue;
-                switch (ms.SettingType)
-                {
-                    case SettingsType.Button:
-                    case SettingsType.RButton:
-                    case SettingsType.Header:
-                    case SettingsType.Text:
-                        continue;
-                    case SettingsType.CheckBoxGroup:
-                        SettingsCheckBoxGroup group = (SettingsCheckBoxGroup)ms;
-                        group.SetValue(bool.Parse(settings.settings[j].Value.ToString()));
-                        break;
-                    case SettingsType.CheckBox:
-                        SettingsCheckBox check = (SettingsCheckBox)ms;
-                        check.SetValue(bool.Parse(settings.settings[j].Value.ToString()));
-                        break;
-                    case SettingsType.Slider:
-                        SettingsSlider slider = (SettingsSlider)ms;
-                        slider.SetValue(float.Parse(settings.settings[j].Value.ToString()));
-                        break;
-                    case SettingsType.SliderInt:
-                        SettingsSliderInt sliderInt = (SettingsSliderInt)ms;
-                        sliderInt.SetValue(int.Parse(settings.settings[j].Value.ToString()));
-                        break;
-                    case SettingsType.TextBox:
-                        SettingsTextBox textBox = (SettingsTextBox)ms;
-                        textBox.SetValue(settings.settings[j].Value.ToString());
-                        break;
-                    case SettingsType.DropDown:
-                        SettingsDropDownList dropDown = (SettingsDropDownList)ms;
-                        dropDown.SetSelectedItemIndex(int.Parse(settings.settings[j].Value.ToString()));
-                        break;
-                    case SettingsType.ColorPicker:
-                        SettingsColorPicker colorPicker = (SettingsColorPicker)ms;
-                        colorPicker.Value = settings.settings[j].Value.ToString();
-                        break;
-                }
-            }
             try
             {
+                for (int j = 0; j < settings.settings.Count; j++)
+                {
+                    ModSetting ms = Settings.GetModSettings(ModLoader.LoadedMods[i]).Find(x => x.ID == settings.settings[j].ID);
+                    if (ms == null)
+                        continue;
+                    switch (ms.SettingType)
+                    {
+                        case SettingsType.Button:
+                        case SettingsType.RButton:
+                        case SettingsType.Header:
+                        case SettingsType.Text:
+                            continue;
+                        case SettingsType.CheckBoxGroup:
+                            SettingsCheckBoxGroup group = (SettingsCheckBoxGroup)ms;
+                            group.SetValue(bool.Parse(settings.settings[j].Value.ToString()));
+                            break;
+                        case SettingsType.CheckBox:
+                            SettingsCheckBox check = (SettingsCheckBox)ms;
+                            check.SetValue(bool.Parse(settings.settings[j].Value.ToString()));
+                            break;
+                        case SettingsType.Slider:
+                            SettingsSlider slider = (SettingsSlider)ms;
+                            slider.SetValue(float.Parse(settings.settings[j].Value.ToString()));
+                            break;
+                        case SettingsType.SliderInt:
+                            SettingsSliderInt sliderInt = (SettingsSliderInt)ms;
+                            sliderInt.SetValue(int.Parse(settings.settings[j].Value.ToString()));
+                            break;
+                        case SettingsType.TextBox:
+                            SettingsTextBox textBox = (SettingsTextBox)ms;
+                            textBox.SetValue(settings.settings[j].Value.ToString());
+                            break;
+                        case SettingsType.DropDown:
+                            SettingsDropDownList dropDown = (SettingsDropDownList)ms;
+                            dropDown.SetSelectedItemIndex(int.Parse(settings.settings[j].Value.ToString()));
+                            break;
+                        case SettingsType.ColorPicker:
+                            SettingsColorPicker colorPicker = (SettingsColorPicker)ms;
+                            colorPicker.Value = settings.settings[j].Value.ToString();
+                            break;
+                    }
+                }
+
                 if (!ModLoader.LoadedMods[i].isDisabled)
                 {
                     if (ModLoader.LoadedMods[i].newSettingsFormat)
@@ -470,6 +470,7 @@ internal class ModMenu : Mod
             catch (Exception e)
             {
                 ModLoader.ModException(e, ModLoader.LoadedMods[i]);
+                ResetSettings(ModLoader.LoadedMods[i]); //Failed settings save file
             }
         }
     }

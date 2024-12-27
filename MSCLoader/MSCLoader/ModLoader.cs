@@ -1166,7 +1166,8 @@ public partial class ModLoader : MonoBehaviour
         if (response.StartsWith("error"))
         {
             string[] result = response.Split('|');
-            ModConsole.Error(result[1]);
+            if(result.Length > 1)
+                ModConsole.Error(result[1]);
         }
         else if (response.StartsWith("{"))
         {

@@ -78,7 +78,7 @@ public partial class ModLoader : MonoBehaviour
             if (requestResult.StartsWith("error"))
             {
                 string[] ed = requestResult.Split('|');
-                if (ed[0] == "error")
+                if (ed.Length > 1)
                 {
                     ModConsole.Error("Failed to check for mod updates");
                     ModConsole.Error(ed[1]);
@@ -122,9 +122,9 @@ public partial class ModLoader : MonoBehaviour
             if (requestResult.StartsWith("error"))
             {
                 string[] ed = requestResult.Split('|');
-                if (ed[0] == "error")
+                if (ed.Length > 1)
                 {
-                    ModConsole.Error("Failed to check for mod updates");
+                    ModConsole.Error("Failed to check for reference updates");
                     ModConsole.Error(ed[1]);
                 }
                 failed = true;
@@ -215,12 +215,12 @@ public partial class ModLoader : MonoBehaviour
                 if (cfmuResult.StartsWith("error"))
                 {
                     string[] ed = cfmuResult.Split('|');
-                    if (ed[0] == "error")
+                    if (ed.Length > 1)
                     {
                         Console.WriteLine($"DownloadMetadataFiles() Error: {ed[1]}");
-                        yield return null;
-                        continue;
                     }
+                    yield return null;
+                    continue;
                 }
                 else if (cfmuResult.StartsWith("{"))
                 {

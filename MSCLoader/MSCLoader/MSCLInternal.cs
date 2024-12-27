@@ -39,9 +39,8 @@ internal class MSCLInternal
             }
             catch (Exception e)
             {
-                ModConsole.Error($"Request failed with error: {e.Message}");
                 Console.WriteLine(e);
-                response = "error";
+                response = $"error|{e.Message}";
             }
         }
         return response;
@@ -85,8 +84,7 @@ internal class MSCLInternal
         AsyncRequestInProgress = false;
         if (e.Error != null)
         {
-            ModConsole.Error("Failed to check for mods updates");
-            ModConsole.Error(e.Error.Message);
+            AsyncRequestResult = $"error|{e.Error.Message}";
             Console.WriteLine(e.Error);
             AsyncRequestError = true;
             return;
