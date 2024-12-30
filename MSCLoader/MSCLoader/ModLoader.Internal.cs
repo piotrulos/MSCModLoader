@@ -49,6 +49,7 @@ public partial class ModLoader
 
     internal static string steamID;
     internal static bool loaderPrepared = false;
+    internal static bool initCalled = false;
     internal static string ModsFolder = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Path.Combine("MySummerCar", "Mods")));
     internal static string ConfigFolder = Path.Combine(ModsFolder, "Config");
     internal static string SettingsFolder = Path.Combine(ConfigFolder, "Mod Settings");

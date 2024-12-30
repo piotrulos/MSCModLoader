@@ -49,6 +49,8 @@ internal class MSCUnloader : MonoBehaviour
 
             ModLoader.unloader = false;
             ModLoader.returnToMainMenu = true;
+            ModLoader.loaderPrepared = false;
+            ModLoader.initCalled = false;
             Application.LoadLevel(Application.loadedLevelName);
             doReset = false;
         }
