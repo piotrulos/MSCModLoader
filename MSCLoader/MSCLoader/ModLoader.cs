@@ -1053,7 +1053,7 @@ public partial class ModLoader : MonoBehaviour
     internal static bool CheckEmptyMethod(Mod mod, string methodName)
     {
         //TO TRASH
-        MethodInfo method = mod.GetType().GetMethod(methodName);
+        MethodInfo method = mod.GetType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         return (method.IsVirtual && method.DeclaringType == mod.GetType() && method.GetMethodBody().GetILAsByteArray().Length > 2);
     }
 

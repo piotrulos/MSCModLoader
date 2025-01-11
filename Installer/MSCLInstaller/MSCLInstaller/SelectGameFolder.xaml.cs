@@ -67,12 +67,33 @@ namespace MSCLInstaller
         private void FindMSCOnSteam()
         {
             Dbg.Log("Trying get MSC path from steam...");
-            string steamPath = null;
+            string steamPath = null;            
             RegistryKey steam = Registry.LocalMachine.OpenSubKey("SOFTWARE\\WOW6432Node\\Valve\\Steam");
-            if (steam != null)
+            if (steam == null)
             {
-                steamPath = steam.GetValue("InstallPath").ToString();
+                Dbg.Log("Error: Steam not found");
+                return;
             }
+            steamPath = steam.GetValue("InstallPath").ToString();
+            if(string.IsNullOrEmpty(steamPath))
+            {
+                Dbg.Log("Error: Steam InstallPath is null! Trying SteamService installpath_default");
+                RegistryKey steam2 = Registry.LocalMachine.OpenSubKey("SOFTWARE\\WOW6432Node\\Valve\\SteamService");
+                if (steam2 == null)
+                {
+                    Dbg.Log("Error: Steam is most likely not correctly installed");
+                    return;
+                }
+
+                steamPath = steam2.GetValue("installpath_default").ToString();
+                if (string.IsNullOrEmpty(steamPath))
+                {
+                    Dbg.Log("Error: SteamService installpath_default is null! Failed to find MSC path from steam");
+                    return;
+                }                    
+
+            }
+            
             string msc = Path.Combine(steamPath, "steamapps", "common", "My Summer Car");
             if (File.Exists(Path.Combine(msc, "mysummercar.exe")))
             {
@@ -80,6 +101,7 @@ namespace MSCLInstaller
             }
             else
             {
+                Dbg.Log("Trying get MSC from additional library folders...");
                 string steamLib = Path.Combine(steamPath, "steamapps", "libraryfolders.vdf");
                 if (File.Exists(Path.Combine(steamLib)))
                 {
@@ -88,7 +110,13 @@ namespace MSCLInstaller
                     {
                         if (s.Trim().StartsWith("\"path\""))
                         {
-                            string msclib = Path.Combine(s.Trim().Split('"')[3], "steamapps", "common", "My Summer Car");
+                            string p = Path.GetFullPath(s.Trim().Split('"')[3]);
+                            if(string.IsNullOrEmpty(p))
+                            {
+                                Dbg.Log($"Warn: Got invalid path in libraryfolders.vdf: {s}");
+                                continue;
+                            }
+                            string msclib = Path.Combine(p, "steamapps", "common", "My Summer Car");
                             if (File.Exists(Path.Combine(msclib, "mysummercar.exe")))
                             {
                                 Storage.mscPath = msclib;

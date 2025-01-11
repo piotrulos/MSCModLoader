@@ -6,116 +6,40 @@ namespace MSCLoader;
 public partial class Mod
 {
     //Here is old pre 1.2 functions used here only for backwards compatibility
+    //Obsoleted (internal doesn't break old code)
+
+    internal virtual bool LoadInMenu => false;
+    internal virtual void OnNewGame() { }
 
     /// <summary>
-    /// Load this mod in Main Menu.
+    /// [DON'T USE] 
     /// </summary>
-    public virtual bool LoadInMenu => false;
-
-    /// <summary>
-    /// Called once after starting "New Game"
-    /// You can reset/delete your saves here
-    /// </summary>
-    public virtual void OnNewGame() { }
-
-    /// <summary>
-    /// [DON'T USE] It's useless
-    /// </summary>
-    /// 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     [Obsolete("This doesn't do anything")]
     public ModSettings modSettings;
 
-    /// <summary>
-    /// Constructor DON'T USE
-    /// </summary>
-    /// 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public bool proSettings;
-
-    /// <summary>
-    /// Compatibility only: same as OnMenuLoad()
-    /// </summary>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public virtual void MenuOnLoad() { }
-
-    /// <summary>
-    /// Compatibility only: same as SecondPassOnLoad()
-    /// </summary>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public virtual void PostLoad() { }
-
-    /// <summary>
-    /// Called once, when save and quit.
-    /// </summary>
-    public virtual void OnSave() { }
-
-    /// <summary>
-    /// Standard unity OnGUI().
-    /// </summary>
-    /// <example>See: https://docs.unity3d.com/500/Documentation/Manual/GUIScriptingGuide.html
-    /// </example>
-    public virtual void OnGUI() { }
-
-    /// <summary>
-    /// Called once every frame
-    /// (standard unity Update()).
-    /// </summary>
-    public virtual void Update() { }
-
-    /// <summary>
-    /// Called once every fixed frame 
-    /// (standard unity FixedUpdate()).
-    /// </summary>
-    public virtual void FixedUpdate() { }
-
-    /// <summary>
-    /// Called once in main menu (only when LoadInMenu is true).
-    /// </summary>
-    public virtual void OnMenuLoad()
+    internal bool proSettings;
+    internal virtual void MenuOnLoad() { }
+    internal virtual void PostLoad() { }
+    internal virtual void OnSave() { }
+    internal virtual void OnGUI() { }
+    internal virtual void Update() { }
+    internal virtual void FixedUpdate() { }
+    internal virtual void OnMenuLoad()
     {
         if (LoadInMenu)
             ModConsole.Error($"<b>LoadInMenu</b> is set to <b>true</b> for mod: <b>{ID}</b> but <b>OnMenuLoad()</b> is empty.");
     }
+    internal virtual void PreLoad() { }
+    internal virtual void OnLoad() { }
+    internal virtual void SecondPassOnLoad() { PostLoad(); }
+    internal virtual void OnModEnabled() { }
+    internal virtual void OnModDisabled() { }
+    internal virtual void ModSettings() { }
+    internal virtual void ModSettingsLoaded() { }
 
     /// <summary>
-    /// Called once as soon as GAME scene is loaded.
-    /// </summary>
-    public virtual void PreLoad() { }
-
-    /// <summary>
-    /// Called once, after GAME scene is fully loaded.
-    /// </summary>
-    public virtual void OnLoad() { }
-
-    /// <summary>
-    /// Called once, after ALL mods has finished OnLoad() and when SecondPass is set to true
-    /// (Executed still before first pass of Update(), but NOT exectued if OnLoad() failed with error)
-    /// </summary>
-    public virtual void SecondPassOnLoad() { PostLoad(); }
-
-    /// <summary>
-    /// Called once when mod has been enabled in settings
-    /// </summary>
-    public virtual void OnModEnabled() { }
-
-    /// <summary>
-    /// Called once when mod has been disabled in settings
-    /// </summary>
-    public virtual void OnModDisabled() { }
-
-    /// <summary>
-    /// All settings should be created here.
-    /// </summary>
-    public virtual void ModSettings() { }
-
-    /// <summary>
-    /// Called after saved settings have been loaded from file.
-    /// </summary>
-    public virtual void ModSettingsLoaded() { }
-
-    /// <summary>
-    /// pro BS
+    /// Constructor only for compatibiltiy for pro settings.
     /// </summary>
 #pragma warning disable CS0618 // Type or member is obsolete
     public Mod() => modSettings = new ModSettings(this);

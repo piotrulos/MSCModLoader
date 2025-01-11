@@ -255,7 +255,10 @@ namespace MSCLInstaller
                 failed = true;
             progress.Report((5, 5, false));
             System.Threading.Thread.Sleep(100);
-            progressLog.Report(("Done", "Done!"));
+            if (failed)
+                progressLog.Report(("Something went wrong", "Some steps failed to complete. Please try again."));
+            else
+                progressLog.Report(("Done", "Done!"));
         }
         private void UpdateMSCLoaderWork(bool updateCore, bool updateRefs, bool updateMSCL, IProgress<(string text, string log)> progressLog, IProgress<(int percent, int max, bool isIndeterminate)> progress)
         {
