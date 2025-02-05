@@ -450,7 +450,7 @@ public class PopupSetting
     /// <param name="placeholderText">Placeholder text (like "Enter text...")</param>
     /// <param name="visibleByDefault">Show text box by default (default true)</param>
     /// <returns>SettingsTextBox</returns>
-    public SettingsTextBox AddTextBox(string settingID, string name, string value, string placeholderText, bool visibleByDefault = true) => AddTextBox(settingID, name, value, placeholderText, InputField.ContentType.Standard,visibleByDefault);
+    public SettingsTextBox AddTextBox(string settingID, string name, string value, string placeholderText, bool visibleByDefault = true) => AddTextBox(settingID, name, value, placeholderText, InputField.ContentType.Standard, visibleByDefault);
 
     /// <summary>
     /// Add TextBox where user can type any text (string value returns on confirm)

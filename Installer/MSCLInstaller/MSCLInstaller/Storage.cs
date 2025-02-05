@@ -18,6 +18,7 @@
     }
     internal class Storage
     {
+        public static string currentPath;
         public static string mscPath;
         public static string modsPath;
         public static Game selectedGame = Game.MSC;
@@ -26,7 +27,7 @@
         public static string[] packFiles = null;
         public static SelectedAction selectedAction = SelectedAction.Nothing;
         public static bool skipIntroCfg = false;
-        public static bool skipConfigScreenCfg = false;        
+        public static bool skipConfigScreenCfg = false;
         public static ModsFolder modsFolderCfg = ModsFolder.GameFolder;
     }
 }

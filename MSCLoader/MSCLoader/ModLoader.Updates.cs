@@ -535,11 +535,11 @@ public partial class ModLoader : MonoBehaviour
         downloadPercentage = 100;
         downloadInProgress = false;
         if (e.Error != null)
-        {            
+        {
             ModConsole.Error("Failed to download file!");
             ModConsole.Error(e.Error.Message);
             Console.WriteLine(e.Error);
-            if(File.Exists(e.UserState.ToString()))
+            if (File.Exists(e.UserState.ToString()))
                 File.Delete(e.UserState.ToString());
         }
         else

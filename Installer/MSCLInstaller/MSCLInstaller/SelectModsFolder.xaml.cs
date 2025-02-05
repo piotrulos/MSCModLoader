@@ -140,11 +140,11 @@ namespace MSCLInstaller
             Storage.modsPath = newPath;
             if (copyOldMods)
             {
-               main.InstallProgressPage().ChangeModsFolderAndCopyAsync(oldPath, newFolder);
+                main.InstallProgressPage().ChangeModsFolderAndCopyAsync(oldPath, newFolder);
             }
             else
             {
-               main.InstallProgressPage().ChangeModsFolder(newFolder, deleteTargetFolder);
+                main.InstallProgressPage().ChangeModsFolder(newFolder, deleteTargetFolder);
             }
         }
         private void GameFolderRB_Checked(object sender, RoutedEventArgs e)

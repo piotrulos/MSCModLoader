@@ -24,7 +24,7 @@ namespace MSCLInstaller
             switch (Storage.selectedGame)
             {
                 case Game.MSC:
-                    main.Title += " - My Summer Car"; 
+                    main.Title += " - My Summer Car";
                     break;
                 case Game.MSC_IMA:
                     main.Title += " - My Summer Car (Community)";
@@ -67,7 +67,7 @@ namespace MSCLInstaller
         private void FindMSCOnSteam()
         {
             Dbg.Log("Trying get MSC path from steam...");
-            string steamPath = null;            
+            string steamPath = null;
             RegistryKey steam = Registry.LocalMachine.OpenSubKey("SOFTWARE\\WOW6432Node\\Valve\\Steam");
             if (steam == null)
             {
@@ -75,7 +75,7 @@ namespace MSCLInstaller
                 return;
             }
             steamPath = steam.GetValue("InstallPath").ToString();
-            if(string.IsNullOrEmpty(steamPath))
+            if (string.IsNullOrEmpty(steamPath))
             {
                 Dbg.Log("Error: Steam InstallPath is null! Trying SteamService installpath_default");
                 RegistryKey steam2 = Registry.LocalMachine.OpenSubKey("SOFTWARE\\WOW6432Node\\Valve\\SteamService");
@@ -90,10 +90,10 @@ namespace MSCLInstaller
                 {
                     Dbg.Log("Error: SteamService installpath_default is null! Failed to find MSC path from steam");
                     return;
-                }                    
+                }
 
             }
-            
+
             string msc = Path.Combine(steamPath, "steamapps", "common", "My Summer Car");
             if (File.Exists(Path.Combine(msc, "mysummercar.exe")))
             {
@@ -111,7 +111,7 @@ namespace MSCLInstaller
                         if (s.Trim().StartsWith("\"path\""))
                         {
                             string p = Path.GetFullPath(s.Trim().Split('"')[3]);
-                            if(string.IsNullOrEmpty(p))
+                            if (string.IsNullOrEmpty(p))
                             {
                                 Dbg.Log($"Warn: Got invalid path in libraryfolders.vdf: {s}");
                                 continue;
@@ -174,7 +174,7 @@ namespace MSCLInstaller
                 {
                     File.WriteAllText("MSCFolder.txt", Storage.mscPath);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Dbg.Log("Error creating MSCFolder.txt", true, true);
                     Dbg.Log(ex.ToString());

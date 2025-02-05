@@ -25,25 +25,25 @@ namespace MSCLInstaller
         private bool updateCore = false; //Only update core files
         private bool updateRefs = false; //Only update references
         private bool updateMSCL = false; //Only update MSCLoader files
-        
+
         public MSCLoaderInstaller()
         {
             InitializeComponent();
         }
         public void Init(MainWindow m)
         {
-            if (initialized) 
+            if (initialized)
             {
-                UpdatePathText(); 
-                return; 
+                UpdatePathText();
+                return;
             }
-            
+
             main = m;
             if (File.Exists(Path.Combine(Storage.mscPath, "mysummercar_Data", "Managed", "MSCLoader.Preloader.dll")) && File.Exists(Path.Combine(Storage.mscPath, "winhttp.dll")) && File.Exists(Path.Combine(Storage.mscPath, "doorstop_config.ini")))
             {
                 isInstalled = true;
             }
-            if (File.Exists(Path.Combine(".", "dbg.pack")))
+            if (File.Exists(Path.Combine(Storage.currentPath, "dbg.pack")))
                 ToggleAdvancedRadioVisibility(Visibility.Visible);
             else
                 ToggleAdvancedRadioVisibility(Visibility.Collapsed);
@@ -77,6 +77,7 @@ namespace MSCLInstaller
                     {
                         Dbg.Log($"Fatal Error when checking versions");
                         Dbg.Log(e.ToString());
+                        MessageBox.Show($"Fatal Error when checking versions.{Environment.NewLine}{Environment.NewLine}{e.Message}", "Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         fullinstall = true;
                     }
                 }
@@ -121,21 +122,21 @@ namespace MSCLInstaller
             InstallRadio.Visibility = installMSCLoader;
             UpdateRadio.Visibility = updateMSCLoader;
             ReinstallRadio.Visibility = reinstallMSCLoader;
-            UninstallRadio.Visibility = uninstallMSCLoader; 
+            UninstallRadio.Visibility = uninstallMSCLoader;
         }
 
         void ToggleAdvancedRadioVisibility(Visibility advancedOptions)
-        {            
+        {
             AdvancedRadio.Visibility = advancedOptions;
         }
         void VersionCompares()
         {
             string corepack;
             if (Storage.is64)
-                corepack = Path.Combine(".", "core64.pack");
+                corepack = Path.Combine(Storage.currentPath, "core64.pack");
             else
-                corepack = Path.Combine(".", "core32.pack");
-            if(!File.Exists(corepack))
+                corepack = Path.Combine(Storage.currentPath, "core32.pack");
+            if (!File.Exists(corepack))
             {
                 Dbg.MissingFilesError();
             }
@@ -155,8 +156,8 @@ namespace MSCLInstaller
             {
                 updateCore = true;
             }
-            Directory.CreateDirectory(Path.Combine(".", "temp"));
-            string refpack = Path.Combine(".", "main_ref.pack");
+            Directory.CreateDirectory(Path.Combine(Storage.currentPath, "temp"));
+            string refpack = Path.Combine(Storage.currentPath, "main_ref.pack");
             if (!File.Exists(refpack))
             {
                 Dbg.MissingFilesError();
@@ -166,18 +167,18 @@ namespace MSCLInstaller
                 Dbg.Log($"Failed to read file: {refpack}");
             }
             ZipFile zip2 = ZipFile.Read(refpack);
-            zip2.ExtractAll(Path.Combine(".", "temp"));
+            zip2.ExtractAll(Path.Combine(Storage.currentPath, "temp"));
             zip2.Dispose();
             Dbg.Log("Comparing references versions...", true);
-            foreach (string f in Directory.GetFiles(Path.Combine(".", "temp")))
+            foreach (string f in Directory.GetFiles(Path.Combine(Storage.currentPath, "temp")))
             {
                 if (InstallerHelpers.VersionCompare(f, Path.Combine(Storage.mscPath, "mysummercar_Data", "Managed", Path.GetFileName(f))))
                 {
                     updateRefs = true;
                 }
             }
-            Directory.Delete(Path.Combine(".", "temp"), true);
-            string msc = Path.Combine(".", "main_msc.pack");
+            Directory.Delete(Path.Combine(Storage.currentPath, "temp"), true);
+            string msc = Path.Combine(Storage.currentPath, "main_msc.pack");
             if (!File.Exists(msc))
             {
                 Dbg.MissingFilesError();
@@ -188,9 +189,9 @@ namespace MSCLInstaller
             }
             ZipFile zip3 = ZipFile.Read(msc);
             Version mscVer = new Version("0.0.0.0");
-            if (zip3.Comment != null)      
+            if (zip3.Comment != null)
             {
-               
+
                 mscVer = new Version(zip3.Comment);
             }
             zip3.Dispose();
@@ -215,7 +216,7 @@ namespace MSCLInstaller
                 if (cfg != null && skipIntro != null)
                 {
                     Storage.skipIntroCfg = bool.Parse(skipIntro);
-                    if(skipConfigScreen != null)
+                    if (skipConfigScreen != null)
                         Storage.skipConfigScreenCfg = bool.Parse(skipConfigScreen);
                     switch (cfg)
                     {
@@ -274,7 +275,7 @@ namespace MSCLInstaller
 
         private void ReinstallRadio_Checked(object sender, RoutedEventArgs e)
         {
-            Storage.selectedAction  = SelectedAction.ReinstallMSCLoader;
+            Storage.selectedAction = SelectedAction.ReinstallMSCLoader;
             ExecuteSelectedBtn.IsEnabled = true;
         }
 
@@ -317,7 +318,7 @@ namespace MSCLInstaller
                     }
                     break;
                 case SelectedAction.UninstallMSCLoader:
-                    if(MessageBox.Show("Do you want to uninstall MSCLoader?", "Uninstall MSCLoader", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    if (MessageBox.Show("Do you want to uninstall MSCLoader?", "Uninstall MSCLoader", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
                         main.InstallProgressPage().UninstalMSCLoader();
                     }

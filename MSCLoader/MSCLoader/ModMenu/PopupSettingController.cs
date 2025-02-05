@@ -57,7 +57,7 @@ internal class PopupSettingController : MonoBehaviour
                 Console.WriteLine(e);
             }
         }
-        if(!dontCloseOnSubmit)
+        if (!dontCloseOnSubmit)
             AfterDestroy();
     }
 

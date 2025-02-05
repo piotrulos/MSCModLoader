@@ -288,9 +288,9 @@ internal class ModMetadata
 
         try
         {
-            File.Copy(mod.fileName, Path.Combine(dir, Path.GetFileName(mod.fileName)));
+            File.Copy(mod.fileName, Path.Combine(dir, Path.GetFileName(mod.fileName)), true);
             if (File.Exists(mod.fileName.Replace(".dll", ".xml")))
-                File.Copy(mod.fileName.Replace(".dll", ".xml"), Path.Combine(dir, Path.GetFileName(mod.fileName.Replace(".dll", ".xml"))));
+                File.Copy(mod.fileName.Replace(".dll", ".xml"), Path.Combine(dir, Path.GetFileName(mod.fileName.Replace(".dll", ".xml"))), true);
             if (assets)
             {
                 Directory.CreateDirectory(Path.Combine(dir, "Assets"));
@@ -331,6 +331,8 @@ internal class ModMetadata
             if (references)
                 Directory.Delete(Path.Combine(dir, "References"), true);
             File.Delete(Path.Combine(dir, Path.GetFileName(mod.fileName)));
+            if (File.Exists(Path.Combine(dir, Path.GetFileName(mod.fileName.Replace(".dll", ".xml")))))
+                File.Delete(Path.Combine(dir, Path.GetFileName(mod.fileName.Replace(".dll", ".xml"))));
             ModConsole.Print("Complete!");
 
         }
@@ -369,9 +371,9 @@ internal class ModMetadata
 
         try
         {
-            File.Copy(refs.FileName, Path.Combine(dir, Path.GetFileName(refs.FileName)));
+            File.Copy(refs.FileName, Path.Combine(dir, Path.GetFileName(refs.FileName)), true);
             if (File.Exists(refs.FileName.Replace(".dll", ".xml")))
-                File.Copy(refs.FileName.Replace(".dll", ".xml"), Path.Combine(dir, Path.GetFileName(refs.FileName.Replace(".dll", ".xml"))));
+                File.Copy(refs.FileName.Replace(".dll", ".xml"), Path.Combine(dir, Path.GetFileName(refs.FileName.Replace(".dll", ".xml"))), true);
         }
         catch (Exception e)
         {
@@ -391,7 +393,8 @@ internal class ModMetadata
                 zip.AddFile(Path.Combine(dir, "unused.txt"), "");
             zip.Save(Path.Combine(dir, $"{refs.AssemblyID}.zip"));
             File.Delete(Path.Combine(dir, Path.GetFileName(refs.FileName)));
-            File.Delete(Path.Combine(dir, Path.GetFileName(refs.FileName.Replace(".dll", ".xml"))));
+            if (File.Exists(Path.Combine(dir, Path.GetFileName(refs.FileName.Replace(".dll", ".xml")))))
+                File.Delete(Path.Combine(dir, Path.GetFileName(refs.FileName.Replace(".dll", ".xml"))));
             ModConsole.Print("Complete!");
 
         }
@@ -522,7 +525,7 @@ internal class ModMetadata
                     ModMenu.SaveSettings(mod);
                 }
                 Version v1 = new Version(mv.versions[i].mod_version);
-                Version v2 = new Version(mod.Version.Replace("v",string.Empty));
+                Version v2 = new Version(mod.Version.Replace("v", string.Empty));
                 switch (v1.CompareTo(v2))
                 {
                     case 1:

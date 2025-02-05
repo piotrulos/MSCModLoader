@@ -52,10 +52,10 @@ public partial class Settings
     /// <param name="mod"></param>
     /// <returns></returns>
     [Obsolete("Stop using undocumented crap", true)]
-    public static List<Settings> Get(Mod mod) 
-    { 
+    public static List<Settings> Get(Mod mod)
+    {
         List<Settings> crap = new List<Settings>();
-        foreach (var setting in mod.modSettingsList)
+        foreach (ModSetting setting in mod.modSettingsList)
         {
             switch (setting.SettingType)
             {
@@ -74,7 +74,7 @@ public partial class Settings
                 case SettingsType.TextBox:
                     crap.Add(((SettingsTextBox)setting).Instance);
                     break;
-                    case SettingsType.DropDown:
+                case SettingsType.DropDown:
                     crap.Add(((SettingsDropDownList)setting).Instance);
                     break;
                 default:

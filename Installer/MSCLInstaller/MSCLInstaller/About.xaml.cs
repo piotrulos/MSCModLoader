@@ -22,7 +22,7 @@ namespace MSCLInstaller
         private void Hyperlink_Click(object sender, RoutedEventArgs e)
         {
             //Open License.txt file
-            Process.Start(Path.Combine(".","License.txt"));
+            Process.Start(Path.Combine(Storage.currentPath, "License.txt"));
         }
     }
 }

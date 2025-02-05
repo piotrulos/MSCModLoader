@@ -463,6 +463,7 @@ public class SaveLoad
     /// <param name="mod">Mod instance</param>
     /// <param name="g">Your GameObject to save</param>
     /// <param name="fileName">Name of the save file</param>
+    /// <exclude />
     [Obsolete("Consider switching to SaveLoad.WriteValue or serializing custom class.", true)]
     public static void SaveGameObject(Mod mod, GameObject g, string fileName)
     {
@@ -491,6 +492,7 @@ public class SaveLoad
     /// </summary>
     /// <param name="mod">Mod instance</param>
     /// <param name="fileName">Name of the save file</param>
+    /// <exclude />
     [Obsolete("Consider switching to SaveLoad.ReadValue or deserializing custom class.", true)]
     public static void LoadGameObject(Mod mod, string fileName)
     {

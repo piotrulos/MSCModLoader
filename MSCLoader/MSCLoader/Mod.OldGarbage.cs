@@ -14,6 +14,7 @@ public partial class Mod
     /// <summary>
     /// [DON'T USE] 
     /// </summary>
+    /// <exclude />
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     [Obsolete("This doesn't do anything")]
     public ModSettings modSettings;
@@ -41,6 +42,7 @@ public partial class Mod
     /// <summary>
     /// Constructor only for compatibiltiy for pro settings.
     /// </summary>
+    /// <exclude />
 #pragma warning disable CS0618 // Type or member is obsolete
     public Mod() => modSettings = new ModSettings(this);
 #pragma warning restore CS0618 // Type or member is obsolete

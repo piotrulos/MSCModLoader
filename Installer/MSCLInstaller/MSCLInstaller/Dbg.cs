@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Windows;
 
 namespace MSCLInstaller
@@ -7,10 +8,12 @@ namespace MSCLInstaller
     class Dbg
     {
         private static TraceSource ts = new TraceSource("MSCLInstaller");
-        private static TextWriterTraceListener tw = new TextWriterTraceListener("Log.txt");
+        private static TextWriterTraceListener tw;
 
         public static void Init()
         {
+            Stream logFile = File.Create("Log.txt");
+            tw = new TextWriterTraceListener(logFile);
             ts.Switch.Level = SourceLevels.All;
             ts.Listeners.Add(tw);
             Log($"MSCLoader Installer Log {DateTime.Now:u}");
@@ -18,6 +21,7 @@ namespace MSCLInstaller
         }
         public static void Log(string message, bool newline = false, bool separator = false)
         {
+            if (tw == null) return;
             if (newline) tw.WriteLine("");
             tw.WriteLine(message);
             if (separator) tw.WriteLine("=================");

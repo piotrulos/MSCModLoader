@@ -673,8 +673,8 @@ public class SettingsDynamicText : SettingsText
     /// </summary>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public Settings Instance;
-    internal SettingsDynamicText(string name) : base(name, true) 
-    { 
+    internal SettingsDynamicText(string name) : base(name, true)
+    {
         Instance = new Settings(this);
         Instance.ID = name;
         Instance.Name = name;

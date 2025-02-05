@@ -1188,7 +1188,7 @@ public partial class ModLoader : MonoBehaviour
         if (response.StartsWith("error"))
         {
             string[] result = response.Split('|');
-            if(result.Length > 1)
+            if (result.Length > 1)
                 ModConsole.Error(result[1]);
         }
         else if (response.StartsWith("{"))
@@ -1606,9 +1606,9 @@ public partial class ModLoader : MonoBehaviour
                 mod.isDisabled = true;
                 ModConsole.Error($"Mod <b>{mod.ID}</b> has been <b>disabled!</b> Because it spams too many errors each frame!{Environment.NewLine}Report this problem to mod author.{Environment.NewLine}Last error message:");
                 ModConsole.Error(e.GetFullMessage());
-                Console.WriteLine(e);
             }
         }
+        Console.WriteLine(e);
     }
 
     internal static string SidChecksumCalculator(string rawData)

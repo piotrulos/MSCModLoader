@@ -804,7 +804,7 @@ public static class PlayMakerProxyExtensions
 
         for (int i = 0; i < pmalp.Length; i++)
         {
-            if (pmalp[i].referenceName == referenceName) 
+            if (pmalp[i].referenceName == referenceName)
                 return pmalp[i];
         }
 
@@ -825,7 +825,7 @@ public static class PlayMakerProxyExtensions
 
         for (int i = 0; i < pmhtp.Length; i++)
         {
-            if (pmhtp[i].referenceName == referenceName) 
+            if (pmhtp[i].referenceName == referenceName)
                 return pmhtp[i];
         }
 

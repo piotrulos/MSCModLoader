@@ -3,7 +3,6 @@ using AudioLibrary;
 using System;
 using System.Collections;
 using System.IO;
-using System.Runtime.InteropServices.ComTypes;
 
 namespace MSCLoader;
 
@@ -72,7 +71,7 @@ public class ModAudio : MonoBehaviour
         }
         try
         {
-           return Manager.Load(stream, format, filename, doStream, true, true);
+            return Manager.Load(stream, format, filename, doStream, true, true);
         }
         catch (Exception e)
         {
@@ -80,7 +79,7 @@ public class ModAudio : MonoBehaviour
             if (ModLoader.devMode)
                 ModConsole.Error(e.ToString());
             System.Console.WriteLine(e);
-            
+
         }
         return null;
     }

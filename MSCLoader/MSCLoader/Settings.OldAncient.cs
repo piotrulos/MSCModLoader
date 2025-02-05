@@ -13,6 +13,7 @@ namespace MSCLoader
         /// Get value of setting.
         /// </summary>
         /// <returns>Raw value of setting</returns>
+        /// <exclude />
         [System.Obsolete("Please switch to new settings format.", true)]
         public object GetValue()
         {
@@ -56,6 +57,7 @@ namespace MSCLoader
         /// </summary>
         /// <param name="mod">Your mod instance</param>
         /// <param name="setting">Your settings variable</param>
+        /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [System.Obsolete("Please switch to new settings format.", true)]
         public static void AddCheckBox(Mod mod, Settings setting)
@@ -70,6 +72,7 @@ namespace MSCLoader
         /// <param name="mod">Your mod instance</param>
         /// <param name="setting">Your settings variable</param>
         /// <param name="group">Unique group name, same for all checkboxes that will be grouped</param>
+        /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [System.Obsolete("Please switch to new settings format.", true)]
         public static void AddCheckBox(Mod mod, Settings setting, string group)
@@ -85,6 +88,7 @@ namespace MSCLoader
         /// <param name="mod">Your mod instance</param>
         /// <param name="setting">Your settings variable</param>
         /// <param name="description">Short optional description for this button</param>
+        /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [System.Obsolete("Please switch to new settings format.", true)]
         public static void AddButton(Mod mod, Settings setting, string description = null) => AddButton(mod, setting, new UnityEngine.Color32(0, 113, 166, 255), new UnityEngine.Color32(0, 153, 166, 255), new UnityEngine.Color32(0, 183, 166, 255), description);
@@ -98,6 +102,7 @@ namespace MSCLoader
         /// <param name="highlightedColor">Button color when highlighted</param>
         /// <param name="pressedColor">Button color when pressed</param>
         /// <param name="description">Short optional description for this button</param>
+        /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [System.Obsolete("Please switch to new settings format.", true)]
         public static void AddButton(Mod mod, Settings setting, UnityEngine.Color normalColor, UnityEngine.Color highlightedColor, UnityEngine.Color pressedColor, string description = null) => AddButton(mod, setting, normalColor, highlightedColor, pressedColor, UnityEngine.Color.white, description);
@@ -112,6 +117,7 @@ namespace MSCLoader
         /// <param name="pressedColor">Button color when pressed</param>
         /// <param name="buttonTextColor">Text color on Button</param>
         /// <param name="description">Short optional description for this button</param>
+        /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [System.Obsolete("Please switch to new settings format.", true)]
         public static void AddButton(Mod mod, Settings setting, UnityEngine.Color normalColor, UnityEngine.Color highlightedColor, UnityEngine.Color pressedColor, UnityEngine.Color buttonTextColor, string description = null)
@@ -127,6 +133,7 @@ namespace MSCLoader
         /// <param name="setting">Your settings variable</param>
         /// <param name="maxValue">Max value of slider</param>
         /// <param name="minValue">Min value of slider</param>
+        /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [System.Obsolete("Please switch to new settings format.", true)]
         public static void AddSlider(Mod mod, Settings setting, int minValue, int maxValue) => AddSlider(mod, setting, minValue, maxValue, null);
@@ -139,6 +146,7 @@ namespace MSCLoader
         /// <param name="maxValue">Max value of slider</param>
         /// <param name="minValue">Min value of slider</param>
         /// <param name="textValues">Array of text values (array index equals to slider value)</param>
+        /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [System.Obsolete("Please switch to new settings format.", true)]
         public static void AddSlider(Mod mod, Settings setting, int minValue, int maxValue, string[] textValues)
@@ -155,6 +163,7 @@ namespace MSCLoader
         /// <param name="setting">Your settings variable</param>
         /// <param name="maxValue">Max value of slider</param>
         /// <param name="minValue">Min value of slider</param>
+        /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [System.Obsolete("Please switch to new settings format.", true)]
         public static void AddSlider(Mod mod, Settings setting, float minValue, float maxValue) => AddSlider(mod, setting, minValue, maxValue, 2);
@@ -168,6 +177,7 @@ namespace MSCLoader
         /// <param name="maxValue">Max value of slider</param>
         /// <param name="minValue">Min value of slider</param>
         /// <param name="decimalPoints">Round value to set number of decimal points (default = 2)</param>
+        /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [System.Obsolete("Please switch to new settings format.", true)]
         public static void AddSlider(Mod mod, Settings setting, float minValue, float maxValue, int decimalPoints)
@@ -183,6 +193,7 @@ namespace MSCLoader
         /// <param name="mod">Your mod instance</param>
         /// <param name="setting">Your settings variable</param>
         /// <param name="placeholderText">Placeholder text (like "Enter text...")</param>
+        /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [System.Obsolete("Please switch to new settings format.", true)]
         public static void AddTextBox(Mod mod, Settings setting, string placeholderText) => AddTextBox(mod, setting, placeholderText, UnityEngine.Color.white);
@@ -194,6 +205,7 @@ namespace MSCLoader
         /// <param name="setting">Your settings variable</param>
         /// <param name="placeholderText">Placeholder text (like "Enter text...")</param>
         /// <param name="titleTextColor">Text color of title</param>
+        /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [System.Obsolete("Please switch to new settings format.", true)]
         public static void AddTextBox(Mod mod, Settings setting, string placeholderText, UnityEngine.Color titleTextColor) => AddTextBox(mod, setting, placeholderText, titleTextColor, InputField.ContentType.Standard);
@@ -206,6 +218,7 @@ namespace MSCLoader
         /// <param name="placeholderText">Placeholder text (like "Enter text...")</param>
         /// <param name="titleTextColor">Text color of title</param>
         /// <param name="contentType">InputField content type</param>
+        /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [System.Obsolete("Please switch to new settings format.", true)]
         public static void AddTextBox(Mod mod, Settings setting, string placeholderText, UnityEngine.Color titleTextColor, InputField.ContentType contentType)

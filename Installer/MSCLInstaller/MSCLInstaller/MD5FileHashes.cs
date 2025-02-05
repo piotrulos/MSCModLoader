@@ -79,7 +79,7 @@ namespace MSCLInstaller
                     Dbg.Log($"{Path.GetFileName(file2)} ({oldVer} <= {newVer}) - Older than installed");
                     return false;
                 default:
-                    Dbg.Log($"{Path.GetFileName(file2)} ({oldVer} <?> {newVer}) WTF"); 
+                    Dbg.Log($"{Path.GetFileName(file2)} ({oldVer} <?> {newVer}) WTF");
                     return false;
             }
         }
@@ -88,7 +88,7 @@ namespace MSCLInstaller
             if (File.Exists(filename))
             {
                 File.Delete(filename);
-                    Dbg.Log($"Deleting file.....{Path.GetFileName(filename)}");
+                Dbg.Log($"Deleting file.....{Path.GetFileName(filename)}");
             }
         }
         public static async Task DelayedWork()
