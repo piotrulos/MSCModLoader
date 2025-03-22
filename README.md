@@ -35,8 +35,8 @@ If you want to port this to other games make sure to link original reposity in y
 
 ## Like My Work?
 If you want you can buy me a beer :)   
-Paypal: [Paypal.me](https://www.paypal.me/piotrulos/0eur)  
-BTC: 1NLRvUXHLhuLz5erVWyXdY7i8KmfCSjJgP  
+Ko-fi: [Ko-fi.com](https://ko-fi.com/piotrulos44779)    
+Paypal: [Paypal.me](https://www.paypal.me/piotrulos/0eur)    
 Thanks for all donations, even small ammount helps.
 
 #### Credit

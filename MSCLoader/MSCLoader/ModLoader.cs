@@ -333,12 +333,12 @@ public partial class ModLoader : MonoBehaviour
                 ModConsole.Print($"<b><color=orange>Hello <color=lime>{"SmartSteamEmu!"}</color>!</color></b>");
                 throw new Exception("[EMULATOR] Do What You Want, Cause A Pirate Is Free... You Are A Pirate!");
             }
-            if (ModMetadata.CalculateFileChecksum(Path.Combine("", "steam_api.dll")) != "7B857C897BC69313E4936DC3DCCE5193")
+            if (File.Exists(Path.GetFullPath(Path.Combine("steam_api.ini", ""))) || File.Exists(Path.GetFullPath(Path.Combine("steam_32.dll", ""))) || File.Exists(Path.GetFullPath(Path.Combine("steam_64.dll", ""))) || File.Exists(Path.GetFullPath(Path.Combine("steamclient.dll", ""))) || File.Exists(Path.GetFullPath(Path.Combine("steamclient64.dll", ""))))
             {
-                ModConsole.Print($"<b><color=orange>Hello <color=lime>{"Emulator!"}</color>!</color></b>");
+                ModConsole.Print($"<b><color=orange>Hello <color=lime>{"kidsrow!"}</color>!</color></b>");
                 throw new Exception("[EMULATOR] Do What You Want, Cause A Pirate Is Free... You Are A Pirate!");
             }
-            if (ModMetadata.CalculateFileChecksum(Path.Combine("", "steam_api64.dll")) != "6C23EAB28F1CD1BFD128934B08288DD8")
+            if (ModMetadata.CalculateFileChecksum(Path.Combine("", "steam_api.dll")) != "7B857C897BC69313E4936DC3DCCE5193" || ModMetadata.CalculateFileChecksum(Path.Combine("", "steam_api64.dll")) != "6C23EAB28F1CD1BFD128934B08288DD8")
             {
                 ModConsole.Print($"<b><color=orange>Hello <color=lime>{"Emulator!"}</color>!</color></b>");
                 throw new Exception("[EMULATOR] Do What You Want, Cause A Pirate Is Free... You Are A Pirate!");
@@ -542,7 +542,7 @@ public partial class ModLoader : MonoBehaviour
                     ModUI.ShowMessage($"<color=orange><b>Warning:</b></color>{Environment.NewLine}You are using beta build: <color=orange><b>{Name}</b></color>{Environment.NewLine}{Environment.NewLine}Remember that some mods may not work correctly on beta branches.", "Experimental build warning");
             }
             Console.WriteLine($"MSC buildID: <b>{Steamworks.SteamApps.GetAppBuildId()}</b>");
-            if (Steamworks.SteamApps.GetAppBuildId() < 100)
+            if (Steamworks.SteamApps.GetAppBuildId() < 10000)
                 throw new DivideByZeroException();
         }
         catch (Exception ex)

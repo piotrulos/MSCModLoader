@@ -128,7 +128,7 @@ public class Playlists
                 {
                     //skip
                 }
-                playlist.Add(line);
+                playlist.Add(line.Replace("file:///", string.Empty));
                 prevLineIsExtInf = false;
             }
         }
