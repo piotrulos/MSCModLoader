@@ -49,7 +49,7 @@ public class ModConsole : Mod
                 ModLoader.Instance.CheckForModsUpd(true);
                 RefreshMainSettingsData();
             }
-        }, new Color32(0, 64, 0, 255), Color.white, SettingsButton.ButtonIcon.Update);
+        }, new Color32(0, 64, 128, 255), Color.white, SettingsButton.ButtonIcon.Update);
         Settings.AddHeader("Console Settings");
         Settings.AddText("Basic settings for console");
         typing = Settings.AddCheckBox("MSCLoader_ConsoleTyping", "Start typing when you open console", false);

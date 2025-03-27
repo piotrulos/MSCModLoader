@@ -98,12 +98,30 @@ public partial class ModLoader
         return null;
     }
 
-    internal static Mod GetModByID(string modID, bool includeDisabled = false)
+    /// <summary>
+    /// Get version of mod by modID (returns 0.0.0.0 if not found)
+    /// </summary>
+    /// <param name="modID">Specified modID</param>
+    /// <returns>Version number as string</returns>
+    public static string GetModVersionByID(string modID)
     {
-        Mod m = LoadedMods.Where(x => x.ID.Equals(modID)).FirstOrDefault();
-        if (includeDisabled) return m; //if include disabled is true then just return (can be null)
-        if (!m.isDisabled) return m; //if include disabled is false we go here to check if mod is not disabled and return it.
-        return null; //null if any above if is false
+        Mod m = GetModByID(modID, true);
+        if (m == null)
+            return "0.0.0.0";
+        return m.Version;
+    }
+
+    /// <summary>
+    /// Get version of reference by AssemblyID (returns 0.0.0.0 if not found)
+    /// </summary>
+    /// <param name="AssemblyID">AssemblyID of reference</param>
+    /// <returns>Version number as string</returns>
+    public static string GetReferenceVersionByID(string AssemblyID)
+    {
+        References refs = Instance.ReferencesList.Where(x => x.AssemblyID.Equals(AssemblyID)).FirstOrDefault();
+        if (refs != null)
+            return refs.AssemblyFileVersion;
+        return "0.0.0.0";
     }
     /// <summary>
     /// Check if Reference of specified AssemblyID is present

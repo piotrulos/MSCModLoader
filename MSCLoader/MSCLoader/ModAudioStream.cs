@@ -35,6 +35,11 @@ public class ModAudioStream : MonoBehaviour
     /// <param name="streamURL">stream url</param>
     public void PlayStream(string streamURL)
     {
+        if(streamURL.StartsWith("https://"))
+        {
+            ModConsole.Warning("ModAudioStream - https:// urls are not supported, please rename your stream url to http://");
+            return;
+        }
         if (audioSource == null)
             audioSource = gameObject.GetComponent<AudioSource>();
         mp3s.audioSource = audioSource;

@@ -84,6 +84,7 @@ internal class AudioFileReader : WaveStream, ISampleProvider
                 readerStream = new AiffFileReader(stream);
                 break;
             case AudioFormat.ogg:
+            case AudioFormat.ogv:
                 readerStream = new VorbisWaveReader(stream);
                 break;
             case AudioFormat.flac:

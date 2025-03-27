@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace MSCLoader;
@@ -73,6 +74,14 @@ public partial class ModLoader
     internal bool allModsLoaded = false;
     internal bool IsModsResetting = false;
     internal bool ModloaderUpdateMessage = false;
+
+    internal static Mod GetModByID(string modID, bool includeDisabled = false)
+    {
+        Mod m = LoadedMods.Where(x => x.ID.Equals(modID)).FirstOrDefault();
+        if (includeDisabled) return m; //if include disabled is true then just return (can be null)
+        if (!m.isDisabled) return m; //if include disabled is false we go here to check if mod is not disabled and return it.
+        return null; //null if any above if is false
+    }
 }
 
 #endif

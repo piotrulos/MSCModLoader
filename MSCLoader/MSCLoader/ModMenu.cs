@@ -61,6 +61,7 @@ internal class ModMenu : Mod
 
         Settings.AddHeader("MSCLoader Credits", Color.black);
         Settings.AddText("All source code contributors and used libraries are listed on GitHub");
+        Settings.AddButton("Support on <color=orange>ko-fi.com</color>", () => System.Diagnostics.Process.Start("https://ko-fi.com/piotrulos44779"), new Color32(0,64,128,255), Color.white, SettingsButton.ButtonIcon.KoFi);
         Settings.AddText("Non-GitHub contributions:");
         Settings.AddText("<color=aqua>BrennFuchS</color> - New default mod icon and expanded PlayMaker extensions.");
 

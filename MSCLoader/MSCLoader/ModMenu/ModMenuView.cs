@@ -168,7 +168,10 @@ internal class ModMenuView : MonoBehaviour
         if (savedDataCount > 0)
         {
             tx.settingName.text += $"{Environment.NewLine}{Environment.NewLine}<color=yellow>Unified save system: </color><color=aqua>{savedDataCount}</color><color=lime> saved values</color>";
-            SettingsElement rbtn = CreateButton(header.HeaderListView.transform, "Reset save file", Color.white, Color.black);
+            SettingsElement rbtn = CreateButton(header.HeaderListView.transform, "Reset save file", Color.red, Color.black);
+            rbtn.settingName.alignment = TextAnchor.MiddleLeft;
+            rbtn.iconElement.texture = rbtn.iconPack[(int)SettingsButton.ButtonIcon.Delete];
+            rbtn.iconElement.gameObject.SetActive(true);
             rbtn.button.onClick.AddListener(delegate
             {
                 if (ModLoader.GetCurrentScene() != CurrentScene.MainMenu)
@@ -202,7 +205,7 @@ internal class ModMenuView : MonoBehaviour
                     nexusBtn.settingName.alignment = TextAnchor.MiddleLeft;
                     nexusBtn.iconElement.texture = nexusBtn.iconPack[1];
                     nexusBtn.iconElement.gameObject.SetActive(true);
-                    nexusBtn.button.onClick.AddListener(() => OpenModLink(mod.metadata.links[0]));
+                    nexusBtn.button.onClick.AddListener(() => OpenModLink(mod.metadata.links[(int)SettingsButton.ButtonIcon.NexusMods]));
                 }
                 if (!string.IsNullOrEmpty(mod.metadata.links[1]))
                 {
@@ -210,7 +213,7 @@ internal class ModMenuView : MonoBehaviour
                     rdBtn.settingName.alignment = TextAnchor.MiddleLeft;
                     rdBtn.iconElement.texture = rdBtn.iconPack[0];
                     rdBtn.iconElement.gameObject.SetActive(true);
-                    rdBtn.button.onClick.AddListener(() => OpenModLink(mod.metadata.links[1]));
+                    rdBtn.button.onClick.AddListener(() => OpenModLink(mod.metadata.links[(int)SettingsButton.ButtonIcon.RaceDepartment]));
                 }
                 if (!string.IsNullOrEmpty(mod.metadata.links[2]))
                 {
@@ -218,7 +221,7 @@ internal class ModMenuView : MonoBehaviour
                     ghBtn.settingName.alignment = TextAnchor.MiddleLeft;
                     ghBtn.iconElement.texture = ghBtn.iconPack[2];
                     ghBtn.iconElement.gameObject.SetActive(true);
-                    ghBtn.button.onClick.AddListener(() => OpenModLink(mod.metadata.links[2]));
+                    ghBtn.button.onClick.AddListener(() => OpenModLink(mod.metadata.links[(int)SettingsButton.ButtonIcon.Github]));
                 }
             }
             SettingsGroup header3 = CreateHeader(listView.transform, "Description", Color.yellow);
@@ -397,7 +400,7 @@ internal class ModMenuView : MonoBehaviour
 
         if (!mod.hideResetAllSettings)
         {
-            SettingsElement rbtn = CreateButton(listView.transform, "Reset all settings to default", Color.white, Color.black);
+            SettingsElement rbtn = CreateButton(listView.transform, "Reset all settings to default", new Color32(128,255,255,255), Color.black);
             rbtn.settingName.alignment = TextAnchor.MiddleLeft;
             rbtn.iconElement.texture = rbtn.iconPack[(int)SettingsButton.ButtonIcon.Reset];
             rbtn.iconElement.gameObject.SetActive(true);
@@ -544,6 +547,9 @@ internal class ModMenuView : MonoBehaviour
                 SettingsElement rbtn = rbtnP.GetComponent<SettingsElement>();
                 settingRes.SettingsElement = rbtn;
                 rbtn.SetupButton(settingRes.Name.ToUpper(), Color.white, Color.black);
+                rbtn.settingName.alignment = TextAnchor.MiddleLeft;
+                rbtn.iconElement.texture = rbtn.iconPack[(int)SettingsButton.ButtonIcon.Reset];
+                rbtn.iconElement.gameObject.SetActive(true);
                 rbtn.button.onClick.AddListener(delegate
                 {
                     settingRes.ResetSettings();

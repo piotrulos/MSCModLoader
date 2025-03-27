@@ -141,6 +141,7 @@ public static class LoadAssets
         }
         else
         {
+            ModUI.ShowMessage($"Asset files for <color=orange>{mod.Name}</color> not found!{Environment.NewLine} Make sure you unpacked ALL files from zip into mods folder.", $"{mod.Name} - Fatal Error");
             throw new FileNotFoundException($"<b>LoadBundle() Error:</b> File not found: <b>{bundle}</b>{Environment.NewLine}", bundleName);
         }
     }

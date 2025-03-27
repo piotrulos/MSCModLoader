@@ -456,7 +456,7 @@ public partial class Settings
                 SaveLoad.ResetSaveForMod(mod);
                 ModUI.ShowMessage("Save file for this mod has been reset");
             });
-        });
+        }, Color.black, new Color32(255, 0, 0, 255), SettingsButton.ButtonIcon.Delete);
     }
 
     /// <summary>

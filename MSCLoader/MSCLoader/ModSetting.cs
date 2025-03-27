@@ -611,7 +611,15 @@ public class SettingsButton : ModSetting
         /// <summary>
         /// "Edit" icon
         /// </summary>
-        Edit
+        Edit,
+        /// <summary>
+        /// "PayPal" icon
+        /// </summary>
+        PayPal,
+        /// <summary>
+        /// "Ko-fi" icon
+        /// </summary>
+        KoFi
     }
 
     internal SettingsButton(string name, Action doAction, Color backgroundColor, Color textColor, bool visibleByDefault, ButtonIcon icon, Texture2D customIcon) : base(null, name, doAction, SettingsType.Button, visibleByDefault)
