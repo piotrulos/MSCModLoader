@@ -42,7 +42,7 @@ internal class ModMenu : Mod
             dm_logST = Settings.AddCheckBox("MSCLoader_dm_logST", "Log-all stack trace (not recommended)", false);
             dm_operr = Settings.AddCheckBox("MSCLoader_dm_operr", "Log-all open console on error", false);
             dm_warn = Settings.AddCheckBox("MSCLoader_dm_warn", "Log-all open console on warning", false);
-            dm_pcon = Settings.AddCheckBox("MSCLoader_dm_pcon", "Persistent console (sometimes may break font)", false);
+            dm_pcon = Settings.AddCheckBox("MSCLoader_dm_pcon", "Persistent console (sometimes may break font color)", false);
         }
         Settings.AddHeader("Basic Settings");
         expWarning = Settings.AddCheckBox("MSCLoader_expWarning", "Show experimental warning (experimental branch on Steam)", true);

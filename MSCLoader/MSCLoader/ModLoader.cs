@@ -1584,19 +1584,12 @@ public partial class ModLoader : MonoBehaviour
             mod.modErrors++;
         if (devMode)
         {
-            if (mod.modErrors == 30)
+            if (mod.modErrors >= 60)
             {
+                mod.isDisabled = true;
                 ModConsole.Error($"Mod <b>{mod.ID}</b> spams <b>too many errors each frame</b>! Last error: ");
                 ModConsole.Error(e.ToString());
-                if (ModMenu.dm_disabler.GetValue())
-                {
-                    mod.isDisabled = true;
-                    ModConsole.Warning($"[DevMode] Mod <b>{mod.ID}</b> has been disabled!");
-                }
-                else
-                {
-                    ModConsole.Warning($"[DevMode] Mod <b>{mod.ID}</b> is still running!");
-                }
+                ModConsole.Warning($"[DevMode] This is performance issue if it happens also outside od Mod class!");
             }
         }
         else

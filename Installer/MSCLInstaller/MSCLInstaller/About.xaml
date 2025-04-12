@@ -14,9 +14,9 @@
             Supported games: <Bold>My Summer Car</Bold> <LineBreak/>Official Links:<LineBreak/>
             <Hyperlink NavigateUri="https://www.nexusmods.com/mysummercar/mods/147" RequestNavigate="Hyperlink_RequestNavigate">Nexus Mods</Hyperlink><LineBreak/>
             <Hyperlink NavigateUri="https://github.com/piotrulos/MSCModLoader" RequestNavigate="Hyperlink_RequestNavigate">Github</Hyperlink><LineBreak/>
-            <Hyperlink NavigateUri="https://github.com/piotrulos/MSCModLoader/wiki" RequestNavigate="Hyperlink_RequestNavigate">Modders Documentation</Hyperlink>
-            <Hyperlink NavigateUri="https://github.com/piotrulos/MSCModLoader/issues" RequestNavigate="Hyperlink_RequestNavigate">Report any bugs</Hyperlink>
-            <LineBreak/>
+            <Hyperlink NavigateUri="https://github.com/piotrulos/MSCModLoader/wiki" RequestNavigate="Hyperlink_RequestNavigate">Modders Documentation</Hyperlink><LineBreak/>
+            <Hyperlink NavigateUri="https://github.com/piotrulos/MSCModLoader/issues" RequestNavigate="Hyperlink_RequestNavigate">Report any bugs</Hyperlink><LineBreak/>
+
             License: <Hyperlink Click="Hyperlink_Click">GPL-3.0 license</Hyperlink>
             <LineBreak /><LineBreak/>
             This product is <Bold>FREE</Bold>, if you paid money for downloading it, you got <Bold>scammed</Bold>         <LineBreak/> (Donating money on nexus or github is optional)

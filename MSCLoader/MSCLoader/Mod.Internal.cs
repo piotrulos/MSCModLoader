@@ -110,96 +110,101 @@ public partial class Mod
     public void SetupFunction(Setup functionType, Action function)
     {
         newFormat = true;
+        if (function == null) return;
+        if (function.Method.GetMethodBody().GetILAsByteArray().Length <= 2)
+        {
+            Console.WriteLine($"[MSCLoader] SetupFunction() warning: [{function.Method.Name}()] set as [Setup.{functionType}] for mod [{ID}] appears to be empty. Skipping.");
+            return;
+        }
         switch (functionType)
         {
             case Setup.OnNewGame:
                 if (A_OnNewGame == null)
                     A_OnNewGame = function;
                 else
-                    ModConsole.Error($"SetupMod() error for <b>{ID}</b>. You have already created <b>OnNewGame</b> function type.");
+                    ModConsole.Error($"SetupFunction() error for <b>{ID}</b>. You have already created <b>OnNewGame</b> function type.");
                 break;
             case Setup.OnMenuLoad:
                 menuCallbacks = true;
                 if (A_OnMenuLoad == null)
                     A_OnMenuLoad = function;
                 else
-                    ModConsole.Error($"SetupMod() error for <b>{ID}</b>. You have already created <b>OnMenuLoad</b> function type.");
+                    ModConsole.Error($"SetupFunction() error for <b>{ID}</b>. You have already created <b>OnMenuLoad</b> function type.");
                 break;
             case Setup.PreLoad:
                 if (A_PreLoad == null)
                     A_PreLoad = function;
                 else
-                    ModConsole.Error($"SetupMod() error for <b>{ID}</b>. You have already created <b>PreLoad</b> function type.");
+                    ModConsole.Error($"SetupFunction() error for <b>{ID}</b>. You have already created <b>PreLoad</b> function type.");
                 break;
             case Setup.OnLoad:
                 if (A_OnLoad == null)
                     A_OnLoad = function;
                 else
-                    ModConsole.Error($"SetupMod() error for <b>{ID}</b>. You have already created <b>OnLoad</b> function type.");
+                    ModConsole.Error($"SetupFunction() error for <b>{ID}</b>. You have already created <b>OnLoad</b> function type.");
                 break;
             case Setup.PostLoad:
                 if (A_PostLoad == null)
                     A_PostLoad = function;
                 else
-                    ModConsole.Error($"SetupMod() error for <b>{ID}</b>. You have already created <b>PostLoad</b> function type.");
+                    ModConsole.Error($"SetupFunction() error for <b>{ID}</b>. You have already created <b>PostLoad</b> function type.");
                 break;
             case Setup.OnSave:
                 if (A_OnSave == null)
                     A_OnSave = function;
                 else
-                    ModConsole.Error($"SetupMod() error for <b>{ID}</b>. You have already created <b>OnSave</b> function type.");
+                    ModConsole.Error($"SetupFunction() error for <b>{ID}</b>. You have already created <b>OnSave</b> function type.");
                 break;
             case Setup.OnGUI:
                 if (A_OnGUI == null)
                     A_OnGUI = function;
                 else
-                    ModConsole.Error($"SetupMod() error for <b>{ID}</b>. You have already created <b>OnGUI</b> function type.");
+                    ModConsole.Error($"SetupFunction() error for <b>{ID}</b>. You have already created <b>OnGUI</b> function type.");
                 break;
             case Setup.Update:
                 if (A_Update == null)
                     A_Update = function;
                 else
-                    ModConsole.Error($"SetupMod() error for <b>{ID}</b>. You have already created <b>Update</b> function type.");
+                    ModConsole.Error($"SetupFunction() error for <b>{ID}</b>. You have already created <b>Update</b> function type.");
                 break;
             case Setup.FixedUpdate:
                 if (A_FixedUpdate == null)
                     A_FixedUpdate = function;
                 else
-                    ModConsole.Error($"SetupMod() error for <b>{ID}</b>. You have already created <b>FixedUpdate</b> function type.");
+                    ModConsole.Error($"SetupFunction() error for <b>{ID}</b>. You have already created <b>FixedUpdate</b> function type.");
                 break;
             case Setup.OnModEnabled:
                 newEnDisFormat = true;
                 if (A_OnModEnabled == null)
                     A_OnModEnabled = function;
                 else
-                    ModConsole.Error($"SetupMod() error for <b>{ID}</b>. You have already created <b>OnModEnabled</b> function type.");
+                    ModConsole.Error($"SetupFunction() error for <b>{ID}</b>. You have already created <b>OnModEnabled</b> function type.");
                 break;
             case Setup.OnModDisabled:
                 newEnDisFormat = true;
                 if (A_OnModDisabled == null)
                     A_OnModDisabled = function;
                 else
-                    ModConsole.Error($"SetupMod() error for <b>{ID}</b>. You have already created <b>OnModDisabled</b> function type.");
+                    ModConsole.Error($"SetupFunction() error for <b>{ID}</b>. You have already created <b>OnModDisabled</b> function type.");
                 break;
             case Setup.ModSettingsLoaded:
                 newSettingsFormat = true;
                 if (A_ModSettingsLoaded == null)
                     A_ModSettingsLoaded = function;
                 else
-                    ModConsole.Error($"SetupMod() error for <b>{ID}</b>. You have already created <b>ModSettingsLoaded</b> function type.");
+                    ModConsole.Error($"SetupFunction() error for <b>{ID}</b>. You have already created <b>ModSettingsLoaded</b> function type.");
                 break;
             case Setup.ModSettings:
                 newSettingsFormat = true;
                 if (A_ModSettings == null)
                     A_ModSettings = function;
                 else
-                    ModConsole.Error($"SetupMod() error for <b>{ID}</b>. You have already created <b>ModSettings</b> function type.");
+                    ModConsole.Error($"SetupFunction() error for <b>{ID}</b>. You have already created <b>ModSettings</b> function type.");
                 break;
             default:
                 ModConsole.Print("The hell happened here? That's impossible. (Don't bitwise Setup enum)");
                 break;
         }
-
     }
 }
 #endif
