@@ -576,34 +576,37 @@ public static class PlayMakerExtensions
     /// Get a variable of specified type and name.
     /// </summary>
     /// <typeparam name="T">Type of variable to get.</typeparam>
-    /// <param name="pm">PlayMakerFSM</param>
+    /// <param name="pm">PlayMakerFSM from which to get the variable.</param>
     /// <param name="ID">Name of the variable to find.</param>
-    /// <returns>PlayMaker variable</returns>
+    /// <returns>The specified variable if it is found, otherwise null.</returns>
     public static T GetVariable<T>(this PlayMakerFSM pm, string ID) where T : new()
     {
-        try
+        pm.InitializeFSM();
+        Type type = typeof(T);
+        FsmVariables allVars = pm.Fsm.Variables;
+        NamedVariable[] targetedVars = type switch
         {
-            object var = null;
-            pm.Fsm.InitData();
-            switch (typeof(T))
-            {
-                case Type t when t == typeof(FsmFloat): var = (object)pm.Fsm.Variables.FloatVariables.First(x => x.Name == ID); break;
-                case Type t when t == typeof(FsmInt): var = (object)pm.Fsm.Variables.IntVariables.First(x => x.Name == ID); break;
-                case Type t when t == typeof(FsmBool): var = (object)pm.Fsm.Variables.BoolVariables.First(x => x.Name == ID); break;
-                case Type t when t == typeof(FsmGameObject): var = (object)pm.Fsm.Variables.GameObjectVariables.First(x => x.Name == ID); break;
-                case Type t when t == typeof(FsmString): var = (object)pm.Fsm.Variables.StringVariables.First(x => x.Name == ID); break;
-                case Type t when t == typeof(FsmVector2): var = (object)pm.Fsm.Variables.Vector2Variables.First(x => x.Name == ID); break;
-                case Type t when t == typeof(FsmVector3): var = (object)pm.Fsm.Variables.Vector3Variables.First(x => x.Name == ID); break;
-                case Type t when t == typeof(FsmColor): var = (object)pm.Fsm.Variables.ColorVariables.First(x => x.Name == ID); break;
-                case Type t when t == typeof(FsmRect): var = (object)pm.Fsm.Variables.RectVariables.First(x => x.Name == ID); break;
-                case Type t when t == typeof(FsmMaterial): var = (object)pm.Fsm.Variables.MaterialVariables.First(x => x.Name == ID); break;
-                case Type t when t == typeof(FsmTexture): var = (object)pm.Fsm.Variables.TextureVariables.First(x => x.Name == ID); break;
-                case Type t when t == typeof(FsmQuaternion): var = (object)pm.Fsm.Variables.QuaternionVariables.First(x => x.Name == ID); break;
-                case Type t when t == typeof(FsmObject): var = (object)pm.Fsm.Variables.ObjectVariables.First(x => x.Name == ID); break;
-            }
-            return (T)var;
+            _ when type == typeof(FsmFloat) => allVars.FloatVariables,
+            _ when type == typeof(FsmInt) => allVars.IntVariables,
+            _ when type == typeof(FsmBool) => allVars.BoolVariables,
+            _ when type == typeof(FsmGameObject) => allVars.GameObjectVariables,
+            _ when type == typeof(FsmString) => allVars.StringVariables,
+            _ when type == typeof(FsmVector2) => allVars.Vector2Variables,
+            _ when type == typeof(FsmVector3) => allVars.Vector3Variables,
+            _ when type == typeof(FsmColor) => allVars.ColorVariables,
+            _ when type == typeof(FsmRect) => allVars.RectVariables,
+            _ when type == typeof(FsmMaterial) => allVars.MaterialVariables,
+            _ when type == typeof(FsmTexture) => allVars.TextureVariables,
+            _ when type == typeof(FsmQuaternion) => allVars.QuaternionVariables,
+            _ when type == typeof(FsmObject) => allVars.ObjectVariables,
+            _ => null,
+        };
+        if (targetedVars == null)
+        {
+            ModConsole.Warning($"PlayMakerExtension.GetVariable - Type of \"{type.Name}\" is not a NamedVariable, please make sure you are using the correct type (e.g. \"FsmFloat\" instead of \"float\")");
+            return new T();
         }
-        catch (Exception ex) { ModConsole.Error(ex.ToString()); return new T(); }
+        return (T)(object)targetedVars.FirstOrDefault(x => x.Name == ID);
     }
 
     /// <summary>
