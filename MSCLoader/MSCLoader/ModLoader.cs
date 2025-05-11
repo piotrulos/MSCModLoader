@@ -32,7 +32,7 @@ public partial class ModLoader : MonoBehaviour
     /// <summary>
     /// The current version of the ModLoader.
     /// </summary>
-    public static readonly string MSCLoader_Ver;
+    public static readonly string MSCLoader_Ver = MSCLInfo.Version;
 
     /// <summary>
     /// Is this version of ModLoader experimental (this is NOT game experimental branch)
@@ -47,14 +47,6 @@ public partial class ModLoader : MonoBehaviour
     internal static string GetMetadataFolder(string fn) => Path.Combine(MetadataFolder, fn);
     private MSCLoaderCanvasLoading canvLoading;
 
-    //Constructor version number
-    static ModLoader()
-    {
-        if (Assembly.GetExecutingAssembly().GetName().Version.Build == 0)
-            MSCLoader_Ver = $"{Assembly.GetExecutingAssembly().GetName().Version.Major}.{Assembly.GetExecutingAssembly().GetName().Version.Minor}";
-        else
-            MSCLoader_Ver = $"{Assembly.GetExecutingAssembly().GetName().Version.Major}.{Assembly.GetExecutingAssembly().GetName().Version.Minor}.{Assembly.GetExecutingAssembly().GetName().Version.Build}";
-    }
     void Awake()
     {
         if (GameObject.Find("Music") != null)

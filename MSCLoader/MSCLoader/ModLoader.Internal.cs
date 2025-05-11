@@ -16,34 +16,34 @@ public partial class ModLoader
     internal static bool returnToMainMenu = false;
     internal static List<string> saveErrors;
 
-    internal Mod[] actualModList = new Mod[0];
-    internal Mod[] BC_ModList = new Mod[0];
+    internal Mod[] actualModList = [];
+    internal Mod[] BC_ModList = [];
     internal static List<Mod> HasUpdateModList = new List<Mod>();
     internal static List<References> HasUpdateRefList = new List<References>();
     internal List<string> crashedGuids = new List<string>();
     internal List<string> modIDsReferences = new List<string>();
     internal List<References> ReferencesList = new List<References>();
-    internal string[] stdRef = new string[] { "mscorlib", "System.Core", "UnityEngine", "PlayMaker", "MSCLoader", "System", "Assembly-CSharp", "Assembly-CSharp-firstpass", "Assembly-UnityScript", "Assembly-UnityScript-firstpass", "ES2", "Ionic.Zip", "UnityEngine.UI", "0Harmony", "cInput", "Newtonsoft.Json", "System.Xml" };
+    internal string[] stdRef = ["mscorlib", "System.Core", "UnityEngine", "PlayMaker", "MSCLoader", "System", "Assembly-CSharp", "Assembly-CSharp-firstpass", "Assembly-UnityScript", "Assembly-UnityScript-firstpass", "ES2", "Ionic.Zip", "UnityEngine.UI", "0Harmony", "cInput", "Newtonsoft.Json", "System.Xml"];
 
     //Old stuff
-    internal Mod[] PLoadMods = new Mod[0];
-    internal Mod[] SecondPassMods = new Mod[0];
-    internal Mod[] OnGUImods = new Mod[0];
-    internal Mod[] UpdateMods = new Mod[0];
-    internal Mod[] FixedUpdateMods = new Mod[0];
-    internal Mod[] OnSaveMods = new Mod[0];
+    internal Mod[] PLoadMods = [];
+    internal Mod[] SecondPassMods = [];
+    internal Mod[] OnGUImods = [];
+    internal Mod[] UpdateMods = [];
+    internal Mod[] FixedUpdateMods = [];
+    internal Mod[] OnSaveMods = [];
 
     //New Stuff
-    internal Mod[] Mod_OnNewGame = new Mod[0];   //When New Game is started
-    internal Mod[] Mod_PreLoad = new Mod[0];     //Phase 1 (mod loading)
-    internal Mod[] Mod_OnLoad = new Mod[0];      //Phase 2 (mod loading)  
-    internal Mod[] Mod_PostLoad = new Mod[0];    //Phase 3 (mod loading)
-    internal Mod[] Mod_OnSave = new Mod[0];      //When game saves
-    internal Mod[] Mod_OnGUI = new Mod[0];       //Calls unity OnGUI
-    internal Mod[] Mod_Update = new Mod[0];      //Calls unity Update
-    internal Mod[] Mod_FixedUpdate = new Mod[0]; //Calls unity FixedUpdate
+    internal Mod[] Mod_OnNewGame = [];   //When New Game is started
+    internal Mod[] Mod_PreLoad = [];     //Phase 1 (mod loading)
+    internal Mod[] Mod_OnLoad = [];      //Phase 2 (mod loading)  
+    internal Mod[] Mod_PostLoad = [];    //Phase 3 (mod loading)
+    internal Mod[] Mod_OnSave = [];      //When game saves
+    internal Mod[] Mod_OnGUI = [];       //Calls unity OnGUI
+    internal Mod[] Mod_Update = [];      //Calls unity Update
+    internal Mod[] Mod_FixedUpdate = []; //Calls unity FixedUpdate
 
-    internal int currentBuild = Assembly.GetExecutingAssembly().GetName().Version.Revision;
+    internal int currentBuild = MSCLInfo.Build;
     internal int newBuild = 0;
     internal string newVersion = MSCLoader_Ver;
     internal MSCUnloader mscUnloader;
