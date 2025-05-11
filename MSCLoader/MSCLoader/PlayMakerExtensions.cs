@@ -575,35 +575,32 @@ public static class PlayMakerExtensions
     /// <summary>
     /// Get a variable of specified type and name.
     /// </summary>
-    /// <typeparam name="T">Type of variable to get.</typeparam>
-    /// <param name="pm">PlayMakerFSM</param>
+    /// <typeparam name="T">Type of FSM Variable to get.</typeparam>
+    /// <param name="pm">PlayMakerFSM from which to get the variable.</param>
     /// <param name="ID">Name of the variable to find.</param>
-    /// <returns>PlayMaker variable</returns>
-    public static T GetVariable<T>(this PlayMakerFSM pm, string ID) where T : new()
+    /// <returns>The specified variable if it is found, otherwise null.</returns>
+    public static T GetVariable<T>(this PlayMakerFSM pm, string ID) where T : class, new()
     {
-        try
-        {
-            object var = null;
-            pm.Fsm.InitData();
-            switch (typeof(T))
-            {
-                case Type t when t == typeof(FsmFloat): var = (object)pm.Fsm.Variables.FloatVariables.First(x => x.Name == ID); break;
-                case Type t when t == typeof(FsmInt): var = (object)pm.Fsm.Variables.IntVariables.First(x => x.Name == ID); break;
-                case Type t when t == typeof(FsmBool): var = (object)pm.Fsm.Variables.BoolVariables.First(x => x.Name == ID); break;
-                case Type t when t == typeof(FsmGameObject): var = (object)pm.Fsm.Variables.GameObjectVariables.First(x => x.Name == ID); break;
-                case Type t when t == typeof(FsmString): var = (object)pm.Fsm.Variables.StringVariables.First(x => x.Name == ID); break;
-                case Type t when t == typeof(FsmVector2): var = (object)pm.Fsm.Variables.Vector2Variables.First(x => x.Name == ID); break;
-                case Type t when t == typeof(FsmVector3): var = (object)pm.Fsm.Variables.Vector3Variables.First(x => x.Name == ID); break;
-                case Type t when t == typeof(FsmColor): var = (object)pm.Fsm.Variables.ColorVariables.First(x => x.Name == ID); break;
-                case Type t when t == typeof(FsmRect): var = (object)pm.Fsm.Variables.RectVariables.First(x => x.Name == ID); break;
-                case Type t when t == typeof(FsmMaterial): var = (object)pm.Fsm.Variables.MaterialVariables.First(x => x.Name == ID); break;
-                case Type t when t == typeof(FsmTexture): var = (object)pm.Fsm.Variables.TextureVariables.First(x => x.Name == ID); break;
-                case Type t when t == typeof(FsmQuaternion): var = (object)pm.Fsm.Variables.QuaternionVariables.First(x => x.Name == ID); break;
-                case Type t when t == typeof(FsmObject): var = (object)pm.Fsm.Variables.ObjectVariables.First(x => x.Name == ID); break;
-            }
-            return (T)var;
-        }
-        catch (Exception ex) { ModConsole.Error(ex.ToString()); return new T(); }
+        pm.InitializeFSM();
+        Type type = typeof(T);
+        FsmVariables allVars = pm.Fsm.Variables;
+
+        if (type == typeof(FsmFloat)) return allVars.FindFsmFloat(ID) as T;
+        if (type == typeof(FsmInt)) return allVars.FindFsmInt(ID) as T;
+        if (type == typeof(FsmBool)) return allVars.FindFsmBool(ID) as T;
+        if (type == typeof(FsmGameObject)) return allVars.FindFsmGameObject(ID) as T;
+        if (type == typeof(FsmString)) return allVars.FindFsmString(ID) as T;
+        if (type == typeof(FsmVector2)) return allVars.FindFsmVector2(ID) as T;
+        if (type == typeof(FsmVector3)) return allVars.FindFsmVector3(ID) as T;
+        if (type == typeof(FsmColor)) return allVars.FindFsmColor(ID) as T;
+        if (type == typeof(FsmRect)) return allVars.FindFsmRect(ID) as T;
+        if (type == typeof(FsmMaterial)) return allVars.FindFsmMaterial(ID) as T;
+        if (type == typeof(FsmTexture)) return allVars.FindFsmTexture(ID) as T;
+        if (type == typeof(FsmQuaternion)) return allVars.FindFsmQuaternion(ID) as T;
+        if (type == typeof(FsmObject)) return allVars.FindFsmObject(ID) as T;
+
+        ModConsole.Warning($"PlayMakerExtension.GetVariable - Type of <b>{type.Name}</b> is not a NamedVariable, please make sure you are using the correct type (e.g. <b>FsmFloat</b> instead of <b>float</b>)");
+        return null;
     }
 
     /// <summary>
