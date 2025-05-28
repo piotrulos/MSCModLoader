@@ -1,4 +1,5 @@
-﻿using HutongGames.PlayMaker;
+﻿#if !Mini
+using HutongGames.PlayMaker;
 
 namespace MSCLoader;
 
@@ -118,3 +119,4 @@ public class UnifiedRaycast : MonoBehaviour
         return instance.hits;
     }
 }
+#endif

@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿#if !Mini
+using Newtonsoft.Json;
+#endif
 using System;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
@@ -10,9 +12,10 @@ internal class MSCLCanvasManager : MonoBehaviour
 {
     private bool isApplicationQuitting = false;
     private Canvas canvas;
+
     void Start()
     {
-        gameObject.name = gameObject.name.Replace("(Clone)", string.Empty);
+        gameObject.name = gameObject.name.Replace("(Clone)", " " + Guid.NewGuid().ToString("n").Substring(0, 8));
         canvas = GetComponent<Canvas>();
     }
 #if !Mini

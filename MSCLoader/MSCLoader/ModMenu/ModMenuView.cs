@@ -13,6 +13,7 @@ internal class ModMenuView : MonoBehaviour
     public GameObject HeaderGroupPrefab;
     public GameObject ButtonPrefab, CheckBoxPrefab, KeyBindPrefab, LabelPrefab, SliderPrefab, TextBoxPrefab;
     public GameObject DropDownListPrefab, ColorPickerPrefab;
+    public GameObject VerticalGroupPrefab, HorizontalGroupPrefab;
     public UniversalView universalView;
 
     public bool modList = false;
@@ -132,7 +133,7 @@ internal class ModMenuView : MonoBehaviour
         Transform currentTransform = null;
         for (int i = 0; i < Settings.GetModSettings(ModLoader.LoadedMods[0]).Count; i++)
         {
-            if (Settings.GetModSettings(ModLoader.LoadedMods[0])[i].SettingType == SettingsType.Header)
+            if (Settings.GetModSettings(ModLoader.LoadedMods[0])[i].SettingType == SettingsType.HeaderGroup)
                 currentTransform = SettingsHeader(Settings.GetModSettings(ModLoader.LoadedMods[0])[i], listView.transform);
             else
                 SettingsList(Settings.GetModSettings(ModLoader.LoadedMods[0])[i], currentTransform);
@@ -142,7 +143,7 @@ internal class ModMenuView : MonoBehaviour
         keyBind.transform.SetParent(currentTransform, false);
         for (int i = 0; i < Settings.GetModSettings(ModLoader.LoadedMods[1]).Count; i++)
         {
-            if (Settings.GetModSettings(ModLoader.LoadedMods[1])[i].SettingType == SettingsType.Header)
+            if (Settings.GetModSettings(ModLoader.LoadedMods[1])[i].SettingType == SettingsType.HeaderGroup)
                 currentTransform = SettingsHeader(Settings.GetModSettings(ModLoader.LoadedMods[1])[i], listView.transform);
             else
                 SettingsList(Settings.GetModSettings(ModLoader.LoadedMods[1])[i], currentTransform);
@@ -374,6 +375,7 @@ internal class ModMenuView : MonoBehaviour
         RemoveChildren(listView.transform);
         listView.GetComponentInParent<ScrollRect>().verticalNormalizedPosition = 0;
         Transform currentTransform = null;
+        Transform previousTransform = null;
         //If first settings element is not header, create one.
         if (mod.proSettings)
         {
@@ -382,7 +384,7 @@ internal class ModMenuView : MonoBehaviour
             CreateText(header.HeaderListView.transform, $"<color=aqua>Incompatible settings format! Settings below may not load or work correctly.</color>{Environment.NewLine}Report that to mod author to use proper settings format.");
         }
 
-        if (Settings.GetModSettings(mod)[0].SettingType != SettingsType.Header)
+        if (Settings.GetModSettings(mod)[0].SettingType != SettingsType.HeaderGroup)
         {
             SettingsGroup header = CreateHeader(listView.transform, "Settings", Color.cyan);
             currentTransform = header.HeaderListView.transform;
@@ -390,12 +392,35 @@ internal class ModMenuView : MonoBehaviour
 
         for (int i = 0; i < Settings.GetModSettings(mod).Count; i++)
         {
-            if (Settings.GetModSettings(mod)[i].SettingType == SettingsType.Header)
-                currentTransform = SettingsHeader(Settings.GetModSettings(mod)[i], listView.transform);
-            else
+            switch (Settings.GetModSettings(mod)[i].SettingType)
             {
-                SettingsList(Settings.GetModSettings(mod)[i], currentTransform);
+                case SettingsType.HeaderGroup:
+                    currentTransform = SettingsHeader(Settings.GetModSettings(mod)[i], listView.transform);
+                    previousTransform = null;
+                    break;
+                case SettingsType.LayoutGroup:
+                    if (previousTransform == null)
+                    {
+                        previousTransform = currentTransform;
+                        currentTransform = SettingsLayoutGroup(Settings.GetModSettings(mod)[i], listView.transform);
+                    }
+                    else
+                        ModConsole.Error($"<b>{mod.ID}</b> Settings error - Groups cannot be nested, end previous group first.");
+                    break;
+                case SettingsType.LayoutGroupEnd:
+                    if (previousTransform != null)
+                    {
+                        currentTransform = previousTransform;
+                        previousTransform = null;
+                    }
+                    else
+                        ModConsole.Error($"<b>{mod.ID}</b> Settings error - EndGroup can be only called after creating VerticalGroup or HorizontalGroup. And before creating new Header (Headers can't be in group so header already closes previous group).");
+                    break;
+                default:
+                    SettingsList(Settings.GetModSettings(mod)[i], currentTransform);
+                    break;
             }
+
         }
 
         if (!mod.hideResetAllSettings)
@@ -466,6 +491,14 @@ internal class ModMenuView : MonoBehaviour
         if (setting.CollapsedByDefault) header.SetHeaderNoAnim(false);
         header.gameObject.SetActive(setting.IsVisible);
         return header.HeaderListView.transform;
+    }
+    private Transform SettingsLayoutGroup(ModSetting set, Transform listView)
+    {
+        SettingsGroupLayout setting = (SettingsGroupLayout)set;
+        SettingsGroup group = CreateGroup(listView.transform, setting.IsHorizontal);
+        setting.HeaderElement = group;
+        group.gameObject.SetActive(setting.IsVisible);
+        return group.HeaderListView.transform;
     }
 
     internal void SettingsList(ModSetting set, Transform listView)
@@ -686,6 +719,13 @@ internal class ModMenuView : MonoBehaviour
         SettingsGroup header = hdr.GetComponent<SettingsGroup>();
         header.HeaderTitle.text = title.ToUpper();
         header.HeaderTitle.color = textColor;
+        hdr.transform.SetParent(listView, false);
+        return header;
+    }
+    public SettingsGroup CreateGroup(Transform listView, bool horizontal = false)
+    {
+        GameObject hdr = GameObject.Instantiate(horizontal ? HorizontalGroupPrefab : VerticalGroupPrefab);
+        SettingsGroup header = hdr.GetComponent<SettingsGroup>();
         hdr.transform.SetParent(listView, false);
         return header;
     }

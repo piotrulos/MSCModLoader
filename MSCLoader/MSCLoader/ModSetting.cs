@@ -19,6 +19,13 @@ public class ModSetting
 
     internal SettingsElement SettingsElement;
     internal SettingsGroup HeaderElement;
+
+    internal ModSetting(SettingsType type, bool visibleByDefault) 
+    {
+        SettingType = type; 
+        DefaultVisibility = visibleByDefault;
+        IsVisible = visibleByDefault;
+    }
     internal ModSetting(string id, string name, Action doAction, SettingsType type, bool visibleByDefault)
     {
         ID = id;
@@ -478,7 +485,7 @@ public class SettingsHeader : ModSetting
     }
 
 
-    internal SettingsHeader(string name, Color backgroundColor, Color textColor, bool collapsedByDefault, bool visibleByDefault) : base(null, name, null, SettingsType.Header, visibleByDefault)
+    internal SettingsHeader(string name, Color backgroundColor, Color textColor, bool collapsedByDefault, bool visibleByDefault) : base(null, name, null, SettingsType.HeaderGroup, visibleByDefault)
     {
         BackgroundColor = backgroundColor;
         TextColor = textColor;
@@ -631,6 +638,19 @@ public class SettingsButton : ModSetting
         CustomIcon = customIcon;
     }
 }
+
+/// <summary>
+/// Settings Horizontal/Vertical Group
+/// </summary>
+public class SettingsGroupLayout : ModSetting
+{  
+    internal bool IsHorizontal = false;
+    internal SettingsGroupLayout(bool isHorizontal, bool visibleByDefault) : base(SettingsType.LayoutGroup, visibleByDefault) 
+    {
+        IsHorizontal = isHorizontal;
+    }
+}
+
 /// <summary>
 /// Settings Reset Button
 /// </summary>

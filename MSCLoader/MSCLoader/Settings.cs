@@ -31,10 +31,12 @@ internal enum SettingsType
     Slider,
     SliderInt,
     TextBox,
-    Header,
     Text,
     DropDown,
-    ColorPicker
+    ColorPicker,
+    HeaderGroup,
+    LayoutGroup,
+    LayoutGroupEnd
 }
 
 /// <summary>
@@ -133,6 +135,39 @@ public partial class Settings
         SettingsHeader s = new SettingsHeader(HeaderTitle, backgroundColor, textColor, collapsedByDefault, visibleByDefault);
         settingsMod.modSettingsList.Add(s);
         return s;
+    }
+
+    /// <summary>
+    /// Create Settings Group, you can group settings to easily toggle visibility of multiple elements or create horizontal layout group.
+    /// </summary>
+    /// <param name="isHorizontal">Create Horizontal Layout Group (default=false)</param>
+    /// <param name="visibleByDefault">Visible by default (default=true)</param>
+    /// <returns>SettingsGroupLayout</returns>
+    public static SettingsGroupLayout CreateGroup(bool isHorizontal = false, bool visibleByDefault = true)
+    {
+        if (settingsMod == null)
+        {
+            ModConsole.Error($"[<b>{settingsMod}</b>] CreateGroup() error: unknown Mod instance, settings must be created inside your ModSettings function");
+            return null;
+        }
+
+        SettingsGroupLayout s = new SettingsGroupLayout(isHorizontal, visibleByDefault);
+        settingsMod.modSettingsList.Add(s);
+        return s;
+    }
+
+    /// <summary>
+    /// End and close previously created group
+    /// </summary>
+    public static void EndGroup()
+    {
+        if (settingsMod == null)
+        {
+            ModConsole.Error($"[<b>{settingsMod}</b>] EndGroup() error: unknown Mod instance, settings must be created inside your ModSettings function");
+            return;
+        }
+        ModSetting s = new ModSetting(SettingsType.LayoutGroupEnd, true);
+        settingsMod.modSettingsList.Add(s);
     }
 
     /// <summary>

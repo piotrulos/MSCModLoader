@@ -10,6 +10,8 @@ internal class MSCLoaderCanvasLoading : MonoBehaviour
     public Slider lProgress, uProgress;
     public Image lBackFade;
 
+    private Coroutine updateUIAnim;
+
     void Awake()
     {
         modLoadingUI.SetActive(false);
@@ -18,7 +20,7 @@ internal class MSCLoaderCanvasLoading : MonoBehaviour
     public void ToggleUpdateUI(bool toggle)
     {
         if (modUpdateUI.activeSelf == toggle) return;
-        StopCoroutine(UpdateUIAnim(!toggle)); //kek?
+        if(updateUIAnim != null) StopCoroutine(updateUIAnim);
         if (toggle)
         {
             modUpdateUI.transform.localScale = new Vector3(1, 0, 1);
@@ -27,7 +29,7 @@ internal class MSCLoaderCanvasLoading : MonoBehaviour
         {
             modUpdateUI.transform.localScale = new Vector3(1, 1, 1);
         }
-        StartCoroutine(UpdateUIAnim(toggle));
+        updateUIAnim = StartCoroutine(UpdateUIAnim(toggle));
     }
     public void ToggleLoadingUI(bool toggle)
     {
@@ -105,8 +107,8 @@ internal class MSCLoaderCanvasLoading : MonoBehaviour
                 yield return null;
             }
             modUpdateUI.SetActive(open);
-
         }
+        updateUIAnim = null;
     }
 
     IEnumerator LoadingUIAnimClose()

@@ -293,11 +293,6 @@ internal class ModMenu : Mod
         {
             switch (Settings.GetModSettings(mod)[i].SettingType)
             {
-                case SettingsType.Button:
-                case SettingsType.RButton:
-                case SettingsType.Header:
-                case SettingsType.Text:
-                    continue;
                 case SettingsType.CheckBoxGroup:
                     SettingsCheckBoxGroup group = (SettingsCheckBoxGroup)Settings.GetModSettings(mod)[i];
                     list.settings.Add(new Setting(group.ID, group.Value));
@@ -325,6 +320,8 @@ internal class ModMenu : Mod
                 case SettingsType.ColorPicker:
                     SettingsColorPicker colorPicker = (SettingsColorPicker)Settings.GetModSettings(mod)[i];
                     list.settings.Add(new Setting(colorPicker.ID, colorPicker.Value));
+                    break;
+                default:
                     break;
             }
         }
@@ -419,11 +416,6 @@ internal class ModMenu : Mod
                         continue;
                     switch (ms.SettingType)
                     {
-                        case SettingsType.Button:
-                        case SettingsType.RButton:
-                        case SettingsType.Header:
-                        case SettingsType.Text:
-                            continue;
                         case SettingsType.CheckBoxGroup:
                             SettingsCheckBoxGroup group = (SettingsCheckBoxGroup)ms;
                             group.SetValue(bool.Parse(settings.settings[j].Value.ToString()));
@@ -451,6 +443,8 @@ internal class ModMenu : Mod
                         case SettingsType.ColorPicker:
                             SettingsColorPicker colorPicker = (SettingsColorPicker)ms;
                             colorPicker.Value = settings.settings[j].Value.ToString();
+                            break;
+                        default:
                             break;
                     }
                 }

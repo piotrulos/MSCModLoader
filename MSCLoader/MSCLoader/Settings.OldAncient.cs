@@ -36,10 +36,6 @@ namespace MSCLoader
                 case SettingsType.TextBox:
                     valueName = ((SettingsTextBox)modSetting).GetValue();
                     return ((SettingsTextBox)modSetting).GetValue();
-                case SettingsType.Header:
-                case SettingsType.Button:
-                case SettingsType.RButton:
-                case SettingsType.Text:
                 case SettingsType.DropDown:
                     valueName = ((SettingsDropDownList)modSetting).GetSelectedItemIndex();
                     return ((SettingsDropDownList)modSetting).GetSelectedItemIndex();

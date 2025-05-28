@@ -4,7 +4,7 @@ using UnityEngine.UI;
 namespace MSCLoader;
 internal class SettingsGroup : MonoBehaviour
 {
-
+    public bool isHeader = true;
     public RawImage headerButtonImg;
     public RectTransform contents;
     public LayoutElement conentsElement;
@@ -17,6 +17,7 @@ internal class SettingsGroup : MonoBehaviour
     public GameObject HeaderListView;
     public void Toggle()
     {
+        if(!isHeader) return;
         if (anim) return;
         if (collapsed)
         {
@@ -30,6 +31,8 @@ internal class SettingsGroup : MonoBehaviour
 
     public void SetHeader(bool expand)
     {
+        if (!isHeader) return;
+
         if (collapsed)
         {
             if (expand)
@@ -50,6 +53,8 @@ internal class SettingsGroup : MonoBehaviour
 
     public void SetHeaderNoAnim(bool expand)
     {
+        if (!isHeader) return;
+
         if (collapsed)
         {
             if (expand)
@@ -73,7 +78,6 @@ internal class SettingsGroup : MonoBehaviour
     }
     IEnumerator Anim(bool expand)
     {
-
         anim = true;
         if (expand)
         {
