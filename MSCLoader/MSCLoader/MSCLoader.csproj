@@ -136,6 +136,7 @@
     <Compile Include="FsmHook.cs" />
     <Compile Include="Info\MSCLInfo.cs" />
     <Compile Include="Keybind.cs" />
+    <Compile Include="Keybind.Old.cs" />
     <Compile Include="KeyBinding.cs" />
     <Compile Include="LoadAssets.cs" />
     <Compile Include="Mod.cs" />
@@ -173,6 +174,7 @@
     <Compile Include="DummyCompLayer\ModSave.cs" />
     <Compile Include="ModMenu.cs" />
     <Compile Include="ModMetadata.cs" />
+    <Compile Include="ModKeybind.cs" />
     <Compile Include="ModSetting.cs" />
     <Compile Include="ModUI.cs" />
     <Compile Include="ModUIDrag.cs" />

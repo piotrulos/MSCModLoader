@@ -498,6 +498,7 @@ public class SettingsHeader : ModSetting
 /// </summary>
 public class SettingsText : ModSetting
 {
+    internal TextAnchor Alignment = TextAnchor.MiddleLeft;
     /// <summary>
     /// Get Text value
     /// </summary>
@@ -516,7 +517,10 @@ public class SettingsText : ModSetting
         UpdateName(value);
     }
 
-    internal SettingsText(string name, bool visibleByDefault) : base(null, name, null, SettingsType.Text, visibleByDefault) { }
+    internal SettingsText(string name, TextAlignment textAlignment, bool visibleByDefault) : base(null, name, null, SettingsType.Text, visibleByDefault)
+    {
+        Alignment = (TextAnchor)(textAlignment + 3); //Convert TextAlignment to TextAnchor (TextAlignment is easier for modders)
+    }
 
 }
 
@@ -701,7 +705,7 @@ public class SettingsDynamicText : SettingsText
     /// </summary>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public Settings Instance;
-    internal SettingsDynamicText(string name) : base(name, true)
+    internal SettingsDynamicText(string name) : base(name, TextAlignment.Left, true)
     {
         Instance = new Settings(this);
         Instance.ID = name;

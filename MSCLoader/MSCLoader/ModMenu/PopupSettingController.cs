@@ -8,6 +8,7 @@ internal class PopupSettingController : MonoBehaviour
 #if !Mini
     PopupSetting currentPopupSetting;
     Action<string> OnSubmit;
+
     internal bool dontCloseOnSubmit = false;
     GameObject activePopup = null;
     public void CreatePopupSetting(PopupSetting popupSetting, Action<string> onSubmit, bool dontClose)
@@ -25,9 +26,22 @@ internal class PopupSettingController : MonoBehaviour
             ModMenuView mmv = GameObject.Find("MSCLoader Mod Menu").GetComponentInChildren<ModMenuView>();
             popupSettingGroup.PopupTitle.text = popupSetting.WindowTitle.ToUpper();
             popupSettingGroup.ConfirmButtonText.text = popupSetting.SubmitButtonText.ToUpper();
+            Transform currentTransform = popupSettingGroup.PopupListView.transform;
+
             for (int i = 0; i < popupSetting.settingElements.Count; i++)
             {
-                mmv.SettingsList(popupSetting.settingElements[i], popupSettingGroup.PopupListView.transform);
+                switch (popupSetting.settingElements[i].SettingType)
+                {
+                    case SettingsType.LayoutGroup:
+                        currentTransform = mmv.SettingsLayoutGroup(popupSetting.settingElements[i], currentTransform);
+                        break;
+                    case SettingsType.LayoutGroupEnd:
+                        currentTransform = popupSettingGroup.PopupListView.transform;
+                        break;
+                    default:
+                        mmv.SettingsList(popupSetting.settingElements[i], currentTransform);
+                        break;
+                }
             }
         }
     }

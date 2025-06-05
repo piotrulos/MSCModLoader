@@ -98,9 +98,10 @@ public partial class Mod
     internal Action A_ModSettingsLoaded;    //When mod settings have been loaded from file
 
     internal List<ModSetting> modSettingsList = new List<ModSetting>();
-    internal List<Keybind> Keybinds = new List<Keybind>();
-    internal List<Keybind> DefaultKeybinds = new List<Keybind>();
-    internal string[] AdditionalReferences = new string[0];
+    internal List<ModKeybind> modKeybindsList = new List<ModKeybind>();
+  //  internal List<Keybind> Keybinds = new List<Keybind>();//
+   // internal List<Keybind> DefaultKeybinds = new List<Keybind>();//
+    internal string[] AdditionalReferences = [];
     internal string asmGuid = "";
     /// <summary>
     /// Setup selected function for your mod

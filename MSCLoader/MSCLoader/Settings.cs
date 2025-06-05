@@ -176,14 +176,23 @@ public partial class Settings
     /// <param name="text">Just a text (supports unity rich text)</param>
     /// <param name="visibleByDefault">Visible by default (default=true)</param>
     /// <returns>SettingsText</returns>
-    public static SettingsText AddText(string text, bool visibleByDefault = true)
+    public static SettingsText AddText(string text, bool visibleByDefault = true) => AddText(text, TextAlignment.Left, visibleByDefault);
+
+    /// <summary>
+    /// Add just a text
+    /// </summary>
+    /// <param name="text">Just a text (supports unity rich text)</param>
+    /// <param name="textAlignment">Text alignment (Left, Center, Right)</param>
+    /// <param name="visibleByDefault">Visible by default (default=true)</param>
+    /// <returns>SettingsText</returns>
+    public static SettingsText AddText(string text, TextAlignment textAlignment, bool visibleByDefault = true)
     {
         if (settingsMod == null)
         {
             ModConsole.Error($"[<b>{settingsMod}</b>] AddText() error: unknown Mod instance, settings must be created inside your ModSettings function");
             return null;
         }
-        SettingsText s = new SettingsText(text, visibleByDefault);
+        SettingsText s = new SettingsText(text, textAlignment, visibleByDefault);
         settingsMod.modSettingsList.Add(s);
         return s;
     }

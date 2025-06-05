@@ -352,14 +352,46 @@ public class PopupSetting
     public void ClosePopup() => ModUI.popupSettingController.DestroyActivePopup();
 
     /// <summary>
+    /// Create Settings Group, you can group settings to easily toggle visibility of multiple elements or create horizontal layout group.
+    /// </summary>
+    /// <param name="isHorizontal">Create Horizontal Layout Group (default=false)</param>
+    /// <param name="visibleByDefault">Visible by default (default=true)</param>
+    /// <returns>SettingsGroupLayout</returns>
+    public SettingsGroupLayout CreateGroup(bool isHorizontal = false, bool visibleByDefault = true)
+    {
+        SettingsGroupLayout s = new SettingsGroupLayout(isHorizontal, visibleByDefault);
+        settingElements.Add(s);
+        return s;
+    }
+
+    /// <summary>
+    /// End and close previously created group
+    /// </summary>
+    public void EndGroup()
+    {
+        ModSetting s = new ModSetting(SettingsType.LayoutGroupEnd, true);
+        settingElements.Add(s);
+    }
+
+    /// <summary>
     /// Add just a text (doesn't return anything on confirm)
     /// </summary>
     /// <param name="text">Just a text (supports unity rich text)</param>
     /// <param name="visibleByDefault">Should this setting be visible by default</param>
     /// <returns>SettingsText</returns>
-    public SettingsText AddText(string text, bool visibleByDefault = true)
+    public SettingsText AddText(string text, bool visibleByDefault = true) => AddText(text, TextAlignment.Left, visibleByDefault);
+
+
+    /// <summary>
+    /// Add just a text (doesn't return anything on confirm)
+    /// </summary>
+    /// <param name="text">Just a text (supports unity rich text)</param>
+    /// <param name="textAlignment">Text alignment (Left, Center, Right)</param>
+    /// <param name="visibleByDefault">Should this setting be visible by default</param>
+    /// <returns>SettingsText</returns>
+    public SettingsText AddText(string text, TextAlignment textAlignment, bool visibleByDefault = true)
     {
-        SettingsText s = new SettingsText(text, visibleByDefault);
+        SettingsText s = new SettingsText(text, textAlignment, visibleByDefault);
         settingElements.Add(s);
         return s;
     }

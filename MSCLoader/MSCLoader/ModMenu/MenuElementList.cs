@@ -131,7 +131,7 @@ namespace MSCLoader
                     uv.FillSettings(mod);
                 });
             }
-            if (Keybind.Get(mod).Count > 0)
+            if (Keybind.GetKeybinds(mod).Count > 0)
             {
                 KeybindsBtn.gameObject.SetActive(true);
                 KeybindsBtn.onClick.AddListener(delegate

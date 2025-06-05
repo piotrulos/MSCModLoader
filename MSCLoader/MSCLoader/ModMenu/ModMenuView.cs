@@ -139,7 +139,7 @@ internal class ModMenuView : MonoBehaviour
                 SettingsList(Settings.GetModSettings(ModLoader.LoadedMods[0])[i], currentTransform);
         }
         GameObject keyBind = Instantiate(KeyBindPrefab);
-        keyBind.GetComponent<KeyBinding>().LoadBind(ModLoader.LoadedMods[0].Keybinds[0], ModLoader.LoadedMods[0]);
+        keyBind.GetComponent<KeyBinding>().LoadBind((SettingsKeybind)ModLoader.LoadedMods[0].modKeybindsList[0], ModLoader.LoadedMods[0]);
         keyBind.transform.SetParent(currentTransform, false);
         for (int i = 0; i < Settings.GetModSettings(ModLoader.LoadedMods[1]).Count; i++)
         {
@@ -455,23 +455,25 @@ internal class ModMenuView : MonoBehaviour
         listView.GetComponentInParent<ScrollRect>().verticalNormalizedPosition = 0;
         Transform currentTransform = null;
         //If first settings element is not header, create one.
-        if (mod.Keybinds[0].ID != null && mod.Keybinds[0].Vals == null)
+        if (!mod.modKeybindsList[0].IsHeader)
         {
             SettingsGroup header = CreateHeader(listView.transform, "Keybinds", Color.yellow);
             currentTransform = header.HeaderListView.transform;
         }
-        for (int i = 0; i < mod.Keybinds.Count; i++)
+        for (int i = 0; i < mod.modKeybindsList.Count; i++)
         {
-            if (mod.Keybinds[i].ID == null && mod.Keybinds[i].Vals != null)
+            if (mod.modKeybindsList[i].IsHeader)
             {
-                SettingsGroup header = CreateHeader(listView.transform, mod.Keybinds[i].Name, (Color)mod.Keybinds[i].Vals[1]);
-                header.HeaderBackground.color = (Color)mod.Keybinds[i].Vals[0];
+                KeybindHeader hdr = (KeybindHeader)mod.modKeybindsList[i];
+                SettingsGroup header = CreateHeader(listView.transform, hdr.Name, hdr.TextColor);
+                header.HeaderBackground.color = hdr.BackgroundColor;
+                if(hdr.CollapsedByDefault) header.SetHeaderNoAnim(false);
                 currentTransform = header.HeaderListView.transform;
             }
             else
             {
                 GameObject keyBind = Instantiate(KeyBindPrefab);
-                keyBind.GetComponent<KeyBinding>().LoadBind(mod.Keybinds[i], mod);
+                keyBind.GetComponent<KeyBinding>().LoadBind((SettingsKeybind)mod.modKeybindsList[i], mod);
                 keyBind.transform.SetParent(currentTransform, false);
             }
         }
@@ -492,7 +494,7 @@ internal class ModMenuView : MonoBehaviour
         header.gameObject.SetActive(setting.IsVisible);
         return header.HeaderListView.transform;
     }
-    private Transform SettingsLayoutGroup(ModSetting set, Transform listView)
+    internal Transform SettingsLayoutGroup(ModSetting set, Transform listView)
     {
         SettingsGroupLayout setting = (SettingsGroupLayout)set;
         SettingsGroup group = CreateGroup(listView.transform, setting.IsHorizontal);
@@ -696,6 +698,7 @@ internal class ModMenuView : MonoBehaviour
                 SettingsElement label = tx.GetComponent<SettingsElement>();
                 settingText.SettingsElement = label;
                 label.settingName.text = settingText.Name;
+                label.settingName.alignment = settingText.Alignment;
                 tx.transform.SetParent(listView, false);
                 label.gameObject.SetActive(settingText.IsVisible);
                 break;
