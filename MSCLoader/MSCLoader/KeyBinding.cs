@@ -32,7 +32,12 @@ internal class KeyBinding : MonoBehaviour
 
     public void ResetToDefault()
     {
-
+        ModUI.ShowYesNoMessage($"This will reset keybind to default{Environment.NewLine}Default keybind is: <color=yellow>{(keyb.DefaultKeybModif == KeyCode.None ? keyb.DefaultKeybKey.ToString().ToUpper() : $"{keyb.DefaultKeybModif.ToString().ToUpper()} + {FriendlyBindName(keyb.DefaultKeybKey.ToString()).ToUpper()}")}</color>{Environment.NewLine}Do you want to continue?", "Reset Keybind", delegate
+        {
+            keyb.ResetToDefault();
+            ModMenu.SaveModBinds(mod);
+            ChangeKeyCode(false, ismodifier);
+        });
     }
     public void CancelReassign()
     {
@@ -55,9 +60,34 @@ internal class KeyBinding : MonoBehaviour
         mod = m;
         keyb = kb;
         KeybindName.text = kb.Name;
-        KeybindText.text = kb.KeybModif == KeyCode.None ? kb.KeybKey.ToString().ToUpper() : $"{kb.KeybModif.ToString().ToUpper()} + {kb.KeybKey.ToString().ToUpper()}";
+        KeybindText.text = kb.KeybModif == KeyCode.None ? FriendlyBindName(kb.KeybKey.ToString()).ToUpper() : $"{FriendlyBindName(kb.KeybModif.ToString()).ToUpper()} + {FriendlyBindName(kb.KeybKey.ToString()).ToUpper()}";
+            
     }
-
+    private string FriendlyBindName(string name)
+    {
+        if (name.StartsWith("Keypad"))
+        {
+            switch (name)
+            {
+                case "KeypadDivide":
+                    return "Num /";
+                case "KeypadMultiply":
+                    return "Num *";
+                case "KeypadMinus":
+                    return "Num -";
+                case "KeypadPlus":
+                    return "Num +";
+                case "KeypadEnter":
+                    return "Num Enter";
+                case "KeypadEquals":
+                    return "Num =";
+                case "KeypadPeriod":
+                    return "Num .";
+            }
+            return name.Replace("Keypad", "Num ");
+        }        
+        return name;
+    }
     void Update()
     {
         if (reassignKey)
@@ -100,7 +130,7 @@ internal class KeyBinding : MonoBehaviour
         }
         else
         {
-            KeybindText.text = keyb.KeybModif == KeyCode.None ? keyb.KeybKey.ToString().ToUpper() : $"{keyb.KeybModif.ToString().ToUpper()} + {keyb.KeybKey.ToString().ToUpper()}";
+            KeybindText.text = keyb.KeybModif == KeyCode.None ? FriendlyBindName(keyb.KeybKey.ToString()).ToUpper() : $"{FriendlyBindName(keyb.KeybModif.ToString()).ToUpper()} + {keyb.KeybKey.ToString().ToUpper()}";
             Buttons.SetActive(true);
             ButtonsR.SetActive(false);
         }
@@ -109,9 +139,7 @@ internal class KeyBinding : MonoBehaviour
     {
         if (modifier)
         {
-            if (keyb.KeybKey == kcode && kcode != KeyCode.None)
-            {
-
+            if (keyb.KeybKey == kcode && kcode != KeyCode.None)          {
                 KeybindError(true);
                 return;
             }

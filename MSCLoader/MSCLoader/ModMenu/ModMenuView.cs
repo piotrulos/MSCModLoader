@@ -402,7 +402,7 @@ internal class ModMenuView : MonoBehaviour
                     if (previousTransform == null)
                     {
                         previousTransform = currentTransform;
-                        currentTransform = SettingsLayoutGroup(Settings.GetModSettings(mod)[i], listView.transform);
+                        currentTransform = SettingsLayoutGroup(Settings.GetModSettings(mod)[i], currentTransform);
                     }
                     else
                         ModConsole.Error($"<b>{mod.ID}</b> Settings error - Groups cannot be nested, end previous group first.");
@@ -425,7 +425,7 @@ internal class ModMenuView : MonoBehaviour
 
         if (!mod.hideResetAllSettings)
         {
-            SettingsElement rbtn = CreateButton(listView.transform, "Reset all settings to default", new Color32(128,255,255,255), Color.black);
+            SettingsElement rbtn = CreateButton(listView.transform, "Reset all settings to default", new Color32(128, 255, 255, 255), Color.black);
             rbtn.settingName.alignment = TextAnchor.MiddleLeft;
             rbtn.iconElement.texture = rbtn.iconPack[(int)SettingsButton.ButtonIcon.Reset];
             rbtn.iconElement.gameObject.SetActive(true);
@@ -477,7 +477,10 @@ internal class ModMenuView : MonoBehaviour
                 keyBind.transform.SetParent(currentTransform, false);
             }
         }
-        SettingsElement rbtn = CreateButton(listView.transform, "Reset all Keybinds to default", Color.white, Color.black);
+        SettingsElement rbtn = CreateButton(listView.transform, "Reset all Keybinds to default", new Color32(128, 255, 255, 255), Color.black);
+        rbtn.settingName.alignment = TextAnchor.MiddleLeft;
+        rbtn.iconElement.texture = rbtn.iconPack[(int)SettingsButton.ButtonIcon.Reset];
+        rbtn.iconElement.gameObject.SetActive(true);
         rbtn.button.onClick.AddListener(delegate
         {
             ModMenu.ResetBinds(mod);

@@ -114,7 +114,7 @@ public partial class Mod
         if (function == null) return;
         if (function.Method.GetMethodBody().GetILAsByteArray().Length <= 2)
         {
-            Console.WriteLine($"[MSCLoader] SetupFunction() warning: [{function.Method.Name}()] set as [Setup.{functionType}] for mod [{ID}] appears to be empty. Skipping.");
+            Console.WriteLine($"[MSCLoader] SetupFunction() warning: [{function.Method.Name}()] set as [Setup.{functionType}] for mod [{ID}] appears to be empty. DO NOT register empty functions, it affects performance. Skipping.");
             return;
         }
         switch (functionType)

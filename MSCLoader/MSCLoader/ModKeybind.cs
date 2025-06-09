@@ -116,7 +116,11 @@ public class SettingsKeybind : ModKeybind
         DefaultKeybKey = key;
         DefaultKeybModif = modifier;
     }
-
+    internal void ResetToDefault()
+    {
+        KeybKey = DefaultKeybKey;
+        KeybModif = DefaultKeybModif;
+    }
     /// <summary>
     /// Check if keybind is being hold down. (Same behaviour as GetKey)
     /// </summary>

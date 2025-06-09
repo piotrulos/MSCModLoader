@@ -89,6 +89,7 @@ public partial class Settings
     internal static void ModSettings(Mod modEntry)
     {
         settingsMod = modEntry;
+        Keybind.ModSettings(modEntry);
     }
 
     /// <summary>

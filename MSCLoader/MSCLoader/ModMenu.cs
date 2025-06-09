@@ -179,8 +179,7 @@ internal class ModMenu : Mod
             {
                 if(mod.modKeybindsList[i].IsHeader) continue;
                 SettingsKeybind skb = (SettingsKeybind)mod.modKeybindsList[i];
-                skb.KeybKey = skb.DefaultKeybKey;
-                skb.KeybModif = skb.DefaultKeybModif;
+                skb.ResetToDefault();
             }
 
             // Save binds

@@ -26,7 +26,7 @@ public class ModConsole : Mod
     internal static SettingsSliderInt ConsoleFontSize;
     internal static SettingsText versionText, lastCheckText;
     private GameObject UI;
-    private Keybind consoleKey;
+    private SettingsKeybind consoleKey;
     public override void ModSetup()
     {
         SetupFunction(Setup.OnMenuLoad, Mod_OnMenuLoad);
@@ -38,7 +38,7 @@ public class ModConsole : Mod
     private void Mod_Settings()
     {
         Settings.ModSettings(this);
-        consoleKey = Keybind.Add(this, "Open", "<color=lime>Open console key combination</color>", KeyCode.BackQuote);
+        consoleKey = Keybind.Add("Open", "<color=lime>Open console key combination</color>", KeyCode.BackQuote);
         Settings.AddHeader("MSCLoader info", Color.black);
         versionText = Settings.AddText($"<color=lime><size=16>MSCLoader {ModLoader.MSCLoader_Ver} build {ModLoader.Instance.currentBuild}</size></color>", TextAlignment.Center);
         lastCheckText = Settings.AddText($"Last checked for mod updates: <color=aqua>Unknown</color>");

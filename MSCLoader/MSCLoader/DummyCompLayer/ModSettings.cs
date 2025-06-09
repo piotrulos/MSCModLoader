@@ -54,7 +54,7 @@ public class ModSettings
         if (modifiers.Length > 0)
             keyb = Keybind.Add(mod, id, name, key, modifiers[0]);
         else
-            keyb = new Keybind(id, name, key, KeyCode.None);
+            keyb = Keybind.Add(mod, id, name, key, KeyCode.None);
         GameObject d = new GameObject("zzzDummyProShitIgnoreThat");
         d.AddComponent<SettingKeybind>().SettingKeybindC(keyb);
         return d.GetComponent<SettingKeybind>();

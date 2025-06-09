@@ -1244,7 +1244,7 @@ public partial class ModLoader : MonoBehaviour
                 continue;
             ModMetadata.ReadMetadata(LoadedMods[i]);
             try
-            {
+            {              
                 Settings.ModSettings(LoadedMods[i]);
                 if (LoadedMods[i].newSettingsFormat)
                 {

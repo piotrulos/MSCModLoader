@@ -11,31 +11,37 @@ public partial class Keybind
     /// <summary>
     /// The ID of the keybind (Should only be used once in your mod).
     /// </summary>
+    [Obsolete("Please switch to new settings format", true)]
     public string ID { get => keybindBC.ID; set { } }
 
     /// <summary>
     /// The name that will be displayed in settings
     /// </summary>
+    [Obsolete("Please switch to new settings format", true)]
     public string Name { get => keybindBC.Name; set { } }
 
     /// <summary>
     /// The KeyCode the user will have to press.
     /// </summary>
+    [Obsolete("Please switch to new settings format", true)]
     public KeyCode Key { get => keybindBC.KeybKey; set { } }
 
     /// <summary>
     /// The modifier KeyCode the user will have to press with the Key.
     /// </summary>
+    [Obsolete("Please switch to new settings format", true)]
     public KeyCode Modifier { get => keybindBC.KeybModif; set { } }
 
     /// <summary>
     /// The Mod this Keybind belongs to (This is set when using Keybind.Add).
     /// </summary>
+    [Obsolete("Please switch to new settings format", true)]
     public Mod Mod { get; set; }
 
     /// <summary>
     /// Helpful additional variables.
     /// </summary>
+    [Obsolete("Please switch to new settings format", true)]
     public object[] Vals { get; set; }
 
     internal SettingsKeybind keybindBC;
@@ -47,6 +53,7 @@ public partial class Keybind
     /// <param name="mod">The instance of your mod.</param>
     /// <param name="key">The Keybind to add.</param>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [Obsolete("Please switch to SettingsKeybind variable", true)]
     public static void Add(Mod mod, Keybind key)
     {
         key.Mod = mod;
@@ -64,6 +71,7 @@ public partial class Keybind
     /// <param name="name">The name of the Keybind that will be displayed.</param>
     /// <param name="key">The KeyCode the user will press.</param>
     /// <returns>Keybind</returns>
+    [Obsolete("Remove 'this ,' parameter to switch to new format", true)]
     public static Keybind Add(Mod mod, string id, string name, KeyCode key)
     {
         return Add(mod, id, name, key, KeyCode.None);
@@ -78,6 +86,7 @@ public partial class Keybind
     /// <param name="key">The KeyCode the user will press.</param>
     /// <param name="modifier">The modifier KeyCode the user will have to press.</param>
     /// <returns>Keybind</returns>
+    [Obsolete("Remove 'this ,' parameter to switch to new format", true)]
     public static Keybind Add(Mod mod, string id, string name, KeyCode key, KeyCode modifier)
     {
         Keybind keyb = new Keybind(id, name, key, modifier) { Mod = mod };
@@ -95,6 +104,7 @@ public partial class Keybind
     /// </summary>
     /// <param name="mod">Your mod instance</param>
     /// <param name="HeaderTitle">Title of your header</param>
+    [Obsolete("Remove 'this ,' parameter to switch to new format", true)]
     public static void AddHeader(Mod mod, string HeaderTitle) => AddHeader(mod, HeaderTitle, Color.blue, Color.white);
 
     /// <summary>
@@ -103,6 +113,7 @@ public partial class Keybind
     /// <param name="mod">Your mod instance</param>
     /// <param name="HeaderTitle">Title of your header</param>
     /// <param name="backgroundColor">Background color of header</param>
+    [Obsolete("Remove 'this ,' parameter to switch to new format", true)]
     public static void AddHeader(Mod mod, string HeaderTitle, Color backgroundColor) => AddHeader(mod, HeaderTitle, backgroundColor, Color.white);
 
     /// <summary>
@@ -112,6 +123,7 @@ public partial class Keybind
     /// <param name="HeaderTitle">Title of your header</param>
     /// <param name="backgroundColor">Background color of header</param>
     /// <param name="textColor">Text Color of header</param>
+    [Obsolete("Remove 'this ,' parameter to switch to new format", true)]
     public static void AddHeader(Mod mod, string HeaderTitle, Color backgroundColor, Color textColor)
     {
         keybindMod = mod;
@@ -140,6 +152,7 @@ public partial class Keybind
     /// <param name="id">The ID of the Keybind.</param>
     /// <param name="name">The name of the Keybind.</param>
     /// <param name="key">The KeyCode the user will press.</param>
+    [Obsolete("Please switch to new settings format", true)]
     public Keybind(string id, string name, KeyCode key)
     {
         ID = id;
@@ -155,6 +168,7 @@ public partial class Keybind
     /// <param name="name">The name of the Keybind that will be displayed.</param>
     /// <param name="key">The KeyCode the user will press.</param>
     /// <param name="modifier">The modifier KeyCode the user will have to press.</param>
+    [Obsolete("Please switch to new settings format", true)]
     public Keybind(string id, string name, KeyCode key, KeyCode modifier)
     {
         ID = id;
@@ -167,6 +181,7 @@ public partial class Keybind
     /// Check if keybind is being hold down. (Same behaviour as GetKey)
     /// </summary>
     /// <returns>true, if the keybind is being hold down.</returns>
+    [Obsolete("Please switch to SettingsKeybind variable", true)]
     public bool GetKeybind()
     {
         return keybindBC.GetKeybind();
@@ -176,6 +191,8 @@ public partial class Keybind
     /// Check if the keybind was just pressed once. (Same behaviour as GetKeyDown)
     /// </summary>
     /// <returns>true, Check if the keybind was just pressed.</returns>
+  
+    [Obsolete("Please switch to SettingsKeybind variable", true)]
     public bool GetKeybindDown()
     {
         return keybindBC.GetKeybindDown();
@@ -185,6 +202,7 @@ public partial class Keybind
     /// Check if the keybind was just released. (Same behaviour as GetKeyUp)
     /// </summary>
     /// <returns>true, Check if the keybind was just released.</returns>
+    [Obsolete("Please switch to SettingsKeybind variable", true)]
     public bool GetKeybindUp()
     {
         return keybindBC.GetKeybindUp();
