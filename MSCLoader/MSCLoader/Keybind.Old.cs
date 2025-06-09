@@ -155,6 +155,8 @@ public partial class Keybind
     [Obsolete("Please switch to new settings format", true)]
     public Keybind(string id, string name, KeyCode key)
     {
+        SettingsKeybind keybind = new SettingsKeybind(id, name, key, KeyCode.None);
+        keybindBC = keybind;
         ID = id;
         Name = name;
         Key = key;
@@ -171,6 +173,8 @@ public partial class Keybind
     [Obsolete("Please switch to new settings format", true)]
     public Keybind(string id, string name, KeyCode key, KeyCode modifier)
     {
+        SettingsKeybind keybind = new SettingsKeybind(id, name, key, modifier);
+        keybindBC = keybind;
         ID = id;
         Name = name;
         Key = key;
