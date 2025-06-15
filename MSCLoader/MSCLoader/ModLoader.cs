@@ -882,6 +882,7 @@ public partial class ModLoader : MonoBehaviour
 
     IEnumerator LoadMods()
     {
+        FsmGameObject playerCam = FsmVariables.GlobalVariables.FindFsmGameObject("POV");
         ModConsole.Print("<color=aqua>==== Loading mods (Phase 1) ====</color><color=#505050ff>");
         int totalCount = PLoadMods.Length + BC_ModList.Length + SecondPassMods.Length + Mod_PreLoad.Length + Mod_OnLoad.Length + Mod_PostLoad.Length;
         canvLoading.SetLoading("Loading mods - Phase 1", 0, totalCount, "Loading mods. Please wait...");
@@ -918,10 +919,10 @@ public partial class ModLoader : MonoBehaviour
         }
         canvLoading.SetLoadingTitle("Waiting...");
         canvLoading.SetLoadingStatus("Waiting for game to finish load...");
-        while (GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera") == null)
+        while (playerCam.Value == null)
             yield return null;
         MouseFix();
-        GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera").AddComponent<UnifiedRaycast>();
+        playerCam.Value.AddComponent<UnifiedRaycast>();
         yield return null;
         canvLoading.SetLoadingTitle("Loading mods - Phase 2");
         canvLoading.SetLoadingStatus("Loading mods. Please wait...");

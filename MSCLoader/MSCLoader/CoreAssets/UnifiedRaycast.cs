@@ -8,17 +8,23 @@ namespace MSCLoader;
 /// </summary>
 public class UnifiedRaycast : MonoBehaviour
 {
-    private float ray = 1.35f;
+    private float rayLenght = 1.35f;
     private Camera mainCam;
-    private RaycastHit hit;
+    private RaycastHit hit, hitInteraction;
     private RaycastHit[] hits;
+    private int interactionLayerMask;
     private static UnifiedRaycast instance;
     private FsmBool inMenu = false;
-    private bool isHit = false;
+    private bool isHit, isHitInteraction = false;
+
+    private readonly static string[] emptystring = new string[0];
+    private readonly static RaycastHit emptyHit = new RaycastHit();
+    private readonly static RaycastHit[] emptyaHit = new RaycastHit[0];
     void Start()
     {
         mainCam = FsmVariables.GlobalVariables.FindFsmGameObject("POV").Value.GetComponent<Camera>();
         inMenu = FsmVariables.GlobalVariables.FindFsmBool("PlayerInMenu");
+        interactionLayerMask = LayerMask.GetMask("Tools", "HingedObjects", "Dashboard");
         instance = this;
     }
 
@@ -26,9 +32,10 @@ public class UnifiedRaycast : MonoBehaviour
     {
         if (mainCam == null) return;
         if (inMenu.Value) return;
-
-        hits = Physics.RaycastAll(mainCam.ScreenPointToRay(Input.mousePosition), ray);
-        isHit = Physics.Raycast(mainCam.ScreenPointToRay(Input.mousePosition), out hit, ray);
+        Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
+        hits = Physics.RaycastAll(ray, rayLenght);
+        isHit = Physics.Raycast(ray, out hit, rayLenght);
+        isHitInteraction = Physics.Raycast(ray, out hitInteraction, rayLenght, interactionLayerMask);
     }
 
     void OnDestroy()
@@ -37,17 +44,25 @@ public class UnifiedRaycast : MonoBehaviour
     }
 
     /// <summary>
-    /// Returns true if provided collider is hit as first element
+    /// Returns true if provided collider is hit as first element on all layers
     /// </summary>
     /// <param name="collider">Your collider</param>
     /// <returns>true if hit</returns>
     public static bool GetHit(Collider collider)
     {
-        if (instance == null) return false;
-        if (!instance.isHit) return false;
-        if (instance.inMenu.Value) return false;
-        if (instance.hit.collider == null) return false;
+        if (instance == null || instance.inMenu.Value || !instance.isHit) return false;
         return instance.hit.collider == collider;
+    }
+
+    /// <summary>
+    /// Returns true if collider is hit only on "Tools", "HingedObjects", "Dashboard" layers 
+    /// </summary>
+    /// <param name="collider">Your collider</param>
+    /// <returns>true if hit</returns>
+    public static bool GetHitInteraction(Collider collider)
+    {
+        if (instance == null || instance.inMenu.Value || !instance.isHitInteraction) return false;
+        return instance.hitInteraction.collider == collider;
     }
 
     /// <summary>
@@ -57,9 +72,7 @@ public class UnifiedRaycast : MonoBehaviour
     /// <returns>true if hit</returns>
     public static bool GetHitAll(Collider collider)
     {
-        if (instance == null) return false;
-        if (instance.inMenu.Value) return false;
-        if (instance.hits.Length == 0) return false;
+        if (instance == null || instance.inMenu.Value || instance.hits.Length == 0) return false;
         for (int i = 0; i < instance.hits.Length; i++)
         {
             if (instance.hits[i].collider == collider) return true;
@@ -68,15 +81,12 @@ public class UnifiedRaycast : MonoBehaviour
     }
 
     /// <summary>
-    /// Returns name of the first raycast  hit
+    /// Returns name of the first raycast hit
     /// </summary>
     /// <returns>name of the first raycast hit</returns>
     public static string GetHitName()
     {
-        if (instance == null) return string.Empty;
-        if (!instance.isHit) return string.Empty;
-        if (instance.inMenu.Value) return string.Empty;
-        if (instance.hit.collider == null) return string.Empty;
+        if (instance == null || !instance.isHit || instance.inMenu.Value) return string.Empty;
         return instance.hit.collider.name;
     }
 
@@ -86,9 +96,7 @@ public class UnifiedRaycast : MonoBehaviour
     /// <returns>names of all raycast hits</returns>
     public static string[] GetHitNames()
     {
-        if (instance == null) return new string[0];
-        if (instance.inMenu.Value) return new string[0];
-        if (instance.hits.Length == 0) return new string[0];
+        if (instance == null || instance.inMenu.Value || instance.hits.Length == 0) return emptystring;
         string[] names = new string[instance.hits.Length];
         for (int i = 0; i < instance.hits.Length; i++)
         {
@@ -103,9 +111,17 @@ public class UnifiedRaycast : MonoBehaviour
     /// <returns>RaycastHit</returns>
     public static RaycastHit GetRaycastHit()
     {
-        if (instance == null) return new RaycastHit();
-        if (instance.inMenu.Value) return new RaycastHit();
+        if (instance == null || instance.inMenu.Value) return emptyHit;
         return instance.hit;
+    }
+    /// <summary>
+    /// Returns RaycastHit from interaction layers so you can parse it yourself
+    /// </summary>
+    /// <returns>RaycastHit</returns>
+    public static RaycastHit GetRaycastHitInteraction()
+    {
+        if (instance == null || instance.inMenu.Value) return emptyHit;
+        return instance.hitInteraction;
     }
 
     /// <summary>
@@ -114,8 +130,7 @@ public class UnifiedRaycast : MonoBehaviour
     /// <returns>RaycastHit[]</returns>
     public static RaycastHit[] GetRaycastHits()
     {
-        if (instance == null) return new RaycastHit[0];
-        if (instance.inMenu.Value) return new RaycastHit[0];
+        if (instance == null || instance.inMenu.Value) return emptyaHit;
         return instance.hits;
     }
 }
