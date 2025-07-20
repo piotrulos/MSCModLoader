@@ -39,7 +39,7 @@
     <DocumentationFile>bin\Release\MSCLoader.xml</DocumentationFile>
     <Optimize>true</Optimize>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>10</LangVersion>
+    <LangVersion>13</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
