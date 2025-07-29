@@ -136,11 +136,12 @@ public partial class Keybind
     /// <param name="mod"></param>
     /// <returns></returns>
     [Obsolete("Stop using undocumented crap", true)]
-    public static List<Keybind> Get(Mod mod) {
+    public static List<Keybind> Get(Mod mod)
+    {
         List<Keybind> crap = new List<Keybind>();
         foreach (ModKeybind setting in mod.modKeybindsList)
         {
-            if(setting.IsHeader) continue;
+            if (setting.IsHeader) continue;
             crap.Add(((SettingsKeybind)setting).BCInstance);
         }
         return crap;
@@ -195,7 +196,7 @@ public partial class Keybind
     /// Check if the keybind was just pressed once. (Same behaviour as GetKeyDown)
     /// </summary>
     /// <returns>true, Check if the keybind was just pressed.</returns>
-  
+
     [Obsolete("Please switch to SettingsKeybind variable", true)]
     public bool GetKeybindDown()
     {

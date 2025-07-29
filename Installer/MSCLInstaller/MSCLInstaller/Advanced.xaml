@@ -10,10 +10,11 @@
         <GroupBox Header="Mod Debbugging">
             <StackPanel>
                 <TextBlock Width="Auto">
-                    <Hyperlink NavigateUri="https://github.com/piotrulos/MSCModLoader/wiki/Debugging-your-mods-in-Visual-Studio" RequestNavigate="Hyperlink_RequestNavigate">Click here to read more info about Debugging!</Hyperlink>
+                    <Hyperlink NavigateUri="" RequestNavigate="Hyperlink_RequestNavigate">Click here to read more info about Debugging!</Hyperlink>
                 </TextBlock>
                 <TextBlock Name="DebugStatus" Width="Auto" />
                 <Button Name="DebugButton" Width="Auto" Content="Enable Debugging" IsEnabled="False" Click="DebugButton_Click" />
+                <Button Name="CopyDebugButton" Width="Auto" Content="Copy Debug Files" IsEnabled="False" Click="CopyDebugButton_Click" />
             </StackPanel>
         </GroupBox>
     </StackPanel>

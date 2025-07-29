@@ -63,15 +63,6 @@ namespace MSCLInstaller
         {
             mscloaderInstaller = new MSCLoaderInstaller();
         }
-        private void NextBtn_Click(object sender, RoutedEventArgs e)
-        {
-            //  installProgress = new InstallProgress();
-            // MainFrame.Content = installProgress;
-
-            //     mscli = new MSCLoaderInstaller();
-
-            //  MessageBox.Show(Environment.GetFolderPath(), "wtf", MessageBoxButton.OK, MessageBoxImage.Error);
-        }
 
         internal InstallProgress InstallProgressPage()
         {

@@ -7,11 +7,11 @@
         mc:Ignorable="d"
         Title="About MSCLInstaller" SizeToContent="WidthAndHeight" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
     <StackPanel Margin="10">
-        <TextBlock Text="MSCLoader Installer" TextAlignment="Center" Width="Auto" />
+        <TextBlock Text="MSCLoader Installer" TextAlignment="Center" Width="Auto" FontWeight="Bold"/>
         <TextBlock Text="Universal Mod Loader installer for Amistech Games." TextAlignment="Center" Width="Auto" />
         <TextBlock>
             <LineBreak/>            
-            Supported games: <Bold>My Summer Car</Bold> <LineBreak/>Official Links:<LineBreak/>
+            Supported games: <Run FontWeight="Bold" Foreground="Yellow">My Summer Car</Run> <LineBreak/>Official Links:<LineBreak/>
             <Hyperlink NavigateUri="https://www.nexusmods.com/mysummercar/mods/147" RequestNavigate="Hyperlink_RequestNavigate">Nexus Mods</Hyperlink><LineBreak/>
             <Hyperlink NavigateUri="https://github.com/piotrulos/MSCModLoader" RequestNavigate="Hyperlink_RequestNavigate">Github</Hyperlink><LineBreak/>
             <Hyperlink NavigateUri="https://github.com/piotrulos/MSCModLoader/wiki" RequestNavigate="Hyperlink_RequestNavigate">Modders Documentation</Hyperlink><LineBreak/>

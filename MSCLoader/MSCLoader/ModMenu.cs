@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace MSCLoader;
 
@@ -19,11 +18,11 @@ internal class ModMenu : Mod
     internal GameObject UI;
     internal static byte cfmu_set = 0;
     internal static ModMenu instance;
-    internal static SettingsCheckBox dm_disabler, dm_logST, dm_operr, dm_warn, dm_pcon;
-    internal static SettingsCheckBox expWarning, modPath, forceMenuVsync, openLinksOverlay, skipGameIntro, skipConfigScreen;
+    internal static SettingsCheckBox dm_logST, dm_operr, dm_warn, dm_pcon;
+    internal static SettingsCheckBox expWarning, modPath, forceMenuVsync, openLinksOverlay, skipGameIntro, skipConfigScreen, filterAdPopups;
 
     private static SettingsCheckBoxGroup checkLaunch, checkDaily, checkWeekly;
-    private System.Diagnostics.FileVersionInfo coreVer;
+    private System.Diagnostics.FileVersionInfo coreVer, doorstopVer;
 
     public override void ModSetup()
     {
@@ -39,7 +38,6 @@ internal class ModMenu : Mod
         if (ModLoader.devMode)
         {
             Settings.AddHeader("DevMode Settings", new Color32(0, 0, 128, 255), Color.green);
-            dm_disabler = Settings.AddCheckBox("MSCLoader_dm_disabler", "Disable mods throwing errors", false);
             dm_logST = Settings.AddCheckBox("MSCLoader_dm_logST", "Log-all stack trace (not recommended)", false);
             dm_operr = Settings.AddCheckBox("MSCLoader_dm_operr", "Log-all open console on error", false);
             dm_warn = Settings.AddCheckBox("MSCLoader_dm_warn", "Log-all open console on warning", false);
@@ -50,7 +48,9 @@ internal class ModMenu : Mod
         modPath = Settings.AddCheckBox("MSCLoader_modPath", "Show mods folder (top left corner)", true, ModLoader.MainMenuPath);
         forceMenuVsync = Settings.AddCheckBox("MSCLoader_forceMenuVsync", "60 FPS limit in Main Menu", true, VSyncSwitchCheckbox);
         openLinksOverlay = Settings.AddCheckBox("MSCLoader_openLinksOverlay", "Open URLs in Steam overlay", true);
-        Settings.AddText("Skip stuff:");
+        filterAdPopups = Settings.AddCheckBox("MSCLoader_filterMoneyPopups", "Filter out money begging popups or ads", false);
+
+        Settings.AddText("Skip stuff");
         skipGameIntro = Settings.AddCheckBox("MSCLoader_skipGameIntro", "Skip game splash screen", false, SkipIntroSet);
         skipConfigScreen = Settings.AddCheckBox("MSCLoader_skipConfigScreen", "Skip configuration screen", false, SkipConfigScreen);
 
@@ -62,13 +62,14 @@ internal class ModMenu : Mod
 
         Settings.AddHeader("MSCLoader Credits", Color.black);
         Settings.AddText("All source code contributors and used libraries are listed on GitHub");
-        Settings.AddButton("Support on <color=orange>ko-fi.com</color>", () => System.Diagnostics.Process.Start("https://ko-fi.com/piotrulos44779"), new Color32(0,64,128,255), Color.white, SettingsButton.ButtonIcon.KoFi);
+        Settings.AddButton("Support on <color=orange>ko-fi.com</color>", () => System.Diagnostics.Process.Start("https://ko-fi.com/piotrulos44779"), new Color32(0, 64, 128, 255), Color.white, SettingsButton.ButtonIcon.KoFi);
         Settings.AddText("Non-GitHub contributions:");
-        Settings.AddText("<color=aqua>BrennFuchS</color> - New default mod icon and expanded PlayMaker extensions.");
+        Settings.AddText("<color=aqua>BrennFuchS</color> - Default mod icon.");
 
         Settings.AddHeader("Detailed Version Information", new Color32(0, 128, 0, 255));
         coreVer = System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "MSCLoader.Preloader.dll"));
-        SettingsText modulesVer = Settings.AddText($"MSCLoader modules:{Environment.NewLine}<color=yellow>MSCLoader.Preloader</color>: <color=aqua>v{coreVer.FileMajorPart}.{coreVer.FileMinorPart}.{coreVer.FileBuildPart} build {coreVer.FilePrivatePart}</color>{Environment.NewLine}<color=yellow>MSCLoader</color>: <color=aqua>v{ModLoader.MSCLoader_Ver} build {ModLoader.Instance.currentBuild}</color>");
+        doorstopVer = System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine("", "winhttp.dll"));
+        SettingsText modulesVer = Settings.AddText($"MSCLoader modules:{Environment.NewLine}<color=yellow>Doorstop</color>: <color=aqua>v{doorstopVer.ProductVersion}</color>{Environment.NewLine}<color=yellow>MSCLoader.Preloader</color>: <color=aqua>v{coreVer.FileMajorPart}.{coreVer.FileMinorPart}.{coreVer.FileBuildPart} build {coreVer.FilePrivatePart}</color>{Environment.NewLine}<color=yellow>MSCLoader</color>: <color=aqua>v{ModLoader.MSCLoader_Ver} build {ModLoader.Instance.currentBuild}</color>");
         if (File.Exists(Path.Combine(ModLoader.ModsFolder, Path.Combine("References", "MSCCoreLibrary.dll"))))
         {
             System.Diagnostics.FileVersionInfo libVer = System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine(ModLoader.ModsFolder, Path.Combine("References", "MSCCoreLibrary.dll")));
@@ -177,7 +178,7 @@ internal class ModMenu : Mod
             // Revert binds
             for (int i = 0; i < mod.modKeybindsList.Count; i++)
             {
-                if(mod.modKeybindsList[i].IsHeader) continue;
+                if (mod.modKeybindsList[i].IsHeader) continue;
                 SettingsKeybind skb = (SettingsKeybind)mod.modKeybindsList[i];
                 skb.ResetToDefault();
             }
@@ -203,7 +204,7 @@ internal class ModMenu : Mod
     {
 
         KeybindList list = new KeybindList();
-        string path = Path.Combine(ModLoader.GetModSettingsFolder(mod), "keybinds.json");        
+        string path = Path.Combine(ModLoader.GetModSettingsFolder(mod), "keybinds.json");
         for (int i = 0; i < mod.modKeybindsList.Count; i++)
         {
             if (mod.modKeybindsList[i].IsHeader) continue;

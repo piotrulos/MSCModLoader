@@ -34,7 +34,7 @@ public partial class Keybind
     public static SettingsKeybind Add(string id, string name, KeyCode key, KeyCode modifier)
     {
         if (keybindMod == null)
-        { 
+        {
             ModConsole.Error($"[<b>{keybindMod}</b>] Keybind.Add() error: unknown Mod instance, keybinds must be created inside your ModSettings function");
             return null;
         }

@@ -31,8 +31,8 @@ namespace MSCLInstaller
         public static void MissingFilesError()
         {
             MessageBox.Show($"Couldn't find any required core files.{Environment.NewLine}Please unpack all files before launching this installer!", "Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            Dbg.Log($"!!! CRASH !!!", true, true);
-            Dbg.Log($"Core files not found, exiting.");
+            Log($"!!! ERROR !!!", true, true);
+            Log($"Core files not found, exiting.");
             Environment.Exit(0);
         }
     }

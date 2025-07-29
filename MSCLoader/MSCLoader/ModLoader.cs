@@ -1,4 +1,5 @@
 ﻿global using UnityEngine;
+
 #if !Mini
 using HutongGames.PlayMaker.Actions;
 using HutongGames.PlayMaker;
@@ -43,7 +44,8 @@ public partial class ModLoader : MonoBehaviour
     internal static bool devMode = false;
     internal static string GetMetadataFolder(string fn) => Path.Combine(MetadataFolder, fn);
     private MSCLoaderCanvasLoading canvLoading;
-
+    private bool isMonoDebugger = false;
+    private string monoDebugIP = "127.0.0.1:10000"; //default if not changed in launch command
     void Awake()
     {
         if (GameObject.Find("Music") != null)
@@ -215,6 +217,25 @@ public partial class ModLoader : MonoBehaviour
         string[] launchArgs = Environment.GetCommandLineArgs();
         Console.WriteLine("Launch arguments:");
         Console.WriteLine(string.Join(" ", launchArgs));
+        for (int i = 0; i < launchArgs.Length; i++)
+        {
+            if (launchArgs[i] == "--doorstop-mono-debug-enabled")
+            {
+                if (i + 1 < launchArgs.Length)
+                {
+                    isMonoDebugger = launchArgs[i + 1] == "true";
+                }
+                continue;
+            }
+            if (launchArgs[i] == "--doorstop-mono-debug-address")
+            {
+                if (i + 1 < launchArgs.Length)
+                {
+                    monoDebugIP = launchArgs[i + 1];
+                }
+                continue;
+            }
+        }
         if (launchArgs.Contains("-mscloader-devmode")) devMode = true;
         //Set config and Assets folder in selected mods folder
         ConfigFolder = Path.Combine(ModsFolder, "Config");
@@ -712,17 +733,22 @@ public partial class ModLoader : MonoBehaviour
 
     private void MainMenuInfo()
     {
-        Text info, mf;
+        Text info, mf, extra;
         mainMenuInfo = Instantiate(mainMenuInfo);
         mainMenuInfo.name = "MSCLoader Info";
         menuInfoAnim = mainMenuInfo.GetComponent<Animation>();
         menuInfoAnim.Play("fade_in");
         info = mainMenuInfo.transform.GetChild(0).gameObject.GetComponent<Text>();
         mf = mainMenuInfo.transform.GetChild(1).gameObject.GetComponent<Text>();
+        extra = mainMenuInfo.transform.GetChild(2).gameObject.GetComponent<Text>();
         info.text = $"Mod Loader MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready! (<color=orange>Checking for updates...</color>)";
         CheckMSCLoaderVersion();
         mf.text = $"<color=orange>Mods folder:</color> {ModsFolder}";
         MainMenuPath();
+        if (isMonoDebugger)
+        {
+            extra.text = $"<color=magenta>Debugging Enabled</color> (<color=lime>{monoDebugIP}</color>)";
+        }
         mainMenuInfo.transform.SetParent(ModUI.GetCanvas(0).transform, false);
     }
 
@@ -883,7 +909,7 @@ public partial class ModLoader : MonoBehaviour
     IEnumerator LoadMods()
     {
         FsmGameObject playerCam = FsmVariables.GlobalVariables.FindFsmGameObject("POV");
-        ModConsole.Print("<color=aqua>==== Loading mods (Phase 1) ====</color><color=#505050ff>");
+        ModConsole.Print("<b></b><color=aqua>==== Loading mods (Phase 1) ====</color><color=#505050ff>");
         int totalCount = PLoadMods.Length + BC_ModList.Length + SecondPassMods.Length + Mod_PreLoad.Length + Mod_OnLoad.Length + Mod_PostLoad.Length;
         canvLoading.SetLoading("Loading mods - Phase 1", 0, totalCount, "Loading mods. Please wait...");
         yield return null;
@@ -926,7 +952,8 @@ public partial class ModLoader : MonoBehaviour
         yield return null;
         canvLoading.SetLoadingTitle("Loading mods - Phase 2");
         canvLoading.SetLoadingStatus("Loading mods. Please wait...");
-        ModConsole.Print("</color><color=aqua>==== Loading mods (Phase 2) ====</color><color=#505050ff>");
+        ModConsole.Print("<i></i></color>");
+        ModConsole.Print("<b></b><color=aqua>==== Loading mods (Phase 2) ====</color><color=#505050ff>");
         yield return null;
         for (int i = 0; i < Mod_OnLoad.Length; i++)
         {
@@ -961,7 +988,8 @@ public partial class ModLoader : MonoBehaviour
         ModMenu.LoadBinds();
         canvLoading.SetLoadingTitle("Loading mods - Phase 3");
         canvLoading.SetLoadingStatus("Loading mods. Please wait...");
-        ModConsole.Print("</color><color=aqua>==== Loading mods (Phase 3) ====</color><color=#505050ff>");
+        ModConsole.Print("<i></i></color>");
+        ModConsole.Print("<b></b><color=aqua>==== Loading mods (Phase 3) ====</color><color=#505050ff>");
         yield return null;
         for (int i = 0; i < Mod_PostLoad.Length; i++)
         {
@@ -997,7 +1025,7 @@ public partial class ModLoader : MonoBehaviour
         canvLoading.SetLoadingStatus("Finishing touches...");
         yield return null;
         GameObject.Find("ITEMS").GetComponent<PlayMakerFSM>().FsmInject("Save game", SaveMods);
-        ModConsole.Print("</color>");
+        ModConsole.Print("<i></i></color>");
         if (IsReferencePresent("MSCCoreLibrary"))
             TimeSchedulerCalls("load");
         yield return null;
@@ -1245,7 +1273,7 @@ public partial class ModLoader : MonoBehaviour
                 continue;
             ModMetadata.ReadMetadata(LoadedMods[i]);
             try
-            {              
+            {
                 Settings.ModSettings(LoadedMods[i]);
                 if (LoadedMods[i].newSettingsFormat)
                 {

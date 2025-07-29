@@ -17,7 +17,7 @@ internal class SettingsGroup : MonoBehaviour
     public GameObject HeaderListView;
     public void Toggle()
     {
-        if(!isHeader) return;
+        if (!isHeader) return;
         if (anim) return;
         if (collapsed)
         {

@@ -99,8 +99,8 @@ public partial class Mod
 
     internal List<ModSetting> modSettingsList = new List<ModSetting>();
     internal List<ModKeybind> modKeybindsList = new List<ModKeybind>();
-  //  internal List<Keybind> Keybinds = new List<Keybind>();//
-   // internal List<Keybind> DefaultKeybinds = new List<Keybind>();//
+    //  internal List<Keybind> Keybinds = new List<Keybind>();//
+    // internal List<Keybind> DefaultKeybinds = new List<Keybind>();//
     internal string[] AdditionalReferences = [];
     internal string asmGuid = "";
     /// <summary>

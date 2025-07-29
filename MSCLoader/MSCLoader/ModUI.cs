@@ -156,15 +156,8 @@ public class ModUI
     /// <param name="title">Title of message</param>
     public static void ShowMessage(string message, string title)
     {
-        GameObject mb = GameObject.Instantiate(messageBoxCv.messageBoxPrefab);
-        MessageBoxHelper mbh = mb.GetComponent<MessageBoxHelper>();
-        MsgBoxBtn btn = CreateMessageBoxBtn("OK");
-        btn.transform.SetParent(mbh.btnRow1.transform, false);
-        btn.button.onClick.AddListener(() => GameObject.Destroy(mb));
-        mbh.messageBoxTitle.text = title.ToUpper();
-        mbh.messageBoxContent.text = message;
-        mb.transform.SetParent(messageBoxCv.transform, false);
-        mb.SetActive(true);
+        MsgBoxBtn[] btn = { CreateMessageBoxBtn("OK") };
+        ShowCustomMessage(message, title, btn);
     }
 
     /// <summary>
@@ -182,18 +175,8 @@ public class ModUI
     /// <param name="ifYes">What to do when user click yes</param>
     public static void ShowYesNoMessage(string message, string title, Action ifYes)
     {
-        GameObject mb = GameObject.Instantiate(messageBoxCv.messageBoxPrefab);
-        MessageBoxHelper mbh = mb.GetComponent<MessageBoxHelper>();
-        MsgBoxBtn btnYes = CreateMessageBoxBtn("YES");
-        MsgBoxBtn btnNo = CreateMessageBoxBtn("NO");
-        btnYes.transform.SetParent(mbh.btnRow1.transform, false);
-        btnNo.transform.SetParent(mbh.btnRow1.transform, false);
-        mbh.messageBoxTitle.text = title.ToUpper();
-        mbh.messageBoxContent.text = message;
-        btnYes.button.onClick.AddListener(() => { ifYes.Invoke(); GameObject.Destroy(mb); });
-        btnNo.button.onClick.AddListener(() => GameObject.Destroy(mb));
-        mb.transform.SetParent(messageBoxCv.transform, false);
-        mb.SetActive(true);
+        MsgBoxBtn[] btn = { CreateMessageBoxBtn("YES", ifYes), CreateMessageBoxBtn("NO") };
+        ShowCustomMessage(message, title, btn);
     }
 
     /// <summary>
@@ -215,9 +198,20 @@ public class ModUI
     /// <param name="buttons2">A place to add "second row" of buttons.</param>
     public static void ShowCustomMessage(string message, string title, MsgBoxBtn[] buttons, MsgBoxBtn[] buttons2)
     {
+        bool isBeggingAdPopup = false;
         if (buttons == null || buttons.Length == 0)
         {
             ModConsole.Error("<b>ShowCustomMessage()</b> - MessageBox requires at least one button.");
+            return;
+        }
+        if (message.ToLower().Contains("patreon") || message.ToLower().Contains("paypal") || message.ToLower().Contains("donate") || message.ToLower().Contains("donating") || message.ToLower().Contains("donation") || message.ToLower().Contains("sponsoring") || message.ToLower().Contains("discord"))
+        {
+            isBeggingAdPopup = true;
+        }
+        if (ModMenu.filterAdPopups.GetValue() && isBeggingAdPopup)
+        {
+            ModConsole.Print("<color=aqua>[Filtered Money Begging Ad Popup]</color> - you can change this in Main Settings of MSCLoader menu");
+            Console.WriteLine($"Filtered message: {message}"); //add message to log for reference and potential false positives
             return;
         }
         GameObject mb = GameObject.Instantiate(messageBoxCv.messageBoxPrefab);
@@ -238,24 +232,46 @@ public class ModUI
                 buttons[i].button.onClick.AddListener(() => { GameObject.Destroy(mb); });
             buttons[i].transform.SetParent(mbh.btnRow1.transform, false);
         }
-
+        MsgBoxBtn ad = null;
+        if (isBeggingAdPopup)
+        {
+            ad = CreateMessageBoxBtn("Filter this messages", delegate { ModUI.ShowMessage($"This message box looks like ad or money begging popup.{Environment.NewLine}{Environment.NewLine}You can try to filter these messages in future{Environment.NewLine}Go to Main Settings of MSCLoader menu and enable:{Environment.NewLine}<color=yellow>Filter out money begging popups or ads</color> option.", "How to filter Money Begging Popups"); }, new Color32(0, 0, 128, 255), Color.white, true);
+        }
         if (buttons2 != null)
         {
             if (buttons2.Length > 0)
             {
+                ad?.transform.SetParent(mbh.btnRow2.transform, false);
                 for (int i = 0; i < buttons2.Length; i++)
                 {
                     if (buttons2[i].IfClicked != null)
                     {
                         if (!buttons2[i].noDestroy)
                         {
-                            buttons2[i].button.onClick.AddListener(() => { buttons2[i].IfClicked(); GameObject.Destroy(mb); });
+                            Action act2 = buttons2[i].IfClicked;
+                            buttons2[i].button.onClick.AddListener(() => { act2(); GameObject.Destroy(mb); });
                         }
                     }
                     else
                         buttons2[i].button.onClick.AddListener(() => { GameObject.Destroy(mb); });
                     buttons2[i].transform.SetParent(mbh.btnRow2.transform, false);
                 }
+                mbh.btnRow2.SetActive(true);
+            }
+            else
+            {
+                if (ad != null)
+                {
+                    ad.transform.SetParent(mbh.btnRow2.transform, false);
+                    mbh.btnRow2.SetActive(true);
+                }
+            }
+        }
+        else
+        {
+            if (ad != null)
+            {
+                ad.transform.SetParent(mbh.btnRow2.transform, false);
                 mbh.btnRow2.SetActive(true);
             }
         }

@@ -20,9 +20,9 @@ public class ModSetting
     internal SettingsElement SettingsElement;
     internal SettingsGroup HeaderElement;
 
-    internal ModSetting(SettingsType type, bool visibleByDefault) 
+    internal ModSetting(SettingsType type, bool visibleByDefault)
     {
-        SettingType = type; 
+        SettingType = type;
         DefaultVisibility = visibleByDefault;
         IsVisible = visibleByDefault;
     }
@@ -647,9 +647,9 @@ public class SettingsButton : ModSetting
 /// Settings Horizontal/Vertical Group
 /// </summary>
 public class SettingsGroupLayout : ModSetting
-{  
+{
     internal bool IsHorizontal = false;
-    internal SettingsGroupLayout(bool isHorizontal, bool visibleByDefault) : base(SettingsType.LayoutGroup, visibleByDefault) 
+    internal SettingsGroupLayout(bool isHorizontal, bool visibleByDefault) : base(SettingsType.LayoutGroup, visibleByDefault)
     {
         IsHorizontal = isHorizontal;
     }

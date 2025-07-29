@@ -102,7 +102,7 @@ namespace MSCLInstaller
         {
             bool failed = false;
             progress.Report((0, 10, true));
-            System.Threading.Thread.Sleep(1500);
+            System.Threading.Thread.Sleep(1000);
             if (!UpdateConfigFile(newfolder, progressLog, progress))
                 return true;
             System.Threading.Thread.Sleep(100);
@@ -167,7 +167,7 @@ namespace MSCLInstaller
             string[] oldMods = Directory.GetFiles(oldPath, "*.dll");
             string[] oldAssets = Directory.GetDirectories(Path.Combine(oldPath, "Assets"));
             string[] oldRefs = Directory.GetFiles(Path.Combine(oldPath, "References"), "*.dll");
-            System.Threading.Thread.Sleep(1500);
+            System.Threading.Thread.Sleep(1000);
             progressLog.Report(($"Copying mods", $"- Start Copying Mods -"));
             try
             {
@@ -221,7 +221,7 @@ namespace MSCLInstaller
             bool failed = false;
             progress.Report((0, 10, true));
             int max = 0;
-            System.Threading.Thread.Sleep(1500);
+            System.Threading.Thread.Sleep(1000);
             try
             {
                 ZipFile zip1 = ZipFile.Read(Path.Combine(Storage.currentPath, "main_ref.pack"));
@@ -265,14 +265,16 @@ namespace MSCLInstaller
             bool failed = false;
             progress.Report((0, 10, true));
             progressLog.Report(($"Installing Core Files (1 / 4)", $"Installing Core Files"));
-            System.Threading.Thread.Sleep(1500);
+            System.Threading.Thread.Sleep(1000);
             if (Storage.is64)
             {
-                if (!ExtractFiles(Path.Combine(Storage.currentPath, "core64.pack"), Storage.mscPath, progressLog, progress, false)) failed = true;
+                if (!ExtractFiles(Path.Combine(Storage.currentPath, "core64.pack"), Storage.mscPath, progressLog, progress, false)) 
+                    failed = true;
             }
             else
             {
-                if (!ExtractFiles(Path.Combine(Storage.currentPath, "core32.pack"), Storage.mscPath, progressLog, progress, false)) failed = true;
+                if (!ExtractFiles(Path.Combine(Storage.currentPath, "core32.pack"), Storage.mscPath, progressLog, progress, false)) 
+                    failed = true;
             }
             if (failed)
             {
@@ -282,7 +284,7 @@ namespace MSCLInstaller
             }
             progress.Report((0, 10, true));
             progressLog.Report(($"Installing References (2 / 4)", $"Installing References"));
-            System.Threading.Thread.Sleep(1500);
+            System.Threading.Thread.Sleep(1000);
             if (!ExtractFiles(Path.Combine(Storage.currentPath, "main_ref.pack"), Path.Combine(Storage.mscPath, "mysummercar_Data", "Managed"), progressLog, progress, false))
             {
                 MessageBox.Show("Failed to install files, check Log for more info.", "Fatal Error.", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -291,7 +293,7 @@ namespace MSCLInstaller
             }
             progress.Report((0, 10, true));
             progressLog.Report(($"Installing MSCLoader (3 / 4)", $"Installing MSCLoader"));
-            System.Threading.Thread.Sleep(1500);
+            System.Threading.Thread.Sleep(1000);
             if (!ExtractFiles(Path.Combine(Storage.currentPath, "main_msc.pack"), Path.Combine(Storage.currentPath, "temp"), progressLog, progress, true)) failed = true;
             System.Threading.Thread.Sleep(100);
             if (!ExtractFiles(Path.Combine(Storage.currentPath, "temp", "Managed.zip"), Path.Combine(Storage.mscPath, "mysummercar_Data", "Managed"), progressLog, progress, false)) failed = true;
@@ -303,7 +305,7 @@ namespace MSCLInstaller
             }
             progress.Report((0, 10, true));
             progressLog.Report(($"Installing MSCLoader Assets (4 / 4)", $"Installing MSCLoader Assets"));
-            System.Threading.Thread.Sleep(1500);
+            System.Threading.Thread.Sleep(1000);
             if (!ExtractFiles(Path.Combine(Storage.currentPath, "temp", "Mods.zip"), Storage.modsPath, progressLog, progress, false))
             {
                 MessageBox.Show("Failed to install files, check Log for more info.", "Fatal Error.", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -312,11 +314,11 @@ namespace MSCLInstaller
             }
             progress.Report((0, 10, true));
             progressLog.Report(($"Cleaning temp files", $"Cleaning temp files"));
-            System.Threading.Thread.Sleep(1500);
+            System.Threading.Thread.Sleep(1000);
             Directory.Delete(Path.Combine(Storage.currentPath, "temp"), true);
             progress.Report((0, 10, true));
             progressLog.Report(($"Updating config file", $"Updating config file"));
-            System.Threading.Thread.Sleep(1500);
+            System.Threading.Thread.Sleep(1000);
             if (!UpdateConfigFile(newfolder, progressLog, progress))
                 failed = true;
             progress.Report((5, 5, false));
@@ -332,13 +334,19 @@ namespace MSCLInstaller
             bool failed = false;
             progress.Report((0, 10, true));
             progressLog.Report(($"Updating MSCLoader Files", $"Updating MSCLoader Files"));
-            System.Threading.Thread.Sleep(1500);
+            System.Threading.Thread.Sleep(1000);
             if (updateCore)
             {
                 if (Storage.is64)
-                    if (!ExtractFiles(Path.Combine(Storage.currentPath, "core64.pack"), Storage.mscPath, progressLog, progress, false)) failed = true;
-                    else
-                    if (!ExtractFiles(Path.Combine(Storage.currentPath, "core32.pack"), Storage.mscPath, progressLog, progress, false)) failed = true;
+                {
+                    if (!ExtractFiles(Path.Combine(Storage.currentPath, "core64.pack"), Storage.mscPath, progressLog, progress, false)) 
+                        failed = true;
+                }
+                else
+                {
+                    if (!ExtractFiles(Path.Combine(Storage.currentPath, "core32.pack"), Storage.mscPath, progressLog, progress, false)) 
+                        failed = true;
+                }
                 progressLog.Report(($"Updating config file", $"Updating config file"));
                 System.Threading.Thread.Sleep(100);
                 if (!UpdateConfigFile(Storage.modsFolderCfg, progressLog, progress)) failed = true;
@@ -351,7 +359,10 @@ namespace MSCLInstaller
             }
             System.Threading.Thread.Sleep(100);
             if (updateRefs)
-                if (!ExtractFiles(Path.Combine(Storage.currentPath, "main_ref.pack"), Path.Combine(Storage.mscPath, "mysummercar_Data", "Managed"), progressLog, progress, false)) failed = true;
+            {
+                if (!ExtractFiles(Path.Combine(Storage.currentPath, "main_ref.pack"), Path.Combine(Storage.mscPath, "mysummercar_Data", "Managed"), progressLog, progress, false))
+                    failed = true;
+            }
             if (failed)
             {
                 MessageBox.Show("Failed to update files, check Log for more info.", "Fatal Error.", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -368,7 +379,7 @@ namespace MSCLInstaller
                 if (!ExtractFiles(Path.Combine(Storage.currentPath, "temp", "Mods.zip"), Storage.modsPath, progressLog, progress, false)) failed = true;
                 progress.Report((0, 10, true));
                 progressLog.Report(($"Cleaning temp files", $"Cleaning temp files"));
-                System.Threading.Thread.Sleep(1500);
+                System.Threading.Thread.Sleep(1000);
                 Directory.Delete(Path.Combine(Storage.currentPath, "temp"), true);
             }
             if (failed)

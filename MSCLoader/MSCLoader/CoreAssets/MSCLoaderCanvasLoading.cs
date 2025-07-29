@@ -20,7 +20,7 @@ internal class MSCLoaderCanvasLoading : MonoBehaviour
     public void ToggleUpdateUI(bool toggle)
     {
         if (modUpdateUI.activeSelf == toggle) return;
-        if(updateUIAnim != null) StopCoroutine(updateUIAnim);
+        if (updateUIAnim != null) StopCoroutine(updateUIAnim);
         if (toggle)
         {
             modUpdateUI.transform.localScale = new Vector3(1, 0, 1);

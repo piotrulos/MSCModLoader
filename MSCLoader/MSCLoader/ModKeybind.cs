@@ -1,7 +1,4 @@
 ﻿#if !Mini 
-using System;
-using UnityEngine.UI;
-
 namespace MSCLoader;
 
 /// <summary>
@@ -91,7 +88,7 @@ public class KeybindHeader : ModKeybind
     }
 
 
-    internal KeybindHeader(string name, Color backgroundColor, Color textColor, bool collapsedByDefault) : base(null, name,true)
+    internal KeybindHeader(string name, Color backgroundColor, Color textColor, bool collapsedByDefault) : base(null, name, true)
     {
         BackgroundColor = backgroundColor;
         TextColor = textColor;

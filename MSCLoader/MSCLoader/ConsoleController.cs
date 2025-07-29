@@ -77,7 +77,11 @@ internal class ConsoleController
     {
         if (scrollback.Count >= scrollbackSize)
         {
-            scrollback.Dequeue();
+            if (scrollback.Dequeue().StartsWith("<b></b>"))
+            {
+                // Markers for split color formatting (should fix console formatting breaking when Dequeue open color tag obviously works only for mscloader messages)
+                while (!scrollback.Dequeue().StartsWith("<i></i>")) { if (scrollback.Count < 2) break; continue; }
+            }
         }
         scrollback.Enqueue(line);
 

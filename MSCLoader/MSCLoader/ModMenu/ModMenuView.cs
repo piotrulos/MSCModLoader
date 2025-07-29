@@ -467,7 +467,7 @@ internal class ModMenuView : MonoBehaviour
                 KeybindHeader hdr = (KeybindHeader)mod.modKeybindsList[i];
                 SettingsGroup header = CreateHeader(listView.transform, hdr.Name, hdr.TextColor);
                 header.HeaderBackground.color = hdr.BackgroundColor;
-                if(hdr.CollapsedByDefault) header.SetHeaderNoAnim(false);
+                if (hdr.CollapsedByDefault) header.SetHeaderNoAnim(false);
                 currentTransform = header.HeaderListView.transform;
             }
             else

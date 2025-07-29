@@ -751,6 +751,11 @@ public static class PlayMakerExtensions
     /// <param name="action">FsmStateAction action</param>
     public static void ReplaceAction(this FsmState fs, int index, FsmStateAction action)
     {
+        if (index < 0 || index >= fs.Actions.Length)
+        {
+            ModConsole.Error($"PlayMakerExtension.ReplaceAction: index <b>{index}</b> for state <b>{fs.Name}</b> out of range");
+            return;
+        }
         fs.Actions[index] = action;
     }
 
@@ -765,6 +770,7 @@ public static class PlayMakerExtensions
         FsmStateAction[] _a = new FsmStateAction[fs.Actions.Length + 1];
         if (index < 0 || index >= fs.Actions.Length)
         {
+            ModConsole.Error($"PlayMakerExtension.InsertAction: index <b>{index}</b> for state <b>{fs.Name}</b> out of range");
             return;
         }
 

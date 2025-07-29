@@ -324,9 +324,9 @@ namespace MSCLInstaller
                     }
                     break;
                 case SelectedAction.AdvancedOptions:
-                    Advanced a = new Advanced
+                    Advanced a = new Advanced(updateCore)
                     {
-                        Owner = main
+                        Owner = main,                       
                     };
                     a.ShowDialog();
                     break;

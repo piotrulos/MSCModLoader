@@ -8,7 +8,7 @@ namespace MSCLoader;
 /// </summary>
 public class UnifiedRaycast : MonoBehaviour
 {
-    private float rayLenght = 1.35f;
+    private const float rayLenght = 1.35f;
     private Camera mainCam;
     private RaycastHit hit, hitInteraction;
     private RaycastHit[] hits;
@@ -17,9 +17,9 @@ public class UnifiedRaycast : MonoBehaviour
     private FsmBool inMenu = false;
     private bool isHit, isHitInteraction = false;
 
-    private readonly static string[] emptystring = new string[0];
-    private readonly static RaycastHit emptyHit = new RaycastHit();
-    private readonly static RaycastHit[] emptyaHit = new RaycastHit[0];
+    private readonly static string[] emptystring = [];
+    private readonly static RaycastHit emptyHit = new();
+    private readonly static RaycastHit[] emptyaHit = [];
     void Start()
     {
         mainCam = FsmVariables.GlobalVariables.FindFsmGameObject("POV").Value.GetComponent<Camera>();
