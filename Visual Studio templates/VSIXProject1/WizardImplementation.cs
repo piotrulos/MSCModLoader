@@ -76,8 +76,7 @@ namespace VSIXProject1
                 replacementsDictionary.Add("$setOnGUI$", Form1.setOnGUI);
                 replacementsDictionary.Add("$setUpdate$", Form1.setUpdate);
                 replacementsDictionary.Add("$setFixedUpdate$", Form1.setFixedUpdate);
-
-
+                replacementsDictionary.Add("$setPostBuild$", Form1.setPostBuild);
             }
             catch (Exception ex)
             {
@@ -89,6 +88,10 @@ namespace VSIXProject1
         // not for project templates.
         public bool ShouldAddProjectItem(string filePath)
         {
+            string fileName = System.IO.Path.GetFileName(filePath);
+
+            if (fileName == "postbuild.bat" && Form1.setPostBuild != "true") return false;
+
             return true;
         }
     }

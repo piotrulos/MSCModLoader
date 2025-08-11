@@ -34,6 +34,7 @@ namespace VSIXProject1
         public static string setOnGUI = "false";
         public static string setUpdate = "false";
         public static string setFixedUpdate = "false";
+        public static string setPostBuild = "false";
         private string[] saveData = null;
 
         public Form1()
@@ -107,6 +108,7 @@ namespace VSIXProject1
             if (setupOnGUI.Checked) setOnGUI = "true";
             if (setupUpdate.Checked) setUpdate = "true";
             if (setupFixedUpdate.Checked) setFixedUpdate = "true";
+            if (setupPostBuild.Checked) setPostBuild = "true";
             if (string.IsNullOrEmpty(managedPath))
             {
                 MessageBox.Show("Please select Managed path", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
