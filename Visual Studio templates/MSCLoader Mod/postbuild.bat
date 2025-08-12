@@ -8,7 +8,7 @@
 echo [ Running post build actions for configuration %4! ]
 
 :: CHANGE THESE
-set ModFolder=YOURMODFOLDERPATH
+set ModFolder=$modFolderPath$
 set ABFolder=YOURASSETBUNDLEFOLDERPATH
 
 if %ModFolder%==YOURMODFOLDERPATH (
