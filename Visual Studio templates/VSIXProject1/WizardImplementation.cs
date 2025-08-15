@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TemplateWizard;
 using System.Windows.Forms;
 using EnvDTE;
+using System.IO;
 
 
 namespace VSIXProject1
@@ -76,8 +77,23 @@ namespace VSIXProject1
                 replacementsDictionary.Add("$setOnGUI$", Form1.setOnGUI);
                 replacementsDictionary.Add("$setUpdate$", Form1.setUpdate);
                 replacementsDictionary.Add("$setFixedUpdate$", Form1.setFixedUpdate);
+                replacementsDictionary.Add("$setPostBuild$", Form1.setPostBuild);
 
+                // Try and find mod folder for automated post build script
+                if (Form1.setPostBuild == "true")
+                {                     
+                    string modsFolder = "YOURMODFOLDERPATH";
 
+                    string gameFolderPath = Path.GetFullPath(Path.Combine(Form1.managedPath, "..", "..", "Mods"));
+                    string documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MySummerCar", "Mods");
+                    string appDataPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "..", "LocalLow", "Amistech", "My Summer Car", "Mods"));
+
+                    if (Directory.Exists(gameFolderPath)) modsFolder = gameFolderPath;
+                    else if (Directory.Exists(documentsPath)) modsFolder = documentsPath;
+                    else if (Directory.Exists(appDataPath)) modsFolder = appDataPath;
+
+                    replacementsDictionary.Add("$modFolderPath$", modsFolder);
+                }
             }
             catch (Exception ex)
             {
@@ -89,6 +105,10 @@ namespace VSIXProject1
         // not for project templates.
         public bool ShouldAddProjectItem(string filePath)
         {
+            string fileName = System.IO.Path.GetFileName(filePath);
+
+            if (fileName == "postbuild.bat" && Form1.setPostBuild != "true") return false;
+
             return true;
         }
     }

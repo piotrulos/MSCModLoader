@@ -63,6 +63,7 @@
   <ItemGroup>
     <None Include="AssemblyInfo.cs" />
     <None Include="Class1.cs" />
+    <None Include="postbuild.bat" />
     <None Include="ProjectTemplate.csproj" />
     <None Include="MSCLoader Mod.ico" />
   </ItemGroup>

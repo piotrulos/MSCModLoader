@@ -80,11 +80,19 @@
       <HintPath>$managedPath$\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    $endif$
+	  $endif$
+	  $if$ ($setPostBuild$ == true)
+	  <None Include="postbuild.bat" />
+	  $endif$
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$safeprojectname$.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+	$if$ ($setPostBuild$ == true)
+	<PropertyGroup>
+		<PostBuildEvent>call "$(SolutionDir)\postbuild.bat" "$(TargetPath)" "$(TargetDir)" "$(TargetName)" "$(ConfigurationName)"</PostBuildEvent>
+	</PropertyGroup>
+	$endif$
 </Project>
