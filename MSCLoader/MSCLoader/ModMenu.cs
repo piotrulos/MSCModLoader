@@ -364,7 +364,7 @@ internal class ModMenu : Mod
                 SaveSettings(ModLoader.LoadedMods[i]); //create settings file if not exists.
                                                        //Load and deserialize 
             SettingsList settings = JsonConvert.DeserializeObject<SettingsList>(File.ReadAllText(path));
-            ModLoader.LoadedMods[i].isDisabled = settings.isDisabled;
+          //  ModLoader.LoadedMods[i].isDisabled = settings.isDisabled;
             if (!ModLoader.LoadedMods[i].isDisabled)
             {
                 try
