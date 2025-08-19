@@ -8,14 +8,14 @@
 echo [ Running post build actions for configuration %4! ]
 
 :: CHANGE THESE
-set ModFolder=$modFolderPath$
-set ABFolder=YOURASSETBUNDLEFOLDERPATH
+set ModFolder="$modFolderPath$"
+set ABFolder="YOURASSETBUNDLEFOLDERPATH"
 
-if %ModFolder%==YOURMODFOLDERPATH (
+if %ModFolder%=="YOURMODFOLDERPATH" (
     echo [ Set your Mod Folder path in postbuild.bat - not set yet, not copying to mods folder! ]
 )
 
-if %ABFolder%==YOURASSETBUNDLEFOLDERPATH (
+if %ABFolder%=="YOURASSETBUNDLEFOLDERPATH" (
     echo [ Set your Assetbundle Folder path in postbuild.bat - not set yet, not copying to Assetbundle folder! ]
 )
 
@@ -23,15 +23,15 @@ if %4=="Mini" goto :mini
 if %4=="mini" goto :mini
 if %4=="MINI" goto :mini
 
-if NOT %ModFolder%==YOURMODFOLDERPATH (
-    copy %1 "%ModFolder%" /y
+if NOT %ModFolder%=="YOURMODFOLDERPATH" (
+    copy %1 %ModFolder% /y
     echo [ Copied dll into mods folder! ]
 
     if %4=="Debug" (
-        copy %2%3.pdb "%ModFolder%" /y
+        copy %2%3.pdb %ModFolder% /y
         echo [ Copied pdb file into mods folder! ]
     
-        cd "%ModFolder%"
+        cd %ModFolder%
         if exist debug.bat (
             call debug.bat
         ) else (
@@ -46,7 +46,7 @@ exit
 :mini
 echo [ Building mini dll, hence not copying to mods folder! ]
 if NOT %ABFolder%==YOURASSETBUNDLEFOLDERPATH (
-    copy %1 "%ABFolder%" /y
+    copy %1 %ABFolder% /y
     echo [ Copied to ABFolder for mini build! ]
     echo [ Done! ]
 )
