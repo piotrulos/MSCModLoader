@@ -141,13 +141,7 @@ public partial class ModLoader
     /// </summary>
     /// <param name="ModID">Mod ID of other mod to check (Case sensitive)</param>
     /// <returns>true if mod ID is present</returns>
-    public static bool IsModPresent(string ModID)
-    {
-        Mod m = LoadedMods.Where(x => x.ID.Equals(ModID) && !x.isDisabled).FirstOrDefault();
-        if (m != null)
-            return true;
-        return false;
-    }
+    public static bool IsModPresent(string ModID) => LoadedMods.Any(x => x.ID.Equals(ModID) && !x.isDisabled);
 
     /// <summary>
     /// Check if other ModID is present
@@ -155,16 +149,8 @@ public partial class ModLoader
     /// <param name="ModID">Mod ID of other mod to check (Case sensitive)</param>
     /// <param name="includeDisabled">Include disabled mods</param>
     /// <returns>true if mod ID is present</returns>
-    public static bool IsModPresent(string ModID, bool includeDisabled)
-    {
-        if (includeDisabled)
-        {
-            Mod m = LoadedMods.Where(x => x.ID.Equals(ModID)).FirstOrDefault();
-            if (m != null)
-                return true;
-        }
-        return IsModPresent(ModID);
-    }
+    public static bool IsModPresent(string ModID, bool includeDisabled) => includeDisabled ? LoadedMods.Any(x => x.ID.Equals(ModID)) : IsModPresent(ModID);
+
     /// <summary>
     /// [compatibility only]
     /// </summary>
