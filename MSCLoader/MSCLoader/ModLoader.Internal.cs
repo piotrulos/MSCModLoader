@@ -67,7 +67,7 @@ public partial class ModLoader
 
     internal static readonly string serverURL = "http://my-summer-car.ovh"; //Main url
     internal static readonly string metadataURL = "man_v3/";
-    //internal static readonly string serverURL = "http://localhost/msc2"; //localhost for testing only
+   // internal static readonly string serverURL = "http://localhost/msc2"; //localhost for testing only
 
     internal bool IsModsLoading = false;
     internal bool allModsLoaded = false;

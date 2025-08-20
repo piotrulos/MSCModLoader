@@ -745,9 +745,13 @@ public partial class ModLoader : MonoBehaviour
         CheckMSCLoaderVersion();
         mf.text = $"<color=orange>Mods folder:</color> {ModsFolder}";
         MainMenuPath();
+        if(serverURL.Contains("localhost") || serverURL.Contains("127.0.0.1"))
+        {
+            extra.text = $"<color=aqua>!!! LOCALHOST VERSION !!!</color> ";
+        }
         if (isMonoDebugger)
         {
-            extra.text = $"<color=magenta>Debugging Enabled</color> (<color=lime>{monoDebugIP}</color>)";
+            extra.text += $"<color=magenta>Debugging Enabled</color> (<color=lime>{monoDebugIP}</color>)";
         }
         mainMenuInfo.transform.SetParent(ModUI.GetCanvas(0).transform, false);
     }
@@ -1284,6 +1288,12 @@ public partial class ModLoader : MonoBehaviour
                 }
                 else
                     LoadedMods[i].ModSettings();
+                //Load disabled flag first
+                string path = Path.Combine(ModLoader.GetModSettingsFolder(ModLoader.LoadedMods[i]), "settings.json");
+                if (!File.Exists(path))
+                    continue;
+                SettingsList settings = JsonConvert.DeserializeObject<SettingsList>(File.ReadAllText(path));
+                LoadedMods[i].isDisabled = settings.isDisabled;
             }
             catch (Exception e)
             {
