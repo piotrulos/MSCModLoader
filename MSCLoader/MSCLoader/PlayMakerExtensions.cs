@@ -768,7 +768,7 @@ public static class PlayMakerExtensions
     public static void InsertAction(this FsmState fs, int index, FsmStateAction action)
     {
         FsmStateAction[] _a = new FsmStateAction[fs.Actions.Length + 1];
-        if (index < 0 || index >= fs.Actions.Length)
+        if (index < 0 || index >= fs.Actions.Length + 1)
         {
             ModConsole.Error($"PlayMakerExtension.InsertAction: index <b>{index}</b> for state <b>{fs.Name}</b> out of range");
             return;

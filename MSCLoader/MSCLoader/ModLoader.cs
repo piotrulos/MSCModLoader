@@ -317,9 +317,9 @@ public partial class ModLoader : MonoBehaviour
         LoadedMods[1].A_ModSettings.Invoke();
         ModMenu.LoadSettings();
         if (experimental)
-            ModConsole.Print($"<color=lime>ModLoader <b><color=aqua>v{MSCLoader_Ver}</color></b> ready</color> [<color=magenta>Experimental</color> <color=lime>build {currentBuild}</color>]");
+            ModConsole.Print($"<color=lime>MSCLoader <b><color=aqua>v{MSCLoader_Ver}</color></b></color> [<color=magenta>Experimental</color> <color=lime>build {currentBuild}</color>]");
         else
-            ModConsole.Print($"<color=lime>ModLoader <b><color=aqua>v{MSCLoader_Ver}</color></b> ready</color>");
+            ModConsole.Print($"<color=lime>MSCLoader <b><color=aqua>v{MSCLoader_Ver}</color></b></color>");
         MainMenuInfo();
         ModsUpdateDir = Directory.GetFiles(Path.Combine("Updates", "Mods"), "*.zip");
         RefsUpdateDir = Directory.GetFiles(Path.Combine("Updates", "References"), "*.zip");
@@ -408,7 +408,7 @@ public partial class ModLoader : MonoBehaviour
         }
 
         if (devMode)
-            ModConsole.Warning("You are running ModLoader in <color=red><b>DevMode</b></color>, this mode is <b>only for modders</b> and shouldn't be used in normal gameplay.");
+            ModConsole.Warning("You are running MSCLoader in <color=red><b>DevMode</b></color>, this mode is <b>only for modders</b> and shouldn't be used in normal gameplay.");
         System.Console.WriteLine(SystemInfoFix()); //operating system version to output_log.txt
         if (InvalidMods.Count > 0)
         {
@@ -800,15 +800,15 @@ public partial class ModLoader : MonoBehaviour
                     if (newBuild > currentBuild)
                     {
                         newVersion = result[1];
-                        info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready!{(experimental ? $" [<color=magenta>Experimental</color> <color=lime>build {currentBuild}</color>]" : "")} (<color=aqua>Update is available</color>)";
+                        info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> {(experimental ? $" [<color=magenta>Experimental</color> <color=lime>build {currentBuild}</color>]" : "")} (<color=aqua>Update is available</color>)";
                         ModloaderUpdateMessage = true;
                         MsgBoxBtn[] btn1 = { ModUI.CreateMessageBoxBtn("YES", DownloadModloaderUpdate), ModUI.CreateMessageBoxBtn("NO") };
                         MsgBoxBtn[] btn2 = { ModUI.CreateMessageBoxBtn("Show Changelog", ShowChangelog, new Color32(0, 0, 80, 255), Color.white, true) };
-                        ModUI.ShowCustomMessage($"New ModLoader version is available{Environment.NewLine}<color=yellow>{MSCLoader_Ver} build {currentBuild}</color> => <color=lime>{newVersion} build {newBuild}</color>{Environment.NewLine}{Environment.NewLine}Do you want to download it now?", "MSCLoader update", btn1, btn2);
+                        ModUI.ShowCustomMessage($"New MSCLoader version is available{Environment.NewLine}<color=yellow>{MSCLoader_Ver} build {currentBuild}</color> => <color=lime>{newVersion} build {newBuild}</color>{Environment.NewLine}{Environment.NewLine}Do you want to download it now?", "MSCLoader update", btn1, btn2);
                     }
                     else
                     {
-                        info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready!{(experimental ? $" [<color=magenta>Experimental</color> <color=lime>build {currentBuild}</color>]" : "")} (<color=lime>Up to date</color>)";
+                        info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> {(experimental ? $" [<color=magenta>Experimental</color> <color=lime>build {currentBuild}</color>]" : "")} (<color=lime>Up to date</color>)";
                     }
                     break;
                 default:
@@ -822,7 +822,7 @@ public partial class ModLoader : MonoBehaviour
             if (devMode)
                 ModConsole.Error(ex.ToString());
             Console.WriteLine(ex);
-            info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> is ready!{(experimental ? $" [<color=magenta>Experimental</color> <color=lime>build {currentBuild}</color>]" : "")}";
+            info.text = $"MSCLoader <color=cyan>v{MSCLoader_Ver}</color> {(experimental ? $" [<color=magenta>Experimental</color> <color=lime>build {currentBuild}</color>]" : "")}";
         }
         if (devMode)
             info.text += " [<color=red><b>Dev Mode!</b></color>]";
