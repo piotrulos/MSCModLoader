@@ -24,7 +24,7 @@
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" AssemblyName="|%CurrentProject%;AssemblyName|" />
     </Assets>
     <Prerequisites>
-        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,18.0)" DisplayName="Visual Studio core editor" />
-        <Prerequisite Id="Microsoft.Net.Component.3.5.DeveloperTools" Version="[17.0,18.0)" DisplayName=".NET Framework 3.5 development tools" />
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,19.0)" DisplayName="Visual Studio core editor" />
+        <Prerequisite Id="Microsoft.Net.Component.3.5.DeveloperTools" Version="[17.0,19.0)" DisplayName=".NET Framework 3.5 development tools" />
     </Prerequisites>
 </PackageManifest>
