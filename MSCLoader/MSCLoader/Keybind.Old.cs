@@ -8,6 +8,7 @@ namespace MSCLoader;
 /// </summary>
 public partial class Keybind
 {
+    #if !Mini
     /// <summary>
     /// The ID of the keybind (Should only be used once in your mod).
     /// </summary>
@@ -46,7 +47,7 @@ public partial class Keybind
 
     internal SettingsKeybind keybindBC;
 
-#if !Mini
+
     /// <summary>
     /// Add a keybind.
     /// </summary>

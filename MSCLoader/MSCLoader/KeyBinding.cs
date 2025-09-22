@@ -24,34 +24,44 @@ internal class KeyBinding : MonoBehaviour
     bool ismodifier = false;
 
     public Mod mod;
+#if !Mini
     private SettingsKeybind keyb;
+#endif
     public void ChangeKeybind(bool modifier)
     {
+        #if !Mini
         ChangeKeyCode(true, modifier);
+        #endif
     }
 
     public void ResetToDefault()
     {
+#if !Mini
         ModUI.ShowYesNoMessage($"This will reset keybind to default{Environment.NewLine}Default keybind is: <color=yellow>{(keyb.DefaultKeybModif == KeyCode.None ? keyb.DefaultKeybKey.ToString().ToUpper() : $"{keyb.DefaultKeybModif.ToString().ToUpper()} + {FriendlyBindName(keyb.DefaultKeybKey.ToString()).ToUpper()}")}</color>{Environment.NewLine}Do you want to continue?", "Reset Keybind", delegate
         {
             keyb.ResetToDefault();
             ModMenu.SaveModBinds(mod);
             ChangeKeyCode(false, ismodifier);
         });
+#endif
     }
     public void CancelReassign()
     {
+        #if !Mini
         ChangeKeyCode(false, ismodifier);
+        #endif
     }
 
     public void SetToNone()
     {
+        #if !Mini
         if (keyb.KeybModif != KeyCode.None && !ismodifier)
         {
             KeybindError(false);
             return;
         }
         UpdateKeyCode(KeyCode.None, ismodifier);
+        #endif
     }
 
 #if !Mini
