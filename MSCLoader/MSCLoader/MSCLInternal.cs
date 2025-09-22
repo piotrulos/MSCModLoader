@@ -1,10 +1,11 @@
 ﻿#if !Mini 
-using System.Net;
-using System.Text;
-using System;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace MSCLoader;
 
@@ -200,14 +201,14 @@ internal class MSCLInternal
 
     internal static bool IsEAFile(string path)
     {
-        byte[] bytes = new byte[3];
+        byte[] bytes = new byte[4];
         try
         {
             using (BinaryReader reader = new BinaryReader(File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)))
             {
-                reader.Read(bytes, 0, 3);
+                reader.Read(bytes, 0, 4);
                 reader.Close();
-                return bytes[0] == 0x45 && bytes[1] == 0x41 && bytes[2] == 0x4D;
+                return bytes[0] == 0x45 && bytes[1] == 0x41 && bytes[2] == 0x4D && bytes[3] == 0x33;
             }
         }
         catch (Exception ex)
@@ -278,7 +279,7 @@ internal static class ByteArrayExtensions
 
     // --------------------------------------------------------------------------------------
 
-    public static byte[] Cry_ScrambleBitRightEnc(this byte[] cleardata, byte[] password)
+    private static byte[] Cry_ScrambleBitRightEnc(this byte[] cleardata, byte[] password)
     {
         long cdlen = cleardata.LongLength;
         byte[] cryptdata = new byte[cdlen];
@@ -306,7 +307,7 @@ internal static class ByteArrayExtensions
         }
         return cryptdata;
     }
-    public static byte[] Cry_ScrambleBitRightDec(this byte[] cryptdata, byte[] password)
+    private static byte[] Cry_ScrambleBitRightDec(this byte[] cryptdata, byte[] password)
     {
         long cdlen = cryptdata.LongLength;
         byte[] cleardata = new byte[cdlen];
@@ -333,13 +334,13 @@ internal static class ByteArrayExtensions
 
     // -----------------------------------------------------------------------------------
 
-    public static bool GetBitR(this byte[] bytearray, long bit)
+    private static bool GetBitR(this byte[] bytearray, long bit)
     {
         return ((bytearray[(bit / bitsinbyte) % bytearray.LongLength] >>
                 ((int)bit % bitsinbyte)) & 1) == 1;
     }
 
-    public static void SetBitR(byte[] bytearray, long bit, bool set)
+    private static void SetBitR(byte[] bytearray, long bit, bool set)
     {
         long bytepos = bit / bitsinbyte;
         if (bytepos < bytearray.LongLength)
@@ -357,6 +358,57 @@ internal static class ByteArrayExtensions
                 bytearray[bytepos] = (byte)(bytearray[bytepos] & adder);
             }
         }
+    }
+
+    // -----------------------------------------------------------------------------------
+    public static byte[] EncByteArray(this byte[] bytesToBeEncrypted, byte[] passwordBytes)
+    {
+        byte[] encryptedBytes = null;
+        byte[] saltBytes = [83, 97, 108, 116, 121, 77, 83, 67, 76, 101, 97, 107, 101, 114, 115];
+        using (MemoryStream ms = new())
+        {
+            using (RijndaelManaged RM = new())
+            {
+                RM.KeySize = 256;
+                RM.BlockSize = 128;
+                Rfc2898DeriveBytes key = new(passwordBytes, saltBytes, 1000);
+                RM.Key = key.GetBytes(RM.KeySize / 8);
+                RM.IV = key.GetBytes(RM.BlockSize / 8);
+                RM.Mode = CipherMode.CBC;
+                using (CryptoStream cs = new(ms, RM.CreateEncryptor(), CryptoStreamMode.Write))
+                {
+                    cs.Write(bytesToBeEncrypted, 0, bytesToBeEncrypted.Length);
+                    cs.Close();
+                }
+                encryptedBytes = ms.ToArray();
+            }
+        }
+        return encryptedBytes;
+    }
+
+    public static byte[] DecByteArray(this byte[] bytesToBeDecrypted, byte[] passwordBytes)
+    {
+        byte[] decryptedBytes = null;
+        byte[] saltBytes = [83, 97, 108, 116, 121, 77, 83, 67, 76, 101, 97, 107, 101, 114, 115];
+        using (MemoryStream ms = new())
+        {
+            using (RijndaelManaged RM = new())
+            {
+                RM.KeySize = 256;
+                RM.BlockSize = 128;
+                Rfc2898DeriveBytes key = new(passwordBytes, saltBytes, 1000);
+                RM.Key = key.GetBytes(RM.KeySize / 8);
+                RM.IV = key.GetBytes(RM.BlockSize / 8);
+                RM.Mode = CipherMode.CBC;
+                using (CryptoStream cs = new(ms, RM.CreateDecryptor(), CryptoStreamMode.Write))
+                {
+                    cs.Write(bytesToBeDecrypted, 0, bytesToBeDecrypted.Length);
+                    cs.Close();
+                }
+            }
+            decryptedBytes = ms.ToArray();
+        }
+        return decryptedBytes;
     }
 }
 internal class InvalidMods

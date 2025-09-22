@@ -68,11 +68,11 @@ namespace MSCLoader.Preloader
                         modPath = Path.GetFullPath(Path.Combine("Mods", ""));
                         break;
                 }
-                MDebug.Log("Installing modloader update...");
+                MDebug.Log("Installing MSCLoader update...");
                 UnpackZip(Path.Combine("Updates", Path.Combine("Core", "update.zip")), Path.Combine("Updates", "Core"));
                 UnpackZip(Path.Combine("Updates", Path.Combine("Core", "Managed.zip")), managedPath);
                 UnpackZip(Path.Combine("Updates", Path.Combine("Core", "Mods.zip")), modPath);
-                MDebug.Log("Installing modloader update done!");
+                MDebug.Log("Installing MSCLoader update done!");
             }
         }
         private static void UnpackZip(string fn, string target)
@@ -81,7 +81,7 @@ namespace MSCLoader.Preloader
             {
                 if (!ZipFile.IsZipFile(fn))
                 {
-                    MDebug.Log("[MODLOADER UPDATE FAILED]");
+                    MDebug.Log("[MSCLOADER UPDATE FAILED]");
                     MDebug.Log($"Invalid zip file {fn}", true);
                     File.Delete(fn);
                 }
@@ -98,7 +98,7 @@ namespace MSCLoader.Preloader
             }
             catch (Exception e)
             {
-                MDebug.Log("[MODLOADER UPDATE FAILED]");
+                MDebug.Log("[MSCLOADER UPDATE FAILED]");
                 MDebug.Log(e.ToString(), true);
                 File.Delete(fn);
             }

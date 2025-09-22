@@ -431,7 +431,7 @@ public partial class ModLoader : MonoBehaviour
                 DownloadFile("mscl_download.php?type=core&id=msc", Path.Combine(Path.Combine("Updates", "Core"), "update.zip"));
                 while (downloadInProgress)
                 {
-                    canvLoading.SetUpdateProgress(downloadPercentage, $"(ModLoader) <color=aqua>update.zip</color> [<color=lime>{downloadPercentage}%</color>]");
+                    canvLoading.SetUpdateProgress(downloadPercentage, $"(MSCLoader) <color=aqua>update.zip</color> [<color=lime>{downloadPercentage}%</color>]");
                     yield return null;
                 }
                 yield return new WaitForSeconds(1f);

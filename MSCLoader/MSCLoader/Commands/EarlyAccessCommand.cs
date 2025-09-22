@@ -84,9 +84,9 @@ internal class EarlyAccessCommand : ConsoleCommand
         {
             if (!Directory.Exists(output))
                 Directory.CreateDirectory(output);
-            byte[] header = { 0x45, 0x41, 0x4D };
+            byte[] header = { 0x45, 0x41, 0x4D, 0x33 };
             byte[] modFile = File.ReadAllBytes(Path.Combine(ModLoader.ModsFolder, file));
-            byte[] modoutput = modFile.Cry_ScrambleByteRightEnc(System.Text.Encoding.ASCII.GetBytes(key));
+            byte[] modoutput = modFile.EncByteArray(System.Text.Encoding.ASCII.GetBytes(key));
             File.WriteAllBytes(Path.Combine(output, $"{Path.GetFileNameWithoutExtension(Path.Combine(ModLoader.ModsFolder, file))}.dll"), header.Concat(modoutput).ToArray());
             string txt = $"Use this command to register your mod:{Environment.NewLine}{Environment.NewLine}!ea registerfile {Path.GetFileNameWithoutExtension(Path.Combine(ModLoader.ModsFolder, file))} {key}{Environment.NewLine}{Environment.NewLine}If you already registered that file before and want to update key use this:{Environment.NewLine}{Environment.NewLine}!ea setkey {Path.GetFileNameWithoutExtension(Path.Combine(ModLoader.ModsFolder, file))} {key}";
             File.WriteAllText(Path.Combine(output, $"{Path.GetFileNameWithoutExtension(Path.Combine(ModLoader.ModsFolder, file))}.txt"), txt);

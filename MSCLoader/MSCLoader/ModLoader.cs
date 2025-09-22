@@ -100,7 +100,7 @@ public partial class ModLoader : MonoBehaviour
         if (!loaderPrepared)
         {
             loaderPrepared = true;
-            GameObject go = new GameObject("MSCLoader", typeof(ModLoader));
+            GameObject go = new("MSCLoader", typeof(ModLoader));
             Instance = go.GetComponent<ModLoader>();
             DontDestroyOnLoad(go);
         }
@@ -317,9 +317,9 @@ public partial class ModLoader : MonoBehaviour
         LoadedMods[1].A_ModSettings.Invoke();
         ModMenu.LoadSettings();
         if (experimental)
-            ModConsole.Print($"<color=lime>MSCLoader <b><color=aqua>v{MSCLoader_Ver}</color></b></color> [<color=magenta>Experimental</color> <color=lime>build {currentBuild}</color>]");
+            ModConsole.Print($"<color=lime>MSCLoader <b><color=aqua>v{MSCLoader_Ver}</color></b> for {MSCLInfo.TargetGame}</color> [<color=magenta>Experimental</color> <color=lime>build {currentBuild}</color>]");
         else
-            ModConsole.Print($"<color=lime>MSCLoader <b><color=aqua>v{MSCLoader_Ver}</color></b></color>");
+            ModConsole.Print($"<color=lime>MSCLoader <b><color=aqua>v{MSCLoader_Ver}</color></b> for {MSCLInfo.TargetGame}</color>");
         MainMenuInfo();
         ModsUpdateDir = Directory.GetFiles(Path.Combine("Updates", "Mods"), "*.zip");
         RefsUpdateDir = Directory.GetFiles(Path.Combine("Updates", "References"), "*.zip");
@@ -617,9 +617,9 @@ public partial class ModLoader : MonoBehaviour
         if (Directory.Exists(Path.Combine(ModsFolder, "References")))
         {
             string[] files = Directory.GetFiles(Path.Combine(ModsFolder, "References"), "*.dll");
-            string[] managedStuff = Directory.GetFiles(Path.Combine("mysummercar_Data", "Managed"), "*.dll");
-            string[] alreadyIncluded = (from s in managedStuff select Path.GetFileName(s)).ToArray();
-            string[] unusedFiles = new string[0];
+            string[] alreadyIncluded = Directory.GetFiles(Path.Combine("mysummercar_Data", "Managed"), "*.dll").Select(Path.GetFileName).ToArray();
+            string[] unusedFiles = [];
+
             if (File.Exists(Path.Combine(Path.Combine(ModsFolder, "References"), "unused.txt")))
             {
                 unusedFiles = File.ReadAllLines(Path.Combine(Path.Combine(ModsFolder, "References"), "unused.txt"));
@@ -1079,33 +1079,81 @@ public partial class ModLoader : MonoBehaviour
         return (method.IsVirtual && method.DeclaringType == mod.GetType() && method.GetMethodBody().GetILAsByteArray().Length > 2);
     }
 
-    private void LoadEADll(string file)
+    private void LoadEADll(string file, bool repeated = false)
     {
-        if (!CheckSteam()) return;
+        if (!CheckSteam())
+        {
+            ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - To use this mod, valid steam client is required! (if issue persists, try restarting your steam client)");
+            return;
+        }
         string response = string.Empty;
-        response = MSCLInternal.MSCLDataRequest("mscl_ea.php", new Dictionary<string, string> { { "steamID", steamID }, { "file", Path.GetFileNameWithoutExtension(file) } });
+        response = MSCLInternal.MSCLDataRequest("mscl_ea.php", new Dictionary<string, string> { { "steamID", steamID }, { "uid", SystemInfo.deviceUniqueIdentifier }, { "file", Path.GetFileNameWithoutExtension(file) } });
         string[] result = response.Split('|');
         switch (result[0])
         {
             case "error":
                 ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - {result[1]}");
+                ModUI.ShowMessage($"Loading early access file <b><color=aqua>{Path.GetFileName(file)}</color></b> failed with error:{Environment.NewLine} <color=orange>{result[1]}</color>!", "Error");
+                break;
+            case "verify":
+                if (repeated)
+                {
+                    ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - Failed to verify steam client to load this mod. Please restart your steam client and try again.");
+                    return;
+                }
+                LoadEADllSteam(file);
                 break;
             case "ok":
                 byte[] input;
                 using (BinaryReader reader = new BinaryReader(File.OpenRead(file)))
                 {
-                    reader.BaseStream.Seek(3, SeekOrigin.Begin);
-                    input = new byte[reader.BaseStream.Length - 3];
+                    reader.BaseStream.Seek(4, SeekOrigin.Begin);
+                    input = new byte[reader.BaseStream.Length - 4];
                     reader.Read(input, 0, input.Length);
                 }
                 byte[] key = Encoding.ASCII.GetBytes(result[1]);
-                LoadDLL($"{Path.GetFileNameWithoutExtension(file)}.dll", input.Cry_ScrambleByteRightDec(key));
+                byte[] output;
+                try
+                {
+                    output = input.DecByteArray(key);
+                }
+                catch (Exception)
+                {                  
+                   output = [0x45, 0x41, 0x4D];
+                }
+                LoadDLL($"{Path.GetFileNameWithoutExtension(file)}.dll", output);
                 break;
             default:
                 Console.WriteLine(result);
                 break;
         }
     }
+    private void LoadEADllSteam(string file)
+    {
+        byte[] pTicket = new byte[1024];
+        Steamworks.HAuthTicket hticket = Steamworks.SteamUser.GetAuthSessionTicket(pTicket, 1024, out uint _);
+        string ticket = BitConverter.ToString(pTicket).Replace("-", string.Empty).TrimEnd('0', ' ');
+        string response = string.Empty;
+        response = MSCLInternal.MSCLDataRequest("mscl_eaverify.php", new Dictionary<string, string> { { "steamID", steamID }, { "SteamTicket", ticket }, { "uid", SystemInfo.deviceUniqueIdentifier }, { "file", Path.GetFileNameWithoutExtension(file) } });
+        string[] result = response.Split('|');
+        switch (result[0])
+        {
+            case "error":
+                Steamworks.SteamUser.CancelAuthTicket(hticket);
+                ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - {result[1]}");
+                break;
+            case "ok":
+                Steamworks.SteamUser.CancelAuthTicket(hticket);
+                LoadEADll(file, true);
+                break;
+            default:
+                Steamworks.SteamUser.CancelAuthTicket(hticket);
+                Console.WriteLine(result);
+                break;
+        }
+    }
+
+
 
     private void PreLoadMods()
     {
@@ -1116,6 +1164,9 @@ public partial class ModLoader : MonoBehaviour
         {
             unusedFiles = File.ReadAllLines(Path.Combine(ModsFolder, "unused.txt"));
         }
+        
+        List<string> eaQueue = new List<string>();
+
         for (int i = 0; i < files.Length; i++)
         {
             if (unusedFiles.Contains(Path.GetFileName(files[i])))
@@ -1127,18 +1178,22 @@ public partial class ModLoader : MonoBehaviour
 
             if (MSCLInternal.IsEAFile(files[i]))
             {
-                LoadEADll(files[i]);
+                eaQueue.Add(files[i]);
             }
             else
             {
                 LoadDLL(files[i]);
             }
         }
+        for (int i = 0; i < eaQueue.Count; i++)
+        {
+            LoadEADll(eaQueue[i]);
+        }
         if (File.Exists(Path.Combine(ModsFolder, "unused.txt")))
         {
             File.Delete(Path.Combine(ModsFolder, "unused.txt"));
         }
-        actualModList = LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")).ToArray();
+        actualModList = LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")).OrderBy(x => x.ID).ToArray();
         BC_ModList = actualModList.Where(x => !x.newFormat).ToArray();
 
         PLoadMods = BC_ModList.Where(x => CheckEmptyMethod(x, "PreLoad")).ToArray();
@@ -1320,8 +1375,8 @@ public partial class ModLoader : MonoBehaviour
             Assembly asm = null;
             if (byteFile == null)
                 asm = Assembly.LoadFrom(file);
-            else
-                asm = Assembly.Load(byteFile);
+            else            
+                asm = Assembly.Load(byteFile);            
             bool isMod = false;
             AssemblyName[] list = asm.GetReferencedAssemblies();
             if (Attribute.IsDefined(asm, typeof(System.Runtime.InteropServices.GuidAttribute)))
@@ -1376,7 +1431,7 @@ public partial class ModLoader : MonoBehaviour
                     m.asmGuid = asmGuid;
                     isMod = true;
                     if (addRef.Count > 0)
-                        LoadMod(m, msVer, file, addRef.ToArray());
+                        LoadMod(m, msVer, file, [.. addRef]);
                     else
                         LoadMod(m, msVer, file);
                     break;
@@ -1419,6 +1474,7 @@ public partial class ModLoader : MonoBehaviour
             {
                 if (byteFile != null)
                 {
+                    ModUI.ShowMessage($"Loading early access file <b><color=aqua>{Path.GetFileName(file)}</color></b> failed with error:{Environment.NewLine} <color=orange>{e.GetType().Name}</color>{Environment.NewLine}{Environment.NewLine}Most likely there is new updated file available outside MSCLoader!", "Error");
                     ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - failed to load this as valid early access file. Most likely there is new updated file available!{Environment.NewLine}<b>Details:</b> {e.GetType().Name}{Environment.NewLine}");
                     InvalidMods.Add(new InvalidMods(Path.GetFileName(file), false, "failed to load this as valid early access file. Most likely there is new updated file available!"));
                 }

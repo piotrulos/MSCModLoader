@@ -39,8 +39,9 @@ public class ModConsole : Mod
     {
         Settings.ModSettings(this);
         consoleKey = Keybind.Add("Open", "<color=lime>Open console key combination</color>", KeyCode.BackQuote);
-        Settings.AddHeader("MSCLoader info", Color.black);
-        versionText = Settings.AddText($"<color=lime><size=16>MSCLoader {ModLoader.MSCLoader_Ver} build {ModLoader.Instance.currentBuild}</size></color>", TextAlignment.Center);
+        Settings.AddHeader("Info", Color.black);
+        Settings.AddText($"MSCLoader <color=aqua>v{ModLoader.MSCLoader_Ver}</color> [<color=lime>build {ModLoader.Instance.currentBuild}</color>] for <color=lightblue>{MSCLInfo.TargetGame}</color> ");
+        versionText = Settings.AddText($"[err] new version string",false);
         lastCheckText = Settings.AddText($"Last checked for mod updates: <color=aqua>Unknown</color>");
         Settings.AddButton("Check For Mods Updates", delegate
         {
@@ -70,11 +71,12 @@ public class ModConsole : Mod
     {
         if (ModLoader.Instance.newBuild > ModLoader.Instance.currentBuild)
         {
-            versionText.SetValue($"<color=yellow>MSCLoader {ModLoader.MSCLoader_Ver} build {ModLoader.Instance.currentBuild}</color> -> <color=lime>MSCLoader {ModLoader.Instance.newVersion} build {ModLoader.Instance.newBuild}</color>");
+            versionText.SetVisibility(true);
+            versionText.SetValue($"New update available: <color=aqua>v{ModLoader.Instance.newVersion}</color> <color=lime>[build {ModLoader.Instance.newBuild}]</color>");
         }
         else
         {
-            versionText.SetValue($"<color=lime><size=16>MSCLoader {ModLoader.MSCLoader_Ver} build {ModLoader.Instance.currentBuild}</size></color>");
+            versionText.SetVisibility(false);
         }
         string sp = Path.Combine(ModLoader.SettingsFolder, Path.Combine("MSCLoader_Settings", "lastCheck"));
         if (File.Exists(sp))
