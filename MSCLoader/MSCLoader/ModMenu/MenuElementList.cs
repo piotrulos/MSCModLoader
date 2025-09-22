@@ -28,75 +28,68 @@ namespace MSCLoader
 #if !Mini
         public void ModInfoFill()
         {
-            if (mod != null)
-            {
-                if (mod.isDisabled)
-                {
-                    Title.text = $"<color=red>{mod.Name}</color>";
-                    WarningText.gameObject.SetActive(true);
-                    WarningText.text = "Mod is disabled";
-                }
-                else
-                {
-                    Title.text = mod.Name;
-                    WarningText.text = string.Empty;
-                    WarningText.gameObject.SetActive(false);
-                }
-                Author.text = $"by <color=orange><b>{mod.Author}</b></color> (<color=aqua>{mod.Version}</color>)";
-                if (string.IsNullOrEmpty(mod.Description))
-                    Description.text = "No short description provided...";
-                else
-                    Description.text = mod.Description;
-                DisableMod.isOn = mod.isDisabled;
-                DisableMod.onValueChanged.AddListener(DisableThisMod);
-                QuickInfo.text = $"<color=yellow>ID:</color> <color=aqua>{mod.ID}</color> (MSCLoader <color=yellow>{mod.compiledVersion}</color>){Environment.NewLine}";
-                if (mod.hasUpdate)
-                    QuickInfo.text += $"<color=yellow>Version:</color> <color=aqua>{mod.Version}</color> (<color=lime>{mod.UpdateInfo.mod_version} available</color>){Environment.NewLine}";
-                else
-                    QuickInfo.text += $"<color=yellow>Version:</color> <color=aqua>{mod.Version}</color>{Environment.NewLine}";
-                QuickInfo.text += $"<color=yellow>Author:</color> <color=aqua>{mod.Author}</color>";
+            if (mod == null) return;
 
-                if (mod.metadata != null)
+            if (mod.isDisabled)
+            {
+                Title.text = $"<color=red>{mod.Name}</color>";
+                WarningText.gameObject.SetActive(true);
+                WarningText.text = "Mod is disabled";
+            }
+            else
+            {
+                Title.text = mod.Name;
+                if (mod.isEA)
                 {
-                    if (!string.IsNullOrEmpty(mod.metadata.description))
-                    {
-                        if (string.IsNullOrEmpty(mod.Description))
-                            Description.text = mod.metadata.description;
-                    }
-                    if (!string.IsNullOrEmpty(mod.metadata.icon))
-                    {
-                        if (File.Exists(Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", mod.metadata.icon))))
-                        {
-                            try
-                            {
-                                Texture2D t2d = new Texture2D(1, 1);
-                                t2d.LoadImage(File.ReadAllBytes(Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", mod.metadata.icon))));
-                                icon.texture = t2d;
-                            }
-                            catch (Exception e)
-                            {
-                                ModConsole.Error(e.Message);
-                                System.Console.WriteLine(e);
-                            }
-                        }
-                    }
-                    else
+                    WarningText.gameObject.SetActive(true);
+                    WarningBtn.gameObject.SetActive(true);
+                    WarningText.text = "<color=aqua>Early Access Mod</color>";
+                    WarningInfo.text = $"This mod is a <color=aqua>Early Access Mod</color>. There may be bugs. {Environment.NewLine}Please respect any rules given by mod author, breaking them may result in blacklisting from ANY future Early Access mods.";
+                }
+                if (mod.proSettings)
+                {
+                    WarningText.gameObject.SetActive(true);
+                    WarningBtn.gameObject.SetActive(true);
+                    WarningText.text = "<color=lightblue>Compatibility Mode (Pro)</color>";
+                    WarningInfo.text = $"This mod runs in <color=lightblue>compatibility mode</color>. Some features might not work as intended. {Environment.NewLine}Check if there is new version (or remake) available.";
+                }
+            }
+            Author.text = $"by <color=orange><b>{mod.Author}</b></color> (<color=aqua>{mod.Version}</color>)";
+            if (string.IsNullOrEmpty(mod.Description))
+                Description.text = "No short description provided...";
+            else
+                Description.text = mod.Description;
+            DisableMod.isOn = mod.isDisabled;
+            DisableMod.onValueChanged.AddListener(DisableThisMod);
+            QuickInfo.text = $"<color=yellow>ID:</color> <color=aqua>{mod.ID}</color> (MSCLoader <color=yellow>{mod.compiledVersion}</color>){Environment.NewLine}";
+            if (mod.hasUpdate)
+                QuickInfo.text += $"<color=yellow>Version:</color> <color=aqua>{mod.Version}</color> (<color=lime>{mod.UpdateInfo.mod_version} available</color>){Environment.NewLine}";
+            else
+                QuickInfo.text += $"<color=yellow>Version:</color> <color=aqua>{mod.Version}</color>{Environment.NewLine}";
+            QuickInfo.text += $"<color=yellow>Author:</color> <color=aqua>{mod.Author}</color>";
+
+            if (mod.metadata != null)
+            {
+                if (!string.IsNullOrEmpty(mod.metadata.description))
+                {
+                    if (string.IsNullOrEmpty(mod.Description))
+                        Description.text = mod.metadata.description;
+                }
+                if (!string.IsNullOrEmpty(mod.metadata.icon))
+                {
+                    if (File.Exists(Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", mod.metadata.icon))))
                     {
                         try
                         {
-                            if (mod.Icon != null)
-                            {
-                                Texture2D t2d = new Texture2D(1, 1);
-                                t2d.LoadImage(mod.Icon);
-                                icon.texture = t2d;
-                            }
+                            Texture2D t2d = new(1, 1);
+                            t2d.LoadImage(File.ReadAllBytes(Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", mod.metadata.icon))));
+                            icon.texture = t2d;
                         }
                         catch (Exception e)
                         {
                             ModConsole.Error(e.Message);
                             System.Console.WriteLine(e);
                         }
-
                     }
                 }
                 else
@@ -105,7 +98,7 @@ namespace MSCLoader
                     {
                         if (mod.Icon != null)
                         {
-                            Texture2D t2d = new Texture2D(1, 1);
+                            Texture2D t2d = new(1, 1);
                             t2d.LoadImage(mod.Icon);
                             icon.texture = t2d;
                         }
@@ -116,6 +109,23 @@ namespace MSCLoader
                         System.Console.WriteLine(e);
                     }
 
+                }
+            }
+            else
+            {
+                try
+                {
+                    if (mod.Icon != null)
+                    {
+                        Texture2D t2d = new Texture2D(1, 1);
+                        t2d.LoadImage(mod.Icon);
+                        icon.texture = t2d;
+                    }
+                }
+                catch (Exception e)
+                {
+                    ModConsole.Error(e.Message);
+                    System.Console.WriteLine(e);
                 }
 
             }

@@ -1370,13 +1370,19 @@ public partial class ModLoader : MonoBehaviour
         bool mscl = false;
         HashSet<string> addRef = new HashSet<string>();
         string asmGuid = "unknown";
+        bool isEA = false;
         try
         {
             Assembly asm = null;
             if (byteFile == null)
+            {
                 asm = Assembly.LoadFrom(file);
-            else            
-                asm = Assembly.Load(byteFile);            
+            }
+            else
+            {
+                asm = Assembly.Load(byteFile);
+                isEA = true;
+            }
             bool isMod = false;
             AssemblyName[] list = asm.GetReferencedAssemblies();
             if (Attribute.IsDefined(asm, typeof(System.Runtime.InteropServices.GuidAttribute)))
@@ -1431,9 +1437,9 @@ public partial class ModLoader : MonoBehaviour
                     m.asmGuid = asmGuid;
                     isMod = true;
                     if (addRef.Count > 0)
-                        LoadMod(m, msVer, file, [.. addRef]);
+                        LoadMod(m, msVer, file, [.. addRef], isEA);
                     else
-                        LoadMod(m, msVer, file);
+                        LoadMod(m, msVer, file, null, isEA);
                     break;
                 }
                 else
@@ -1509,13 +1515,14 @@ public partial class ModLoader : MonoBehaviour
         }
         return false;
     }
-    private void LoadMod(Mod mod, string msver, string fname = null, string[] additionalRef = null)
+    private void LoadMod(Mod mod, string msver, string fname = null, string[] additionalRef = null, bool isEA = false)
     {
         string pm = string.Empty;
         // Check if mod already exists
         if (!LoadedMods.Contains(mod) && !LoadedMods.Select(x => x.ID).Contains(mod.ID))
         {
             LoadedMods.Add(mod);
+            mod.isEA = isEA;
             if (mod.Description != null) pm = mod.Description.Contains(MSCLInternal.ProLoaderMagic()) ? "*" : "";
             Console.WriteLine($"Detected As: {mod.Name} (ID: {mod.ID}) v{mod.Version} (by {mod.Author}) {pm}");
             // Create config folder
