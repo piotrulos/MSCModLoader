@@ -11,18 +11,21 @@ namespace MSCLoader
     {
         public Mod mod;
         public References refs;
+
         [Header("Values")]
         public RawImage icon;
         public Text Title, Author, Description, QuickInfo, WarningInfo, WarningText;
-        public Button SettingsBtn, KeybindsBtn, MoreInfoBtn, WarningBtn;
+        public Button SettingsBtn, KeybindsBtn, MoreInfoBtn, WarningBtn, BugReportBtn;
         public Toggle DisableMod;
         public Texture2D invalidModIcon, ReferenceIcon, invalidReferenceIcon;
+
         [Header("Additional Values")]
-        public Button DownloadUpdateBtn, OpenDownloadWebsiteBtn;
         public Text DownloadInfoTxt;
+        public Button DownloadUpdateBtn, OpenDownloadWebsiteBtn;
+
         [Header("Anim stuff")]
-        public GameObject quickInfo, warningInfo;
         public RectTransform contents;
+        public GameObject quickInfo, warningInfo;
         private bool collapsed;
         private bool anim;
 #if !Mini
@@ -34,6 +37,7 @@ namespace MSCLoader
             {
                 Title.text = $"<color=red>{mod.Name}</color>";
                 WarningText.gameObject.SetActive(true);
+                BugReportBtn.gameObject.SetActive(false);
                 WarningText.text = "Mod is disabled";
             }
             else
@@ -46,10 +50,11 @@ namespace MSCLoader
                     WarningText.text = "<color=aqua>Early Access Mod</color>";
                     WarningInfo.text = $"This mod is a <color=aqua>Early Access Mod</color>. There may be bugs. {Environment.NewLine}Please respect any rules given by mod author, breaking them may result in blacklisting from ANY future Early Access mods.";
                 }
-                if (mod.proSettings)
+                if (mod.proSettings || (mod.AdditionalReferences != null && mod.AdditionalReferences.Contains("MSCLoader.Features")))
                 {
                     WarningText.gameObject.SetActive(true);
                     WarningBtn.gameObject.SetActive(true);
+                    BugReportBtn.gameObject.SetActive(false);
                     WarningText.text = "<color=lightblue>Compatibility Mode (Pro)</color>";
                     WarningInfo.text = $"This mod runs in <color=lightblue>compatibility mode</color>. Some features might not work as intended. {Environment.NewLine}Check if there is new version (or remake) available.";
                 }
@@ -137,7 +142,7 @@ namespace MSCLoader
             {
                 SettingsBtn.gameObject.SetActive(true);
                 SettingsBtn.onClick.AddListener(delegate
-                {
+                {                    
                     uv.FillSettings(mod);
                 });
             }
@@ -153,12 +158,18 @@ namespace MSCLoader
             {
                 uv.FillMetadataInfo(mod);
             });
+            BugReportBtn.onClick.AddListener(delegate
+            {
+
+                ShowBugReportWindow(mod);
+            });
 
         }
         public void InvalidMod(InvalidMods mod)
         {
             Title.text = $"<color=red>{mod.FileName}</color>";
             WarningBtn.gameObject.SetActive(true);
+            BugReportBtn.gameObject.SetActive(false);
             WarningText.gameObject.SetActive(true);
             WarningText.text = "Failed to load";
             Author.text = string.Empty;
@@ -184,7 +195,6 @@ namespace MSCLoader
                 Author.text = string.Empty;
                 WarningText.text = "Failed to load";
                 Description.text = "<color=yellow>Failed to load this reference</color>";
-
                 WarningText.gameObject.SetActive(true);
                 WarningBtn.gameObject.SetActive(true);
                 icon.texture = invalidReferenceIcon;
@@ -239,6 +249,19 @@ namespace MSCLoader
                 Console.WriteLine(e);
             }
             ModUI.ShowChangelogWindow(dwl);
+        }
+
+        internal void ShowBugReportWindow(Mod mod)
+        {
+            PopupSetting bugReport = ModUI.CreatePopupSetting($"Bug Report ({mod.ID})", "Submit Bug Report");
+            bugReport.AddText($"This is form where you can report bugs/issues with mod named: <color=aqua><b>{mod.Name}</b></color>. Please make sure to include as much information as possible.{Environment.NewLine}{Environment.NewLine}" +
+                $"Trolling/Spam/Offtopic can cause your report to be ignored, and may result in blacklisting you from using this feature globally.");
+            bugReport.AddTextBox("bugReportTitle", "Bug Report Title",string.Empty, "Enter Bug Report Title...");
+            bugReport.AddTextArea("bugReportDesc", "Bug Report Description", string.Empty, "Describe the bug/issue...");
+            bugReport.AddText("You can also include your save file, this could help modder narrow down the issue.");
+            bugReport.AddCheckBox("bugReportSaveFile", "Include Save File", false);
+            bugReport.AddText("This report will also include error log");
+            bugReport.ShowPopup(null);
         }
         public void UpdateInfoFill()
         {

@@ -66,5 +66,13 @@ namespace MSCLoader
             textBox.contentType = contentType;
             textBox.text = val;
         }
+
+        internal void SetupTextArea(string name, string val, string plholder)
+        {
+            settingName.text = name;
+            settingName.color = Color.white;
+            placeholder.text = plholder;
+            textBox.text = val;
+        }
     }
 }

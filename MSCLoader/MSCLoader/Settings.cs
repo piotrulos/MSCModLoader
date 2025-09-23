@@ -11,16 +11,10 @@ internal class SettingsList
     public bool isDisabled;
     public List<Setting> settings = new List<Setting>();
 }
-internal class Setting
+internal class Setting(string id, object value)
 {
-    public string ID;
-    public object Value;
-
-    public Setting(string id, object value)
-    {
-        ID = id;
-        Value = value;
-    }
+    public string ID = id;
+    public object Value = value;
 }
 internal enum SettingsType
 {
@@ -31,6 +25,7 @@ internal enum SettingsType
     Slider,
     SliderInt,
     TextBox,
+    TextArea,
     Text,
     DropDown,
     ColorPicker,

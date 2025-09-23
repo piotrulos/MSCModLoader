@@ -10,12 +10,15 @@ internal class ModMenuView : MonoBehaviour
     public Text ModTab, ReferenceTab, UpdateTab;
 
     public GameObject ModElementPrefab, ReferenceElementPrefab, UpdateElementPrefab;
+
+    [Header("Settings Elements Prefabs")]
     public GameObject HeaderGroupPrefab;
-    public GameObject ButtonPrefab, CheckBoxPrefab, KeyBindPrefab, LabelPrefab, SliderPrefab, TextBoxPrefab;
+    public GameObject ButtonPrefab, CheckBoxPrefab, KeyBindPrefab, LabelPrefab, SliderPrefab, TextBoxPrefab, TextAreaPrefab;
     public GameObject DropDownListPrefab, ColorPickerPrefab;
     public GameObject VerticalGroupPrefab, HorizontalGroupPrefab;
-    public UniversalView universalView;
 
+    [Header("Views")]
+    public UniversalView universalView;
     public bool modList = false;
     public GameObject modListView;
 #if !Mini
@@ -651,6 +654,19 @@ internal class ModMenuView : MonoBehaviour
                 });
                 txt.transform.SetParent(listView, false);
                 txt.gameObject.SetActive(settingTxtBox.IsVisible);
+                break;
+            case SettingsType.TextArea:
+                SettingsTextArea settingTxtArea = (SettingsTextArea)set;
+                GameObject txtAP = Instantiate(TextAreaPrefab);
+                SettingsElement txtA = txtAP.GetComponent<SettingsElement>();
+                settingTxtArea.SettingsElement = txtA;
+                txtA.SetupTextArea(settingTxtArea.Name, settingTxtArea.Value, settingTxtArea.Placeholder);
+                txtA.textBox.onValueChange.AddListener(delegate
+                {
+                    settingTxtArea.Value = txtA.textBox.text;
+                });
+                txtA.transform.SetParent(listView, false);
+                txtA.gameObject.SetActive(settingTxtArea.IsVisible);
                 break;
             case SettingsType.DropDown:
                 SettingsDropDownList settingDropDown = (SettingsDropDownList)set;

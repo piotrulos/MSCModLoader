@@ -537,6 +537,21 @@ public class PopupSetting
     }
 
     /// <summary>
+    /// Add Text Area where user can type any multiline text (string value returns on confirm)
+    /// </summary>
+    /// <param name="settingID">Your unique settings ID</param>
+    /// <param name="name">Name of text box</param>
+    /// <param name="value">Default TextBox value</param>
+    /// <param name="placeholderText">Placeholder text (like "Enter text...")</param>
+    /// <param name="visibleByDefault">Show text box by default (default true)</param>
+    /// <returns>SettingsTextArea</returns>
+    public SettingsTextArea AddTextArea(string settingID, string name, string value, string placeholderText, bool visibleByDefault = true) 
+    {
+        SettingsTextArea s = new SettingsTextArea(settingID, name, value, placeholderText, visibleByDefault);
+        settingElements.Add(s);
+        return s;
+    }
+    /// <summary>
     /// Add DropDown List to popup menu (int [array index] value returns on confirm)
     /// </summary>
     /// <param name="settingID">unique settings ID</param>

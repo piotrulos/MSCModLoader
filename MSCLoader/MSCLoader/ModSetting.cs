@@ -315,6 +315,41 @@ public class SettingsTextBox : ModSetting
         Instance.ID = id;
     }
 }
+
+/// <summary>
+/// Settings TextArea
+/// </summary>
+public class SettingsTextArea : ModSetting
+{
+    internal string Value = string.Empty;
+    internal string Placeholder = string.Empty;
+
+    /// <summary>
+    /// Get TextArea value
+    /// </summary>
+    /// <returns>TextArea string value</returns>
+    public string GetValue()
+    {
+        return Value;
+    }
+
+    /// <summary>
+    /// Set value for TextArea
+    /// </summary>
+    /// <param name="value">value</param>
+    public void SetValue(string value)
+    {
+        Value = value;
+        UpdateValue(value);
+    }
+
+    internal SettingsTextArea(string id, string name, string value, string placeholder, bool visibleByDefault) : base(id, name, null, SettingsType.TextArea, visibleByDefault)
+    {
+        Value = value;
+        Placeholder = placeholder;
+    }
+}
+
 /// <summary>
 /// Settings DropDown List
 /// </summary>
