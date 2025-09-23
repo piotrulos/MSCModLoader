@@ -913,7 +913,7 @@ public partial class ModLoader : MonoBehaviour
     IEnumerator LoadMods()
     {
         FsmGameObject playerCam = FsmVariables.GlobalVariables.FindFsmGameObject("POV");
-        ModConsole.Print("<b></b><color=aqua>==== Loading mods (Phase 1) ====</color><color=#505050ff>");
+        ModConsole.PrintSplit("<b></b><color=aqua>==== Loading mods (Phase 1) ====</color><color=#505050ff>", true);
         int totalCount = PLoadMods.Length + BC_ModList.Length + SecondPassMods.Length + Mod_PreLoad.Length + Mod_OnLoad.Length + Mod_PostLoad.Length;
         canvLoading.SetLoading("Loading mods - Phase 1", 0, totalCount, "Loading mods. Please wait...");
         yield return null;
@@ -1029,7 +1029,7 @@ public partial class ModLoader : MonoBehaviour
         canvLoading.SetLoadingStatus("Finishing touches...");
         yield return null;
         GameObject.Find("ITEMS").GetComponent<PlayMakerFSM>().FsmInject("Save game", SaveMods);
-        ModConsole.Print("<i></i></color>");
+        ModConsole.PrintSplit("<i></i></color>", false);
         if (IsReferencePresent("MSCCoreLibrary"))
             TimeSchedulerCalls("load");
         yield return null;

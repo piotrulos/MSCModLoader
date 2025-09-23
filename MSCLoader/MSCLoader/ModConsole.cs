@@ -128,6 +128,11 @@ public class ModConsole : Mod
         ConsoleCommand.Add(new EarlyAccessCommand());
         ConsoleCommand.Add(new SaveDbgCommand());
     }
+    internal static void PrintSplit(string str, bool start)
+    {
+        console.controller.pauseDequeue = start;
+        Print(str);
+    }
     /// <summary>
     /// Print a message to console.
     /// </summary>
@@ -144,9 +149,7 @@ public class ModConsole : Mod
     /// <param name="obj">Text or object to print to console.</param>
     public static void Print(object obj)
     {
-        if (console != null)
-            console.controller.AppendLogLine(obj.ToString());
-        System.Console.WriteLine($"MSCLoader Message: {obj}");
+        Print(obj.ToString());
     }
 
     /// <summary>
