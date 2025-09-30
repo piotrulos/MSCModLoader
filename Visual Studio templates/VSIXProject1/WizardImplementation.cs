@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TemplateWizard;
 using System.Windows.Forms;
 using EnvDTE;
-using System.IO;
 
 
 namespace VSIXProject1
@@ -49,25 +48,28 @@ namespace VSIXProject1
                 inputForm = new Form1();
                 //    inputForm.StartPosition = FormStartPosition.CenterParent;
                 inputForm.ShowDialog();
-            /*    managedPath = UserInputForm.managedPath;
-                modName = UserInputForm.modName;
-                authorName = UserInputForm.modAuthor;
-                modVersion = UserInputForm.modVersion;*/
+                /*    managedPath = UserInputForm.managedPath;
+                    modName = UserInputForm.modName;
+                    authorName = UserInputForm.modAuthor;
+                    modVersion = UserInputForm.modVersion;*/
 
 
-                // Add custom parameters.
+
+                //Set variables
                 replacementsDictionary.Add("$managedPath$", Form1.managedPath);
                 replacementsDictionary.Add("$modName$", Form1.modName);
                 replacementsDictionary.Add("$modAuthor$", Form1.modAuthor);
                 replacementsDictionary.Add("$modVersion$", Form1.modVersion);
-              
+
+                //Add references
                 replacementsDictionary.Add("$assPM$", Form1.assPM);
                 replacementsDictionary.Add("$assCS$", Form1.assCS);
                 replacementsDictionary.Add("$asscInput$", Form1.asscInput);
                 replacementsDictionary.Add("$assUI$", Form1.assUI);
                 replacementsDictionary.Add("$assHarmony$", Form1.assHarmony);
                 replacementsDictionary.Add("$assCSf$", Form1.assCSf);
-              
+
+                //Mod Functions
                 replacementsDictionary.Add("$setOnMenuLoad$", Form1.setOnMenuLoad);
                 replacementsDictionary.Add("$setOnNewGame$", Form1.setOnNewGame);
                 replacementsDictionary.Add("$setPreLoad$", Form1.setPreLoad);
@@ -77,23 +79,13 @@ namespace VSIXProject1
                 replacementsDictionary.Add("$setOnGUI$", Form1.setOnGUI);
                 replacementsDictionary.Add("$setUpdate$", Form1.setUpdate);
                 replacementsDictionary.Add("$setFixedUpdate$", Form1.setFixedUpdate);
-                replacementsDictionary.Add("$setPostBuild$", Form1.setPostBuild);
 
-                // Try and find mod folder for automated post build script
-                if (Form1.setPostBuild == "true")
-                {                     
-                    string modsFolder = "YOURMODFOLDERPATH";
+                //Post-build stuff
+                replacementsDictionary.Add("$advScript$", Form1.advMiniDlls);
+                replacementsDictionary.Add("$modsPath$", Form1.modsPath);
+                replacementsDictionary.Add("$abPath$", "NONE");
 
-                    string gameFolderPath = Path.GetFullPath(Path.Combine(Form1.managedPath, "..", "..", "Mods"));
-                    string documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MySummerCar", "Mods");
-                    string appDataPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "..", "LocalLow", "Amistech", "My Summer Car", "Mods"));
 
-                    if (Directory.Exists(gameFolderPath)) modsFolder = gameFolderPath;
-                    else if (Directory.Exists(documentsPath)) modsFolder = documentsPath;
-                    else if (Directory.Exists(appDataPath)) modsFolder = appDataPath;
-
-                    replacementsDictionary.Add("$modFolderPath$", modsFolder);
-                }
             }
             catch (Exception ex)
             {
@@ -105,10 +97,6 @@ namespace VSIXProject1
         // not for project templates.
         public bool ShouldAddProjectItem(string filePath)
         {
-            string fileName = System.IO.Path.GetFileName(filePath);
-
-            if (fileName == "postbuild.bat" && Form1.setPostBuild != "true") return false;
-
             return true;
         }
     }

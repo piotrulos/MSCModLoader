@@ -31,6 +31,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+$if$ ($advScript$ == true)
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Mini|AnyCPU'">
+    <OutputPath>bin\Mini\</OutputPath>
+    <DefineConstants>TRACE;Mini</DefineConstants>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+$endif$
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -116,7 +125,7 @@
       )
 $if$ ($advScript$ == true)
       IF "$(ABFOLDER)"=="NONE" (
-      echo  "Set your &lt;ABFOLDER&gt; path macro in .csproj file"
+      echo  "Set your &lt;ABFOLDER&gt; path macro in .csproj file to auto copy mini dlls"
       ) ELSE (
       IF "$(ConfigurationName)" == "Mini" (
       copy "$(TargetPath)" "$(ABFOLDER)" /y

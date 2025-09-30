@@ -34,7 +34,10 @@ namespace VSIXProject1
         public static string setOnGUI = "false";
         public static string setUpdate = "false";
         public static string setFixedUpdate = "false";
-        public static string setPostBuild = "false";
+
+        public static string modsPath = "NONE";
+        public static string advMiniDlls = "false";
+
         private string[] saveData = null;
 
         public Form1()
@@ -108,11 +111,36 @@ namespace VSIXProject1
             if (setupOnGUI.Checked) setOnGUI = "true";
             if (setupUpdate.Checked) setUpdate = "true";
             if (setupFixedUpdate.Checked) setFixedUpdate = "true";
-            if (setupPostBuild.Checked) setPostBuild = "true";
+            if (advMiniDll.Checked) advMiniDlls = "true";
+
             if (string.IsNullOrEmpty(managedPath))
             {
                 MessageBox.Show("Please select Managed path", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
+            }
+            string dsini = Path.GetFullPath(Path.Combine(managedPath, "..", "..", "doorstop_config.ini"));
+            if (File.Exists(dsini))
+            {
+                foreach (string l in File.ReadAllLines(dsini))
+                { 
+                    if (l.StartsWith("mods"))
+                    {
+                        if(l.Contains("GF"))
+                        {
+                            modsPath = Path.GetFullPath(Path.Combine(managedPath, "..", "..", "Mods"));
+                        }
+                        if (l.Contains("MD"))
+                        {
+                            modsPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MySummerCar", "Mods"));
+                        }
+                        if(l.Contains("AD"))
+                        {
+                            modsPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "..", "LocalLow", "Amistech", "My Summer Car", "Mods"));
+                        }
+                        break;
+                    }
+                }
+
             }
             saveData = new string[] { managedPath, modAuthor };
             File.WriteAllLines(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MSCLoader_template.txt"), saveData);
