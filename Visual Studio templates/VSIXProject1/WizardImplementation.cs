@@ -10,10 +10,10 @@ namespace VSIXProject1
     class WizardImplementation : IWizard
     {
         private Form1 inputForm;
-      /*  private string managedPath;
-        private string authorName;
-        private string modName;
-        private string modVersion;*/
+        /*  private string managedPath;
+          private string authorName;
+          private string modName;
+          private string modVersion;*/
 
         // This method is called before opening any item that
         // has the OpenInEditor attribute.
@@ -46,14 +46,7 @@ namespace VSIXProject1
                 // Display a form to the user. The form collects
                 // input for the custom message.
                 inputForm = new Form1();
-                //    inputForm.StartPosition = FormStartPosition.CenterParent;
                 inputForm.ShowDialog();
-                /*    managedPath = UserInputForm.managedPath;
-                    modName = UserInputForm.modName;
-                    authorName = UserInputForm.modAuthor;
-                    modVersion = UserInputForm.modVersion;*/
-
-
 
                 //Set variables
                 replacementsDictionary.Add("$managedPath$", Form1.managedPath);

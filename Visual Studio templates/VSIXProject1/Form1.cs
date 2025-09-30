@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace VSIXProject1
@@ -55,7 +48,7 @@ namespace VSIXProject1
             }
             comboBox1.SelectedIndex = 0;
         }
-        
+
         private void browseManaged_Click(object sender, EventArgs e)
         {
             if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
@@ -122,10 +115,10 @@ namespace VSIXProject1
             if (File.Exists(dsini))
             {
                 foreach (string l in File.ReadAllLines(dsini))
-                { 
+                {
                     if (l.StartsWith("mods"))
                     {
-                        if(l.Contains("GF"))
+                        if (l.Contains("GF"))
                         {
                             modsPath = Path.GetFullPath(Path.Combine(managedPath, "..", "..", "Mods"));
                         }
@@ -133,7 +126,7 @@ namespace VSIXProject1
                         {
                             modsPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MySummerCar", "Mods"));
                         }
-                        if(l.Contains("AD"))
+                        if (l.Contains("AD"))
                         {
                             modsPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "..", "LocalLow", "Amistech", "My Summer Car", "Mods"));
                         }
