@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Ionic.Zip;
+using System;
 using System.Collections;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using UnityEngine.UI;
 
 namespace MSCLoader
@@ -142,7 +144,7 @@ namespace MSCLoader
             {
                 SettingsBtn.gameObject.SetActive(true);
                 SettingsBtn.onClick.AddListener(delegate
-                {                    
+                {
                     uv.FillSettings(mod);
                 });
             }
@@ -158,12 +160,14 @@ namespace MSCLoader
             {
                 uv.FillMetadataInfo(mod);
             });
+            if (mod.metadata == null || !ModLoader.CheckSteam())
+            {
+                BugReportBtn.gameObject.SetActive(false);
+            }
             BugReportBtn.onClick.AddListener(delegate
             {
-
                 ShowBugReportWindow(mod);
             });
-
         }
         public void InvalidMod(InvalidMods mod)
         {
@@ -250,19 +254,181 @@ namespace MSCLoader
             }
             ModUI.ShowChangelogWindow(dwl);
         }
-
+        PopupSetting bugReport;
         internal void ShowBugReportWindow(Mod mod)
         {
-            PopupSetting bugReport = ModUI.CreatePopupSetting($"Bug Report ({mod.ID})", "Submit Bug Report");
+            if (ModLoader.HasUpdateModList.Contains(mod))
+            {
+                ModUI.ShowMessage("This mod has an update available! <color=aqua>Please update mod to the latest version before reporting bugs!</color>", "Error");
+                return;
+            }
+            string dwl = string.Empty;
+            WebClient getdwl = new WebClient();
+            getdwl.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
+            try
+            {
+                dwl = getdwl.DownloadString($"{ModLoader.serverURL}/mscl_bugreport.php?steam={ModLoader.steamID}&resid={mod.ID}");
+            }
+            catch (Exception e)
+            {
+                ModUI.ShowMessage($"Failed to get info from bug report server {Environment.NewLine} Error: <color=orange>{e.Message}</color>", "Error");
+                Console.WriteLine(e);
+                return;
+            }
+            string[] result = dwl.Split('|');
+            if (result[0] == "error")
+            {
+                ModUI.ShowMessage($"Error: <color=orange>{result[1]}</color>", "Error");
+                return;
+            }
+            if (result[0] == "disabled")
+            {
+                ModUI.ShowMessage($"This mod has disabled bug reports{Environment.NewLine}Reason: <color=orange>{result[1]}</color>", "Mod Author disabled bug reports");
+                return;
+            }
+            if (result[0] == "banned")
+            {
+                ModUI.ShowMessage($"You have been banned from using bug reports{Environment.NewLine}Reason: <color=orange>{result[1]}</color>", "Banned");
+                return;
+            }
+            bugReport = ModUI.CreatePopupSetting($"Bug Report ({mod.ID})", "Submit Bug Report");
             bugReport.AddText($"This is form where you can report bugs/issues with mod named: <color=aqua><b>{mod.Name}</b></color>. Please make sure to include as much information as possible.{Environment.NewLine}{Environment.NewLine}" +
-                $"Trolling/Spam/Offtopic can cause your report to be ignored, and may result in blacklisting you from using this feature globally.");
-            bugReport.AddTextBox("bugReportTitle", "Bug Report Title",string.Empty, "Enter Bug Report Title...");
+                $"Trolling/Spam/Abuse can cause your report to be ignored, and may result in blacklisting you from using this feature in future.");
+            bugReport.AddTextBox("modID", "Mod ID", mod.ID, string.Empty, false);
+            bugReport.AddTextBox("bugReportTitle", "Bug Report Title", string.Empty, "Enter Bug Report Title...");
             bugReport.AddTextArea("bugReportDesc", "Bug Report Description", string.Empty, "Describe the bug/issue...");
             bugReport.AddText("You can also include your save file, this could help modder narrow down the issue.");
             bugReport.AddCheckBox("bugReportSaveFile", "Include Save File", false);
             bugReport.AddText("This report will also include error log");
-            bugReport.ShowPopup(null);
+            bugReport.ShowPopup(CreateBugReport, true);
+            if (result[0] == "inactive")
+                ModUI.ShowMessage($"This mod author was last active <color=aqua>{result[1]}</color>. {Environment.NewLine}There is a chance that your bug report will not be read.", "Inactive Mod Author");
         }
+        class BugReportResult
+        {
+            public string modID = string.Empty;
+            public string bugReportTitle = string.Empty;
+            public string bugReportDesc = string.Empty;
+            public bool bugReportSaveFile = false;
+
+            public string version = string.Empty;
+            public string modList = string.Empty;
+        }
+        internal void CreateBugReport(string response)
+        {
+            BugReportResult report = ModUI.ParsePopupResponse<BugReportResult>(response);
+            if (report.bugReportTitle == string.Empty)
+            {
+                ModUI.ShowMessage("Please enter bug report title...", "Error");
+                return;
+            }
+            if (report.bugReportDesc == string.Empty)
+            {
+                ModUI.ShowMessage("Please enter bug report description...", "Error");
+                return;
+            }
+            Mod mod = ModLoader.GetModByID(report.modID);
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"===== Loaded References ====={Environment.NewLine}");
+
+            foreach (References m in ModLoader.Instance.ReferencesList)
+            {
+                sb.AppendLine($"{(mod.AdditionalReferences != null && mod.AdditionalReferences.Contains(m.AssemblyID) ? "-->" : "")} {Path.GetFileName(m.FileName)} [ID: {m.AssemblyID}] - {m.AssemblyTitle} v{m.AssemblyFileVersion} {(ModLoader.HasUpdateRefList.Contains(m) ? "(Update Pending)" : "")}");
+            }
+            sb.AppendLine($"===== Loaded Mods ====={Environment.NewLine}");
+
+            foreach (Mod m in ModLoader.Instance.actualModList)
+            {
+                sb.AppendLine($"{(mod.ID == m.ID ? "===>" : "")} [ID: {m.ID}] - {m.Name} v{m.Version} {(m.isDisabled ? "(Disabled)" : "")} {((m.proSettings || (m.AdditionalReferences != null && m.AdditionalReferences.Contains("MSCLoader.Features"))) ? "(Compatiblity Pro)" : "")} {((m.Description != null && m.Description.Contains(MSCLInternal.ProLoaderMagic())) ? "*" : "")} {(ModLoader.HasUpdateModList.Contains(m) ? "(Update Pending)" : "")}");
+            }
+
+            sb.AppendLine($"===== Invalid files ====={Environment.NewLine}");
+
+            foreach (InvalidMods m in ModLoader.InvalidMods)
+            {
+                sb.AppendLine($"{m.FileName} Error: {m.ErrorMessage} - GUID: {m.AsmGuid}");
+            }
+            if (!Directory.Exists(Path.Combine("Updates", "Br_temp")))
+                Directory.CreateDirectory(Path.Combine("Updates", "Br_temp"));
+            string dir = Path.Combine("Updates", "Br_temp");
+            File.WriteAllText(Path.Combine(dir, "ModList.txt"), sb.ToString());
+            report.modList = sb.ToString();
+
+            report.version = mod.Version;
+            File.WriteAllText(Path.Combine(dir, "bugReport.json"), Newtonsoft.Json.JsonConvert.SerializeObject(report));
+            ModConsole.Print("Zipping Files...");
+            ZipFile zip = new ZipFile();
+            zip.AddFile(Path.Combine(dir, "bugReport.json"), "");
+            zip.AddFile(Path.Combine(dir, "ModList.txt"), "");
+            zip.AddFile(Path.Combine(".", "output_log.txt"), "");
+            if (report.bugReportSaveFile)
+            {
+                if (File.Exists(Path.Combine(Application.persistentDataPath, "defaultES2File.txt")))
+                    zip.AddFile(Path.Combine(Application.persistentDataPath, "defaultES2File.txt"), "Save");
+                if (File.Exists(Path.Combine(Application.persistentDataPath, "items.txt")))
+                    zip.AddFile(Path.Combine(Application.persistentDataPath, "items.txt"), "Save");
+                if (File.Exists(Path.Combine(Application.persistentDataPath, "Mods.txt")))
+                    zip.AddFile(Path.Combine(Application.persistentDataPath, "Mods.txt"), "Save");
+            }
+            zip.Save(Path.Combine(dir, $"BugReport_{mod.ID}.zip"));
+            ModConsole.Print("Zipping Files... Done!");
+
+            bugReport.ClosePopup();
+            StartCoroutine(UploadBugReport(mod.ID, Path.Combine(dir, $"BugReport_{mod.ID}.zip")));
+        }
+        bool bugUploadInProgress = false;
+        IEnumerator UploadBugReport(string ID, string file)
+        {
+            string steamID = Steamworks.SteamUser.GetSteamID().ToString();
+            using (WebClient Client = new WebClient())
+            {
+                Client.Headers.Add("Content-Type", "binary/octet-stream");
+                Client.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
+                Client.UploadFileCompleted += UploadBugReportCompleted;
+                Client.UploadProgressChanged += UploadBugReportProgressChanged;
+                bugUploadInProgress = true;
+                Client.UploadFileAsync(new Uri($"{ModLoader.serverURL}/mscl_bugreport.php?steam={steamID}&resid={ID}"), "POST", file);
+            }
+            yield return null;
+            while (bugUploadInProgress)
+            {
+                yield return null;
+            }
+            File.Delete(file);
+        }
+
+        private void UploadBugReportProgressChanged(object sender, UploadProgressChangedEventArgs e)
+        {
+            bugUploadInProgress = true;
+            ModConsole.Print("Uploading... " + e.ProgressPercentage);
+        }
+
+        private void UploadBugReportCompleted(object sender, UploadFileCompletedEventArgs e)
+        {
+            if (e.Error != null)
+            {
+                ModConsole.Error("Failed to upload");
+                ModConsole.Error(e.Error.Message);
+                return;
+            }
+            else
+            {
+                string s = System.Text.Encoding.UTF8.GetString(e.Result, 0, e.Result.Length);
+                string[] result = s.Split('|');
+                if (result[0] == "error")
+                {
+                    ModConsole.Error($"Failed to upload bug report: {result[1]}");
+                    return;
+                }
+                if (result[0] == "ok")
+                {
+                    ModUI.ShowMessage("Bug Report uploaded successfully!", "Success");
+                }
+            }
+            bugUploadInProgress = false;
+
+        }
+
         public void UpdateInfoFill()
         {
             if (refs != null)

@@ -300,7 +300,7 @@ public class ModUI
 
     internal static void ShowChangelogWindow(string content)
     {
-        SpawnMessageBox(content, "<color=aqua>Changelog</color>", [CreateMessageBoxBtn("CLOSE",null, Color.black, Color.yellow)], null, true, TextAlignment.Left);
+        SpawnMessageBox(content, "<color=aqua>Changelog</color>", [CreateMessageBoxBtn("CLOSE", null, Color.black, Color.yellow)], null, true, TextAlignment.Left);
     }
     /// <summary>
     /// Create Popup Setting Window
@@ -346,7 +346,7 @@ public class PopupSetting
             {
                 case SettingsType.CheckBox:
                     SettingsCheckBox ss = (SettingsCheckBox)s;
-                    json.Add($"\"{ss.ID}\":{ss.GetValue()}");
+                    json.Add($"\"{ss.ID}\":{ss.GetValue().ToString().ToLower()}");
                     break;
                 case SettingsType.Slider:
                     SettingsSlider ss2 = (SettingsSlider)s;
@@ -360,16 +360,20 @@ public class PopupSetting
                     SettingsTextBox ss4 = (SettingsTextBox)s;
                     json.Add($"\"{ss4.ID}\":{JsonConvert.ToString(ss4.GetValue())}");
                     break;
+                case SettingsType.TextArea:
+                    SettingsTextArea ss5 = (SettingsTextArea)s;
+                    json.Add($"\"{ss5.ID}\":{JsonConvert.ToString(ss5.GetValue())}");
+                    break;
                 case SettingsType.DropDown:
-                    SettingsDropDownList ss5 = (SettingsDropDownList)s;
-                    json.Add($"\"{ss5.ID}\":{ss5.GetSelectedItemIndex()}");
+                    SettingsDropDownList ss6 = (SettingsDropDownList)s;
+                    json.Add($"\"{ss6.ID}\":{ss6.GetSelectedItemIndex()}");
                     break;
                 default:
                     break;
             }
         }
 
-        return "{" + $"{string.Join(",", json.ToArray())}" + "}";
+        return $"{{{string.Join(",", [.. json])}}}";
     }
     /// <summary>
     /// Show popup window
@@ -545,7 +549,7 @@ public class PopupSetting
     /// <param name="placeholderText">Placeholder text (like "Enter text...")</param>
     /// <param name="visibleByDefault">Show text box by default (default true)</param>
     /// <returns>SettingsTextArea</returns>
-    public SettingsTextArea AddTextArea(string settingID, string name, string value, string placeholderText, bool visibleByDefault = true) 
+    public SettingsTextArea AddTextArea(string settingID, string name, string value, string placeholderText, bool visibleByDefault = true)
     {
         SettingsTextArea s = new SettingsTextArea(settingID, name, value, placeholderText, visibleByDefault);
         settingElements.Add(s);

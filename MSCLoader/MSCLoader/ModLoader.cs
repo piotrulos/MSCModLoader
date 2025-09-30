@@ -745,7 +745,7 @@ public partial class ModLoader : MonoBehaviour
         CheckMSCLoaderVersion();
         mf.text = $"<color=orange>Mods folder:</color> {ModsFolder}";
         MainMenuPath();
-        if(serverURL.Contains("localhost") || serverURL.Contains("127.0.0.1"))
+        if (serverURL.Contains("localhost") || serverURL.Contains("127.0.0.1"))
         {
             extra.text = $"<color=aqua>!!! LOCALHOST VERSION !!!</color> ";
         }
@@ -1118,8 +1118,8 @@ public partial class ModLoader : MonoBehaviour
                     output = input.DecByteArray(key);
                 }
                 catch (Exception)
-                {                  
-                   output = [0x45, 0x41, 0x4D];
+                {
+                    output = [0x45, 0x41, 0x4D];
                 }
                 LoadDLL($"{Path.GetFileNameWithoutExtension(file)}.dll", output);
                 break;
@@ -1164,7 +1164,7 @@ public partial class ModLoader : MonoBehaviour
         {
             unusedFiles = File.ReadAllLines(Path.Combine(ModsFolder, "unused.txt"));
         }
-        
+
         List<string> eaQueue = new List<string>();
 
         for (int i = 0; i < files.Length; i++)

@@ -8,7 +8,7 @@ namespace MSCLoader;
 /// </summary>
 public partial class Keybind
 {
-    #if !Mini
+#if !Mini
     /// <summary>
     /// The ID of the keybind (Should only be used once in your mod).
     /// </summary>

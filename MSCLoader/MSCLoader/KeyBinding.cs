@@ -29,9 +29,9 @@ internal class KeyBinding : MonoBehaviour
 #endif
     public void ChangeKeybind(bool modifier)
     {
-        #if !Mini
+#if !Mini
         ChangeKeyCode(true, modifier);
-        #endif
+#endif
     }
 
     public void ResetToDefault()
@@ -47,21 +47,21 @@ internal class KeyBinding : MonoBehaviour
     }
     public void CancelReassign()
     {
-        #if !Mini
+#if !Mini
         ChangeKeyCode(false, ismodifier);
-        #endif
+#endif
     }
 
     public void SetToNone()
     {
-        #if !Mini
+#if !Mini
         if (keyb.KeybModif != KeyCode.None && !ismodifier)
         {
             KeybindError(false);
             return;
         }
         UpdateKeyCode(KeyCode.None, ismodifier);
-        #endif
+#endif
     }
 
 #if !Mini

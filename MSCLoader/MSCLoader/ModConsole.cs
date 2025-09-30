@@ -41,7 +41,7 @@ public class ModConsole : Mod
         consoleKey = Keybind.Add("Open", "<color=lime>Open console key combination</color>", KeyCode.BackQuote);
         Settings.AddHeader("Info", Color.black);
         Settings.AddText($"MSCLoader <color=aqua>v{ModLoader.MSCLoader_Ver}</color> [<color=lime>build {ModLoader.Instance.currentBuild}</color>] for <color=lightblue>{MSCLInfo.TargetGame}</color> ");
-        versionText = Settings.AddText($"[err] new version string",false);
+        versionText = Settings.AddText($"[err] new version string", false);
         lastCheckText = Settings.AddText($"Last checked for mod updates: <color=aqua>Unknown</color>");
         Settings.AddButton("Check For Mods Updates", delegate
         {
