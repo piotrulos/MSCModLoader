@@ -68,15 +68,18 @@ namespace VSIXProject1
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.advMiniDll = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
             // doneButton
             // 
             this.doneButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.doneButton.Location = new System.Drawing.Point(278, 400);
+            this.doneButton.Location = new System.Drawing.Point(278, 426);
             this.doneButton.Name = "doneButton";
             this.doneButton.Size = new System.Drawing.Size(75, 21);
             this.doneButton.TabIndex = 0;
@@ -165,7 +168,7 @@ namespace VSIXProject1
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(9, 368);
+            this.label5.Location = new System.Drawing.Point(9, 406);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(201, 13);
             this.label5.TabIndex = 9;
@@ -432,7 +435,7 @@ namespace VSIXProject1
             "My Summer Car",
             "My Winter Car",
             "Both (Universal)"});
-            this.comboBox1.Location = new System.Drawing.Point(62, 401);
+            this.comboBox1.Location = new System.Drawing.Point(62, 427);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(128, 21);
             this.comboBox1.TabIndex = 0;
@@ -441,18 +444,41 @@ namespace VSIXProject1
             // 
             this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(12, 404);
+            this.label7.Location = new System.Drawing.Point(12, 430);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(44, 13);
             this.label7.TabIndex = 15;
             this.label7.Text = "Target: ";
             // 
+            // groupBox4
+            // 
+            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox4.Controls.Add(this.advMiniDll);
+            this.groupBox4.Location = new System.Drawing.Point(12, 365);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(342, 38);
+            this.groupBox4.TabIndex = 17;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Advanced";
+            // 
+            // advMiniDll
+            // 
+            this.advMiniDll.AutoSize = true;
+            this.advMiniDll.Location = new System.Drawing.Point(6, 19);
+            this.advMiniDll.Name = "advMiniDll";
+            this.advMiniDll.Size = new System.Drawing.Size(112, 17);
+            this.advMiniDll.TabIndex = 17;
+            this.advMiniDll.Text = "Add Mini.dll config";
+            this.advMiniDll.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(365, 433);
+            this.ClientSize = new System.Drawing.Size(365, 459);
             this.ControlBox = false;
+            this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.groupBox3);
@@ -482,6 +508,8 @@ namespace VSIXProject1
             this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -536,5 +564,7 @@ namespace VSIXProject1
         private LinkLabel linkLabel2;
         private LinkLabel linkLabel1;
         private Label label7;
+        private GroupBox groupBox4;
+        private CheckBox advMiniDll;
     }
 }

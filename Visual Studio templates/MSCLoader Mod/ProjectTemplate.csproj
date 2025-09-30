@@ -12,6 +12,7 @@
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>Unity Full v3.5</TargetFrameworkProfile>
+    <LangVersion>13</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,6 +31,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+$if$ ($advScript$ == true)
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Mini|AnyCPU'">
+    <OutputPath>bin\Mini\</OutputPath>
+    <DefineConstants>TRACE;Mini</DefineConstants>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+$endif$
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -87,4 +97,43 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <MODSFOLDER>$modsPath$</MODSFOLDER>
+    <ABFOLDER>$abPath$</ABFOLDER>
+    <PostBuildEvent>
+      echo .
+      echo "== Running post build actions for configuration $(ConfigurationName)! ==="
+
+      IF "$(MODSFOLDER)"=="NONE" (
+      echo  "Set your &lt;MODSFOLDER&gt; path macro in .csproj file"
+      ) ELSE (
+      IF "$(ConfigurationName)" == "Release" (
+      copy "$(TargetPath)" "$(MODSFOLDER)" /y
+      echo  "Copied dll into mods folder!"
+      )
+      IF "$(ConfigurationName)" == "Debug" (
+      copy "$(TargetPath)" "$(MODSFOLDER)" /y
+      copy "$(TargetDir)$(TargetName).pdb" "$(MODSFOLDER)" /y
+      echo  "Copied pdb file into mods folder!"
+      cd "$(MODSFOLDER)"
+      IF exist "$(MODSFOLDER)\debug.bat" (
+      call "$(MODSFOLDER)\debug.bat"
+      ) ELSE (
+      echo "debug.bat not found in "$(MODSFOLDER)". You probably dont have MSCLoader debugging enabled!"
+      )
+      )
+      )
+$if$ ($advScript$ == true)
+      IF "$(ABFOLDER)"=="NONE" (
+      echo  "Set your &lt;ABFOLDER&gt; path macro in .csproj file to auto copy mini dlls"
+      ) ELSE (
+      IF "$(ConfigurationName)" == "Mini" (
+      copy "$(TargetPath)" "$(ABFOLDER)" /y
+      echo "Copied to ABFolder for mini build!"
+      )
+      )
+$endif$
+      echo "=== Done! ==="
+    </PostBuildEvent>
+  </PropertyGroup>  
 </Project>

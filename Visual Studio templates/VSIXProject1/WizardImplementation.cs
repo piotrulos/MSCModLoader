@@ -10,10 +10,10 @@ namespace VSIXProject1
     class WizardImplementation : IWizard
     {
         private Form1 inputForm;
-      /*  private string managedPath;
-        private string authorName;
-        private string modName;
-        private string modVersion;*/
+        /*  private string managedPath;
+          private string authorName;
+          private string modName;
+          private string modVersion;*/
 
         // This method is called before opening any item that
         // has the OpenInEditor attribute.
@@ -46,27 +46,23 @@ namespace VSIXProject1
                 // Display a form to the user. The form collects
                 // input for the custom message.
                 inputForm = new Form1();
-                //    inputForm.StartPosition = FormStartPosition.CenterParent;
                 inputForm.ShowDialog();
-            /*    managedPath = UserInputForm.managedPath;
-                modName = UserInputForm.modName;
-                authorName = UserInputForm.modAuthor;
-                modVersion = UserInputForm.modVersion;*/
 
-
-                // Add custom parameters.
+                //Set variables
                 replacementsDictionary.Add("$managedPath$", Form1.managedPath);
                 replacementsDictionary.Add("$modName$", Form1.modName);
                 replacementsDictionary.Add("$modAuthor$", Form1.modAuthor);
                 replacementsDictionary.Add("$modVersion$", Form1.modVersion);
-              
+
+                //Add references
                 replacementsDictionary.Add("$assPM$", Form1.assPM);
                 replacementsDictionary.Add("$assCS$", Form1.assCS);
                 replacementsDictionary.Add("$asscInput$", Form1.asscInput);
                 replacementsDictionary.Add("$assUI$", Form1.assUI);
                 replacementsDictionary.Add("$assHarmony$", Form1.assHarmony);
                 replacementsDictionary.Add("$assCSf$", Form1.assCSf);
-              
+
+                //Mod Functions
                 replacementsDictionary.Add("$setOnMenuLoad$", Form1.setOnMenuLoad);
                 replacementsDictionary.Add("$setOnNewGame$", Form1.setOnNewGame);
                 replacementsDictionary.Add("$setPreLoad$", Form1.setPreLoad);
@@ -76,6 +72,11 @@ namespace VSIXProject1
                 replacementsDictionary.Add("$setOnGUI$", Form1.setOnGUI);
                 replacementsDictionary.Add("$setUpdate$", Form1.setUpdate);
                 replacementsDictionary.Add("$setFixedUpdate$", Form1.setFixedUpdate);
+
+                //Post-build stuff
+                replacementsDictionary.Add("$advScript$", Form1.advMiniDlls);
+                replacementsDictionary.Add("$modsPath$", Form1.modsPath);
+                replacementsDictionary.Add("$abPath$", "NONE");
 
 
             }
