@@ -164,6 +164,13 @@ namespace MSCLoader
             {
                 BugReportBtn.gameObject.SetActive(false);
             }
+            else
+            {
+                if (mod.metadata.type == 9 || mod.metadata.type == 2 || mod.metadata.type == 0 || string.IsNullOrEmpty(mod.metadata.sign) || mod.metadata.sign == "0")
+                {
+                    BugReportBtn.gameObject.SetActive(false);
+                }
+            }
             BugReportBtn.onClick.AddListener(delegate
             {
                 ShowBugReportWindow(mod);
@@ -259,7 +266,7 @@ namespace MSCLoader
         {
             if (ModLoader.HasUpdateModList.Contains(mod))
             {
-                ModUI.ShowMessage("This mod has an update available! <color=aqua>Please update mod to the latest version before reporting bugs!</color>", "Error");
+                ModUI.ShowMessage($"This mod has an update available!{Environment.NewLine}<color=aqua>Please update mod to the latest version before reporting bugs!</color>", "Error");
                 return;
             }
             string dwl = string.Empty;
@@ -302,7 +309,7 @@ namespace MSCLoader
             bugReport.AddText("This report will also include error log");
             bugReport.ShowPopup(CreateBugReport, true);
             if (result[0] == "inactive")
-                ModUI.ShowMessage($"This mod author was last active <color=aqua>{result[1]}</color>. {Environment.NewLine}There is a chance that your bug report will not be read.", "Inactive Mod Author");
+                ModUI.ShowMessage($"This mod author was last active <color=aqua>{result[1]}</color>. {Environment.NewLine}Take this into account when reporting bugs/issues, that they might be inactive.", "Inactive Mod Author");
         }
         class BugReportResult
         {
@@ -356,7 +363,7 @@ namespace MSCLoader
 
             report.version = mod.Version;
             File.WriteAllText(Path.Combine(dir, "bugReport.json"), Newtonsoft.Json.JsonConvert.SerializeObject(report));
-            ModConsole.Print("Zipping Files...");
+            ModConsole.Print("Zipping Bug Report Files...");
             ZipFile zip = new ZipFile();
             zip.AddFile(Path.Combine(dir, "bugReport.json"), "");
             zip.AddFile(Path.Combine(dir, "ModList.txt"), "");
@@ -371,7 +378,7 @@ namespace MSCLoader
                     zip.AddFile(Path.Combine(Application.persistentDataPath, "Mods.txt"), "Save");
             }
             zip.Save(Path.Combine(dir, $"BugReport_{mod.ID}.zip"));
-            ModConsole.Print("Zipping Files... Done!");
+            ModConsole.Print("Zipping Bug Report Files... Done!");
 
             bugReport.ClosePopup();
             StartCoroutine(UploadBugReport(mod.ID, Path.Combine(dir, $"BugReport_{mod.ID}.zip")));

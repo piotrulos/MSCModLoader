@@ -14,6 +14,8 @@ internal class MSCLInternal
     internal static bool AsyncRequestInProgress = false;
     internal static bool AsyncRequestError = false;
     internal static string AsyncRequestResult = string.Empty;
+
+    internal static string PublicKey = string.Empty;
     internal static bool ValidateVersion(string version)
     {
         try
@@ -54,9 +56,26 @@ internal class MSCLInternal
     }
 
 
-    internal static string MSCLDataRequest(string reqPath, Dictionary<string, string> data)
+    internal static string MSCLDataRequest(string reqPath, Dictionary<string, string> data, bool encrypted = false)
     {
-        System.Collections.Specialized.NameValueCollection msclData = new System.Collections.Specialized.NameValueCollection { { "msclData", JsonConvert.SerializeObject(data) } };
+        System.Collections.Specialized.NameValueCollection msclData;
+        if (encrypted)
+        {
+            string encReq = EncryptRequest(JsonConvert.SerializeObject(data));
+            if (encReq != null)
+            {
+                msclData = new System.Collections.Specialized.NameValueCollection { { "encrypted", "true" }, { "msclData", encReq } };
+            }
+            else
+            {
+                msclData = new System.Collections.Specialized.NameValueCollection { { "msclData", JsonConvert.SerializeObject(data) } };
+            }
+        }
+        else
+        {
+            msclData = new System.Collections.Specialized.NameValueCollection { { "msclData", JsonConvert.SerializeObject(data) } };
+        }
+
         return MSCLDataRequest(reqPath, msclData);
     }
 
@@ -196,6 +215,13 @@ internal class MSCLInternal
             }
         }
     }
+    internal static void DeleteMSCLData(string modID)
+    {
+        if (MSCLDataExists(modID))
+        {
+            ES2.Delete($"{ModLoader.GetMetadataFolder("MSCLData.bin")}?tag={modID}||metadata");
+        }
+    }
     internal static bool MSCLDataExists(string modID)
     {
         return ES2.Exists($"{ModLoader.GetMetadataFolder("MSCLData.bin")}?tag={modID}||metadata");
@@ -217,6 +243,29 @@ internal class MSCLInternal
         {
             ModConsole.Error(ex.Message);
             return false;
+        }
+    }
+
+    internal static string EncryptRequest(string request)
+    {
+        try
+        {
+            byte[] plaintextBytes = Encoding.UTF8.GetBytes(request);
+
+            //RSA Asymmetric Encryption
+            using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider(2048))
+            {
+                rsa.ImportCspBlob(Convert.FromBase64String(PublicKey));
+                byte[] encryptedBytes = rsa.Encrypt(plaintextBytes, false);
+                
+                string encryptedString = Convert.ToBase64String(encryptedBytes);
+                return encryptedString;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return null;
         }
     }
 

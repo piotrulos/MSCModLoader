@@ -696,6 +696,7 @@ public partial class ModLoader : MonoBehaviour
         mainMenuInfo = ab.LoadAsset<GameObject>("MSCLoader Info.prefab");
         GameObject loadingP = ab.LoadAsset<GameObject>("MSCLoader Canvas loading.prefab");
         GameObject mbP = ab.LoadAsset<GameObject>("MSCLoader Canvas msgbox.prefab");
+        MSCLInternal.PublicKey = ab.LoadAsset<TextAsset>("public.txt").text;
 
         ModUI.PrepareDefaultCanvas();
         GameObject mb = GameObject.Instantiate(mbP);
@@ -1087,7 +1088,7 @@ public partial class ModLoader : MonoBehaviour
             return;
         }
         string response = string.Empty;
-        response = MSCLInternal.MSCLDataRequest("mscl_ea.php", new Dictionary<string, string> { { "steamID", steamID }, { "uid", SystemInfo.deviceUniqueIdentifier }, { "file", Path.GetFileNameWithoutExtension(file) } });
+        response = MSCLInternal.MSCLDataRequest("mscl_ea.php", new Dictionary<string, string> { { "steamID", steamID }, { "uid", SystemInfo.deviceUniqueIdentifier }, { "file", Path.GetFileNameWithoutExtension(file) } }, true);
         string[] result = response.Split('|');
         switch (result[0])
         {

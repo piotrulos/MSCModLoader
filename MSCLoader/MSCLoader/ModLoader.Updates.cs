@@ -221,6 +221,15 @@ public partial class ModLoader : MonoBehaviour
                     }
                     yield return null;
                     continue;
+                } 
+                else if (cfmuResult.StartsWith("not_found"))
+                {
+                    Mod m = GetModByID(MetadataUpdateList[i], true);
+                    if (m.metadata != null)
+                    {
+                        m.metadata = null;
+                        MSCLInternal.DeleteMSCLData(m.ID);
+                    }
                 }
                 else if (cfmuResult.StartsWith("{"))
                 {

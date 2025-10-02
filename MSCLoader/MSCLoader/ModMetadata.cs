@@ -16,6 +16,7 @@ internal class RequiredList
 internal class ModVersions
 {
     public List<MetaVersion> versions = new List<MetaVersion>();
+    public string notFound = string.Empty;
 }
 internal class MetaVersion
 {
@@ -47,12 +48,10 @@ internal class MSCLData
     public string icon;
     public MinimumRequirements minimumRequirements = new MinimumRequirements();
     public ModConflicts modConflicts = new ModConflicts();
-    public string sign;
+    public string sign = string.Empty;
     public int type = 1;
     public string msg;
     public int rev = 0;
-
-
 }
 internal class MinimumRequirements
 {
@@ -89,7 +88,7 @@ internal class ModMetadata
             return false;
         }
         key = File.ReadAllText(auth);
-        string response = MSCLInternal.MSCLDataRequest("mscl_owner.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key }, { "resID", ID }, { "type", reference ? "reference" : "mod" } });
+        string response = MSCLInternal.MSCLDataRequest("mscl_owner.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key }, { "resID", ID }, { "type", reference ? "reference" : "mod" } }, true);
         string[] result = response.Split('|');
         switch (result[0])
         {
@@ -113,7 +112,7 @@ internal class ModMetadata
             return;
         }
         string steamID = Steamworks.SteamUser.GetSteamID().ToString();
-        string response = MSCLInternal.MSCLDataRequest("mscl_auth.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key } });
+        string response = MSCLInternal.MSCLDataRequest("mscl_auth.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key } }, true);
         string[] result = response.Split('|');
         switch (result[0])
         {
@@ -168,7 +167,7 @@ internal class ModMetadata
             ModConsole.Error("Your assembly is missing GUID");
             return;
         }
-        string response = MSCLInternal.MSCLDataRequest("mscl_create.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key }, { "resID", mscldata.modID }, { "version", mod.Version }, { "sign", mscldata.sign }, { "asmGuid", mod.asmGuid }, { "type", "mod" } });
+        string response = MSCLInternal.MSCLDataRequest("mscl_create.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key }, { "resID", mscldata.modID }, { "version", mod.Version }, { "sign", mscldata.sign }, { "asmGuid", mod.asmGuid }, { "type", "mod" } }, true);
 
         string[] result = response.Split('|');
         switch (result[0])
@@ -273,7 +272,7 @@ internal class ModMetadata
             switch (v1.CompareTo(v2))
             {
                 case 0:
-                    ModConsole.Error($"Mod version <b>{mod.Version}</b> is same as current offered version <b>{mod.UpdateInfo.mod_version}</b>, nothing to update.");
+                    ModConsole.Error($"Mod version <b>{mod.Version}</b> is same as current offered version <b>{mod.UpdateInfo.mod_version}</b> (That means file will not be offered as update)");
                     return;
                 case -1:
                     ModConsole.Error($"Mod version <b>{mod.Version}</b> is <b>LOWER</b> than current offered version <b>{mod.UpdateInfo.mod_version}</b>, cannot update.");
@@ -440,13 +439,13 @@ internal class ModMetadata
         switch (v1.CompareTo(v2))
         {
             case 0:
-                ModConsole.Error($"Mod version <b>{mod.Version}</b> is same as current offered version <b>{mod.UpdateInfo.mod_version}</b>, nothing to update.");
+                ModConsole.Warning($"Mod version <b>{mod.Version}</b> is same as current offered version <b>{mod.UpdateInfo.mod_version}</b> (skipping updating version number).");
                 return;
             case 1:
                 umm.sign = CalculateFileChecksum(mod.fileName);
                 break;
             case -1:
-                ModConsole.Error($"Mod version <b>{mod.Version}</b> is <b>LOWER</b> than current offered version <b>{mod.UpdateInfo.mod_version}</b>, cannot update.");
+                ModConsole.Error($"Mod version <b>{mod.Version}</b> is <b>LOWER</b> than current offered version <b>{mod.UpdateInfo.mod_version}</b>, cannot update version number.");
                 return;
         }
 
@@ -511,7 +510,17 @@ internal class ModMetadata
         ModLoader.Instance.MetadataUpdateList = new List<string>();
         ModLoader.HasUpdateModList = new List<Mod>();
         if (mv == null) return;
-
+        if(!string.IsNullOrEmpty(mv.notFound))
+        {
+            string[] notFound = mv.notFound.Split(',');
+            for (int i = 0; i < notFound.Length; i++)
+            {
+                Mod mod = ModLoader.GetModByID(notFound[i], true);
+                if (mod == null) continue;
+                if (mod.metadata == null) continue;
+                ModLoader.Instance.MetadataUpdateList.Add(mod.ID);
+            }
+        }
         for (int i = 0; i < mv.versions.Count; i++)
         {
             try

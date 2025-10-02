@@ -43,6 +43,7 @@ internal class PopupSettingController : MonoBehaviour
                         break;
                 }
             }
+            activePopup = mWindow;
         }
     }
 

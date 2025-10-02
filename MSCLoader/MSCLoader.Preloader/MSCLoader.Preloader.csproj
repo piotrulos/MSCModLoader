@@ -43,21 +43,27 @@
   <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\0Harmony.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="INIFileParser">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\INIFileParser.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Ionic.Zip">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Ionic.Zip.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="MSCLoader">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\MSCLoader.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="PlayMaker">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\PlayMaker.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -65,9 +71,11 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\UnityEngine.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>

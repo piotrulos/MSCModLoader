@@ -328,11 +328,17 @@ internal class ModMenuView : MonoBehaviour
         }
         SettingsGroup header4 = CreateHeader(listView.transform, "Upload", Color.yellow);
         CreateText(header4.HeaderListView.transform, "<b><color=aqua>Recomended option!</color></b> Updates mod information to latest version and Uploads it, so it's available as in-game update.");
-
+        bool alreadyClicked = false;
         SettingsElement uploadBtn = CreateButton(header4.HeaderListView.transform, "Upload and Update Mod", Color.white, Color.black);
         uploadBtn.button.onClick.AddListener(delegate
         {
+            if (alreadyClicked)
+            {
+                ModUI.ShowMessage($"You already uploaded this file, calm down.{Environment.NewLine}Check the dashboard for status of your updated mod.");
+                return;
+            }
             ModMetadata.UploadUpdate(mod, assets, references, refList.ToArray());
+            alreadyClicked = true;
         });
         uploadBtn.settingName.alignment = TextAnchor.MiddleLeft;
         uploadBtn.iconElement.texture = uploadBtn.iconPack[(int)SettingsButton.ButtonIcon.CloudArrow];
