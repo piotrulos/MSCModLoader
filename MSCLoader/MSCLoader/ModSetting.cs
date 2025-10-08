@@ -391,9 +391,9 @@ public class SettingsDropDownList : ModSetting
     {
         if (value >= ArrayOfItems.Length)
         {
-            Value = DefaultValue;
+            value = DefaultValue;
         }
-        Value = value;
+        Value = value; 
         UpdateValue(value);
     }
 

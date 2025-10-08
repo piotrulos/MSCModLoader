@@ -300,8 +300,9 @@ namespace MSCLoader
             }
             bugReport = ModUI.CreatePopupSetting($"Bug Report ({mod.ID})", "Submit Bug Report");
             bugReport.AddText($"This is form where you can report bugs/issues with mod named: <color=aqua><b>{mod.Name}</b></color>. Please make sure to include as much information as possible.{Environment.NewLine}{Environment.NewLine}" +
-                $"Trolling/Spam/Abuse can cause your report to be ignored, and may result in blacklisting you from using this feature in future.");
-            bugReport.AddTextBox("modID", "Mod ID", mod.ID, string.Empty, false);
+                $"<color=orange>Trolling/Spam/Abuse</color> can cause your report to be ignored, and may result in blacklisting you from using this feature in future.{Environment.NewLine}" +
+                $"Please write only in <color=orange>English</color> language.");
+            bugReport.AddTextBox("modID", "Mod ID", mod.ID, string.Empty, false); // hidden value
             bugReport.AddTextBox("bugReportTitle", "Bug Report Title", string.Empty, "Enter Bug Report Title...");
             bugReport.AddTextArea("bugReportDesc", "Bug Report Description", string.Empty, "Describe the bug/issue...");
             bugReport.AddText("You can also include your save file, this could help modder narrow down the issue.");
