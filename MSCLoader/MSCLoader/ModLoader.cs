@@ -1194,24 +1194,24 @@ public partial class ModLoader : MonoBehaviour
         {
             File.Delete(Path.Combine(ModsFolder, "unused.txt"));
         }
-        actualModList = LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_")).OrderBy(x => x.ID).ToArray();
-        BC_ModList = actualModList.Where(x => !x.newFormat).ToArray();
+        actualModList = [.. LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_"))];
+        BC_ModList = [.. actualModList.Where(x => !x.newFormat)];
 
-        PLoadMods = BC_ModList.Where(x => CheckEmptyMethod(x, "PreLoad")).ToArray();
-        SecondPassMods = BC_ModList.Where(x => CheckEmptyMethod(x, "PostLoad") || CheckEmptyMethod(x, "SecondPassOnLoad")).ToArray();
-        OnGUImods = BC_ModList.Where(x => CheckEmptyMethod(x, "OnGUI")).ToArray();
-        UpdateMods = BC_ModList.Where(x => CheckEmptyMethod(x, "Update")).ToArray();
-        FixedUpdateMods = BC_ModList.Where(x => CheckEmptyMethod(x, "FixedUpdate")).ToArray();
-        OnSaveMods = BC_ModList.Where(x => CheckEmptyMethod(x, "OnSave")).ToArray();
+        PLoadMods = [.. BC_ModList.Where(x => CheckEmptyMethod(x, "PreLoad"))];
+        SecondPassMods = [.. BC_ModList.Where(x => CheckEmptyMethod(x, "PostLoad") || CheckEmptyMethod(x, "SecondPassOnLoad"))];
+        OnGUImods = [.. BC_ModList.Where(x => CheckEmptyMethod(x, "OnGUI"))];
+        UpdateMods = [.. BC_ModList.Where(x => CheckEmptyMethod(x, "Update"))];
+        FixedUpdateMods = [.. BC_ModList.Where(x => CheckEmptyMethod(x, "FixedUpdate"))];
+        OnSaveMods = [.. BC_ModList.Where(x => CheckEmptyMethod(x, "OnSave"))];
 
-        Mod_OnNewGame = actualModList.Where(x => x.newFormat && x.A_OnNewGame != null).ToArray();
-        Mod_PreLoad = actualModList.Where(x => x.newFormat && x.A_PreLoad != null).ToArray();
-        Mod_OnLoad = actualModList.Where(x => x.newFormat && x.A_OnLoad != null).ToArray();
-        Mod_PostLoad = actualModList.Where(x => x.newFormat && x.A_PostLoad != null).ToArray();
-        Mod_OnSave = actualModList.Where(x => x.newFormat && x.A_OnSave != null).ToArray();
-        Mod_OnGUI = actualModList.Where(x => x.newFormat && x.A_OnGUI != null).ToArray();
-        Mod_Update = LoadedMods.Where(x => x.newFormat && x.A_Update != null).ToArray();
-        Mod_FixedUpdate = actualModList.Where(x => x.newFormat && x.A_FixedUpdate != null).ToArray();
+        Mod_OnNewGame = [.. actualModList.Where(x => x.newFormat && x.A_OnNewGame != null)];
+        Mod_PreLoad = [.. actualModList.Where(x => x.newFormat && x.A_PreLoad != null)];
+        Mod_OnLoad = [.. actualModList.Where(x => x.newFormat && x.A_OnLoad != null)];
+        Mod_PostLoad = [.. actualModList.Where(x => x.newFormat && x.A_PostLoad != null)];
+        Mod_OnSave = [.. actualModList.Where(x => x.newFormat && x.A_OnSave != null)];
+        Mod_OnGUI = [.. actualModList.Where(x => x.newFormat && x.A_OnGUI != null)];
+        Mod_Update = [.. LoadedMods.Where(x => x.newFormat && x.A_Update != null)];
+        Mod_FixedUpdate = [.. actualModList.Where(x => x.newFormat && x.A_FixedUpdate != null)];
         GetRequiredFilesData();
         //cleanup files if not in dev mode
         if (!devMode)

@@ -38,17 +38,17 @@ internal class ModMenuView : MonoBehaviour
     }
     System.Collections.IEnumerator ModListAsync(GameObject listView, string search)
     {
-        Mod[] filteredList = new Mod[0];
-        InvalidMods[] filteredInvalidList = new InvalidMods[0];
+        Mod[] filteredList = [];
+        InvalidMods[] filteredInvalidList = [];
         if (search == string.Empty)
         {
-            filteredList = ModLoader.Instance.actualModList;
-            filteredInvalidList = ModLoader.InvalidMods.ToArray();
+            filteredList = [.. ModLoader.Instance.actualModList.OrderBy(x => x.ID)];
+            filteredInvalidList = [.. ModLoader.InvalidMods];
         }
         else
         {
-            filteredList = ModLoader.Instance.actualModList.Where(x => x.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 || x.ID.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0).ToArray();
-            filteredInvalidList = ModLoader.InvalidMods.Where(x => x.FileName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0).ToArray();
+            filteredList = [.. ModLoader.Instance.actualModList.Where(x => x.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 || x.ID.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0).OrderBy(x => x.ID)];
+            filteredInvalidList = [.. ModLoader.InvalidMods.Where(x => x.FileName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)];
         }
 
         for (int i = 0; i < filteredList.Length; i++)
