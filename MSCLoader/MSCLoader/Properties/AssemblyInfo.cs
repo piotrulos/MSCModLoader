@@ -6,7 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("MSCLoader")]
+#if MSC
 [assembly: AssemblyDescription("My Summer Car Mod Loader")]
+#elif MWC
+[assembly: AssemblyDescription("My Winter Car Mod Loader")]
+#endif
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Kosmo Software")]
 [assembly: AssemblyProduct("MSCLoader")]

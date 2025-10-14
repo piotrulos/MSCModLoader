@@ -95,12 +95,14 @@ public class ModUI
     {
         return msclCanv;
     }
+    #if MSC
     /// <summary>
     /// Get UI canvas
     /// </summary>
     /// <returns>Canvas GameObject</returns>
     [Obsolete("It is recommended to create your own canvas using CreateCanvas() instead.", true)]
     public static GameObject GetCanvas() => msclCanv;
+    #endif
 
     /// <summary>
     /// Create Message Box Button for ShowCustomMessage(...);

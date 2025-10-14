@@ -380,6 +380,7 @@ internal class ModMenu : Mod
                     }
                     else
                     {
+#if MSC
                         if (ModLoader.LoadedMods[i].LoadInMenu && ModLoader.LoadedMods[i].fileName != null)
                         {
                             Console.WriteLine($"Calling OnMenuLoad [old format] (for mod {ModLoader.LoadedMods[i].ID})");
@@ -392,6 +393,7 @@ internal class ModMenu : Mod
                             ModLoader.LoadedMods[i].MenuOnLoad();
                             ModLoader.LoadedMods[i].disableWarn = true;
                         }
+#endif
                     }
                 }
                 catch (Exception e)
@@ -452,8 +454,10 @@ internal class ModMenu : Mod
                             ModLoader.LoadedMods[i].A_ModSettingsLoaded.Invoke();
                         }
                     }
+#if MSC
                     else
                         ModLoader.LoadedMods[i].ModSettingsLoaded();
+#endif
                 }
             }
             catch (Exception e)

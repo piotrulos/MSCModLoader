@@ -42,7 +42,7 @@ public partial class Settings
     private static Mod settingsMod = null;
 
     internal static List<ModSetting> GetModSettings(Mod mod) => mod.modSettingsList;
-
+    #if MSC
     /// <summary>
     /// Undocumented crap don't use
     /// </summary>
@@ -80,7 +80,7 @@ public partial class Settings
         }
         return crap;
     }
-
+#endif
     internal static void ModSettings(Mod modEntry)
     {
         settingsMod = modEntry;

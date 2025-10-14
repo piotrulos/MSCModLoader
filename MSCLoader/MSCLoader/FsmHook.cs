@@ -33,7 +33,7 @@ internal class SetMouseCursorFix : FsmStateAction
         Finish();
     }
 }
-
+#if MSC
 /// <summary>
 /// Playmaker hook inject method.
 /// </summary>
@@ -52,4 +52,5 @@ public class FsmHook
         gameObject.FsmInject(stateName, hook);
     }
 }
+#endif
 #endif

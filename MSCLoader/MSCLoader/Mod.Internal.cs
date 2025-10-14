@@ -65,6 +65,8 @@ public partial class Mod
         ModSettings
     }
 
+    internal Game supportedGames = Game.MySummerCar;
+
     /// <summary>
     /// true if mod is disabled
     /// </summary>

@@ -386,13 +386,14 @@ internal class ModMenuView : MonoBehaviour
         Transform currentTransform = null;
         Transform previousTransform = null;
         //If first settings element is not header, create one.
+#if MSC
         if (mod.proSettings)
         {
             SettingsGroup header = CreateHeader(listView.transform, "Incompatible settings", Color.white);
             header.HeaderBackground.color = Color.red;
             CreateText(header.HeaderListView.transform, $"<color=aqua>Incompatible settings format! Settings below may not load or work correctly.</color>{Environment.NewLine}Report that to mod author to use proper settings format.");
         }
-
+#endif
         if (Settings.GetModSettings(mod)[0].SettingType != SettingsType.HeaderGroup)
         {
             SettingsGroup header = CreateHeader(listView.transform, "Settings", Color.cyan);
@@ -450,11 +451,13 @@ internal class ModMenuView : MonoBehaviour
                         mod.A_ModSettingsLoaded.Invoke();
                     }
                 }
+#if MSC
                 else
                 {
                     Console.WriteLine($"Calling ModSettingsLoaded [old format] (for mod {mod.ID})");
                     mod.ModSettingsLoaded();
                 }
+#endif
             });
         }
     }
@@ -608,8 +611,10 @@ internal class ModMenuView : MonoBehaviour
                             settingRes.ThisMod.A_ModSettingsLoaded.Invoke();
                         }
                     }
+#if MSC
                     else
                         settingRes.ThisMod.ModSettingsLoaded();
+#endif
                 });
                 rbtn.transform.SetParent(listView, false);
                 rbtn.gameObject.SetActive(settingRes.IsVisible);
@@ -776,4 +781,4 @@ internal class ModMenuView : MonoBehaviour
         return txt;
     }
 #endif
-}
+    }

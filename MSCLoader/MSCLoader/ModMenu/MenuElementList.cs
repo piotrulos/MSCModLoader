@@ -52,6 +52,7 @@ namespace MSCLoader
                     WarningText.text = "<color=aqua>Early Access Mod</color>";
                     WarningInfo.text = $"This mod is a <color=aqua>Early Access Mod</color>. There may be bugs. {Environment.NewLine}Please respect any rules given by mod author, breaking them may result in blacklisting from ANY future Early Access mods.";
                 }
+                #if MSC
                 if (mod.proSettings || (mod.AdditionalReferences != null && mod.AdditionalReferences.Contains("MSCLoader.Features")))
                 {
                     WarningText.gameObject.SetActive(true);
@@ -60,6 +61,7 @@ namespace MSCLoader
                     WarningText.text = "<color=lightblue>Compatibility Mode (Pro)</color>";
                     WarningInfo.text = $"This mod runs in <color=lightblue>compatibility mode</color>. Some features might not work as intended. {Environment.NewLine}Check if there is new version (or remake) available.";
                 }
+                #endif
             }
             Author.text = $"by <color=orange><b>{mod.Author}</b></color> (<color=aqua>{mod.Version}</color>)";
             if (string.IsNullOrEmpty(mod.Description))
@@ -347,7 +349,11 @@ namespace MSCLoader
 
             foreach (Mod m in ModLoader.Instance.actualModList)
             {
+#if MSC
                 sb.AppendLine($"{(mod.ID == m.ID ? "===>" : "")} [ID: {m.ID}] - {m.Name} v{m.Version} {(m.isDisabled ? "(Disabled)" : "")} {((m.proSettings || (m.AdditionalReferences != null && m.AdditionalReferences.Contains("MSCLoader.Features"))) ? "(Compatiblity Pro)" : "")} {((m.Description != null && m.Description.Contains(MSCLInternal.ProLoaderMagic())) ? "*" : "")} {(ModLoader.HasUpdateModList.Contains(m) ? "(Update Pending)" : "")}");
+#elif MWC
+                sb.AppendLine($"{(mod.ID == m.ID ? "===>" : "")} [ID: {m.ID}] - {m.Name} v{m.Version} {(m.isDisabled ? "(Disabled)" : "")} {((m.Description != null && m.Description.Contains(MSCLInternal.ProLoaderMagic())) ? "*" : "")} {(ModLoader.HasUpdateModList.Contains(m) ? "(Update Pending)" : "")}");
+#endif
             }
 
             sb.AppendLine($"===== Invalid files ====={Environment.NewLine}");
@@ -565,10 +571,12 @@ namespace MSCLoader
                                 mod.disableWarn = false;
                             }
                         }
+#if MSC
                         else
                         {
                             mod.OnModDisabled();
                         }
+#endif
                     }
                     catch (Exception e)
                     {
@@ -598,10 +606,12 @@ namespace MSCLoader
                                 onEnableExist = true;
                             }
                         }
+#if MSC
                         else
                         {
                             mod.OnModEnabled();
                         }
+#endif
                     }
                     catch (Exception e)
                     {

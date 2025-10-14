@@ -99,12 +99,13 @@ public class SettingsCheckBox : ModSetting
 {
     internal bool Value = false;
     internal bool DefaultValue = false;
+    #if MSC
     /// <summary>
     /// Not used anymore
     /// </summary>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public Settings Instance;
-
+#endif
     /// <summary>
     /// Get checkbox value
     /// </summary>
@@ -128,8 +129,10 @@ public class SettingsCheckBox : ModSetting
     {
         Value = value;
         DefaultValue = value;
+        #if MSC
         Instance = new Settings(this); //Compatibility only
         Instance.ID = id;
+        #endif
     }
 }
 
@@ -141,11 +144,13 @@ public class SettingsCheckBoxGroup : ModSetting
     internal bool Value = false;
     internal bool DefaultValue = false;
     internal string CheckBoxGroup = string.Empty;
+    #if MSC
     /// <summary>
     /// Not used anymore
     /// </summary>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public Settings Instance;
+    #endif
 
     /// <summary>
     /// Get checkbox value
@@ -170,8 +175,10 @@ public class SettingsCheckBoxGroup : ModSetting
         Value = value;
         DefaultValue = value;
         CheckBoxGroup = group;
+        #if MSC
         Instance = new Settings(this); //Compatibility only
         Instance.ID = id;
+        #endif
     }
 }
 
@@ -185,12 +192,13 @@ public class SettingsSliderInt : ModSetting
     internal int MinValue = 0;
     internal int MaxValue = 100;
     internal string[] TextValues = null;
-
+    #if MSC
     /// <summary>
     /// Not used anymore
     /// </summary>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public Settings Instance;
+    #endif
 
     /// <summary>
     /// Get slider value
@@ -218,8 +226,10 @@ public class SettingsSliderInt : ModSetting
         MinValue = minValue;
         MaxValue = maxValue;
         TextValues = textValues;
+#if MSC
         Instance = new Settings(this); //Compatibility only
         Instance.ID = id;
+#endif
     }
 }
 
@@ -233,11 +243,13 @@ public class SettingsSlider : ModSetting
     internal float MinValue = 0;
     internal float MaxValue = 100;
     internal int DecimalPoints = 0;
+    #if MSC
     /// <summary>
     /// Not used anymore
     /// </summary>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public Settings Instance;
+    #endif
 
     /// <summary>
     /// Get slider value
@@ -265,8 +277,10 @@ public class SettingsSlider : ModSetting
         MinValue = minValue;
         MaxValue = maxValue;
         DecimalPoints = decimalPoints;
+#if MSC
         Instance = new Settings(this); //Compatibility only
         Instance.ID = id;
+#endif
     }
 }
 
@@ -279,13 +293,13 @@ public class SettingsTextBox : ModSetting
     internal string DefaultValue = string.Empty;
     internal string Placeholder = string.Empty;
     internal InputField.ContentType ContentType = InputField.ContentType.Standard;
-
+    #if MSC
     /// <summary>
     /// Not used anymore
     /// </summary>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public Settings Instance;
-
+    #endif
     /// <summary>
     /// Get TextBox value
     /// </summary>
@@ -311,8 +325,10 @@ public class SettingsTextBox : ModSetting
         DefaultValue = value;
         Placeholder = placeholder;
         ContentType = contentType;
+#if MSC
         Instance = new Settings(this); //Compatibility only
         Instance.ID = id;
+#endif
     }
 }
 
@@ -358,12 +374,13 @@ public class SettingsDropDownList : ModSetting
     internal int Value = 0;
     internal string[] ArrayOfItems = new string[0];
     internal int DefaultValue = 0;
-
+    #if MSC
     /// <summary>
     /// Not used anymore
     /// </summary>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public Settings Instance;
+    #endif
 
     /// <summary>
     /// Get DropDownList selected Item Index (can be accessed from anywhere)
@@ -402,8 +419,10 @@ public class SettingsDropDownList : ModSetting
         Value = defaultValue;
         ArrayOfItems = arrayOfItems;
         DefaultValue = defaultValue;
+#if MSC
         Instance = new Settings(this); //Compatibility only
         Instance.ID = id;
+#endif
     }
 }
 /// <summary>
@@ -414,12 +433,13 @@ public class SettingsColorPicker : ModSetting
     internal string Value = "0,0,0,255";
     internal string DefaultColorValue = "0,0,0,255";
     internal bool ShowAlpha = false;
-
+    #if MSC
     /// <summary>
     /// Not used anymore
     /// </summary>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public Settings Instance;
+    #endif
 
     /// <summary>
     /// Get Color32 value
@@ -446,8 +466,10 @@ public class SettingsColorPicker : ModSetting
         Value = $"{defaultColor.r},{defaultColor.g},{defaultColor.b},{defaultColor.a}";
         DefaultColorValue = $"{defaultColor.r},{defaultColor.g},{defaultColor.b},{defaultColor.a}";
         ShowAlpha = showAlpha;
+#if MSC
         Instance = new Settings(this); //Compatibility only
         Instance.ID = id;
+#endif
     }
 }
 
@@ -719,7 +741,7 @@ public class SettingsResetButton : ModSetting
     }
 }
 
-
+#if MSC
 /// <summary>
 /// Settings Dynamic Header
 /// </summary>
@@ -748,4 +770,5 @@ public class SettingsDynamicText : SettingsText
         Instance.Value = name;
     }
 }
+#endif
 #endif

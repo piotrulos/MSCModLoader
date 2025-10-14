@@ -57,6 +57,7 @@ public partial class ModLoader : MonoBehaviour
     /// </summary>
     internal static void Init_NP(string cfg)
     {
+        CurrentGame = Application.productName == "My Summer Car" ? Game.MySummerCar : Game.MyWinterCar;
         switch (cfg)
         {
             case "GF":
@@ -214,6 +215,9 @@ public partial class ModLoader : MonoBehaviour
     private void Init()
     {
         Console.WriteLine($"{Environment.NewLine}[MSCLoader Init]");
+        Console.WriteLine($"Detected game: {CurrentGame}");
+        Console.WriteLine($"MSCLoader version: {MSCLInfo.Version} build {MSCLInfo.Build}");
+        Console.WriteLine($"MSCLoader target game: {MSCLInfo.TargetGame}");
         string[] launchArgs = Environment.GetCommandLineArgs();
         Console.WriteLine("Launch arguments:");
         Console.WriteLine(string.Join(" ", launchArgs));
@@ -310,6 +314,11 @@ public partial class ModLoader : MonoBehaviour
             ModUI.ShowMessage($"<b><color=orange>DON'T use Vortex</color></b> to update MSCLoader, or to install tools or mods.{Environment.NewLine}<b><color=orange>Vortex isn't supported by MSCLoader</color></b>, because it's implementation breaks Mods folder by putting wrong files into it.{Environment.NewLine}{Environment.NewLine}MSCLoader will try to fix your mods folder now, <b><color=orange>please restart your game.</color></b>{Environment.NewLine}If this message shows again after restart, rebuild your Mods folder from scratch.", "Fatal Error");
             return;
         }
+        if (!CheckCorrectGame())
+        {
+            ModUI.ShowMessage($"Installed MSCLoader is for <color=aqua>{MSCLInfo.TargetGame}</color> game only, but you are trying to use it for <color=yellow>{Application.productName}</color>.{Environment.NewLine}Please install correct MSCLoader for your game.", "Fatal Error");
+            return;
+        }
 
         LoadMod(new ModConsole(), MSCLoader_Ver);
         LoadedMods[0].A_ModSettings.Invoke();
@@ -392,11 +401,13 @@ public partial class ModLoader : MonoBehaviour
         MSCLInternal.LoadMSCLDataFile();
         LoadModsSettings();
         ModMenu.LoadBinds();
+        #if MSC
         GameObject old_callbacks = new GameObject("BC Callbacks");
         old_callbacks.transform.SetParent(gameObject.transform, false);
         if (OnGUImods.Length > 0) old_callbacks.AddComponent<BC_ModOnGUI>().modLoader = this;
         if (UpdateMods.Length > 0) old_callbacks.AddComponent<BC_ModUpdate>().modLoader = this;
         if (FixedUpdateMods.Length > 0) old_callbacks.AddComponent<BC_ModFixedUpdate>().modLoader = this;
+        #endif
         GameObject mod_callbacks = new GameObject("MSCLoader Callbacks");
         mod_callbacks.transform.SetParent(gameObject.transform, false);
         if (Mod_OnGUI.Length > 0) mod_callbacks.AddComponent<A_ModOnGUI>().modLoader = this;
@@ -724,6 +735,18 @@ public partial class ModLoader : MonoBehaviour
         return false;
     }
 
+    private bool CheckCorrectGame()
+    {
+        if(CurrentGame == Game.MySummerCar && !MSCLInfo.BuildType.StartsWith("MSC"))
+        {
+            return false;
+        }
+        if (CurrentGame == Game.MyWinterCar && !MSCLInfo.BuildType.StartsWith("MWC"))
+        {
+            return false;
+        }        
+        return true;
+    }
     /// <summary>
     /// Toggle main menu path via settings
     /// </summary>
@@ -881,6 +904,7 @@ public partial class ModLoader : MonoBehaviour
             }
 
         }
+#if MSC
         for (int i = 0; i < BC_ModList.Length; i++)
         {
             canvLoading.SetLoadingProgress(BC_ModList[i].Name);
@@ -896,6 +920,7 @@ public partial class ModLoader : MonoBehaviour
             }
 
         }
+#endif
         canvLoading.SetLoadingStatus("Resetting Done! You can skip intro now!");
         yield return new WaitForSeconds(1f);
         canvLoading.ToggleLoadingUI(false);
@@ -933,6 +958,7 @@ public partial class ModLoader : MonoBehaviour
                 ModException(e, Mod_PreLoad[i]);
             }
         }
+#if MSC
         for (int i = 0; i < PLoadMods.Length; i++)
         {
             canvLoading.SetLoadingProgress(PLoadMods[i].ID);
@@ -948,6 +974,7 @@ public partial class ModLoader : MonoBehaviour
                 ModException(e, PLoadMods[i]);
             }
         }
+#endif
         canvLoading.SetLoadingTitle("Waiting...");
         canvLoading.SetLoadingStatus("Waiting for game to finish load...");
         while (playerCam.Value == null)
@@ -975,6 +1002,7 @@ public partial class ModLoader : MonoBehaviour
                 ModException(e, Mod_OnLoad[i]);
             }
         }
+#if MSC
         for (int i = 0; i < BC_ModList.Length; i++)
         {
             canvLoading.SetLoadingProgress(BC_ModList[i].ID);
@@ -990,6 +1018,7 @@ public partial class ModLoader : MonoBehaviour
                 ModException(e, BC_ModList[i]);
             }
         }
+#endif
         ModMenu.LoadBinds();
         canvLoading.SetLoadingTitle("Loading mods - Phase 3");
         canvLoading.SetLoadingStatus("Loading mods. Please wait...");
@@ -1011,6 +1040,7 @@ public partial class ModLoader : MonoBehaviour
                 ModException(e, Mod_PostLoad[i]);
             }
         }
+#if MSC
         for (int i = 0; i < SecondPassMods.Length; i++)
         {
             canvLoading.SetLoadingProgress(SecondPassMods[i].ID);
@@ -1026,6 +1056,7 @@ public partial class ModLoader : MonoBehaviour
                 ModException(e, SecondPassMods[i]);
             }
         }
+#endif
         canvLoading.SetLoadingProgress((int)canvLoading.lProgress.maxValue, (int)canvLoading.lProgress.maxValue);
         canvLoading.SetLoadingStatus("Finishing touches...");
         yield return null;
@@ -1056,6 +1087,7 @@ public partial class ModLoader : MonoBehaviour
                 ModException(e, Mod_OnSave[i], true);
             }
         }
+#if MSC
         for (int i = 0; i < OnSaveMods.Length; i++)
         {
             if (OnSaveMods[i].isDisabled) continue;
@@ -1069,6 +1101,7 @@ public partial class ModLoader : MonoBehaviour
                 ModException(e, OnSaveMods[i], true);
             }
         }
+#endif
         if (IsReferencePresent("MSCCoreLibrary"))
             TimeSchedulerCalls("save");
     }
@@ -1342,8 +1375,10 @@ public partial class ModLoader : MonoBehaviour
                         LoadedMods[i].A_ModSettings.Invoke();
                     }
                 }
+#if MSC
                 else
                     LoadedMods[i].ModSettings();
+#endif
                 //Load disabled flag first
                 string path = Path.Combine(ModLoader.GetModSettingsFolder(ModLoader.LoadedMods[i]), "settings.json");
                 if (!File.Exists(path))
@@ -1353,8 +1388,10 @@ public partial class ModLoader : MonoBehaviour
             }
             catch (Exception e)
             {
+#if MSC
                 if (LoadedMods[i].proSettings) System.Console.WriteLine(e); // No need to spam console with pro settings errors.
                 else
+#endif
                 {
                     ModConsole.Error($"Settings error for mod <b>{LoadedMods[i].ID}</b>{Environment.NewLine}<b>Details:</b> {e.Message}");
                     if (devMode)
@@ -1577,7 +1614,41 @@ public partial class ModLoader : MonoBehaviour
             }
         }
     }
-
+    internal void A_Update()
+    {
+        for (int i = 0; i < Mod_Update.Length; i++)
+        {
+            if (Mod_Update[i].isDisabled)
+                continue;
+            try
+            {
+                if (allModsLoaded || Mod_Update[i].menuCallbacks)
+                    Mod_Update[i].A_Update.Invoke();
+            }
+            catch (Exception e)
+            {
+                ModExceptionHandler(e, Mod_Update[i]);
+            }
+        }
+    }
+    internal void A_FixedUpdate()
+    {
+        for (int i = 0; i < Mod_FixedUpdate.Length; i++)
+        {
+            if (Mod_FixedUpdate[i].isDisabled)
+                continue;
+            try
+            {
+                if (allModsLoaded || Mod_FixedUpdate[i].menuCallbacks)
+                    Mod_FixedUpdate[i].A_FixedUpdate.Invoke();
+            }
+            catch (Exception e)
+            {
+                ModExceptionHandler(e, Mod_FixedUpdate[i]);
+            }
+        }
+    }
+#if MSC
     internal void BC_OnGUI()
     {
         GUI.skin = guiskin;
@@ -1596,23 +1667,7 @@ public partial class ModLoader : MonoBehaviour
             }
         }
     }
-    internal void A_Update()
-    {
-        for (int i = 0; i < Mod_Update.Length; i++)
-        {
-            if (Mod_Update[i].isDisabled)
-                continue;
-            try
-            {
-                if (allModsLoaded || Mod_Update[i].menuCallbacks)
-                    Mod_Update[i].A_Update.Invoke();
-            }
-            catch (Exception e)
-            {
-                ModExceptionHandler(e, Mod_Update[i]);
-            }
-        }
-    }
+
 
     internal void BC_Update()
     {
@@ -1631,23 +1686,7 @@ public partial class ModLoader : MonoBehaviour
             }
         }
     }
-    internal void A_FixedUpdate()
-    {
-        for (int i = 0; i < Mod_FixedUpdate.Length; i++)
-        {
-            if (Mod_FixedUpdate[i].isDisabled)
-                continue;
-            try
-            {
-                if (allModsLoaded || Mod_FixedUpdate[i].LoadInMenu)
-                    Mod_FixedUpdate[i].A_FixedUpdate.Invoke();
-            }
-            catch (Exception e)
-            {
-                ModExceptionHandler(e, Mod_FixedUpdate[i]);
-            }
-        }
-    }
+
     internal void BC_FixedUpdate()
     {
         for (int i = 0; i < FixedUpdateMods.Length; i++)
@@ -1665,7 +1704,7 @@ public partial class ModLoader : MonoBehaviour
             }
         }
     }
-
+#endif
     void ModExceptionHandler(Exception e, Mod mod)
     {
         if (LogAllErrors)

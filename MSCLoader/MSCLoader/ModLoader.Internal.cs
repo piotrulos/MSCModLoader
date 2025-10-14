@@ -8,6 +8,8 @@ namespace MSCLoader;
 
 public partial class ModLoader
 {
+    internal static Game CurrentGame = Game.MySummerCar;
+
     internal static bool LogAllErrors = false;
     internal static List<InvalidMods> InvalidMods;
     internal static ModLoader Instance;

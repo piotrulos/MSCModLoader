@@ -15,9 +15,16 @@ internal class MSCLInfo
 #elif MSC_Mini
     public static readonly string BuildType = "MSC_Mini";
     public static readonly string TargetGame = "MSC (Assets Only)"; //Unusable in game
+#elif MWC_Debug
+    public static readonly string BuildType = "MWC_Debug";
+    public static readonly string TargetGame = "My Winter Car (<color=magenta>Debug Build</color>)";
+#elif MWC_Release
+    public static readonly string BuildType = "MWC_Release";
+    public static readonly string TargetGame = "My Winter Car";
+#elif  MWC_Mini
+    public static readonly string BuildType = "MWC_Mini";
+    public static readonly string TargetGame = "MWC (Assets Only)"; //Unusable in game
 #endif
-    //Expand to MWC crap once ready.
-
 
 }
 
