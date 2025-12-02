@@ -214,7 +214,7 @@ public class ModUI
         {
             isBeggingAdPopup = true;
         }
-        if (ModMenu.filterAdPopups.GetValue() && isBeggingAdPopup)
+        if (ModMenu.filterAdPopups != null && ModMenu.filterAdPopups.GetValue() && isBeggingAdPopup)
         {
             ModConsole.Print("<color=aqua>[Filtered Money Begging Ad Popup]</color> - you can change this in Main Settings of MSCLoader menu");
             Console.WriteLine($"Filtered message: {message}"); //add message to log for reference and potential false positives

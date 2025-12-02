@@ -210,5 +210,10 @@ public partial class Mod
                 break;
         }
     }
+    /// <summary>
+    /// Set supported games (MSC or MWC or both)
+    /// </summary>
+    /// <param name="game">Bitwise enum</param>
+   // public void SetupSupportedGames(Game game) => supportedGames = game;
 }
 #endif
