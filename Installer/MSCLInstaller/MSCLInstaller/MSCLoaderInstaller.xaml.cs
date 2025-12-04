@@ -144,13 +144,14 @@ namespace MSCLInstaller
             {
                 Dbg.Log($"Failed to read file: {corepack}");
             }
-            ZipFile zip1 = ZipFile.Read(corepack);
             Version coreVer = new Version("0.0.0.0");
-            if (zip1.Comment != null)
+            using (ZipFile zip = ZipFile.Read(corepack))
             {
-                coreVer = new Version(zip1.Comment);
+                if (zip.Comment != null)
+                {
+                    coreVer = new Version(zip.Comment);
+                }
             }
-            zip1.Dispose();
             Dbg.Log("Comparing core file version...", true);
             if (InstallerHelpers.VersionCompare(coreVer, Path.Combine(Storage.mscPath, "winhttp.dll")))
             {
@@ -166,12 +167,14 @@ namespace MSCLInstaller
             {
                 Dbg.Log($"Failed to read file: {refpack}");
             }
-            ZipFile zip2 = ZipFile.Read(refpack);
-            zip2.ExtractAll(Path.Combine(Storage.currentPath, "temp"));
-            zip2.Dispose();
+            using (ZipFile zip = ZipFile.Read(refpack))
+            {
+                zip.ExtractAll(Path.Combine(Storage.currentPath, "temp"));
+            }
             Dbg.Log("Comparing references versions...", true);
             foreach (string f in Directory.GetFiles(Path.Combine(Storage.currentPath, "temp")))
             {
+                if(Path.GetExtension(f).ToLower() != ".dll") continue;
                 if (InstallerHelpers.VersionCompare(f, Path.Combine(Storage.mscPath, "mysummercar_Data", "Managed", Path.GetFileName(f))))
                 {
                     updateRefs = true;
@@ -187,14 +190,14 @@ namespace MSCLInstaller
             {
                 Dbg.Log($"Failed to read file: {msc}");
             }
-            ZipFile zip3 = ZipFile.Read(msc);
             Version mscVer = new Version("0.0.0.0");
-            if (zip3.Comment != null)
+            using (ZipFile zip = ZipFile.Read(msc))
             {
-
-                mscVer = new Version(zip3.Comment);
+                if (zip.Comment != null)
+                {
+                    mscVer = new Version(zip.Comment);
+                }
             }
-            zip3.Dispose();
             Dbg.Log("Comparing MSCLoader version...", true);
             if (InstallerHelpers.VersionCompare(mscVer, Path.Combine(Storage.mscPath, "mysummercar_Data", "Managed", "MSCLoader.dll")))
             {

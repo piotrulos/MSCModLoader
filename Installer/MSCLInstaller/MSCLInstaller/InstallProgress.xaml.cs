@@ -224,15 +224,17 @@ namespace MSCLInstaller
             System.Threading.Thread.Sleep(1000);
             try
             {
-                ZipFile zip1 = ZipFile.Read(Path.Combine(Storage.currentPath, "main_ref.pack"));
-                max = zip1.Entries.Count + 3;
-                for (int i = 0; i < zip1.Entries.Count; i++)
+                using (ZipFile zip = ZipFile.Read(Path.Combine(Storage.currentPath, "main_ref.pack")))
                 {
-                    ZipEntry zz = zip1[i];
-                    progressLog.Report(($"Deleting {zz.FileName}", $"Deleting.....{zz.FileName}"));
-                    DeleteIfExists(Path.Combine(Storage.mscPath, "mysummercar_Data", "Managed" + zz.FileName));
-                    progress.Report((i, max, false));
-                    System.Threading.Thread.Sleep(100);
+                    max = zip.Entries.Count + 3;
+                    for (int i = 0; i < zip.Entries.Count; i++)
+                    {
+                        ZipEntry zz = zip[i];
+                        progressLog.Report(($"Deleting {zz.FileName}", $"Deleting.....{zz.FileName}"));
+                        DeleteIfExists(Path.Combine(Storage.mscPath, "mysummercar_Data", "Managed", zz.FileName));
+                        progress.Report((i, max, false));
+                        System.Threading.Thread.Sleep(100);
+                    }
                 }
             }
             catch (Exception ex)
@@ -409,25 +411,26 @@ namespace MSCLInstaller
                 }
                 else
                 {
-                    ZipFile zip1 = ZipFile.Read(fn);
-                    progressLog.Report(($"Reading file: {Path.GetFileName(fn)}", $"Reading file.....{Path.GetFileName(fn)}"));
-                    if (!isTemp)
-                        progress.Report((0, zip1.Entries.Count, false));
-                    System.Threading.Thread.Sleep(100);
-
-                    for (int i = 0; i < zip1.Entries.Count; i++)
+                    using (ZipFile zip = ZipFile.Read(fn))
                     {
-                        ZipEntry zz = zip1[i];
+                        progressLog.Report(($"Reading file: {Path.GetFileName(fn)}", $"Reading file.....{Path.GetFileName(fn)}"));
                         if (!isTemp)
-                        {
-                            progressLog.Report(($"Copying file: {zz.FileName}", $"Copying file.....{zz.FileName}"));
-                            progress.Report((i, zip1.Entries.Count, false));
-                        }
-                        zz.Extract(target, ExtractExistingFileAction.OverwriteSilently);
+                            progress.Report((0, zip.Entries.Count, false));
                         System.Threading.Thread.Sleep(100);
 
+                        for (int i = 0; i < zip.Entries.Count; i++)
+                        {
+                            ZipEntry zz = zip[i];
+                            if (!isTemp)
+                            {
+                                progressLog.Report(($"Copying file: {zz.FileName}", $"Copying file.....{zz.FileName}"));
+                                progress.Report((i, zip.Entries.Count, false));
+                            }
+                            zz.Extract(target, ExtractExistingFileAction.OverwriteSilently);
+                            System.Threading.Thread.Sleep(100);
+
+                        }
                     }
-                    zip1.Dispose();
                 }
 
                 return true;

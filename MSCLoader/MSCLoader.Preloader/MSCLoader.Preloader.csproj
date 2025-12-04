@@ -62,8 +62,8 @@
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\INIFileParser.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Ionic.Zip">
-      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Ionic.Zip.dll</HintPath>
+    <Reference Include="Ionic.Zip.Reduced">
+      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Ionic.Zip.Reduced.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="MSCLoader">

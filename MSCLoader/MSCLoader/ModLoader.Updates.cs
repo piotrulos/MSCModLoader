@@ -1,12 +1,14 @@
 ﻿#if !Mini
 using Ionic.Zip;
 using Newtonsoft.Json;
+using Steamworks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using static UnityEngine.UI.GridLayoutGroup;
 
 namespace MSCLoader;
 public partial class ModLoader : MonoBehaviour
@@ -23,12 +25,15 @@ public partial class ModLoader : MonoBehaviour
             }
             else
             {
-                ZipFile zipFile = ZipFile.Read(File.ReadAllBytes(zip));
-                foreach (ZipEntry zipEntry in zipFile)
+                using (ZipFile zipFile = ZipFile.Read(zip))
                 {
-                    ModConsole.Print($"<b><color=yellow>Copying new file:</color></b> <color=aqua>{zipEntry.FileName}</color>");
-                    zipEntry.Extract(target, ExtractExistingFileAction.OverwriteSilently);
+                    foreach (ZipEntry zipEntry in zipFile)
+                    {
+                        ModConsole.Print($"<b><color=yellow>Copying new file:</color></b> <color=aqua>{zipEntry.FileName}</color>");
+                        zipEntry.Extract(target, ExtractExistingFileAction.OverwriteSilently);
+                    }
                 }
+
             }
             File.Delete(zip);
         }
@@ -37,6 +42,35 @@ public partial class ModLoader : MonoBehaviour
             ModConsole.Error(e.Message);
             Console.WriteLine(e);
             File.Delete(zip); //Delete if error (corrupted zip file)
+        }
+    }
+    void PreloaderUpdate()
+    {
+        //Try updating preloader, if it fails... well tough shit. (DS4 doesn't seem to lock the file)
+        string ploader = Path.Combine("Updates", Path.Combine("Core", "MSCLoader.Preloader"));
+
+        if (File.Exists(ploader))
+        {
+            System.Diagnostics.FileVersionInfo currVer = System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "MSCLoader.Preloader.dll"));
+            System.Diagnostics.FileVersionInfo newVer = System.Diagnostics.FileVersionInfo.GetVersionInfo(ploader);
+            if(newVer.FilePrivatePart <= currVer.FilePrivatePart)
+            {
+                //No need to update
+                File.Delete(ploader);
+                return;
+            }
+            try
+            {
+                File.Delete(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "MSCLoader.Preloader.dll"));
+                File.Move(ploader, Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "MSCLoader.Preloader.dll"));
+                ModConsole.Print($"<b><color=yellow>Successfully updated:</color></b> <color=aqua>MSCLoader.Preloader.dll</color>");
+            }
+            catch (Exception e)
+            {
+                ModUI.ShowMessage($"Failed to update <color=aqua>MSCLoader.Preloader.dll</color>!{Environment.NewLine}{Environment.NewLine}Please do a full update using MSCLInstaller.", "Update Failed");
+                Console.WriteLine(e);
+                File.Delete(ploader);
+            }
         }
     }
     void UnpackUpdates()

@@ -92,6 +92,11 @@ public class ModConsole : Mod
     {
         AssetBundle ab = LoadAssets.LoadBundle(this, "console.unity3d");
         GameObject UIp = ab.LoadAsset<GameObject>("MSCLoader Canvas console.prefab");
+        TextAsset assetver = ab.LoadAsset<TextAsset>("version.txt");
+        if (assetver == null || !MSCLInfo.BuildType.StartsWith(assetver.text.Split('|')[0]) || !MSCLInfo.consoleAssetVersion.Equals(assetver.text.Split('|')[1]))
+        {
+            throw new Exception($"Invalid MSCLoader asset file version (<color=aqua>console.unity3d</color>), do not replace random MSCLoader files with other versions.{Environment.NewLine}");
+        }
         UI = GameObject.Instantiate(UIp);
         console = UI.GetComponentInChildren<ConsoleView>();
         GameObject.DontDestroyOnLoad(UI);
@@ -115,7 +120,7 @@ public class ModConsole : Mod
         }
         catch (Exception e)
         {
-            ModUI.ShowMessage($"Fatal error:{Environment.NewLine}<color=orange>{e.Message}</color>{Environment.NewLine}Please install MSCLoader correctly.", "Fatal Error");
+            ModUI.ShowMessage($"Fatal error:{Environment.NewLine}<color=orange>{e.Message}</color>{Environment.NewLine}Please reinstall MSCLoader to fix this issue", "Fatal Error");
         }
         ConsoleCommand.cc = console.controller;
         console.SetVisibility(false);

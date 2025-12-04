@@ -28,7 +28,7 @@ If you want to port this to other games make sure to link original reposity in y
 
 ## Used Libriaries
 * [NAudio](https://github.com/naudio/NAudio)/[NVorbis](https://github.com/ioctlLR/NVorbis) - **MIT License (MIT)**    
-* [Ionic.Zip](https://archive.codeplex.com/?p=dotnetzip) (DotNetZip) - **Microsoft Public License (Ms-PL)**   
+* [Ionic.Zip](https://github.com/haf/DotNetZip.Semverd) (DotNetZip) - **Microsoft Public License (Ms-PL)**   
 * [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json) - **MIT License (MIT)**    
 * [UnityDoorstop](https://github.com/NeighTools/UnityDoorstop) - v3 - **CC0 (Public Domain)** / v4 - **LGPL-2.1 license (LGPL-2.1)**   
 * [INIFileParser](https://github.com/rickyah/ini-parser) - **MIT License (MIT)**    

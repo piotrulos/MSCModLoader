@@ -322,6 +322,7 @@ public partial class ModLoader : MonoBehaviour
 
         LoadMod(new ModConsole(), MSCLoader_Ver);
         LoadedMods[0].A_ModSettings.Invoke();
+        PreloaderUpdate();
         LoadMod(new ModMenu(), MSCLoader_Ver);
         LoadedMods[1].A_ModSettings.Invoke();
         ModMenu.LoadSettings();
@@ -637,7 +638,7 @@ public partial class ModLoader : MonoBehaviour
             }
             for (int i = 0; i < files.Length; i++)
             {
-                if (Path.GetFileName(files[i]) == "0Harmony12.dll" || Path.GetFileName(files[i]) == "0Harmony-1.2.dll" || alreadyIncluded.Contains(Path.GetFileName(files[i])))
+                if (Path.GetFileName(files[i]) == "0Harmony12.dll" || Path.GetFileName(files[i]) == "0Harmony-1.2.dll" || Path.GetFileName(files[i]) == "Ionic.Zip.dll" || alreadyIncluded.Contains(Path.GetFileName(files[i])))
                 {
                     ModConsole.Warning($"<b>{Path.GetFileName(files[i])}</b> already exist in <b>{Path.GetFullPath(Path.Combine("mysummercar_Data", "Managed"))}</b> - skipping");
                     File.Delete(files[i]);

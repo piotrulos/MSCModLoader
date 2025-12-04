@@ -36,6 +36,8 @@ namespace MSCLoader.Preloader
             MDebug.Init();
             MDebug.Log($"Launch parameters");
             MDebug.Log($"{string.Join(" ", launchArgs)}", true);
+            if (File.Exists(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "obsolete.txt")))
+                DeleteObsoleteFiles();
             ReadSettings();
             if (launchArgs.Contains("-mscloader-disable"))
             {
@@ -87,11 +89,17 @@ namespace MSCLoader.Preloader
                 }
                 else
                 {
-                    ZipFile zipFile = ZipFile.Read(File.ReadAllBytes(fn));
-                    foreach (ZipEntry zipEntry in zipFile)
+                    using (ZipFile zipFile = ZipFile.Read(fn))
                     {
-                        MDebug.Log($"Unpacking: {zipEntry.FileName}");
-                        zipEntry.Extract(target, ExtractExistingFileAction.OverwriteSilently);
+                        foreach (ZipEntry zipEntry in zipFile)
+                        {
+                            MDebug.Log($"Unpacking: {zipEntry.FileName}");
+                            if(zipEntry.FileName == "Ionic.Zip.Reduced.dll")
+                            {
+                                if (File.Exists(Path.Combine(target, "Ionic.Zip.Reduced.dll"))) continue;
+                            }
+                            zipEntry.Extract(target, ExtractExistingFileAction.OverwriteSilently);
+                        }
                     }
                 }
                 File.Delete(fn);
@@ -184,7 +192,28 @@ namespace MSCLoader.Preloader
             }
         }
 
-        static void AssemblyWatcher(object sender, AssemblyLoadEventArgs args)
+        private static void DeleteObsoleteFiles()
+        {
+            MDebug.Log("Deleting obsolete files...");
+            string[] files = File.ReadAllLines(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "obsolete.txt"));
+            foreach (string file in files)
+            {
+                try
+                {
+                    MDebug.Log($"Deleting {file}...");
+                    if (File.Exists(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), file)))
+                        File.Delete(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), file));
+                }
+                catch (Exception e)
+                {
+                    MDebug.Log("Failed to delete file");
+                    MDebug.Log(e.ToString(), true);
+                }
+            }
+            File.Delete(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "obsolete.txt"));
+        }
+
+        private static void AssemblyWatcher(object sender, AssemblyLoadEventArgs args)
         {
             //System.dll -> Loaded at very end.
             if (args.LoadedAssembly.GetName().Name == "System")

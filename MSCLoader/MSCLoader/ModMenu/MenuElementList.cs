@@ -371,20 +371,23 @@ namespace MSCLoader
             report.version = mod.Version;
             File.WriteAllText(Path.Combine(dir, "bugReport.json"), Newtonsoft.Json.JsonConvert.SerializeObject(report));
             ModConsole.Print("Zipping Bug Report Files...");
-            ZipFile zip = new ZipFile();
-            zip.AddFile(Path.Combine(dir, "bugReport.json"), "");
-            zip.AddFile(Path.Combine(dir, "ModList.txt"), "");
-            zip.AddFile(Path.Combine(".", "output_log.txt"), "");
-            if (report.bugReportSaveFile)
+            using (ZipFile zip = new ZipFile())
             {
-                if (File.Exists(Path.Combine(Application.persistentDataPath, "defaultES2File.txt")))
-                    zip.AddFile(Path.Combine(Application.persistentDataPath, "defaultES2File.txt"), "Save");
-                if (File.Exists(Path.Combine(Application.persistentDataPath, "items.txt")))
-                    zip.AddFile(Path.Combine(Application.persistentDataPath, "items.txt"), "Save");
-                if (File.Exists(Path.Combine(Application.persistentDataPath, "Mods.txt")))
-                    zip.AddFile(Path.Combine(Application.persistentDataPath, "Mods.txt"), "Save");
+                zip.AddFile(Path.Combine(dir, "bugReport.json"), "");
+                zip.AddFile(Path.Combine(dir, "ModList.txt"), "");
+                zip.AddFile(Path.Combine(".", "output_log.txt"), "");
+                if (report.bugReportSaveFile)
+                {
+                    if (File.Exists(Path.Combine(Application.persistentDataPath, "defaultES2File.txt")))
+                        zip.AddFile(Path.Combine(Application.persistentDataPath, "defaultES2File.txt"), "Save");
+                    if (File.Exists(Path.Combine(Application.persistentDataPath, "items.txt")))
+                        zip.AddFile(Path.Combine(Application.persistentDataPath, "items.txt"), "Save");
+                    if (File.Exists(Path.Combine(Application.persistentDataPath, "Mods.txt")))
+                        zip.AddFile(Path.Combine(Application.persistentDataPath, "Mods.txt"), "Save");
+                }
+                zip.Save(Path.Combine(dir, $"BugReport_{mod.ID}.zip"));
             }
-            zip.Save(Path.Combine(dir, $"BugReport_{mod.ID}.zip"));
+
             ModConsole.Print("Zipping Bug Report Files... Done!");
 
             bugReport.ClosePopup();
