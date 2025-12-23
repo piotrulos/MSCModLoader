@@ -52,7 +52,7 @@ namespace MSCLoader
                     WarningText.text = "<color=aqua>Early Access Mod</color>";
                     WarningInfo.text = $"This mod is a <color=aqua>Early Access Mod</color>. There may be bugs. {Environment.NewLine}Please respect any rules given by mod author, breaking them may result in blacklisting from ANY future Early Access mods.";
                 }
-                #if MSC
+#if MSC
                 if (mod.proSettings || (mod.AdditionalReferences != null && mod.AdditionalReferences.Contains("MSCLoader.Features")))
                 {
                     WarningText.gameObject.SetActive(true);
@@ -61,7 +61,7 @@ namespace MSCLoader
                     WarningText.text = "<color=lightblue>Compatibility Mode (Pro)</color>";
                     WarningInfo.text = $"This mod runs in <color=lightblue>compatibility mode</color>. Some features might not work as intended. {Environment.NewLine}Check if there is new version (or remake) available.";
                 }
-                #endif
+#endif
             }
             Author.text = $"by <color=orange><b>{mod.Author}</b></color> (<color=aqua>{mod.Version}</color>)";
             if (string.IsNullOrEmpty(mod.Description))

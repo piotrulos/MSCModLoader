@@ -1,14 +1,12 @@
 ﻿#if !Mini
 using Ionic.Zip;
 using Newtonsoft.Json;
-using Steamworks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using static UnityEngine.UI.GridLayoutGroup;
 
 namespace MSCLoader;
 public partial class ModLoader : MonoBehaviour
@@ -53,7 +51,7 @@ public partial class ModLoader : MonoBehaviour
         {
             System.Diagnostics.FileVersionInfo currVer = System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "MSCLoader.Preloader.dll"));
             System.Diagnostics.FileVersionInfo newVer = System.Diagnostics.FileVersionInfo.GetVersionInfo(ploader);
-            if(newVer.FilePrivatePart <= currVer.FilePrivatePart)
+            if (newVer.FilePrivatePart <= currVer.FilePrivatePart)
             {
                 //No need to update
                 File.Delete(ploader);
@@ -255,7 +253,7 @@ public partial class ModLoader : MonoBehaviour
                     }
                     yield return null;
                     continue;
-                } 
+                }
                 else if (cfmuResult.StartsWith("not_found"))
                 {
                     Mod m = GetModByID(MetadataUpdateList[i], true);

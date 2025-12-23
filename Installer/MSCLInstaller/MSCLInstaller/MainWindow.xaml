@@ -14,7 +14,7 @@
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
 
-            <Image Name="GameLogo" Source="/Images/logo.png"/>
+            <Image Name="GameLogo" Source="/Images/logo_sel.png"/>
 
         <Border BorderBrush="#707070" BorderThickness=".5" Grid.Row="1">
             <TextBlock Name="MSCIPageTitle" FontSize="25" Text="Select Game Folder" FontFamily="Consolas" TextAlignment="Center" VerticalAlignment="Center"/>

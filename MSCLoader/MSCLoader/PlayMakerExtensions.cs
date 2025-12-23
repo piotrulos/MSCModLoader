@@ -131,7 +131,7 @@ public static class PlayMakerExtensions
                 action?.Invoke();
         }
     }
-    #if MSC
+#if MSC
     /// <summary>
     /// FSM Inject as extension (same as old FsmHook.FsmInject)
     /// </summary>

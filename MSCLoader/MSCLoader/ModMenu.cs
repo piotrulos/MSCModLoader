@@ -168,7 +168,7 @@ internal class ModMenu : Mod
         AssetBundle ab = LoadAssets.LoadBundle(this, "settingsui.unity3d");
         GameObject UIp = ab.LoadAsset<GameObject>("MSCLoader Canvas menu.prefab");
         TextAsset assetver = ab.LoadAsset<TextAsset>("version.txt");
-        if (assetver == null || !MSCLInfo.BuildType.StartsWith(assetver.text.Split('|')[0]) || !MSCLInfo.menuAssetVersion.Equals(assetver.text.Split('|')[1])) 
+        if (assetver == null || !MSCLInfo.BuildType.StartsWith(assetver.text.Split('|')[0]) || !MSCLInfo.menuAssetVersion.Equals(assetver.text.Split('|')[1]))
         {
             throw new Exception($"Invalid MSCLoader asset file version (<color=aqua>settingsui.unity3d</color>), do not replace random MSCLoader files with other versions.{Environment.NewLine}");
         }

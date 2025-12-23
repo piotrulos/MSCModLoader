@@ -25,7 +25,7 @@ namespace MSCLInstaller
                 CopyDebugButton.Visibility = Visibility.Collapsed;
                 return;
             }
-            switch (MD5FileHashes.MD5HashFile(Path.Combine(Storage.mscPath, "mysummercar_Data", "Mono", "mono.dll")))
+            switch (MD5FileHashes.MD5HashFile(Path.Combine(Storage.gamePath, "mysummercar_Data", "Mono", "mono.dll")))
             {
                 case MD5FileHashes.mono64normal:
                     ButtonSet(false, true);
@@ -67,7 +67,7 @@ namespace MSCLInstaller
 
         private void DebugButton_Click(object sender, RoutedEventArgs e)
         {
-            string monoPath = Path.Combine(Storage.mscPath, "mysummercar_Data", "Mono", "mono.dll");
+            string monoPath = Path.Combine(Storage.gamePath, "mysummercar_Data", "Mono", "mono.dll");
             Dbg.Log("Reading.....dbg.pack");
             if (File.Exists($"{monoPath}.normal"))
             {

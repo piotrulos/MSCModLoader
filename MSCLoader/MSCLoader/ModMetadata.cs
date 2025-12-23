@@ -516,7 +516,7 @@ internal class ModMetadata
         ModLoader.Instance.MetadataUpdateList = new List<string>();
         ModLoader.HasUpdateModList = new List<Mod>();
         if (mv == null) return;
-        if(!string.IsNullOrEmpty(mv.notFound))
+        if (!string.IsNullOrEmpty(mv.notFound))
         {
             string[] notFound = mv.notFound.Split(',');
             for (int i = 0; i < notFound.Length; i++)

@@ -402,13 +402,13 @@ public partial class ModLoader : MonoBehaviour
         MSCLInternal.LoadMSCLDataFile();
         LoadModsSettings();
         ModMenu.LoadBinds();
-        #if MSC
+#if MSC
         GameObject old_callbacks = new GameObject("BC Callbacks");
         old_callbacks.transform.SetParent(gameObject.transform, false);
         if (OnGUImods.Length > 0) old_callbacks.AddComponent<BC_ModOnGUI>().modLoader = this;
         if (UpdateMods.Length > 0) old_callbacks.AddComponent<BC_ModUpdate>().modLoader = this;
         if (FixedUpdateMods.Length > 0) old_callbacks.AddComponent<BC_ModFixedUpdate>().modLoader = this;
-        #endif
+#endif
         GameObject mod_callbacks = new GameObject("MSCLoader Callbacks");
         mod_callbacks.transform.SetParent(gameObject.transform, false);
         if (Mod_OnGUI.Length > 0) mod_callbacks.AddComponent<A_ModOnGUI>().modLoader = this;
@@ -738,14 +738,14 @@ public partial class ModLoader : MonoBehaviour
 
     private bool CheckCorrectGame()
     {
-        if(CurrentGame == Game.MySummerCar && !MSCLInfo.BuildType.StartsWith("MSC"))
+        if (CurrentGame == Game.MySummerCar && !MSCLInfo.BuildType.StartsWith("MSC"))
         {
             return false;
         }
         if (CurrentGame == Game.MyWinterCar && !MSCLInfo.BuildType.StartsWith("MWC"))
         {
             return false;
-        }        
+        }
         return true;
     }
     /// <summary>

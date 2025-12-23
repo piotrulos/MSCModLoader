@@ -781,4 +781,4 @@ internal class ModMenuView : MonoBehaviour
         return txt;
     }
 #endif
-    }
+}

@@ -9,12 +9,18 @@
       Title="SelectGame">
 
     <Grid>
-        <StackPanel Margin="10" TextElement.Foreground="#f0f0f0">
-            <!-- Doesn't do anything for now, it's for future content -->
-            <TextBlock FontSize="30" Text="Select Game"/>
-            <Button Height="60" Margin="2" Content="My Summer Car"/>
-            <Button Height="60" Margin="2" Content="My Summer Car (Project IMA test)"/>
-            <Button Height="60" Margin="2" Content="My Winter Car (prep.)"/>
-        </StackPanel>
+        <Grid Margin="10" TextElement.Foreground="#f0f0f0" HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button Margin="2" Grid.Column="0" Name="MSC" Click="MSC_Click">
+                <Image Name="MSCLogo" Source="/Images/msc.png"/>
+            </Button>
+            
+            <Button Margin="2" Grid.Column="1" Name="MWC" Click="MWC_Click">
+                <Image Name="MWCLogo" Source="/Images/mwc.png"/>
+            </Button>
+        </Grid>
     </Grid>
 </Page>

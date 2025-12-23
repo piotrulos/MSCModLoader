@@ -19,10 +19,10 @@
     internal class Storage
     {
         public static string currentPath;
-        public static string mscPath;
+        public static string gamePath;
         public static string modsPath;
         public static Game selectedGame = Game.MSC;
-        public static bool is64 = true;
+        public static bool is64 = true; //MSC only
         public static bool dbgPack = false;
         public static string[] packFiles = null;
         public static SelectedAction selectedAction = SelectedAction.Nothing;

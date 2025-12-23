@@ -14,6 +14,8 @@ namespace MSCLInstaller
     public partial class SelectGameFolder : Page
     {
         MainWindow main;
+        string exeName = "mysummercar.exe";
+        string savePath = "MSCFolder.txt";
         public SelectGameFolder()
         {
             InitializeComponent();
@@ -25,37 +27,41 @@ namespace MSCLInstaller
             {
                 case Game.MSC:
                     main.Title += " - My Summer Car";
+                    exeName = "mysummercar.exe";
+                    savePath = "MSCFolder.txt";
                     break;
                 case Game.MSC_IMA:
                     main.Title += " - My Summer Car (Community)";
                     break;
                 case Game.MWC:
                     main.Title += " - My Winter Car";
+                    exeName = "mywintercar.exe"; //TODO: validate
+                    savePath = "MWCFolder.txt";
                     break;
             }
-            FindMSCOnSteam();
-            if (string.IsNullOrEmpty(Storage.mscPath))
+            FindOnSteam();
+            if (string.IsNullOrEmpty(Storage.gamePath))
             {
-                if (File.Exists("MSCFolder.txt"))
+                if (File.Exists(savePath))
                 {
-                    string mscPath = File.ReadAllText("MSCFolder.txt");
+                    string mscPath = File.ReadAllText(savePath);
                     if (Directory.Exists(mscPath))
                     {
-                        Storage.mscPath = mscPath;
-                        MSCFolder.Text = Storage.mscPath;
-                        Dbg.Log($"Loaded saved MSC Folder: {mscPath}");
+                        Storage.gamePath = mscPath;
+                        MSCFolder.Text = Storage.gamePath;
+                        Dbg.Log($"Loaded saved {Storage.selectedGame} Folder: {mscPath}");
                         GameInfo();
                     }
                     else
                     {
-                        Dbg.Log($"Saved MSC Folder, doesn't exists: {mscPath}");
+                        Dbg.Log($"Saved {Storage.selectedGame} Folder, doesn't exists: {mscPath}");
                         try
                         {
-                            File.Delete("MSCFolder.txt");
+                            File.Delete(savePath);
                         }
                         catch (Exception e)
                         {
-                            Dbg.Log("Error deleting MSCFolder.txt", true, true);
+                            Dbg.Log($"Error deleting {savePath}", true, true);
                             Dbg.Log(e.ToString());
                         }
                     }
@@ -64,9 +70,9 @@ namespace MSCLInstaller
 
         }
 
-        private void FindMSCOnSteam()
+        private void FindOnSteam()
         {
-            Dbg.Log("Trying get MSC path from steam...");
+            Dbg.Log($"Trying get {Storage.selectedGame} path from steam...");
             string steamPath = null;
             RegistryKey steam = Registry.LocalMachine.OpenSubKey("SOFTWARE\\WOW6432Node\\Valve\\Steam");
             if (steam == null)
@@ -88,20 +94,20 @@ namespace MSCLInstaller
                 steamPath = steam2.GetValue("installpath_default").ToString();
                 if (string.IsNullOrEmpty(steamPath))
                 {
-                    Dbg.Log("Error: SteamService installpath_default is null! Failed to find MSC path from steam");
+                    Dbg.Log($"Error: SteamService installpath_default is null! Failed to find {Storage.selectedGame} path from steam");
                     return;
                 }
 
             }
 
-            string msc = Path.Combine(steamPath, "steamapps", "common", "My Summer Car");
-            if (File.Exists(Path.Combine(msc, "mysummercar.exe")))
+            string msc = Path.Combine(steamPath, "steamapps", "common", Storage.selectedGame == Game.MSC ? "My Summer Car" : "My Winter Car"); //TODO: validate path
+            if (File.Exists(Path.Combine(msc, exeName)))
             {
-                Storage.mscPath = msc;
+                Storage.gamePath = msc;
             }
             else
             {
-                Dbg.Log("Trying get MSC from additional library folders...");
+                Dbg.Log($"Trying get {Storage.selectedGame} from additional library folders...");
                 string steamLib = Path.Combine(steamPath, "steamapps", "libraryfolders.vdf");
                 if (File.Exists(Path.Combine(steamLib)))
                 {
@@ -116,25 +122,28 @@ namespace MSCLInstaller
                                 Dbg.Log($"Warn: Got invalid path in libraryfolders.vdf: {s}");
                                 continue;
                             }
-                            string msclib = Path.Combine(p, "steamapps", "common", "My Summer Car");
-                            if (File.Exists(Path.Combine(msclib, "mysummercar.exe")))
+                            string msclib = Path.Combine(p, "steamapps", "common", Storage.selectedGame == Game.MSC ? "My Summer Car" : "My Winter Car");
+                            if (File.Exists(Path.Combine(msclib, exeName)))
                             {
-                                Storage.mscPath = msclib;
+                                Storage.gamePath = msclib;
                             }
                         }
                     }
                 }
             }
-            if (!string.IsNullOrEmpty(Storage.mscPath))
+            if (!string.IsNullOrEmpty(Storage.gamePath))
             {
-                MSCFolder.Text = Storage.mscPath;
-                Dbg.Log($"Got MSC path from steam: {Storage.mscPath}");
+                MSCFolder.Text = Storage.gamePath;
+                Dbg.Log($"Got {Storage.selectedGame} path from steam: {Storage.gamePath}");
                 GameInfo();
             }
         }
+
+
+
         private void GameInfo()
         {
-            string game = Path.Combine(Storage.mscPath, "mysummercar.exe");
+            string game = Path.Combine(Storage.gamePath, exeName);
             if (File.Exists(game))
             {
                 DetectedGameText.Text = string.Empty;
@@ -163,20 +172,20 @@ namespace MSCLInstaller
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
-                Filter = "mysummercar.exe|mysummercar.exe"
+                Filter = $"{exeName}|{exeName}"
             };
             if (openFileDialog.ShowDialog() == true)
             {
-                Storage.mscPath = Path.GetFullPath(Path.GetDirectoryName(openFileDialog.FileName));
-                MSCFolder.Text = Storage.mscPath;
-                Dbg.Log($"MSC path set manually: {Storage.mscPath}");
+                Storage.gamePath = Path.GetFullPath(Path.GetDirectoryName(openFileDialog.FileName));
+                MSCFolder.Text = Storage.gamePath;
+                Dbg.Log($"{Storage.selectedGame} path set manually: {Storage.gamePath}");
                 try
                 {
-                    File.WriteAllText("MSCFolder.txt", Storage.mscPath);
+                    File.WriteAllText(savePath, Storage.gamePath);
                 }
                 catch (Exception ex)
                 {
-                    Dbg.Log("Error creating MSCFolder.txt", true, true);
+                    Dbg.Log($"Error creating {savePath}", true, true);
                     Dbg.Log(ex.ToString());
                 }
                 GameInfo();

@@ -24,7 +24,7 @@ public partial class ModLoader
     internal List<string> crashedGuids = new List<string>();
     internal List<string> modIDsReferences = new List<string>();
     internal List<References> ReferencesList = new List<References>();
-    internal string[] stdRef = ["mscorlib", "System.Core", "UnityEngine", "PlayMaker", "MSCLoader", "System", "Assembly-CSharp", "Assembly-CSharp-firstpass", "Assembly-UnityScript", "Assembly-UnityScript-firstpass", "ES2", "Ionic.Zip", "UnityEngine.UI", "0Harmony", "cInput", "Newtonsoft.Json", "System.Xml"];
+    internal string[] stdRef = ["mscorlib", "System.Core", "UnityEngine", "PlayMaker", "MSCLoader", "System", "Assembly-CSharp", "Assembly-CSharp-firstpass", "Assembly-UnityScript", "Assembly-UnityScript-firstpass", "ES2", "Ionic.Zip", "Ionic.Zip.Reduced", "UnityEngine.UI", "0Harmony", "cInput", "Newtonsoft.Json", "System.Xml"];
 
     //Old stuff
     internal Mod[] PLoadMods = [];

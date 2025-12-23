@@ -58,7 +58,8 @@
     <Reference Include="Ionic.Zip.Reduced, Version=1.16.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\..\..\programowanie_c\DotNetZip.Semverd-master\src\Zip Reduced\bin\Release\Ionic.Zip.Reduced.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
+      <Private>True</Private>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
@@ -164,7 +165,7 @@
     <Resource Include="mscpatchericon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\logo.png" />
+    <Resource Include="Images\logo_msc.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\logo_sel.png" />
@@ -173,6 +174,13 @@
     <PackageReference Include="System.ValueTuple">
       <Version>4.6.1</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\msc.png" />
+    <Resource Include="Images\mwc.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\logo_mwc.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

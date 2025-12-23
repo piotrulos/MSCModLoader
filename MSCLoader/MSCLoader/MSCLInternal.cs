@@ -257,7 +257,7 @@ internal class MSCLInternal
             {
                 rsa.ImportCspBlob(Convert.FromBase64String(PublicKey));
                 byte[] encryptedBytes = rsa.Encrypt(plaintextBytes, false);
-                
+
                 string encryptedString = Convert.ToBase64String(encryptedBytes);
                 return encryptedString;
             }

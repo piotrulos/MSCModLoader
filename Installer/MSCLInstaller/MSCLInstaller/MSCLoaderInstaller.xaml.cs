@@ -39,7 +39,7 @@ namespace MSCLInstaller
             }
 
             main = m;
-            if (File.Exists(Path.Combine(Storage.mscPath, "mysummercar_Data", "Managed", "MSCLoader.Preloader.dll")) && File.Exists(Path.Combine(Storage.mscPath, "winhttp.dll")) && File.Exists(Path.Combine(Storage.mscPath, "doorstop_config.ini")))
+            if (File.Exists(Path.Combine(Storage.gamePath, "mysummercar_Data", "Managed", "MSCLoader.Preloader.dll")) && File.Exists(Path.Combine(Storage.gamePath, "winhttp.dll")) && File.Exists(Path.Combine(Storage.gamePath, "doorstop_config.ini")))
             {
                 isInstalled = true;
             }
@@ -60,7 +60,7 @@ namespace MSCLInstaller
                     resetConfig = true;
                 }
                 if (Storage.modsPath == null)
-                    Storage.modsPath = Path.GetFullPath(Path.Combine(Storage.mscPath, "Mods"));
+                    Storage.modsPath = Path.GetFullPath(Path.Combine(Storage.gamePath, "Mods"));
                 if (resetConfig)
                 {
                     Dbg.Log("Outdated config - update Required");
@@ -91,7 +91,7 @@ namespace MSCLInstaller
         void UpdatePathText()
         {
             MSCFolderText.Text = $"MSC Folder: ";
-            MSCFolderText.Inlines.Add(new Run(Storage.mscPath) { FontWeight = FontWeights.Bold, Foreground = Brushes.Wheat });
+            MSCFolderText.Inlines.Add(new Run(Storage.gamePath) { FontWeight = FontWeights.Bold, Foreground = Brushes.Wheat });
             ModsFolderText.Text = $"Mods Folder: ";
             ModsFolderText.Inlines.Add(new Run(Storage.modsPath) { FontWeight = FontWeights.Bold, Foreground = Brushes.Wheat });
         }
@@ -153,7 +153,7 @@ namespace MSCLInstaller
                 }
             }
             Dbg.Log("Comparing core file version...", true);
-            if (InstallerHelpers.VersionCompare(coreVer, Path.Combine(Storage.mscPath, "winhttp.dll")))
+            if (InstallerHelpers.VersionCompare(coreVer, Path.Combine(Storage.gamePath, "winhttp.dll")))
             {
                 updateCore = true;
             }
@@ -175,7 +175,7 @@ namespace MSCLInstaller
             foreach (string f in Directory.GetFiles(Path.Combine(Storage.currentPath, "temp")))
             {
                 if(Path.GetExtension(f).ToLower() != ".dll") continue;
-                if (InstallerHelpers.VersionCompare(f, Path.Combine(Storage.mscPath, "mysummercar_Data", "Managed", Path.GetFileName(f))))
+                if (InstallerHelpers.VersionCompare(f, Path.Combine(Storage.gamePath, "mysummercar_Data", "Managed", Path.GetFileName(f))))
                 {
                     updateRefs = true;
                 }
@@ -199,7 +199,7 @@ namespace MSCLInstaller
                 }
             }
             Dbg.Log("Comparing MSCLoader version...", true);
-            if (InstallerHelpers.VersionCompare(mscVer, Path.Combine(Storage.mscPath, "mysummercar_Data", "Managed", "MSCLoader.dll")))
+            if (InstallerHelpers.VersionCompare(mscVer, Path.Combine(Storage.gamePath, "mysummercar_Data", "Managed", "MSCLoader.dll")))
             {
                 updateMSCL = true;
             }
@@ -208,10 +208,10 @@ namespace MSCLInstaller
         }
         bool CheckConfig()
         {
-            if (File.Exists(Path.Combine(Storage.mscPath, "doorstop_config.ini")))
+            if (File.Exists(Path.Combine(Storage.gamePath, "doorstop_config.ini")))
             {
                 Dbg.Log("Reading.....doorstop_config.ini");
-                IniData ini = new FileIniDataParser().ReadFile(Path.Combine(Storage.mscPath, "doorstop_config.ini"));
+                IniData ini = new FileIniDataParser().ReadFile(Path.Combine(Storage.gamePath, "doorstop_config.ini"));
                 ini.Configuration.AssigmentSpacer = "";
                 string cfg = ini["MSCLoader"]["mods"];
                 string skipIntro = ini["MSCLoader"]["skipIntro"];
@@ -224,7 +224,7 @@ namespace MSCLInstaller
                     switch (cfg)
                     {
                         case "GF":
-                            Storage.modsPath = Path.GetFullPath(Path.Combine(Storage.mscPath, "Mods"));
+                            Storage.modsPath = Path.GetFullPath(Path.Combine(Storage.gamePath, "Mods"));
                             Storage.modsFolderCfg = ModsFolder.GameFolder;
                             break;
                         case "MD":
@@ -236,7 +236,7 @@ namespace MSCLInstaller
                             Storage.modsFolderCfg = ModsFolder.Appdata;
                             break;
                         default:
-                            Storage.modsPath = Path.GetFullPath(Path.Combine(Storage.mscPath, "Mods"));
+                            Storage.modsPath = Path.GetFullPath(Path.Combine(Storage.gamePath, "Mods"));
                             Storage.modsFolderCfg = ModsFolder.GameFolder;
                             break;
                     }

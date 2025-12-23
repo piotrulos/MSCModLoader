@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Media;
 
 namespace MSCLInstaller
 {
@@ -10,6 +11,7 @@ namespace MSCLInstaller
     /// </summary>
     public partial class MainWindow : Window
     {
+        SelectGame selectGame;
         SelectGameFolder selectGameFolder;
         MSCLoaderInstaller mscloaderInstaller;
         SelectModsFolder selectModsFolder;
@@ -39,6 +41,7 @@ namespace MSCLInstaller
             if (Directory.Exists(Path.Combine(Storage.currentPath, "temp"))) Directory.Delete(Path.Combine(Storage.currentPath, "temp"), true);
             Dbg.Init();
             Dbg.Log($"Current folder: {Storage.currentPath}");
+            selectGame = new SelectGame();
             selectGameFolder = new SelectGameFolder();
             mscloaderInstaller = new MSCLoaderInstaller();
             selectModsFolder = new SelectModsFolder();
@@ -51,8 +54,18 @@ namespace MSCLInstaller
             {
                 Dbg.MissingFilesError();
             }
-
-            SelectGameFolderPage(Game.MSC);
+            if (File.Exists("main_msc.pack") && File.Exists("main_mwc.pack"))
+            {
+                SelectGamePage();
+            }
+            else if (File.Exists("main_msc.pack") && !File.Exists("main_mwc.pack"))
+            {
+                SelectGameFolderPage(Game.MSC);
+            }
+            else if (!File.Exists("main_msc.pack") && File.Exists("main_mwc.pack"))
+            {
+                SelectGameFolderPage(Game.MWC);
+            }
             StatusBarText.Text = $"MSCLInstaller (ver. {MSCLInstallerVer.Major}.{MSCLInstallerVer.Minor}.{MSCLInstallerVer.Build})";
         }
         internal void SetMSCLoaderVer(string ver)
@@ -73,13 +86,29 @@ namespace MSCLInstaller
 
         public void SelectGameFolderPage(Game game)
         {
+            switch (game)
+            {
+                case Game.MSC:
+                    GameLogo.Source = new ImageSourceConverter().ConvertFromString("pack://application:,,,/Images/logo_msc.png") as ImageSource;
+                    break;
+                case Game.MWC:
+                    GameLogo.Source = new ImageSourceConverter().ConvertFromString("pack://application:,,,/Images/logo_mwc.png") as ImageSource;
+                    break;
+            }
             Dbg.Log("Select Game Folder", true, true);
             MSCIPageTitle.Text = "Select Game Folder";
             Storage.selectedGame = game;
             MainFrame.Content = selectGameFolder;
             selectGameFolder.Init(this);
         }
-
+        public void SelectGamePage()
+        {
+            GameLogo.Source = new ImageSourceConverter().ConvertFromString("pack://application:,,,/Images/logo_sel.png") as ImageSource;
+            Dbg.Log("Select Game", true, true);
+            MSCIPageTitle.Text = "Select Game";
+            MainFrame.Content = selectGame;
+            selectGame.Init(this);
+        }
         public async void MSCLoaderInstallerPage()
         {
             Dbg.Log("MSCLoader Installer", true, true);

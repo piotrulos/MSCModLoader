@@ -52,7 +52,7 @@ internal class EarlyAccessCommand : ConsoleCommand
             {
                 modoutput = modFile.EncByteArray(System.Text.Encoding.ASCII.GetBytes(key));
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 ModConsole.Error(e.Message);
                 Console.WriteLine(e);
@@ -115,7 +115,7 @@ internal class EarlyAccessCommand : ConsoleCommand
             eaWindow.AddText($"Select option below on how you want to update this file");
             eaWindow.AddText($"<color=orange>Update with existing key</color> - This will update EA file with existing key");
             eaWindow.AddText($"<color=orange>Update with new key</color> - This will generate new key and update EA file, making old key invalid");
-            
+
             eaWindow.AddButton("Update with existing key", delegate
             {
                 GenerateFile(file, key);

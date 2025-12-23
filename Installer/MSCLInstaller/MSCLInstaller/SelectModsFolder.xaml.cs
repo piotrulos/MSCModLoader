@@ -32,7 +32,7 @@ namespace MSCLInstaller
         private void PopulatePaths()
         {
             Dbg.Log("Getting paths");
-            gfPath = Path.GetFullPath(Path.Combine(Storage.mscPath, "Mods"));
+            gfPath = Path.GetFullPath(Path.Combine(Storage.gamePath, "Mods"));
             GameFolderPathText.Text = gfPath;
             Dbg.Log($"Game folder path: {gfPath}");
             if (changeFolder && gfPath == Storage.modsPath)

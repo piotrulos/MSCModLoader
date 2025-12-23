@@ -94,7 +94,7 @@ namespace MSCLoader.Preloader
                         foreach (ZipEntry zipEntry in zipFile)
                         {
                             MDebug.Log($"Unpacking: {zipEntry.FileName}");
-                            if(zipEntry.FileName == "Ionic.Zip.Reduced.dll")
+                            if (zipEntry.FileName == "Ionic.Zip.Reduced.dll")
                             {
                                 if (File.Exists(Path.Combine(target, "Ionic.Zip.Reduced.dll"))) continue;
                             }
