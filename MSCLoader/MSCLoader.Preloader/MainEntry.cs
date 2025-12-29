@@ -24,19 +24,27 @@ namespace MSCLoader.Preloader
 {
     public static class MainEntry
     {
-        static byte[] data = { 0x41, 0x6d, 0x69, 0x73, 0x74, 0x65, 0x63, 0x68, 0x0d, 0x00, 0x00, 0x00, 0x4d, 0x79, 0x20, 0x53, 0x75, 0x6d, 0x6d, 0x65, 0x72, 0x20, 0x43, 0x61, 0x72 };
-        static long offset = 0;
+        static byte[] mscData = { 0x41, 0x6D, 0x69, 0x73, 0x74, 0x65, 0x63, 0x68, 0x0D, 0x00, 0x00, 0x00, 0x4D, 0x79, 0x20, 0x53, 0x75, 0x6D, 0x6D, 0x65, 0x72, 0x20, 0x43, 0x61, 0x72 };
+        static byte[] mwcData = { 0x41, 0x6D, 0x69, 0x73, 0x74, 0x65, 0x63, 0x68, 0x0D, 0x00, 0x00, 0x00, 0x4D, 0x79, 0x20, 0x57, 0x69, 0x6E, 0x74, 0x65, 0x72, 0x20, 0x43, 0x61, 0x72 };
+        static string managedPath;
+        static bool mwc = false;
 
         //Entry point for doorstop
         public static void Main()
         {
-            string[] launchArgs = System.Environment.GetCommandLineArgs(); //Environment CommandLine Arguments (in Main there are doorstop args only)
+            string[] launchArgs = System.Environment.GetCommandLineArgs(); //Environment CommandLine Argument
 
             if (File.Exists("MSCLoader_Preloader.txt")) File.Delete("MSCLoader_Preloader.txt");
             MDebug.Init();
             MDebug.Log($"Launch parameters");
             MDebug.Log($"{string.Join(" ", launchArgs)}", true);
-            if (File.Exists(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "obsolete.txt")))
+            managedPath = Environment.GetEnvironmentVariable("DOORSTOP_MANAGED_FOLDER_DIR");
+            if (managedPath.Contains("My Winter Car")) mwc = true;
+            MDebug.Log($"Game: {(mwc ? "My Winter Car" : "My Summer Car")}", true);
+
+            MDebug.Log($"Managed folder: {managedPath}");
+
+            if (File.Exists(Path.Combine(managedPath, "obsolete.txt")))
                 DeleteObsoleteFiles();
             ReadSettings();
             if (launchArgs.Contains("-mscloader-disable"))
@@ -45,7 +53,7 @@ namespace MSCLoader.Preloader
                 return;
             }
             UnpackUpdate();
-            OutputLogChecker(); //Enable output_log after possible game update  
+            OutputLogChecker(); //Enable output_log after game update  
             MDebug.Log("Waiting for engine...");
             AppDomain.CurrentDomain.AssemblyLoad += AssemblyWatcher;
         }
@@ -53,18 +61,17 @@ namespace MSCLoader.Preloader
         {
             if (File.Exists(Path.Combine("Updates", Path.Combine("Core", "update.zip"))))
             {
-                string modPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Path.Combine("MySummerCar", "Mods"));
-                string managedPath = Path.Combine("mysummercar_Data", "Managed");
+                string modPath;
                 switch (cfg)
                 {
                     case "GF":
                         modPath = Path.GetFullPath(Path.Combine("Mods", ""));
                         break;
                     case "MD":
-                        modPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Path.Combine("MySummerCar", "Mods")));
+                        modPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Path.Combine(mwc ? "My Winter Car" : "MySummerCar", "Mods")));
                         break;
                     case "AD":
-                        modPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"..\LocalLow\Amistech\My Summer Car\Mods"));
+                        modPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $@"..\LocalLow\Amistech\{(mwc ? "My Winter Car" : "My Summer Car")}\Mods"));
                         break;
                     default:
                         modPath = Path.GetFullPath(Path.Combine("Mods", ""));
@@ -149,9 +156,10 @@ namespace MSCLoader.Preloader
             {
                 bool enLog = false;
                 bool skipCfg = false;
-                offset = FindBytes(Path.Combine("", Path.Combine("mysummercar_Data", "mainData")), data);
-
-                using (FileStream stream = File.OpenRead(Path.Combine("", Path.Combine("mysummercar_Data", "mainData"))))
+                string mainDataPath = Path.Combine("", Path.Combine(mwc ? "mywintercar_Data" : "mysummercar_Data", "mainData"));
+                
+                long offset = FindBytes(mainDataPath, mwc ? mwcData : mscData);
+                using (FileStream stream = File.OpenRead(mainDataPath))
                 {
                     MDebug.Log("Checking output_log status...");
                     stream.Position = offset + 115;
@@ -162,7 +170,7 @@ namespace MSCLoader.Preloader
                 }
                 if (enLog)
                 {
-                    using (FileStream stream = new FileStream(Path.Combine("", Path.Combine("mysummercar_Data", "mainData")), FileMode.Open, FileAccess.ReadWrite))
+                    using (FileStream stream = new FileStream(mainDataPath, FileMode.Open, FileAccess.ReadWrite))
                     {
                         //output_log.txt
                         MDebug.Log("Enabling output_log...");
@@ -173,7 +181,7 @@ namespace MSCLoader.Preloader
                 }
                 if (cfgScreenSkip != skipCfg)
                 {
-                    using (FileStream stream = new FileStream(Path.Combine("", Path.Combine(@"mysummercar_Data", "mainData")), FileMode.Open, FileAccess.ReadWrite))
+                    using (FileStream stream = new FileStream(mainDataPath, FileMode.Open, FileAccess.ReadWrite))
                     {
                         MDebug.Log("Changing config screen skip...");
                         stream.Position = offset + 96;
@@ -195,14 +203,14 @@ namespace MSCLoader.Preloader
         private static void DeleteObsoleteFiles()
         {
             MDebug.Log("Deleting obsolete files...");
-            string[] files = File.ReadAllLines(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "obsolete.txt"));
+            string[] files = File.ReadAllLines(Path.Combine(managedPath, "obsolete.txt"));
             foreach (string file in files)
             {
                 try
                 {
                     MDebug.Log($"Deleting {file}...");
-                    if (File.Exists(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), file)))
-                        File.Delete(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), file));
+                    if (File.Exists(Path.Combine(managedPath, file)))
+                        File.Delete(Path.Combine(managedPath, file));
                 }
                 catch (Exception e)
                 {
@@ -210,7 +218,7 @@ namespace MSCLoader.Preloader
                     MDebug.Log(e.ToString(), true);
                 }
             }
-            File.Delete(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "obsolete.txt"));
+            File.Delete(Path.Combine(managedPath, "obsolete.txt"));
         }
 
         private static void AssemblyWatcher(object sender, AssemblyLoadEventArgs args)

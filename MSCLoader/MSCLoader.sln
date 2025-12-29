@@ -13,6 +13,7 @@ Global
 		MSC_Mini|Any CPU = MSC_Mini|Any CPU
 		MSC_Release|Any CPU = MSC_Release|Any CPU
 		MWC_Debug|Any CPU = MWC_Debug|Any CPU
+		MWC_Release|Any CPU = MWC_Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{3323FE4A-D360-4692-9309-F20B57BBB745}.MSC_Debug|Any CPU.ActiveCfg = MSC_Debug|Any CPU
@@ -23,6 +24,8 @@ Global
 		{3323FE4A-D360-4692-9309-F20B57BBB745}.MSC_Release|Any CPU.Build.0 = MSC_Release|Any CPU
 		{3323FE4A-D360-4692-9309-F20B57BBB745}.MWC_Debug|Any CPU.ActiveCfg = MWC_Debug|Any CPU
 		{3323FE4A-D360-4692-9309-F20B57BBB745}.MWC_Debug|Any CPU.Build.0 = MWC_Debug|Any CPU
+		{3323FE4A-D360-4692-9309-F20B57BBB745}.MWC_Release|Any CPU.ActiveCfg = MWC_Release|Any CPU
+		{3323FE4A-D360-4692-9309-F20B57BBB745}.MWC_Release|Any CPU.Build.0 = MWC_Release|Any CPU
 		{807B36C0-F066-4736-8980-E7B18E3CB1F9}.MSC_Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{807B36C0-F066-4736-8980-E7B18E3CB1F9}.MSC_Debug|Any CPU.Build.0 = Debug|Any CPU
 		{807B36C0-F066-4736-8980-E7B18E3CB1F9}.MSC_Mini|Any CPU.ActiveCfg = Mini|Any CPU
@@ -31,6 +34,8 @@ Global
 		{807B36C0-F066-4736-8980-E7B18E3CB1F9}.MSC_Release|Any CPU.Build.0 = Release|Any CPU
 		{807B36C0-F066-4736-8980-E7B18E3CB1F9}.MWC_Debug|Any CPU.ActiveCfg = MWC_Debug|Any CPU
 		{807B36C0-F066-4736-8980-E7B18E3CB1F9}.MWC_Debug|Any CPU.Build.0 = MWC_Debug|Any CPU
+		{807B36C0-F066-4736-8980-E7B18E3CB1F9}.MWC_Release|Any CPU.ActiveCfg = MWC_Release|Any CPU
+		{807B36C0-F066-4736-8980-E7B18E3CB1F9}.MWC_Release|Any CPU.Build.0 = MWC_Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

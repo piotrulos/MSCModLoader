@@ -49,6 +49,15 @@
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'MWC_Release|AnyCPU'">
+    <OutputPath>bin\MWC_Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\0Harmony.dll</HintPath>
@@ -97,14 +106,23 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if "$(ConfigurationName)" == "Release" (
-copy $(TargetPath) "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
-) ELSE (
-copy $(TargetPath) "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
+    <PostBuildEvent>if "$(ConfigurationName)" == "MSC_Release" (
+copy "$(TargetPath)" "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
+) 
+if "$(ConfigurationName)" == "MSC_Debug" (
+copy "$(TargetPath)" "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
 copy "$(TargetDir)$(TargetName).pdb" "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
 cd "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\"
 call "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\debug.bat"
 )
-</PostBuildEvent>
+if "$(ConfigurationName)" == "MWC_Release" (
+copy "$(TargetPath)" "D:\Steam\steamapps\common\My Winter Car\mywintercar_Data\Managed" /y
+) 
+if "$(ConfigurationName)" == "MWC_Debug" (
+copy "$(TargetPath)" "D:\Steam\steamapps\common\My Winter Car\mywintercar_Data\Managed" /y
+copy "$(TargetDir)$(TargetName).pdb" "D:\Steam\steamapps\common\My Winter Car\mywintercar_Data\Managed" /y
+cd "D:\Steam\steamapps\common\My Winter Car\mywintercar_Data\Managed"
+call "D:\Steam\steamapps\common\My Winter Car\mywintercar_Data\Managed\debug.bat"
+)</PostBuildEvent>
   </PropertyGroup>
 </Project>
