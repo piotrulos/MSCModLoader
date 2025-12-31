@@ -658,7 +658,7 @@ internal class ModMetadata
     {
         string dwl = string.Empty;
         WebClient getdwl = new WebClient();
-        getdwl.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
+        getdwl.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()}) [{MSCLInfo.BuildType}]");
         List<string> idLists = new List<string>();
         List<string> verLists = new List<string>();
         List<string> nameLists = new List<string>();
@@ -804,7 +804,7 @@ internal class ModMetadata
             {
                 using (WebClient webClient = new WebClient())
                 {
-                    webClient.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
+                    webClient.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()}) [{MSCLInfo.BuildType}]");
                     webClient.DownloadFileCompleted += (sender, e) => { if (e.Error != null) Console.WriteLine(e.Error); };
                     webClient.DownloadFileAsync(new Uri($"{ModLoader.serverURL}/images/modicons/{data.icon}"), Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", data.icon)));
                 }

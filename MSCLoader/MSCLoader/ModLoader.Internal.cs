@@ -52,7 +52,12 @@ public partial class ModLoader
     internal static string steamID;
     internal static bool loaderPrepared = false;
     internal static bool initCalled = false;
+#if MSC
     internal static string ModsFolder = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Path.Combine("MySummerCar", "Mods")));
+#elif MWC
+    internal static string ModsFolder = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Path.Combine("My Winter Car", "Mods")));
+#endif
+    internal static string ManagedPath = Environment.GetEnvironmentVariable("DOORSTOP_MANAGED_FOLDER_DIR");
     internal static string ConfigFolder = Path.Combine(ModsFolder, "Config");
     internal static string SettingsFolder = Path.Combine(ConfigFolder, "Mod Settings");
     internal static string MetadataFolder = Path.Combine(ConfigFolder, "Mod Metadata");

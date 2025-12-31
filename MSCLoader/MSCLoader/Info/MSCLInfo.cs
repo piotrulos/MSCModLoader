@@ -7,12 +7,14 @@ internal class MSCLInfo
     public static readonly string Version = $"{Assembly.GetExecutingAssembly().GetName().Version.Major}.{Assembly.GetExecutingAssembly().GetName().Version.Minor}{(Assembly.GetExecutingAssembly().GetName().Version.Build == 0 ? "" : $".{Assembly.GetExecutingAssembly().GetName().Version.Build}")}";
     public static readonly int Build = Assembly.GetExecutingAssembly().GetName().Version.Revision;
 #if MSC
-    public static readonly string menuAssetVersion = "a565b90a";
+    public static readonly string menuAssetVersion = "9854c1c0";
     public static readonly string consoleAssetVersion = "d3819c23";
+    public static readonly string coreAssetsPath = "MSCLoader.CoreAssets.core_msc.unity3d";
 #endif
 #if MWC
-    public static readonly string menuAssetVersion = "tbd";
-    public static readonly string consoleAssetVersion = "tbd";
+    public static readonly string menuAssetVersion = "be198b5d";
+    public static readonly string consoleAssetVersion = "7099769d";
+    public static readonly string coreAssetsPath = "MSCLoader.CoreAssets.core_mwc.unity3d";
 #endif
 #if MSC_Release
     public static readonly string BuildType = "MSC_Release";

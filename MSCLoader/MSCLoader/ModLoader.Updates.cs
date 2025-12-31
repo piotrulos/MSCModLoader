@@ -49,7 +49,7 @@ public partial class ModLoader : MonoBehaviour
 
         if (File.Exists(ploader))
         {
-            System.Diagnostics.FileVersionInfo currVer = System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "MSCLoader.Preloader.dll"));
+            System.Diagnostics.FileVersionInfo currVer = System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine(ManagedPath, "MSCLoader.Preloader.dll"));
             System.Diagnostics.FileVersionInfo newVer = System.Diagnostics.FileVersionInfo.GetVersionInfo(ploader);
             if (newVer.FilePrivatePart <= currVer.FilePrivatePart)
             {
@@ -59,8 +59,8 @@ public partial class ModLoader : MonoBehaviour
             }
             try
             {
-                File.Delete(Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "MSCLoader.Preloader.dll"));
-                File.Move(ploader, Path.Combine(Path.Combine("mysummercar_Data", "Managed"), "MSCLoader.Preloader.dll"));
+                File.Delete(Path.Combine(ManagedPath, "MSCLoader.Preloader.dll"));
+                File.Move(ploader, Path.Combine(ManagedPath, "MSCLoader.Preloader.dll"));
                 ModConsole.Print($"<b><color=yellow>Successfully updated:</color></b> <color=aqua>MSCLoader.Preloader.dll</color>");
             }
             catch (Exception e)
@@ -217,7 +217,7 @@ public partial class ModLoader : MonoBehaviour
             cfmuInProgress = true;
             using (WebClient webClient = new WebClient())
             {
-                webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
+                webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()}) [{MSCLInfo.BuildType}]");
                 webClient.DownloadStringCompleted += (sender, e) =>
                 {
                     cfmuInProgress = false;
@@ -383,7 +383,7 @@ public partial class ModLoader : MonoBehaviour
                 using (WebClient Client = new WebClient())
                 {
                     Client.Headers.Add("Content-Type", "binary/octet-stream");
-                    Client.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
+                    Client.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()}) [{MSCLInfo.BuildType}]");
                     Client.UploadFileCompleted += UploadModUpdateCompleted;
                     Client.UploadProgressChanged += UploadModUpdateProgress;
                     downloadInProgress = true;
@@ -555,7 +555,7 @@ public partial class ModLoader : MonoBehaviour
     {
         using (WebClient webClient = new WebClient())
         {
-            webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
+            webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()}) [{MSCLInfo.BuildType}]");
             if (desc)
                 webClient.DownloadFileCompleted += ModMetadata.DescritpionDownloadCompleted;
             else

@@ -34,7 +34,7 @@ internal class MSCLInternal
         string response = "";
         using (WebClient MSCLDconn = new WebClient())
         {
-            MSCLDconn.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
+            MSCLDconn.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()}) [{MSCLInfo.BuildType}]");
             try
             {
                 byte[] raw = MSCLDconn.UploadValues($"{ModLoader.serverURL}/{reqPath}", "POST", msclData);
@@ -89,7 +89,7 @@ internal class MSCLInternal
         AsyncRequestInProgress = true;
         using (WebClient webClient = new WebClient())
         {
-            webClient.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
+            webClient.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()}) [{MSCLInfo.BuildType}]");
             webClient.UploadValuesCompleted += ModsUpdateData;
             webClient.UploadProgressChanged += ModsUpdateDataProgress;
             webClient.UploadValuesAsync(new Uri($"{ModLoader.serverURL}/{reqPath}"), "POST", msclData);

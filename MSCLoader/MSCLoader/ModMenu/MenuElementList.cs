@@ -251,7 +251,7 @@ namespace MSCLoader
         {
             string dwl = string.Empty;
             WebClient getdwl = new WebClient();
-            getdwl.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
+            getdwl.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()}) [{MSCLInfo.BuildType}]");
             try
             {
                 dwl = getdwl.DownloadString($"{ModLoader.serverURL}/changelog.php?mods={id}&vers={ver}&names={name}");
@@ -273,7 +273,7 @@ namespace MSCLoader
             }
             string dwl = string.Empty;
             WebClient getdwl = new WebClient();
-            getdwl.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
+            getdwl.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()}) [{MSCLInfo.BuildType}]");
             try
             {
                 dwl = getdwl.DownloadString($"{ModLoader.serverURL}/mscl_bugreport.php?steam={ModLoader.steamID}&resid={mod.ID}");
@@ -378,10 +378,20 @@ namespace MSCLoader
                 zip.AddFile(Path.Combine(".", "output_log.txt"), "");
                 if (report.bugReportSaveFile)
                 {
+#if MSC
                     if (File.Exists(Path.Combine(Application.persistentDataPath, "defaultES2File.txt")))
                         zip.AddFile(Path.Combine(Application.persistentDataPath, "defaultES2File.txt"), "Save");
                     if (File.Exists(Path.Combine(Application.persistentDataPath, "items.txt")))
                         zip.AddFile(Path.Combine(Application.persistentDataPath, "items.txt"), "Save");
+#elif MWC
+                    if (File.Exists(Path.Combine(Application.persistentDataPath, "savefile.txt")))
+                        zip.AddFile(Path.Combine(Application.persistentDataPath, "savefile.txt"), "Save");
+                    if (File.Exists(Path.Combine(Application.persistentDataPath, "items2.txt")))
+                        zip.AddFile(Path.Combine(Application.persistentDataPath, "items2.txt"), "Save");
+                    if (File.Exists(Path.Combine(Application.persistentDataPath, "carparts.txt")))
+                        zip.AddFile(Path.Combine(Application.persistentDataPath, "carparts.txt"), "Save");
+#endif
+
                     if (File.Exists(Path.Combine(Application.persistentDataPath, "Mods.txt")))
                         zip.AddFile(Path.Combine(Application.persistentDataPath, "Mods.txt"), "Save");
                 }
@@ -400,7 +410,7 @@ namespace MSCLoader
             using (WebClient Client = new WebClient())
             {
                 Client.Headers.Add("Content-Type", "binary/octet-stream");
-                Client.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()})");
+                Client.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()}) [{MSCLInfo.BuildType}]");
                 Client.UploadFileCompleted += UploadBugReportCompleted;
                 Client.UploadProgressChanged += UploadBugReportProgressChanged;
                 bugUploadInProgress = true;

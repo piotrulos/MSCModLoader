@@ -19,9 +19,14 @@ public class SaveLoad
     internal static void ResetSaveFile()
     {
         saveFileData = null;
-        ES2.Delete("Mods.txt");
-        ES2.Save(new byte[1] { 0x02 }, "Mods.txt?tag=MSCLoaderInternalStuff");
-    }
+        if (ES2.Exists("Mods.txt"))
+            ES2.Delete("Mods.txt");
+#if MSC
+        ES2.Save(new byte[2] { 0x03, 0x01 }, "Mods.txt?tag=MSCLoaderInternalStuff");
+#elif MWC
+        ES2.Save(new byte[2] { 0x03, 0x02 }, "Mods.txt?tag=MSCLoaderInternalStuff");
+#endif
+        }
 
     internal static void LoadModsSaveData()
     {
@@ -34,11 +39,44 @@ public class SaveLoad
                 ES2Settings settings = new ES2Settings($"Mods.txt");
                 ES2Reader es2r = new ES2Reader(settings);
                 headers = es2r.ReadAllHeaders();
-                if (!saveFileData.TagExists("MSCLoaderInternalStuff")) ConvertSeparators();
+                if (!saveFileData.TagExists("MSCLoaderInternalStuff")) { ResetSaveFile(); }
+                else
+                {
+                    byte[] version = saveFileData.LoadArray<byte>("MSCLoaderInternalStuff");
+#if MSC
+                    if (version[0] == 0x02)
+                    {
+                        ES2.Save(new byte[2] { 0x03, 0x01 }, "Mods.txt?tag=MSCLoaderInternalStuff"); //Update version
+                    }
+                    else if (version[0] == 0x03)
+                    {
+                        if (version[1] == 0x02)
+                        {
+                            ModUI.ShowMessage("<color=orange>Mods.txt</color> in save folder is from <color=yellow>My Winter Car</color>, and it's not compatible with <color=yellow>My Summer Car</color>. The file will be reset.", "Fatal Error");
+                            ResetSaveFile();
+                        }
+                    }
+#elif MWC
+
+                    if (version[0] == 0x02)
+                    {
+                        ModUI.ShowMessage("<color=orange>Mods.txt</color> in save folder is from <color=yellow>My Summer Car</color>, and it's not compatible with <color=yellow>My Winter Car</color>. The file will be reset.", "Fatal Error");
+                        ResetSaveFile();
+                    }
+                    else if (version[0] == 0x03)
+                    {
+                        if (version[1] == 0x01)
+                        {
+                            ModUI.ShowMessage("<color=orange>Mods.txt</color> in save folder is from <color=yellow>My Summer Car</color>, and it's not compatible with <color=yellow>My Winter Car</color>. The file will be reset.", "Fatal Error");
+                            ResetSaveFile();
+                        }
+                    }
+#endif
+                }
             }
             else
             {
-                ES2.Save(new byte[1] { 0x02 }, "Mods.txt?tag=MSCLoaderInternalStuff");
+                ResetSaveFile();
             }
         }
         catch (Exception e)
@@ -56,72 +94,6 @@ public class SaveLoad
             {
                 ES2.Delete($"Mods.txt?tag={tag}");
             }
-        }
-    }
-
-    //Convert separator from _ to ||
-    //One time, safe to delete this in next update, since it's ea
-    internal static void ConvertSeparators()
-    {
-        if (saveFileData == null) return;
-        try
-        {
-            string[] oldTags = saveFileData.GetTags();
-            Regex regex = new Regex(Regex.Escape("_"));
-
-            ES2Settings settings = new ES2Settings($"Mods.txt");
-            ES2Settings settings2 = new ES2Settings($"Mods2.txt");
-            ES2Reader es2r = new ES2Reader(settings);
-            Dictionary<string, ES2Header> hdr = es2r.ReadAllHeaders();
-            ModConsole.Print("One time save format conversion...");
-            foreach (string tag in oldTags)
-            {
-                ES2Header header = new ES2Header();
-                if (hdr.ContainsKey(tag))
-                    hdr.TryGetValue(tag, out header);
-
-                ModConsole.Print($"{tag} -> {regex.Replace(tag, "||", 1)}");
-                ES2Writer w = new ES2Writer(settings2);
-                switch (header.collectionType)
-                {
-                    case ES2Keys.Key._NativeArray:
-                        saveFileData.loadedData.TryGetValue(tag, out object value2);
-                        object[] stuff3 = value2 as object[];
-                        w.WriteHeader(regex.Replace(tag, "||", 1), ES2Keys.Key._NativeArray, ES2TypeManager.GetES2Type(header.valueType), null);
-                        w.Write(stuff3, ES2TypeManager.GetES2Type(header.valueType));
-                        w.WriteTerminator();
-                        w.WriteLength();
-                        w.Save();
-                        break;
-                    case ES2Keys.Key._List:
-                        saveFileData.loadedData.TryGetValue(tag, out object value);
-                        List<object> stuff2 = value as List<object>;
-                        w.WriteHeader(regex.Replace(tag, "||", 1), ES2Keys.Key._List, ES2TypeManager.GetES2Type(header.valueType), null);
-                        w.Write(stuff2, ES2TypeManager.GetES2Type(header.valueType));
-                        w.WriteTerminator();
-                        w.WriteLength();
-                        w.Save();
-                        break;
-                    case ES2Keys.Key._Null:
-                        saveFileData.loadedData.TryGetValue(tag, out object stuff);
-                        w.WriteHeader(regex.Replace(tag, "||", 1), ES2Keys.Key._Null, ES2TypeManager.GetES2Type(header.valueType), null);
-                        w.Write(stuff, ES2TypeManager.GetES2Type(header.valueType));
-                        w.WriteTerminator();
-                        w.WriteLength();
-                        w.Save();
-                        break;
-                }
-            }
-            ES2.Save(new byte[1] { 0x02 }, "Mods2.txt?tag=MSCLoaderInternalStuff");
-            ES2.Delete("Mods.txt");
-            ES2.Rename("Mods2.txt", "Mods.txt");
-            ModConsole.Print("Conversion done!");
-            LoadModsSaveData();
-        }
-        catch (Exception e)
-        {
-            ModConsole.Error(e.Message);
-            Console.WriteLine(e);
         }
     }
 

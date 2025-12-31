@@ -51,6 +51,15 @@
     <LangVersion>13</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'MWC_Release|AnyCPU'">
+    <OutputPath>bin\MWC_Release\</OutputPath>
+    <DefineConstants>TRACE;MWC_Release;MWC</DefineConstants>
+    <DocumentationFile>bin\Release\MSCLoader.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>13</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp" Condition="!$(DefineConstants.Contains('Mini'))">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Assembly-CSharp.dll</HintPath>
@@ -203,7 +212,10 @@
     <Compile Include="Settings.OldFormat.cs" Condition="$(DefineConstants.Contains('MSC'))" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="CoreAssets\core.unity3d" Condition="!$(DefineConstants.Contains('Mini'))" />
+    <EmbeddedResource Include="CoreAssets\core_msc.unity3d" Condition="!$(DefineConstants.Contains('Mini')) and $(DefineConstants.Contains('MSC'))" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CoreAssets\core_mwc.unity3d" Condition="!$(DefineConstants.Contains('Mini')) and $(DefineConstants.Contains('MWC'))" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
@@ -215,6 +227,15 @@ copy "$(TargetPath)" "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\M
 copy "$(TargetDir)$(TargetName).pdb" "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed" /y
 cd "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\"
 call "D:\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\debug.bat"
+)
+if "$(ConfigurationName)" == "MWC_Release" (
+copy "$(TargetPath)" "D:\Steam\steamapps\common\My Winter Car\mywintercar_Data\Managed" /y
+) 
+if "$(ConfigurationName)" == "MWC_Debug" (
+copy "$(TargetPath)" "D:\Steam\steamapps\common\My Winter Car\mywintercar_Data\Managed" /y
+copy "$(TargetDir)$(TargetName).pdb" "D:\Steam\steamapps\common\My Winter Car\mywintercar_Data\Managed" /y
+cd "D:\Steam\steamapps\common\My Winter Car\mywintercar_Data\Managed"
+call "D:\Steam\steamapps\common\My Winter Car\mywintercar_Data\Managed\debug.bat"
 )
 </PostBuildEvent>
   </PropertyGroup>

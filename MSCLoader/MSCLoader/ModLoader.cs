@@ -78,7 +78,11 @@ public partial class ModLoader : MonoBehaviour
     internal static void Init_MD()
     {
         if (unloader) return;
+#if MSC
         ModsFolder = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Path.Combine("MySummerCar", "Mods")));
+#elif MWC
+        ModsFolder = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Path.Combine("My Winter Car", "Mods")));
+#endif
         PrepareModLoader();
     }
 
@@ -358,10 +362,22 @@ public partial class ModLoader : MonoBehaviour
                 ModConsole.Print($"<b><color=orange>Hello <color=lime>{"kidsrow!"}</color>!</color></b>");
                 throw new Exception("[EMULATOR] Do What You Want, Cause A Pirate Is Free... You Are A Pirate!");
             }
-            if (ModMetadata.CalculateFileChecksum(Path.Combine("", "steam_api.dll")) != "7B857C897BC69313E4936DC3DCCE5193" || ModMetadata.CalculateFileChecksum(Path.Combine("", "steam_api64.dll")) != "6C23EAB28F1CD1BFD128934B08288DD8")
+            
+            if(File.Exists(Path.GetFullPath(Path.Combine("", "steam_api.dll"))))
             {
-                ModConsole.Print($"<b><color=orange>Hello <color=lime>{"Emulator!"}</color>!</color></b>");
-                throw new Exception("[EMULATOR] Do What You Want, Cause A Pirate Is Free... You Are A Pirate!");
+                if (ModMetadata.CalculateFileChecksum(Path.Combine("", "steam_api.dll")) != "7B857C897BC69313E4936DC3DCCE5193")
+                {
+                    ModConsole.Print($"<b><color=orange>Hello <color=lime>{"Emulator!"}</color>!</color></b>");
+                    throw new Exception("[EMULATOR] Do What You Want, Cause A Pirate Is Free... You Are A Pirate!");
+                }
+            }
+            if (File.Exists(Path.GetFullPath(Path.Combine("steam_api64.dll", ""))))
+            {
+                if (ModMetadata.CalculateFileChecksum(Path.Combine("", "steam_api64.dll")) != "6C23EAB28F1CD1BFD128934B08288DD8")
+                {
+                    ModConsole.Print($"<b><color=orange>Hello <color=lime>{"Emulator!"}</color>!</color></b>");
+                    throw new Exception("[EMULATOR] Do What You Want, Cause A Pirate Is Free... You Are A Pirate!");
+                }
             }
 
             Steamworks.SteamAPI.Init();
@@ -369,7 +385,7 @@ public partial class ModLoader : MonoBehaviour
             ModConsole.Print($"<b><color=orange>Hello <color=lime>{Steamworks.SteamFriends.GetPersonaName()}</color>!</color></b>");
             using (WebClient webClient = new WebClient())
             {
-                webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
+                webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()}) [{MSCLInfo.BuildType}]");
                 webClient.DownloadStringCompleted += SAuthCheckCompleted;
                 webClient.DownloadStringAsync(new Uri($"{serverURL}/sauth.php?sid={steamID}"));
             }
@@ -629,7 +645,7 @@ public partial class ModLoader : MonoBehaviour
         if (Directory.Exists(Path.Combine(ModsFolder, "References")))
         {
             string[] files = Directory.GetFiles(Path.Combine(ModsFolder, "References"), "*.dll");
-            string[] alreadyIncluded = Directory.GetFiles(Path.Combine("mysummercar_Data", "Managed"), "*.dll").Select(Path.GetFileName).ToArray();
+            string[] alreadyIncluded = Directory.GetFiles(ManagedPath, "*.dll").Select(Path.GetFileName).ToArray();
             string[] unusedFiles = [];
 
             if (File.Exists(Path.Combine(Path.Combine(ModsFolder, "References"), "unused.txt")))
@@ -640,7 +656,7 @@ public partial class ModLoader : MonoBehaviour
             {
                 if (Path.GetFileName(files[i]) == "0Harmony12.dll" || Path.GetFileName(files[i]) == "0Harmony-1.2.dll" || Path.GetFileName(files[i]) == "Ionic.Zip.dll" || alreadyIncluded.Contains(Path.GetFileName(files[i])))
                 {
-                    ModConsole.Warning($"<b>{Path.GetFileName(files[i])}</b> already exist in <b>{Path.GetFullPath(Path.Combine("mysummercar_Data", "Managed"))}</b> - skipping");
+                    ModConsole.Warning($"<b>{Path.GetFileName(files[i])}</b> already exist in <b>{Path.GetFullPath(ManagedPath)}</b> - skipping");
                     File.Delete(files[i]);
                     continue;
                 }
@@ -702,7 +718,7 @@ public partial class ModLoader : MonoBehaviour
     private void LoadCoreAssets()
     {
         ModConsole.Print("Loading core assets...");
-        AssetBundle ab = LoadAssets.LoadBundle("MSCLoader.CoreAssets.core.unity3d");
+        AssetBundle ab = LoadAssets.LoadBundle(MSCLInfo.coreAssetsPath);
         guiskin = ab.LoadAsset<GUISkin>("MSCLoader.guiskin");
         ModUI.canvasPrefab = ab.LoadAsset<GameObject>("CanvasPrefab.prefab");
         mainMenuInfo = ab.LoadAsset<GameObject>("MSCLoader Info.prefab");
@@ -785,14 +801,9 @@ public partial class ModLoader : MonoBehaviour
     {
         using (WebClient client = new WebClient())
         {
-            client.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
+            client.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()}) [{MSCLInfo.BuildType}]");
             client.DownloadStringCompleted += VersionCheckCompleted;
-            string branch = "unknown";
-            if (experimental)
-                branch = "msc_exp";
-            else
-                branch = "msc_stable";
-            client.DownloadStringAsync(new Uri($"{serverURL}/mscl_corever.php?core={branch}"));
+            client.DownloadStringAsync(new Uri($"{serverURL}/mscl_corever.php?core={MSCLInfo.BuildType}"));
         }
     }
 
@@ -856,7 +867,7 @@ public partial class ModLoader : MonoBehaviour
     {
         string dwl = string.Empty;
         WebClient getdwl = new WebClient();
-        getdwl.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()})");
+        getdwl.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()}) [{MSCLInfo.BuildType}]");
         try
         {
             dwl = getdwl.DownloadString($"{serverURL}/changelog.php?mods=MSCLoader&vers={newVersion}&names=MSCLoader");
@@ -1061,7 +1072,11 @@ public partial class ModLoader : MonoBehaviour
         canvLoading.SetLoadingProgress((int)canvLoading.lProgress.maxValue, (int)canvLoading.lProgress.maxValue);
         canvLoading.SetLoadingStatus("Finishing touches...");
         yield return null;
-        GameObject.Find("ITEMS").GetComponent<PlayMakerFSM>().FsmInject("Save game", SaveMods);
+#if MSC
+        GameObject.Find("ITEMS").GetComponent<PlayMakerFSM>().FsmInject("Save game", SaveMods); 
+#elif MWC
+        GameObject.Find("Database/PlayerDatabase").GetPlayMaker("Simulation").FsmInject("Save data", SaveMods); //TODO: test
+#endif
         ModConsole.PrintSplit("<i></i></color>", false);
         if (IsReferencePresent("MSCCoreLibrary"))
             TimeSchedulerCalls("load");
@@ -1469,9 +1484,9 @@ public partial class ModLoader : MonoBehaviour
                     if (m.ID.StartsWith("MSCLoader_")) continue;
                     if (!CurrentGame.Equals(m.supportedGames))
                     {
-                        ModConsole.Error($"Mod <b><color=orange>{Path.GetFileName(file)}</color></b> is not compatible with current game! This mod was made for: <b><color=yellow>{m.supportedGames}</color></b>. Please install correct version of the mod.");
-                        InvalidMods.Add(new InvalidMods(Path.GetFileName(file), true, "This mod is not compatible with current game.", new List<string>(), ""));
-                        return;
+                      //  ModConsole.Error($"Mod <b><color=orange>{Path.GetFileName(file)}</color></b> is not compatible with current game! This mod was made for: <b><color=yellow>{m.supportedGames}</color></b>. Please install correct version of the mod.");
+                      //  InvalidMods.Add(new InvalidMods(Path.GetFileName(file), true, "This mod is not compatible with current game.", new List<string>(), ""));
+                      //  return;
                     }
                     if (string.IsNullOrEmpty(m.ID.Trim()))
                     {
