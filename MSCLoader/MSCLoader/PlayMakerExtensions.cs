@@ -106,14 +106,15 @@ public static class PlayMakerExtensions
     }
 
     private class MSCL_PMHook : FsmStateAction
-    {
+    {        
+        public string hookName;
         public Action action;
         public bool everyFrame = false;
-
         public MSCL_PMHook(Action action, bool everyFrame = false)
         {
             this.action = action;
             this.everyFrame = everyFrame;
+            hookName = action.Method.Name;
         }
 
         public override void OnEnter()

@@ -15,7 +15,7 @@ internal class CommandVersion : ConsoleCommand
         ModConsole.Print($"<color=yellow>Unity:</color> <color=aqua><b>{Application.unityVersion}</b></color>");
         try
         {
-            ModConsole.Print($"<color=yellow>MSC buildID:</color> <color=aqua><b>{Steamworks.SteamApps.GetAppBuildId()}</b></color>"); //Get steam buildID
+            ModConsole.Print($"<color=yellow>Steam buildID:</color> <color=aqua><b>{Steamworks.SteamApps.GetAppBuildId()}</b></color>"); //Get steam buildID
         }
         catch (Exception e)
         {

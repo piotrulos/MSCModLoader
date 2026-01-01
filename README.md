@@ -3,7 +3,7 @@
 [![](https://img.shields.io/github/license/piotrulos/MSCModLoader.svg?style=flat-square)](#) 
 
 # MSCLoader
-A mod loader for My Summer Car 
+A mod loader for **My Summer Car** and **My Winter Car**
 
 Please report any issues and ideas [here](https://github.com/piotrulos/MSCModLoader/issues)
 

@@ -159,9 +159,14 @@ namespace MSCLInstaller
                         DetectedGameText.Inlines.Add(new Run("Detected: ") { FontWeight = FontWeights.Bold });
                         DetectedGameText.Inlines.Add(new Bold(new Run("My Summer Car (32-bit)") { Foreground = Brushes.LightGreen }));
                         break;
+                    case MD5FileHashes.mwc64:                        
+                        DetectedGameText.Inlines.Add(new Run("Detected: ") { FontWeight = FontWeights.Bold });
+                        DetectedGameText.Inlines.Add(new Bold(new Run("My Winter Car (64-bit)") { Foreground = Brushes.LightGreen }));
+                        break;
                     default:
                         DetectedGameText.Inlines.Add(new Run("Detected: ") { FontWeight = FontWeights.Bold });
                         DetectedGameText.Inlines.Add(new Bold(new Run("Unknown") { Foreground = Brushes.Red }));
+                        Dbg.Log(MD5FileHashes.MD5HashFile(game));
                         break;
                 }
                 GoNext.IsEnabled = true;

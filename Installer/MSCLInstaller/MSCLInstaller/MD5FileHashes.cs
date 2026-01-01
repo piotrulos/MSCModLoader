@@ -9,11 +9,11 @@ namespace MSCLInstaller
     public static class MD5FileHashes
     {
         /*
-         * mono.dll MD5 hashes (for enabling debug mode):
+         * mono.dll MD5 hashes (for enabling legacy debug mode):
          * 
          * F190C7ECFE414FB407137C1D95AC310E (64-bit, normal)
          * 3EE5C3BD42B61AE820A028AF35DF99C0 (64-bit, debug)
-         * 
+         * (no longer used)
          */
         public const string mono64normal = "F190C7ECFE414FB407137C1D95AC310E";
         public const string mono64debug = "3EE5C3BD42B61AE820A028AF35DF99C0";
@@ -24,11 +24,12 @@ namespace MSCLInstaller
          * E9F1D7E11359DA995881B9280E1726B3 (32-bit, msc vanilla old)
          * 7C37795F08588D952C4B3289DE7AB2EA (64-bit, msc vanilla dx11)
          * 3C3F1460A074993E7F483F08318A2015 (64-bit, msc vanilla dx9)
-         * 
+         * 89A1AE5B4A8E2FA6294E0C258795D702 (64-bit, mwc vanilla dx11)
          */
         public const string msc32 = "E9F1D7E11359DA995881B9280E1726B3";
         public const string msc64 = "7C37795F08588D952C4B3289DE7AB2EA";
         public const string msc64d9 = "3C3F1460A074993E7F483F08318A2015";
+        public const string mwc64 = "89A1AE5B4A8E2FA6294E0C258795D702";
 
         public static string MD5HashFile(string fn)
         {
@@ -40,9 +41,10 @@ namespace MSCLInstaller
     public enum Game
     {
         MSC,
+        MWC,
         //For future use
         MSC_IMA,
-        MWC
+
     }
 
     public static class InstallerHelpers

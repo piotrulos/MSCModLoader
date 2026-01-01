@@ -152,17 +152,20 @@ public partial class ModLoader : MonoBehaviour
                     unloader = true;
                     return;
                 }
+#if MWC
+                GameObject ngm = GameObject.Find("Interface/Buttons/ButtonNewgame").GetPlayMaker("SetSize").GetState("State 1").GetAction<ActivateGameObject>(1).gameObject.GameObject.Value;
+                ngm.transform.Find("Buttons/ButtonBegin").GetPlayMaker("SetSize").FsmInject("Load", ModNewGameReset, false, 0);
+#endif
+#if MSC
                 if (IsReferencePresent("MSCCoreLibrary"))
                     TimeSchedulerCalls("stop");
+#endif
                 break;
             case "Intro":
                 CurrentScene = CurrentScene.NewGameIntro;
-
-                if (!IsModsResetting)
-                {
-                    IsModsResetting = true;
-                    StartCoroutine(NewGameMods());
-                }
+#if MSC
+                ModNewGameReset();
+#endif
                 break;
             case "GAME":
                 CurrentScene = CurrentScene.Game;
@@ -186,6 +189,14 @@ public partial class ModLoader : MonoBehaviour
         }
     }
 
+    private void ModNewGameReset()
+    {
+        if (!IsModsResetting)
+        {
+            IsModsResetting = true;
+            StartCoroutine(NewGameMods());
+        }
+    }
     private void TimeSchedulerCalls(string call)
     {
         switch (call)

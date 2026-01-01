@@ -15,6 +15,18 @@ body:
       placeholder: ex. Windows 10 1709 (16299.248)
     validations:
       required: true
+  - type: dropdown
+    id: game
+    attributes:
+      label: Select Game
+      description: In what game this issue happens
+      options:
+        - My Summer Car
+        - My Winter Car
+        - Both (My Summer Car and My Winter Car)
+      default: 0
+    validations:
+      required: true
   - type: input
     id: mscloaderVer
     attributes:
