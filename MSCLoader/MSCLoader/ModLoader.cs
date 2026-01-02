@@ -133,6 +133,14 @@ public partial class ModLoader : MonoBehaviour
         switch (Application.loadedLevelName)
         {
             case "MainMenu":
+#if MWC
+                //Fix for vanilla error spam in menu
+                GameObject fix = GameObject.Find("Scene").transform.Find("Car/SORBET(190-200psi)/Windshield").gameObject;
+                if(fix.GetComponent<PlayMakerFSM>() != null)
+                {
+                    fix.GetComponent<PlayMakerFSM>().enabled = false;
+                }
+#endif
                 PrepareModLoader();
                 CurrentScene = CurrentScene.MainMenu;
                 if (GameObject.Find("Music"))
