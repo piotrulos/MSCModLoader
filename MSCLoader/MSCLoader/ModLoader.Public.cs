@@ -42,7 +42,11 @@ public enum Game
     /// Designed for My Winter Car
     /// </summary>
     MyWinterCar = 2,
-    //MySummerCarCommunity = 4
+
+    /// <summary>
+    /// Designed for both My Summer Car and My Winter Car
+    /// </summary>
+    MySummerCar_And_MyWinterCar = MySummerCar | MyWinterCar
 }
 
 public partial class ModLoader

@@ -1502,17 +1502,17 @@ public partial class ModLoader : MonoBehaviour
                 {
                     Mod m = (Mod)Activator.CreateInstance(asmTypes[j]);
                     if (m.ID.StartsWith("MSCLoader_")) continue;
-                    if (!CurrentGame.Equals(m.supportedGames))
+                    if ((m.SupportedGames & CurrentGame) ==  0)
                     {
-                      //  ModConsole.Error($"Mod <b><color=orange>{Path.GetFileName(file)}</color></b> is not compatible with current game! This mod was made for: <b><color=yellow>{m.supportedGames}</color></b>. Please install correct version of the mod.");
-                      //  InvalidMods.Add(new InvalidMods(Path.GetFileName(file), true, "This mod is not compatible with current game.", new List<string>(), ""));
-                      //  return;
+                        ModConsole.Error($"Mod <b><color=orange>{Path.GetFileName(file)}</color></b> is not set as compatible with current game! This mod was made for: <b><color=yellow>{m.SupportedGames}</color></b>.");
+                        InvalidMods.Add(new InvalidMods(Path.GetFileName(file), true, $"This mod is not marked as compatible with current game. Compatible games: <color=aqua>{m.SupportedGames}</color>", new List<string>(), ""));
+                        return;
                     }
                     if (string.IsNullOrEmpty(m.ID.Trim()))
                     {
                         //Do not allow null/empty/whitespace modID.
                         Console.Write("Empty mod ID");
-                        break;
+                        return;
                     }
                     m.asmGuid = asmGuid;
                     isMod = true;

@@ -40,6 +40,11 @@ public abstract partial class Mod
     public virtual string Description { get; set; } = null;
 
     /// <summary>
+    /// List of games supported by this mod
+    /// </summary>
+    public virtual Game SupportedGames => Game.MySummerCar;
+
+    /// <summary>
     /// Setup your mod.
     /// </summary>
     public virtual void ModSetup() { }
