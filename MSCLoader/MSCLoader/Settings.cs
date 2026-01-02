@@ -99,7 +99,7 @@ public partial class Settings
     /// <param name="collapsedByDefault">Header collapsed by default (optional default=false)</param>
     /// <param name="visibleByDefault">Visible by default (default=true)</param>
     /// <returns>SettingsHeader</returns>
-    public static SettingsHeader AddHeader(string HeaderTitle, bool collapsedByDefault = false, bool visibleByDefault = true) => AddHeader(HeaderTitle, new Color32(95, 34, 18, 255), new Color32(236, 229, 2, 255), collapsedByDefault, visibleByDefault);
+    public static SettingsHeader AddHeader(string HeaderTitle, bool collapsedByDefault = false, bool visibleByDefault = true) => AddHeader(HeaderTitle, Color.clear, Color.clear, collapsedByDefault, visibleByDefault);
 
     /// <summary>
     /// Add Header, header groups settings together
@@ -109,7 +109,7 @@ public partial class Settings
     /// <param name="collapsedByDefault">Header collapsed by default (optional default=false)</param>
     /// <param name="visibleByDefault">Visible by default (default=true)</param>
     /// <returns>SettingsHeader</returns>
-    public static SettingsHeader AddHeader(string HeaderTitle, Color backgroundColor, bool collapsedByDefault = false, bool visibleByDefault = true) => AddHeader(HeaderTitle, backgroundColor, new Color32(236, 229, 2, 255), collapsedByDefault, visibleByDefault);
+    public static SettingsHeader AddHeader(string HeaderTitle, Color backgroundColor, bool collapsedByDefault = false, bool visibleByDefault = true) => AddHeader(HeaderTitle, backgroundColor, Color.clear, collapsedByDefault, visibleByDefault);
 
     /// <summary>
     /// Add Header, header groups settings together
@@ -200,7 +200,7 @@ public partial class Settings
     /// <param name="onClick">What to do when button is clicked</param>
     /// <param name="visibleByDefault">Visible by default (default=true)</param>
     /// <returns>SettingsButton</returns>
-    public static SettingsButton AddButton(string name, Action onClick, bool visibleByDefault = true) => AddButtonInternal(name, onClick, new Color32(85, 38, 0, 255), Color.white, SettingsButton.ButtonIcon.None, null, visibleByDefault);
+    public static SettingsButton AddButton(string name, Action onClick, bool visibleByDefault = true) => AddButtonInternal(name, onClick, Color.clear, Color.clear, SettingsButton.ButtonIcon.None, null, visibleByDefault);
 
     /// <summary>
     /// Add button that can execute function. 
@@ -210,7 +210,7 @@ public partial class Settings
     /// <param name="predefinedIcon">Optional icon (predefined from list, icons that mscloader menu uses)</param>
     /// <param name="visibleByDefault">Visible by default (default=true)</param>
     /// <returns>SettingsButton</returns>
-    public static SettingsButton AddButton(string name, Action onClick, SettingsButton.ButtonIcon predefinedIcon, bool visibleByDefault = true) => AddButtonInternal(name, onClick, new Color32(85, 38, 0, 255), Color.white, predefinedIcon, null, visibleByDefault);
+    public static SettingsButton AddButton(string name, Action onClick, SettingsButton.ButtonIcon predefinedIcon, bool visibleByDefault = true) => AddButtonInternal(name, onClick, Color.clear, Color.clear, predefinedIcon, null, visibleByDefault);
 
     /// <summary>
     /// Add button that can execute function. 
@@ -220,7 +220,7 @@ public partial class Settings
     /// <param name="customIcon">Custom icon (Texture2D, should be POT minimum 16x16, no bigger than 64x64)</param>
     /// <param name="visibleByDefault">Visible by default (default=true)</param>
     /// <returns>SettingsButton</returns>
-    public static SettingsButton AddButton(string name, Action onClick, Texture2D customIcon, bool visibleByDefault = true) => AddButtonInternal(name, onClick, new Color32(85, 38, 0, 255), Color.white, SettingsButton.ButtonIcon.Custom, customIcon, visibleByDefault);
+    public static SettingsButton AddButton(string name, Action onClick, Texture2D customIcon, bool visibleByDefault = true) => AddButtonInternal(name, onClick, Color.clear, Color.clear, SettingsButton.ButtonIcon.Custom, customIcon, visibleByDefault);
 
     /// <summary>
     /// Add button that can execute function.

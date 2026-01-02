@@ -478,8 +478,14 @@ public class SettingsColorPicker : ModSetting
 /// </summary>
 public class SettingsHeader : ModSetting
 {
+#if MSC
     internal Color BackgroundColor = new Color32(95, 34, 18, 255);
     internal Color TextColor = new Color32(236, 229, 2, 255);
+#elif MWC
+
+    internal Color BackgroundColor = new Color32(18, 76, 101, 255);
+    internal Color TextColor = new Color32(0, 234, 255, 255);
+#endif
     internal bool CollapsedByDefault = false;
 
     /// <summary>
@@ -544,8 +550,10 @@ public class SettingsHeader : ModSetting
 
     internal SettingsHeader(string name, Color backgroundColor, Color textColor, bool collapsedByDefault, bool visibleByDefault) : base(null, name, null, SettingsType.HeaderGroup, visibleByDefault)
     {
-        BackgroundColor = backgroundColor;
-        TextColor = textColor;
+        if (backgroundColor != Color.clear)
+            BackgroundColor = backgroundColor;
+        if (textColor != Color.clear)
+            TextColor = textColor;
         CollapsedByDefault = collapsedByDefault;
     }
 }
@@ -586,7 +594,11 @@ public class SettingsText : ModSetting
 /// </summary>
 public class SettingsButton : ModSetting
 {
+#if MSC
     internal Color BackgroundColor = new Color32(85, 38, 0, 255);
+#elif MWC
+    internal Color BackgroundColor = new Color32(21, 89, 119, 255);
+#endif
     internal Color TextColor = Color.white;
     internal ButtonIcon PredefinedIcon = ButtonIcon.None;
     internal Texture2D CustomIcon = null;
@@ -692,8 +704,10 @@ public class SettingsButton : ModSetting
 
     internal SettingsButton(string name, Action doAction, Color backgroundColor, Color textColor, bool visibleByDefault, ButtonIcon icon, Texture2D customIcon) : base(null, name, doAction, SettingsType.Button, visibleByDefault)
     {
-        BackgroundColor = backgroundColor;
-        TextColor = textColor;
+        if (backgroundColor != Color.clear)
+            BackgroundColor = backgroundColor;
+        if (textColor != Color.clear)
+            TextColor = textColor;
         PredefinedIcon = icon;
         if (customIcon != null) { PredefinedIcon = ButtonIcon.Custom; }
         CustomIcon = customIcon;

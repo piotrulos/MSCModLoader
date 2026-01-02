@@ -12,7 +12,7 @@ internal class MSCLInfo
     public static readonly string coreAssetsPath = "MSCLoader.CoreAssets.core_msc.unity3d";
 #endif
 #if MWC
-    public static readonly string menuAssetVersion = "be198b5d";
+    public static readonly string menuAssetVersion = "ced97cbb";
     public static readonly string consoleAssetVersion = "7099769d";
     public static readonly string coreAssetsPath = "MSCLoader.CoreAssets.core_mwc.unity3d";
 #endif
