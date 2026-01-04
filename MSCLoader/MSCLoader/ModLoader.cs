@@ -436,7 +436,16 @@ public partial class ModLoader : MonoBehaviour
             }
         }
         SaveLoad.LoadModsSaveData();
-        PreLoadMods();
+#if MWC
+        if (ModMenu.ignoreCompatibility.GetValue())
+        {
+            Console.WriteLine("=========================");
+            Console.WriteLine("Compatibility is ignored.");
+            Console.WriteLine("=========================");
+        }
+
+#endif
+            PreLoadMods();
         if (InvalidMods.Count > 0)
             ModConsole.Print($"<b><color=orange>Loaded <color=aqua>{actualModList.Length}</color> mods (<color=magenta>{InvalidMods.Count}</color> failed to load)!</color></b>{Environment.NewLine}");
         else
@@ -1512,9 +1521,20 @@ public partial class ModLoader : MonoBehaviour
                     if (m.ID.StartsWith("MSCLoader_")) continue;
                     if ((m.SupportedGames & currentGame) ==  0)
                     {
-                        ModConsole.Error($"Mod <b><color=orange>{Path.GetFileName(file)}</color></b> is not set as compatible with current game! This mod was made for: <b><color=yellow>{m.SupportedGames}</color></b>.");
-                        InvalidMods.Add(new InvalidMods(Path.GetFileName(file), true, $"This mod is not marked as compatible with current game. Compatible games: <color=aqua>{m.SupportedGames}</color>", new List<string>(), ""));
-                        return;
+#if MWC
+                        if (ModMenu.ignoreCompatibility.GetValue())
+                        {
+                            ModConsole.Warning($"Mod <b><color=orange>{Path.GetFileName(file)}</color></b> is not set as compatible with current game! This mod was made for: <b><color=yellow>{m.SupportedGames}</color></b>.");
+                        } 
+                        else 
+                        { 
+#endif
+                            ModConsole.Error($"Mod <b><color=orange>{Path.GetFileName(file)}</color></b> is not set as compatible with current game! This mod was made for: <b><color=yellow>{m.SupportedGames}</color></b>.");
+                            InvalidMods.Add(new InvalidMods(Path.GetFileName(file), true, $"This mod is not marked as compatible with current game. Compatible games: <color=aqua>{m.SupportedGames}</color>", new List<string>(), ""));
+                            return;
+#if MWC
+                        }
+#endif
                     }
                     if (string.IsNullOrEmpty(m.ID.Trim()))
                     {

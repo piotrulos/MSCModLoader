@@ -20,7 +20,9 @@ internal class ModMenu : Mod
     internal static ModMenu instance;
     internal static SettingsCheckBox dm_logST, dm_operr, dm_warn, dm_pcon;
     internal static SettingsCheckBox expWarning, modPath, forceMenuVsync, openLinksOverlay, skipGameIntro, skipConfigScreen, filterAdPopups;
-
+#if MWC    
+    internal static SettingsCheckBox ignoreCompatibility;
+#endif    
     private static SettingsCheckBoxGroup checkLaunch, checkDaily, checkWeekly;
     private System.Diagnostics.FileVersionInfo coreVer, doorstopVer;
 
@@ -53,7 +55,10 @@ internal class ModMenu : Mod
         Settings.AddText("Skip stuff");
         skipGameIntro = Settings.AddCheckBox("MSCLoader_skipGameIntro", "Skip game splash screen", false, SkipIntroSet);
         skipConfigScreen = Settings.AddCheckBox("MSCLoader_skipConfigScreen", "Skip configuration screen", false, SkipConfigScreen);
-
+#if MWC
+        Settings.AddText("Compatibility stuff");
+        ignoreCompatibility = Settings.AddCheckBox("MSCLoader_ignoreCompatibility", "Ignore compatibility warnings (for MSC mods)", false, IgnoreCompatibilityWarning);
+#endif
         Settings.AddHeader("Update Settings");
         Settings.AddText("How often MSCLoader checks for Mod/References updates.");
         checkLaunch = Settings.AddCheckBoxGroup("MSCLoader_checkOnLaunch", "Every launch", true, "cfmu_set");
@@ -139,6 +144,14 @@ internal class ModMenu : Mod
         IniData ini = parser.ReadFile("doorstop_config.ini");
         ini["MSCLoader"]["skipConfigScreen"] = skipConfigScreen.GetValue().ToString().ToLower();
         parser.WriteFile("doorstop_config.ini", ini, System.Text.Encoding.ASCII);
+    }
+
+    private void IgnoreCompatibilityWarning()
+    {
+        if (ignoreCompatibility.GetValue())
+        {
+            ModUI.ShowMessage($"Reminder!{Environment.NewLine}{Environment.NewLine}<color=orange>Ignore Compatibility Warning</color> doesn't magically make MSC mods work on MWC, it just disables the compatibility check. But the mod will still have very low chance of working correctly. Before disabling, check if the mod you want to run wasn't already ported to MWC. <color=aqua>MSC mod not working on MWC is NOT a bug.</color>{Environment.NewLine}{Environment.NewLine}You need to restart game for this setting to take effect.", "Compatibility Warning");
+        }
     }
     private static void VSyncSwitchCheckbox()
     {
