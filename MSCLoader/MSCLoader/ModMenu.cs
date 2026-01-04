@@ -142,7 +142,7 @@ internal class ModMenu : Mod
     }
     private static void VSyncSwitchCheckbox()
     {
-        if (ModLoader.GetCurrentScene() == CurrentScene.MainMenu)
+        if (ModLoader.CurrentScene == CurrentScene.MainMenu)
         {
             if (forceMenuVsync.GetValue())
                 QualitySettings.vSyncCount = 1;

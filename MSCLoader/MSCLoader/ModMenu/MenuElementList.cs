@@ -254,7 +254,7 @@ namespace MSCLoader
             getdwl.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()}) [{MSCLInfo.BuildType}]");
             try
             {
-                dwl = getdwl.DownloadString($"{ModLoader.serverURL}/changelog.php?mods={id}&vers={ver}&names={name}");
+                dwl = getdwl.DownloadString($"{ModLoader.serverURL}/changelog.php?kameh={MSCLInfo.namePrefix}&mods={id}&vers={ver}&names={name}");
             }
             catch (Exception e)
             {

@@ -57,7 +57,7 @@ public partial class ModLoader : MonoBehaviour
     /// </summary>
     internal static void Init_NP(string cfg)
     {
-        CurrentGame = Application.productName == "My Summer Car" ? Game.MySummerCar : Game.MyWinterCar;
+        currentGame = Application.productName == "My Summer Car" ? Game.MySummerCar : Game.MyWinterCar;
         switch (cfg)
         {
             case "GF":
@@ -135,14 +135,14 @@ public partial class ModLoader : MonoBehaviour
             case "MainMenu":
 #if MWC
                 //Fix for vanilla error spam in menu
-                GameObject fix = GameObject.Find("Scene").transform.Find("Car/SORBET(190-200psi)/Windshield").gameObject;
+             /*   GameObject fix = GameObject.Find("Scene").transform.Find("Car/SORBET(190-200psi)/Windshield").gameObject;
                 if(fix.GetComponent<PlayMakerFSM>() != null)
                 {
                     fix.GetComponent<PlayMakerFSM>().enabled = false;
-                }
+                }*/
 #endif
                 PrepareModLoader();
-                CurrentScene = CurrentScene.MainMenu;
+                currentScene = CurrentScene.MainMenu;
                 if (GameObject.Find("Music"))
                     GameObject.Find("Music").GetComponent<AudioSource>().Play();
                 if (QualitySettings.vSyncCount != 0)
@@ -171,13 +171,13 @@ public partial class ModLoader : MonoBehaviour
 #endif
                 break;
             case "Intro":
-                CurrentScene = CurrentScene.NewGameIntro;
+                currentScene = CurrentScene.NewGameIntro;
 #if MSC
                 ModNewGameReset();
 #endif
                 break;
             case "GAME":
-                CurrentScene = CurrentScene.Game;
+                currentScene = CurrentScene.Game;
                 if (ModMenu.forceMenuVsync.GetValue() && !vse)
                     QualitySettings.vSyncCount = 0;
 
@@ -190,7 +190,7 @@ public partial class ModLoader : MonoBehaviour
                 ModMenu.ModMenuHandle();
                 break;
             case "Ending":
-                CurrentScene = CurrentScene.Ending;
+                currentScene = CurrentScene.Ending;
 #if MSC
                 if (IsReferencePresent("MSCCoreLibrary"))
                     TimeSchedulerCalls("stop");
@@ -245,7 +245,7 @@ public partial class ModLoader : MonoBehaviour
     private void Init()
     {
         Console.WriteLine($"{Environment.NewLine}[MSCLoader Init]");
-        Console.WriteLine($"Detected game: {CurrentGame}");
+        Console.WriteLine($"Detected game: {currentGame}");
         Console.WriteLine($"MSCLoader version: {MSCLInfo.Version} build {MSCLInfo.Build}");
         Console.WriteLine($"MSCLoader target game: {MSCLInfo.TargetGame}");
         string[] launchArgs = Environment.GetCommandLineArgs();
@@ -780,11 +780,11 @@ public partial class ModLoader : MonoBehaviour
 
     private bool CheckCorrectGame()
     {
-        if (CurrentGame == Game.MySummerCar && !MSCLInfo.BuildType.StartsWith("MSC"))
+        if (currentGame == Game.MySummerCar && !MSCLInfo.BuildType.StartsWith("MSC"))
         {
             return false;
         }
-        if (CurrentGame == Game.MyWinterCar && !MSCLInfo.BuildType.StartsWith("MWC"))
+        if (currentGame == Game.MyWinterCar && !MSCLInfo.BuildType.StartsWith("MWC"))
         {
             return false;
         }
@@ -896,7 +896,7 @@ public partial class ModLoader : MonoBehaviour
         getdwl.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()}) [{MSCLInfo.BuildType}]");
         try
         {
-            dwl = getdwl.DownloadString($"{serverURL}/changelog.php?mods=MSCLoader&vers={newVersion}&names=MSCLoader");
+            dwl = getdwl.DownloadString($"{serverURL}/changelog.php?kameh={MSCLInfo.namePrefix}&mods=MSCLoader&vers={newVersion}&names=MSCLoader");
         }
         catch (Exception e)
         {
@@ -1510,7 +1510,7 @@ public partial class ModLoader : MonoBehaviour
                 {
                     Mod m = (Mod)Activator.CreateInstance(asmTypes[j]);
                     if (m.ID.StartsWith("MSCLoader_")) continue;
-                    if ((m.SupportedGames & CurrentGame) ==  0)
+                    if ((m.SupportedGames & currentGame) ==  0)
                     {
                         ModConsole.Error($"Mod <b><color=orange>{Path.GetFileName(file)}</color></b> is not set as compatible with current game! This mod was made for: <b><color=yellow>{m.SupportedGames}</color></b>.");
                         InvalidMods.Add(new InvalidMods(Path.GetFileName(file), true, $"This mod is not marked as compatible with current game. Compatible games: <color=aqua>{m.SupportedGames}</color>", new List<string>(), ""));

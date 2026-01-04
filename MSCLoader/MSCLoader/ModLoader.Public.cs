@@ -54,7 +54,13 @@ public partial class ModLoader
     /// <summary>
     /// Current scene
     /// </summary>
-    public static CurrentScene CurrentScene { get; internal set; }
+    public static CurrentScene CurrentScene => currentScene;
+
+    /// <summary>
+    /// Get Current Game
+    /// </summary>
+    /// <returns>Game enum</returns>
+    public static Game CurrentGame => currentGame;
 
     /// <summary>
     /// Check if steam is present
@@ -90,21 +96,16 @@ public partial class ModLoader
         return false;
     }
 
+#if MSC
     /// <summary>
     /// Get Current Game Scene
     /// </summary>
     /// <returns>CurrentScene enum</returns>
+    [Obsolete("Use CurrentScene instead", true)]
     public static CurrentScene GetCurrentScene() => CurrentScene;
 
-    /// <summary>
-    /// Get Current Game
-    /// </summary>
-    /// <returns>Game enum</returns>
-
-    public static Game GetCurrentGame() => CurrentGame;
-
     //TODO: MAY NOT BE USED ANYMORE plz check and remove if not needed
-#if MSC
+
     /// <summary>
     /// Get Mod class of modID
     /// </summary>

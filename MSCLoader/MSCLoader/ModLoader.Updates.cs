@@ -469,7 +469,7 @@ public partial class ModLoader : MonoBehaviour
         {
             case 0:
                 ModConsole.Print($"Downloading: <color=aqua>update.zip</color>");
-                DownloadFile("mscl_download.php?type=core&id=msc", Path.Combine(Path.Combine("Updates", "Core"), "update.zip"));
+                DownloadFile($"mscl_download.php?type=core&id={MSCLInfo.BuildType}", Path.Combine(Path.Combine("Updates", "Core"), "update.zip"));
                 while (downloadInProgress)
                 {
                     canvLoading.SetUpdateProgress(downloadPercentage, $"(MSCLoader) <color=aqua>update.zip</color> [<color=lime>{downloadPercentage}%</color>]");
@@ -484,7 +484,7 @@ public partial class ModLoader : MonoBehaviour
                 if (type == 1)
                 {
                     canvLoading.SetUpdateTitle("Downloading mod update...");
-                    DownloadFile($"mscl_download.php?type=mod&id={mod}", Path.Combine(Path.Combine("Updates", "Mods"), $"{mod}.zip"));
+                    DownloadFile($"mscl_download.php?type={MSCLInfo.namePrefix}mod&id={mod}", Path.Combine(Path.Combine("Updates", "Mods"), $"{mod}.zip"));
                 }
                 if (type == 2)
                 {
@@ -523,7 +523,7 @@ public partial class ModLoader : MonoBehaviour
         for (int i = 0; i < ModSelfUpdateList.Count; i++)
         {
             ModConsole.Print($"Downloading: <color=aqua>{ModSelfUpdateList[i]}.zip</color>");
-            DownloadFile($"mscl_download.php?type=mod&id={ModSelfUpdateList[i]}", Path.Combine(Path.Combine("Updates", "Mods"), $"{ModSelfUpdateList[i]}.zip"));
+            DownloadFile($"mscl_download.php?type={MSCLInfo.namePrefix}mod&id={ModSelfUpdateList[i]}", Path.Combine(Path.Combine("Updates", "Mods"), $"{ModSelfUpdateList[i]}.zip"));
             while (downloadInProgress)
             {
                 canvLoading.SetUpdateProgress(downloadPercentage, $"({i + 1}/{ModSelfUpdateList.Count}) <color=aqua>{ModSelfUpdateList[i]}.zip</color> [<color=lime>{downloadPercentage}%</color>]");
@@ -611,7 +611,7 @@ public partial class ModLoader : MonoBehaviour
         for (int i = 0; i < mods.Count; i++)
         {
             ModConsole.Print($"Downloading: <color=aqua>{mods[i]}.zip</color>");
-            DownloadFile($"mscl_download.php?type=mod&id={mods[i]}", Path.Combine(Path.Combine("Updates", "Mods"), $"{mods[i]}.zip"));
+            DownloadFile($"mscl_download.php?type={MSCLInfo.namePrefix}mod&id={mods[i]}", Path.Combine(Path.Combine("Updates", "Mods"), $"{mods[i]}.zip"));
             currentCount++;
             while (downloadInProgress)
             {

@@ -10,11 +10,13 @@ internal class MSCLInfo
     public static readonly string menuAssetVersion = "9854c1c0";
     public static readonly string consoleAssetVersion = "d3819c23";
     public static readonly string coreAssetsPath = "MSCLoader.CoreAssets.core_msc.unity3d";
+    public static readonly string namePrefix = "msc_";
 #endif
 #if MWC
     public static readonly string menuAssetVersion = "ced97cbb";
     public static readonly string consoleAssetVersion = "7099769d";
     public static readonly string coreAssetsPath = "MSCLoader.CoreAssets.core_mwc.unity3d";
+    public static readonly string namePrefix = "mwc_";
 #endif
 #if MSC_Release
     public static readonly string BuildType = "MSC_Release";

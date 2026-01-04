@@ -8,7 +8,8 @@ namespace MSCLoader;
 
 public partial class ModLoader
 {
-    internal static Game CurrentGame = Game.MySummerCar;
+    internal static Game currentGame = Game.MySummerCar;
+    internal static CurrentScene currentScene = CurrentScene.MainMenu;
 
     internal static bool LogAllErrors = false;
     internal static List<InvalidMods> InvalidMods;
@@ -73,8 +74,12 @@ public partial class ModLoader
     internal GUISkin guiskin;
 
     internal static readonly string serverURL = "http://my-summer-car.ovh"; //Main url
+#if MSC
     internal static readonly string metadataURL = "man_v3/";
-    //internal static readonly string serverURL = "http://localhost/msc2"; //localhost for testing only
+#elif MWC
+    internal static readonly string metadataURL = "mwc_man/";
+#endif
+    // internal static readonly string serverURL = "http://localhost/msc2"; //localhost for testing only
 
     internal bool IsModsLoading = false;
     internal bool allModsLoaded = false;

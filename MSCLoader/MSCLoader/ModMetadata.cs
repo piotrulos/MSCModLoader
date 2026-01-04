@@ -679,7 +679,7 @@ internal class ModMetadata
         }
         try
         {
-            dwl = getdwl.DownloadString($"{ModLoader.serverURL}/changelog.php?mods={string.Join(",", idLists.ToArray())}&vers={string.Join(",", verLists.ToArray())}&names={string.Join("|,|", nameLists.ToArray())}");
+            dwl = getdwl.DownloadString($"{ModLoader.serverURL}/changelog.php?kameh={MSCLInfo.namePrefix}&mods={string.Join(",", idLists.ToArray())}&vers={string.Join(",", verLists.ToArray())}&names={string.Join("|,|", nameLists.ToArray())}");
         }
         catch (Exception e)
         {
@@ -814,7 +814,7 @@ internal class ModMetadata
 
     private static void CheckForUpdatedDescription(Mod mod)
     {
-        ModLoader.Instance.DownloadFile($"mscl_download.php?type=mod&id={mod}", Path.Combine(Path.Combine("Updates", "Mods"), $"{mod}.zip"), true);
+        ModLoader.Instance.DownloadFile($"mscl_download.php?type={MSCLInfo.namePrefix}mod&id={mod}", Path.Combine(Path.Combine("Updates", "Mods"), $"{mod}.zip"), true);
     }
 
     internal static void DescritpionDownloadCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)

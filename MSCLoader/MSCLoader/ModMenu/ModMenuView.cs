@@ -178,7 +178,7 @@ internal class ModMenuView : MonoBehaviour
             rbtn.iconElement.gameObject.SetActive(true);
             rbtn.button.onClick.AddListener(delegate
             {
-                if (ModLoader.GetCurrentScene() != CurrentScene.MainMenu)
+                if (ModLoader.CurrentScene != CurrentScene.MainMenu)
                 {
                     ModUI.ShowMessage("You can only use this option in main menu.");
                 }

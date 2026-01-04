@@ -170,7 +170,7 @@ internal class ConsoleController
             if (cmds[i].showInHelp)
                 AppendLogLine(string.Format("<color=orange><b>{0}</b></color>: {1}", cmds[i].command, cmds[i].help));
         }
-        if (ModLoader.GetCurrentScene() != CurrentScene.Game)
+        if (ModLoader.CurrentScene != CurrentScene.Game)
         {
             AppendLogLine("<b><color=red>More commands may appear after you load a save...</color></b>");
         }
