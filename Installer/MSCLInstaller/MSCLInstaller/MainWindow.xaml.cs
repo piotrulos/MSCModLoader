@@ -129,7 +129,7 @@ namespace MSCLInstaller
 
         private void Hyperlink_Click(object sender, RoutedEventArgs e)
         {
-            About a = new About
+            About a = new()
             {
                 Owner = this
             };

@@ -35,7 +35,7 @@ namespace MSCLInstaller
                     break;
                 case Game.MWC:
                     main.Title += " - My Winter Car";
-                    exeName = "mywintercar.exe"; //TODO: validate
+                    exeName = "mywintercar.exe";
                     savePath = "MWCFolder.txt";
                     break;
             }
@@ -197,9 +197,36 @@ namespace MSCLInstaller
             }
         }
 
+        private bool CheckForBSLoaders()
+        {
+            if (File.Exists(Path.Combine(Storage.gamePath, "version.dll"))) //Unsupported doorstop clone (hard floor)
+            {
+                return true;
+            }
+
+            if(Directory.Exists(Path.Combine(Storage.gamePath, "MelonLoader")) || Directory.Exists(Path.Combine(Storage.gamePath, "Plugins")) || Directory.Exists(Path.Combine(Storage.gamePath, "BepInEx")) || Directory.Exists(Path.Combine(Storage.gamePath, "MWCLoader")))
+            {
+                return true;
+            }
+            //Other BS
+            string p = Path.Combine(Storage.gamePath, "mywintercar_Data", "Managed");
+            if (File.Exists(Path.Combine(p, "MWCLoader.dll")) || File.Exists(Path.Combine(p, "LightspeedModLoader.dll")))
+            {
+                return true;
+            }
+            return false;
+        }
+
+
         private void GoNext_Click(object sender, RoutedEventArgs e)
         {
-            main.MSCLoaderInstallerPage();
+            if (!CheckForBSLoaders()){
+                main.MSCLoaderInstallerPage();
+            }
+            else
+            {
+                MessageBox.Show($"Please uninstall any other loaders before installing MSCLoader.{Environment.NewLine}Multiple loaders are not supported.", "Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

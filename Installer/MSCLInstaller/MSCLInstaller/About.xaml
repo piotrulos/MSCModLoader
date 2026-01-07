@@ -11,8 +11,9 @@
         <TextBlock Text="Universal Mod Loader installer for Amistech Games." TextAlignment="Center" Width="Auto" />
         <TextBlock>
             <LineBreak/>            
-            Supported games: <Run FontWeight="Bold" Foreground="Yellow">My Summer Car</Run> <LineBreak/>Official Links:<LineBreak/>
-            <Hyperlink NavigateUri="https://www.nexusmods.com/mysummercar/mods/147" RequestNavigate="Hyperlink_RequestNavigate">Nexus Mods</Hyperlink><LineBreak/>
+            Supported games: <Run FontWeight="Bold" Foreground="Yellow">My Summer Car</Run>, <Run FontWeight="Bold" Foreground="#00EAFF">My Winter Car</Run> <LineBreak/>Official Links:<LineBreak/>
+            <Hyperlink NavigateUri="https://www.nexusmods.com/mysummercar/mods/147" RequestNavigate="Hyperlink_RequestNavigate">Nexus Mods (MSC)</Hyperlink><LineBreak/>
+            <Hyperlink NavigateUri="https://www.nexusmods.com/mywintercar/mods/3" RequestNavigate="Hyperlink_RequestNavigate">Nexus Mods (MWC)</Hyperlink><LineBreak/>
             <Hyperlink NavigateUri="https://github.com/piotrulos/MSCModLoader" RequestNavigate="Hyperlink_RequestNavigate">Github</Hyperlink><LineBreak/>
             <Hyperlink NavigateUri="https://github.com/piotrulos/MSCModLoader/wiki" RequestNavigate="Hyperlink_RequestNavigate">Modders Documentation</Hyperlink><LineBreak/>
             <Hyperlink NavigateUri="https://github.com/piotrulos/MSCModLoader/issues" RequestNavigate="Hyperlink_RequestNavigate">Report any bugs</Hyperlink><LineBreak/>

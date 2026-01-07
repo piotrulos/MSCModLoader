@@ -42,7 +42,10 @@ namespace MSCLInstaller
                 GFCurrentText.Visibility = Visibility.Visible;
                 Dbg.Log("[Game folder is current path]");
             }
-            mdPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MySummerCar", "Mods"));
+            if(Storage.selectedGame == Game.MSC)
+                mdPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MySummerCar", "Mods"));
+            else
+                mdPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Winter Car", "Mods"));
             MyDocumentsPathText.Text = mdPath;
             Dbg.Log($"My documents path: {mdPath}");
             if (mdPath.Contains("OneDrive"))
@@ -61,7 +64,10 @@ namespace MSCLInstaller
                     Dbg.Log("[My documents is current path]");
                 }
             }
-            adPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "..", "LocalLow", "Amistech", "My Summer Car", "Mods"));
+            if (Storage.selectedGame == Game.MSC)
+                adPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "..", "LocalLow", "Amistech", "My Summer Car", "Mods"));
+            else
+                adPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "..", "LocalLow", "Amistech", "My Winter Car", "Mods"));
             AppdataPathText.Text = adPath;
             Dbg.Log($"Appdata path: {adPath}");
             if (changeFolder && adPath == Storage.modsPath)

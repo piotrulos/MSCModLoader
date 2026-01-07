@@ -7,7 +7,7 @@ using System.Windows;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("MSCLInstaller")]
-[assembly: AssemblyDescription("Mod Loader installer for My Summer Car")]
+[assembly: AssemblyDescription("MSCLoader installer for My Summer Car")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Kosmo Software")]
 [assembly: AssemblyProduct("MSCLInstaller")]
@@ -50,6 +50,6 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.3.3.379")]
-[assembly: AssemblyFileVersion("1.3.3.379")]
+[assembly: AssemblyVersion("1.3.3.386")]
+[assembly: AssemblyFileVersion("1.3.3.386")]
 [assembly: NeutralResourcesLanguage("en")]

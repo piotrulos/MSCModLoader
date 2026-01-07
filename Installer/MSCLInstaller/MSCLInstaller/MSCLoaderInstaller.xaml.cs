@@ -39,7 +39,8 @@ namespace MSCLInstaller
             }
 
             main = m;
-            if (File.Exists(Path.Combine(Storage.gamePath, "mysummercar_Data", "Managed", "MSCLoader.Preloader.dll")) && File.Exists(Path.Combine(Storage.gamePath, "winhttp.dll")) && File.Exists(Path.Combine(Storage.gamePath, "doorstop_config.ini")))
+
+            if (File.Exists(Path.Combine(Storage.gamePath, Storage.selectedGame == Game.MSC ? "mysummercar_Data" : "mywintercar_Data", "Managed", "MSCLoader.Preloader.dll")) && File.Exists(Path.Combine(Storage.gamePath, "winhttp.dll")) && File.Exists(Path.Combine(Storage.gamePath, "doorstop_config.ini")))
             {
                 isInstalled = true;
             }
@@ -90,7 +91,7 @@ namespace MSCLInstaller
 
         void UpdatePathText()
         {
-            MSCFolderText.Text = $"MSC Folder: ";
+            MSCFolderText.Text = $"{Storage.selectedGame} Folder: ";
             MSCFolderText.Inlines.Add(new Run(Storage.gamePath) { FontWeight = FontWeights.Bold, Foreground = Brushes.Wheat });
             ModsFolderText.Text = $"Mods Folder: ";
             ModsFolderText.Inlines.Add(new Run(Storage.modsPath) { FontWeight = FontWeights.Bold, Foreground = Brushes.Wheat });
@@ -175,13 +176,13 @@ namespace MSCLInstaller
             foreach (string f in Directory.GetFiles(Path.Combine(Storage.currentPath, "temp")))
             {
                 if(Path.GetExtension(f).ToLower() != ".dll") continue;
-                if (InstallerHelpers.VersionCompare(f, Path.Combine(Storage.gamePath, "mysummercar_Data", "Managed", Path.GetFileName(f))))
+                if (InstallerHelpers.VersionCompare(f, Path.Combine(Storage.gamePath, Storage.selectedGame == Game.MSC ? "mysummercar_Data" : "mywintercar_Data", "Managed", Path.GetFileName(f))))
                 {
                     updateRefs = true;
                 }
             }
             Directory.Delete(Path.Combine(Storage.currentPath, "temp"), true);
-            string msc = Path.Combine(Storage.currentPath, "main_msc.pack");
+            string msc = Path.Combine(Storage.currentPath, Storage.selectedGame == Game.MSC ? "main_msc.pack" : "main_mwc.pack");
             if (!File.Exists(msc))
             {
                 Dbg.MissingFilesError();
@@ -199,7 +200,7 @@ namespace MSCLInstaller
                 }
             }
             Dbg.Log("Comparing MSCLoader version...", true);
-            if (InstallerHelpers.VersionCompare(mscVer, Path.Combine(Storage.gamePath, "mysummercar_Data", "Managed", "MSCLoader.dll")))
+            if (InstallerHelpers.VersionCompare(mscVer, Path.Combine(Storage.gamePath, Storage.selectedGame == Game.MSC ? "mysummercar_Data" : "mywintercar_Data", "Managed", "MSCLoader.dll")))
             {
                 updateMSCL = true;
             }
@@ -228,11 +229,17 @@ namespace MSCLInstaller
                             Storage.modsFolderCfg = ModsFolder.GameFolder;
                             break;
                         case "MD":
-                            Storage.modsPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MySummerCar", "Mods"));
+                            if(Storage.selectedGame == Game.MSC)
+                                Storage.modsPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MySummerCar", "Mods"));
+                            else
+                                Storage.modsPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Winter Car", "Mods"));
                             Storage.modsFolderCfg = ModsFolder.MyDocuments;
                             break;
                         case "AD":
-                            Storage.modsPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "..", "LocalLow", "Amistech", "My Summer Car", "Mods"));
+                            if (Storage.selectedGame == Game.MSC)
+                                Storage.modsPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "..", "LocalLow", "Amistech", "My Summer Car", "Mods"));
+                            else
+                                Storage.modsPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "..", "LocalLow", "Amistech", "My Winter Car", "Mods"));
                             Storage.modsFolderCfg = ModsFolder.Appdata;
                             break;
                         default:
@@ -244,6 +251,11 @@ namespace MSCLInstaller
                     if (ini["General"]["target_assembly"] == null)
                     {
                         Dbg.Log("doorstop_config.ini is outdated (pre-4.x)");
+                        return true;
+                    }
+                    else if ((ini["General"]["target_assembly"] != @"mysummercar_Data\Managed\MSCLoader.Preloader.dll" && Storage.selectedGame == Game.MSC) || (ini["General"]["target_assembly"] != @"mywintercar_Data\Managed\MSCLoader.Preloader.dll" && Storage.selectedGame == Game.MWC))
+                    {
+                        Dbg.Log("doorstop_config.ini invalid target_assembly");
                         return true;
                     }
                     return false;
