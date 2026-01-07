@@ -7,12 +7,13 @@ using System.Linq;
 namespace MSCLoader;
 
 public partial class ModLoader
-{
+{     
     internal static Game currentGame = Game.MySummerCar;
     internal static CurrentScene currentScene = CurrentScene.MainMenu;
 
     internal static bool LogAllErrors = false;
     internal static List<InvalidMods> InvalidMods;
+    internal static List<Mod> IncompatibleMods = new List<Mod>();
     internal static ModLoader Instance;
     internal static bool unloader = false;
     internal static bool returnToMainMenu = false;

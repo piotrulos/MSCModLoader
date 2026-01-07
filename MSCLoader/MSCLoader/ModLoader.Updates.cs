@@ -94,10 +94,13 @@ public partial class ModLoader : MonoBehaviour
         dnsaf = true;
         bool failed = false;
         yield return new WaitForSeconds(.3f);
-        string modlist = string.Join(",", actualModList.Select(x => x.ID).ToArray());
+        string mods = string.Join(",", actualModList.Select(x => x.ID).ToArray());
+        string incMods = string.Join(",", IncompatibleMods.Select(x => x.ID).ToArray());
+        string modlist = string.Concat(mods, ",", incMods).Trim(',');
         System.Collections.Specialized.NameValueCollection modvals = new System.Collections.Specialized.NameValueCollection
         {
-            { "mods", modlist }
+            { "mods", modlist },
+            { "kameh", MSCLInfo.namePrefix }
         };
 
         MSCLInternal.MSCLRequestAsync("mscl_versions.php", modvals);
@@ -256,6 +259,7 @@ public partial class ModLoader : MonoBehaviour
                 }
                 else if (cfmuResult.StartsWith("not_found"))
                 {
+
                     Mod m = GetModByID(MetadataUpdateList[i], true);
                     if (m.metadata != null)
                     {
@@ -268,6 +272,7 @@ public partial class ModLoader : MonoBehaviour
                     try
                     {
                         Mod m = GetModByID(MetadataUpdateList[i], true);
+                        if (m == null) continue;
                         m.metadata = JsonConvert.DeserializeObject<MSCLData>(cfmuResult);
                         ModMetadata.ReadMetadata(m);
                     }
@@ -387,7 +392,7 @@ public partial class ModLoader : MonoBehaviour
                     Client.UploadFileCompleted += UploadModUpdateCompleted;
                     Client.UploadProgressChanged += UploadModUpdateProgress;
                     downloadInProgress = true;
-                    Client.UploadFileAsync(new Uri($"{serverURL}/mscl_upfile.php?steam={steamID}&key={key}&resid={ID}&ver={ver}&type={type}"), "POST", Path.Combine(tmpFolder, $"{ID}.zip"));
+                    Client.UploadFileAsync(new Uri($"{serverURL}/mscl_upfile.php?steam={steamID}&key={key}&resid={ID}&ver={ver}&type={type}&kameh={MSCLInfo.namePrefix}"), "POST", Path.Combine(tmpFolder, $"{ID}.zip"));
                 }
                 ModConsole.Print("Uploading File...");
                 canvLoading.SetUpdate("Uploading update file...", 0, 100, "Connecting...");
@@ -484,7 +489,7 @@ public partial class ModLoader : MonoBehaviour
                 if (type == 1)
                 {
                     canvLoading.SetUpdateTitle("Downloading mod update...");
-                    DownloadFile($"mscl_download.php?type={MSCLInfo.namePrefix}mod&id={mod}", Path.Combine(Path.Combine("Updates", "Mods"), $"{mod}.zip"));
+                    DownloadFile($"mscl_download.php?type={MSCLInfo.namePrefix}_mod&id={mod}", Path.Combine(Path.Combine("Updates", "Mods"), $"{mod}.zip"));
                 }
                 if (type == 2)
                 {
@@ -523,7 +528,7 @@ public partial class ModLoader : MonoBehaviour
         for (int i = 0; i < ModSelfUpdateList.Count; i++)
         {
             ModConsole.Print($"Downloading: <color=aqua>{ModSelfUpdateList[i]}.zip</color>");
-            DownloadFile($"mscl_download.php?type={MSCLInfo.namePrefix}mod&id={ModSelfUpdateList[i]}", Path.Combine(Path.Combine("Updates", "Mods"), $"{ModSelfUpdateList[i]}.zip"));
+            DownloadFile($"mscl_download.php?type={MSCLInfo.namePrefix}_mod&id={ModSelfUpdateList[i]}", Path.Combine(Path.Combine("Updates", "Mods"), $"{ModSelfUpdateList[i]}.zip"));
             while (downloadInProgress)
             {
                 canvLoading.SetUpdateProgress(downloadPercentage, $"({i + 1}/{ModSelfUpdateList.Count}) <color=aqua>{ModSelfUpdateList[i]}.zip</color> [<color=lime>{downloadPercentage}%</color>]");
@@ -611,7 +616,7 @@ public partial class ModLoader : MonoBehaviour
         for (int i = 0; i < mods.Count; i++)
         {
             ModConsole.Print($"Downloading: <color=aqua>{mods[i]}.zip</color>");
-            DownloadFile($"mscl_download.php?type={MSCLInfo.namePrefix}mod&id={mods[i]}", Path.Combine(Path.Combine("Updates", "Mods"), $"{mods[i]}.zip"));
+            DownloadFile($"mscl_download.php?type={MSCLInfo.namePrefix}_mod&id={mods[i]}", Path.Combine(Path.Combine("Updates", "Mods"), $"{mods[i]}.zip"));
             currentCount++;
             while (downloadInProgress)
             {

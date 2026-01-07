@@ -15,10 +15,6 @@ internal class MetadataCommand : ConsoleCommand
     // The function that's called when executing command
     public override void Run(string[] args)
     {
-#if MWC
-        ModConsole.Error("Not implemented yet.");
-        return;
-#endif
         if (args.Length == 2)
         {
             Mod mod = ModLoader.LoadedMods.Where(w => w.ID == args[1]).FirstOrDefault();

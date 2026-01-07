@@ -91,11 +91,17 @@ namespace MSCLoader
                         try
                         {
                             Texture2D t2d = new(1, 1);
-                            t2d.LoadImage(File.ReadAllBytes(Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", mod.metadata.icon))));
+                            byte[] iconBytes = File.ReadAllBytes(Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", mod.metadata.icon)));
+                            t2d.LoadImage(iconBytes);
                             icon.texture = t2d;
+                            if (iconBytes.Length < 10)
+                            {
+                                throw new Exception("Invalid icon");
+                            }
                         }
                         catch (Exception e)
                         {
+                            File.Delete(Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", mod.metadata.icon)));
                             ModConsole.Error(e.Message);
                             System.Console.WriteLine(e);
                         }
@@ -276,7 +282,7 @@ namespace MSCLoader
             getdwl.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()}) [{MSCLInfo.BuildType}]");
             try
             {
-                dwl = getdwl.DownloadString($"{ModLoader.serverURL}/mscl_bugreport.php?steam={ModLoader.steamID}&resid={mod.ID}");
+                dwl = getdwl.DownloadString($"{ModLoader.serverURL}/mscl_bugreport.php?steam={ModLoader.steamID}&resid={mod.ID}&kameh={MSCLInfo.namePrefix}");
             }
             catch (Exception e)
             {
@@ -414,7 +420,7 @@ namespace MSCLoader
                 Client.UploadFileCompleted += UploadBugReportCompleted;
                 Client.UploadProgressChanged += UploadBugReportProgressChanged;
                 bugUploadInProgress = true;
-                Client.UploadFileAsync(new Uri($"{ModLoader.serverURL}/mscl_bugreport.php?steam={steamID}&resid={ID}"), "POST", file);
+                Client.UploadFileAsync(new Uri($"{ModLoader.serverURL}/mscl_bugreport.php?steam={steamID}&resid={ID}&kameh={MSCLInfo.namePrefix}"), "POST", file);
             }
             yield return null;
             while (bugUploadInProgress)
@@ -526,11 +532,17 @@ namespace MSCLoader
                         try
                         {
                             Texture2D t2d = new Texture2D(1, 1);
-                            t2d.LoadImage(File.ReadAllBytes(Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", mod.metadata.icon))));
+                            byte[] iconBytes = File.ReadAllBytes(Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", mod.metadata.icon)));
+                            t2d.LoadImage(iconBytes);                              
                             icon.texture = t2d;
+                            if (iconBytes.Length < 10)
+                            {
+                                throw new Exception("Invalid icon");
+                            }
                         }
                         catch (Exception e)
                         {
+                            File.Delete(Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", mod.metadata.icon)));
                             ModConsole.Error(e.Message);
                             Console.WriteLine(e);
                         }

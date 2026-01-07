@@ -46,11 +46,6 @@ public partial class ModLoader : MonoBehaviour
     private MSCLoaderCanvasLoading canvLoading;
     private bool isMonoDebugger = false;
     private string monoDebugIP = "127.0.0.1:10000"; //default if not changed in launch command
-    void Awake()
-    {
-        if (GameObject.Find("Music") != null)
-            GameObject.Find("Music").GetComponent<AudioSource>().Stop();
-    }
 
     /// <summary>
     /// Main init
@@ -133,14 +128,6 @@ public partial class ModLoader : MonoBehaviour
         switch (Application.loadedLevelName)
         {
             case "MainMenu":
-#if MWC
-                //Fix for vanilla error spam in menu
-             /*   GameObject fix = GameObject.Find("Scene").transform.Find("Car/SORBET(190-200psi)/Windshield").gameObject;
-                if(fix.GetComponent<PlayMakerFSM>() != null)
-                {
-                    fix.GetComponent<PlayMakerFSM>().enabled = false;
-                }*/
-#endif
                 PrepareModLoader();
                 currentScene = CurrentScene.MainMenu;
                 if (GameObject.Find("Music"))
@@ -1221,7 +1208,7 @@ public partial class ModLoader : MonoBehaviour
         Steamworks.HAuthTicket hticket = Steamworks.SteamUser.GetAuthSessionTicket(pTicket, 1024, out uint _);
         string ticket = BitConverter.ToString(pTicket).Replace("-", string.Empty).TrimEnd('0', ' ');
         string response = string.Empty;
-        response = MSCLInternal.MSCLDataRequest("mscl_eaverify.php", new Dictionary<string, string> { { "steamID", steamID }, { "SteamTicket", ticket }, { "uid", SystemInfo.deviceUniqueIdentifier }, { "file", Path.GetFileNameWithoutExtension(file) } });
+        response = MSCLInternal.MSCLDataRequest("mscl_eaverify.php", new Dictionary<string, string> { {"kameh", MSCLInfo.namePrefix },{ "steamID", steamID }, { "SteamTicket", ticket }, { "uid", SystemInfo.deviceUniqueIdentifier }, { "file", Path.GetFileNameWithoutExtension(file) } });
         string[] result = response.Split('|');
         switch (result[0])
         {
@@ -1347,7 +1334,7 @@ public partial class ModLoader : MonoBehaviour
         }
         if (missingModIDsReferences.Count == 0 && crashedGuids.Count == 0)
             return;
-        string response = MSCLInternal.MSCLDataRequest("mscl_required.php", new Dictionary<string, List<string>> { { "ModIDs", missingModIDsReferences }, { "guids", crashedGuids } });
+        string response = MSCLInternal.MSCLDataRequest("mscl_required.php", new Dictionary<string, List<string>> { { "kameh", new List<string> { MSCLInfo.namePrefix } }, { "ModIDs", missingModIDsReferences }, { "guids", crashedGuids } });
         //RequiredList
         if (response.StartsWith("error"))
         {
@@ -1530,6 +1517,7 @@ public partial class ModLoader : MonoBehaviour
                         { 
 #endif
                             ModConsole.Error($"Mod <b><color=orange>{Path.GetFileName(file)}</color></b> is not set as compatible with current game! This mod was made for: <b><color=yellow>{m.SupportedGames}</color></b>.");
+                            IncompatibleMods.Add(m);
                             InvalidMods.Add(new InvalidMods(Path.GetFileName(file), true, $"This mod is not marked as compatible with current game. Compatible games: <color=aqua>{m.SupportedGames}</color>", new List<string>(), ""));
                             return;
 #if MWC

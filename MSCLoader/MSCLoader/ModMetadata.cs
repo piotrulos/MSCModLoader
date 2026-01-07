@@ -88,7 +88,7 @@ internal class ModMetadata
             return false;
         }
         key = File.ReadAllText(auth);
-        string response = MSCLInternal.MSCLDataRequest("mscl_owner.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key }, { "resID", ID }, { "type", reference ? "reference" : "mod" } }, true);
+        string response = MSCLInternal.MSCLDataRequest("mscl_owner.php", new Dictionary<string, string> { { "kameh", MSCLInfo.namePrefix }, { "steamID", steamID }, { "key", key }, { "resID", ID }, { "type", reference ? "reference" : "mod" } }, true);
         string[] result = response.Split('|');
         switch (result[0])
         {
@@ -112,7 +112,7 @@ internal class ModMetadata
             return;
         }
         string steamID = Steamworks.SteamUser.GetSteamID().ToString();
-        string response = MSCLInternal.MSCLDataRequest("mscl_auth.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key } }, true);
+        string response = MSCLInternal.MSCLDataRequest("mscl_auth.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key }, { "kameh", MSCLInfo.namePrefix } }, true);
         string[] result = response.Split('|');
         switch (result[0])
         {
@@ -167,7 +167,7 @@ internal class ModMetadata
             ModConsole.Error("Your assembly is missing GUID");
             return;
         }
-        string response = MSCLInternal.MSCLDataRequest("mscl_create.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key }, { "resID", mscldata.modID }, { "version", mod.Version }, { "sign", mscldata.sign }, { "asmGuid", mod.asmGuid }, { "type", "mod" } }, true);
+        string response = MSCLInternal.MSCLDataRequest("mscl_create.php", new Dictionary<string, string> { {"kameh", MSCLInfo.namePrefix }, { "steamID", steamID }, { "key", key }, { "resID", mscldata.modID }, { "version", mod.Version }, { "sign", mscldata.sign }, { "asmGuid", mod.asmGuid }, { "type", "mod" } }, true);
 
         string[] result = response.Split('|');
         switch (result[0])
@@ -211,7 +211,7 @@ internal class ModMetadata
         }
         if (!MSCLInternal.ValidateVersion(refs.AssemblyFileVersion)) return;
         key = File.ReadAllText(auth);
-        string response = MSCLInternal.MSCLDataRequest("mscl_create.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key }, { "resID", refs.AssemblyID }, { "version", refs.AssemblyFileVersion }, { "type", "reference" } });
+        string response = MSCLInternal.MSCLDataRequest("mscl_create.php", new Dictionary<string, string> { { "kameh", MSCLInfo.namePrefix }, { "steamID", steamID }, { "key", key }, { "resID", refs.AssemblyID }, { "version", refs.AssemblyFileVersion }, { "type", "reference" } });
 
         string[] result = response.Split('|');
         switch (result[0])
@@ -455,7 +455,7 @@ internal class ModMetadata
                 return;
         }
 
-        string response = MSCLInternal.MSCLDataRequest("mscl_setversion.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key }, { "resID", mod.ID }, { "version", mod.Version }, { "sign", umm.sign }, { "type", "mod" } });
+        string response = MSCLInternal.MSCLDataRequest("mscl_setversion.php", new Dictionary<string, string> { { "kameh", MSCLInfo.namePrefix }, { "steamID", steamID }, { "key", key }, { "resID", mod.ID }, { "version", mod.Version }, { "sign", umm.sign }, { "type", "mod" } });
 
         string[] result = response.Split('|');
         switch (result[0])
@@ -493,7 +493,7 @@ internal class ModMetadata
         }
         if (!VerifyOwnership(ID, true)) return;
         key = File.ReadAllText(auth);
-        string response = MSCLInternal.MSCLDataRequest("mscl_setversion.php", new Dictionary<string, string> { { "steamID", steamID }, { "key", key }, { "resID", ID }, { "version", refs.AssemblyFileVersion }, { "type", "reference" } });
+        string response = MSCLInternal.MSCLDataRequest("mscl_setversion.php", new Dictionary<string, string> { { "kameh", MSCLInfo.namePrefix }, { "steamID", steamID }, { "key", key }, { "resID", ID }, { "version", refs.AssemblyFileVersion }, { "type", "reference" } });
         string[] result = response.Split('|');
         switch (result[0])
         {
@@ -532,7 +532,11 @@ internal class ModMetadata
             try
             {
                 Mod mod = ModLoader.GetModByID(mv.versions[i].mod_id, true);
-                if (mod == null) continue;
+                if (mod == null) 
+                { 
+                    mod = ModLoader.IncompatibleMods.Select(x =>  x).Where(x => x.ID == mv.versions[i].mod_id).FirstOrDefault();
+                    if(mod == null) continue;
+                } 
                 mod.UpdateInfo = mv.versions[i];
                 if (mv.versions[i].mod_type == 2 || mv.versions[i].mod_type == 9)
                 {
@@ -630,6 +634,11 @@ internal class ModMetadata
             for (int i = 0; i < ModLoader.ModSelfUpdateList.Count; i++)
             {
                 Mod m = ModLoader.GetModByID(ModLoader.ModSelfUpdateList[i], true);
+                if(m == null)
+                {
+                    m = ModLoader.IncompatibleMods.Select(x => x).Where(x => x.ID == ModLoader.ModSelfUpdateList[i]).FirstOrDefault();
+                    if (m == null) continue;
+                }
                 Upd_list += $"<color=yellow>{m.Name}</color>: <color=aqua>{m.Version}</color> => <color=lime>{m.UpdateInfo.mod_version}</color> (Updated: <color=aqua>{DateTime.Parse(m.UpdateInfo.cached_date, System.Globalization.CultureInfo.InvariantCulture):dd.MM.yyyy}</color>){Environment.NewLine}";
             }
             Upd_list += Environment.NewLine;
@@ -806,7 +815,11 @@ internal class ModMetadata
                 {
                     webClient.Headers.Add("user-agent", $"MSCLoader/{ModLoader.MSCLoader_Ver} ({ModLoader.SystemInfoFix()}) [{MSCLInfo.BuildType}]");
                     webClient.DownloadFileCompleted += (sender, e) => { if (e.Error != null) Console.WriteLine(e.Error); };
-                    webClient.DownloadFileAsync(new Uri($"{ModLoader.serverURL}/images/modicons/{data.icon}"), Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", data.icon)));
+#if MSC
+                    webClient.DownloadFileAsync(new Uri($"{ModLoader.serverURL}/images/modicons/msc/{data.icon}"), Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", data.icon)));
+#elif MWC
+                    webClient.DownloadFileAsync(new Uri($"{ModLoader.serverURL}/images/modicons/mwc/{data.icon}"), Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", data.icon)));
+#endif
                 }
             }
         }
@@ -814,7 +827,7 @@ internal class ModMetadata
 
     private static void CheckForUpdatedDescription(Mod mod)
     {
-        ModLoader.Instance.DownloadFile($"mscl_download.php?type={MSCLInfo.namePrefix}mod&id={mod}", Path.Combine(Path.Combine("Updates", "Mods"), $"{mod}.zip"), true);
+        ModLoader.Instance.DownloadFile($"mscl_download.php?type={MSCLInfo.namePrefix}_mod&id={mod}", Path.Combine(Path.Combine("Updates", "Mods"), $"{mod}.zip"), true);
     }
 
     internal static void DescritpionDownloadCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)

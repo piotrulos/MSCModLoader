@@ -145,7 +145,7 @@ internal class ModMenu : Mod
         ini["MSCLoader"]["skipConfigScreen"] = skipConfigScreen.GetValue().ToString().ToLower();
         parser.WriteFile("doorstop_config.ini", ini, System.Text.Encoding.ASCII);
     }
-
+#if MWC
     private void IgnoreCompatibilityWarning()
     {
         if (ignoreCompatibility.GetValue())
@@ -153,6 +153,7 @@ internal class ModMenu : Mod
             ModUI.ShowMessage($"Reminder!{Environment.NewLine}{Environment.NewLine}<color=orange>Ignore Compatibility Warning</color> doesn't magically make MSC mods work on MWC, it just disables the compatibility check. But the mod will still have very low chance of working correctly. Before disabling, check if the mod you want to run wasn't already ported to MWC. <color=aqua>MSC mod not working on MWC is NOT a bug.</color>{Environment.NewLine}{Environment.NewLine}You need to restart game for this setting to take effect.", "Compatibility Warning");
         }
     }
+#endif
     private static void VSyncSwitchCheckbox()
     {
         if (ModLoader.CurrentScene == CurrentScene.MainMenu)

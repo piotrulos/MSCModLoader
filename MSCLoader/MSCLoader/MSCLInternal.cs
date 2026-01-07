@@ -163,6 +163,7 @@ internal class MSCLInternal
             for (int i = 0; i < ModLoader.Instance.MetadataUpdateList.Count; i++)
             {
                 Mod mod = ModLoader.GetModByID(ModLoader.Instance.MetadataUpdateList[i], true);
+                if (mod == null) continue;
                 if (mod.metadata == null) continue;
                 string serializedData = JsonConvert.SerializeObject(mod.metadata, config);
                 byte[] bytes = Encoding.UTF8.GetBytes(serializedData);
