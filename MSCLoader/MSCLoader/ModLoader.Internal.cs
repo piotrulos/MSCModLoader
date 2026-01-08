@@ -20,7 +20,9 @@ public partial class ModLoader
     internal static List<string> saveErrors;
 
     internal Mod[] actualModList = [];
+#if MSC
     internal Mod[] BC_ModList = [];
+#endif
     internal static List<Mod> HasUpdateModList = new List<Mod>();
     internal static List<References> HasUpdateRefList = new List<References>();
     internal List<string> crashedGuids = new List<string>();
@@ -28,6 +30,7 @@ public partial class ModLoader
     internal List<References> ReferencesList = new List<References>();
     internal string[] stdRef = ["mscorlib", "System.Core", "UnityEngine", "PlayMaker", "MSCLoader", "System", "Assembly-CSharp", "Assembly-CSharp-firstpass", "Assembly-UnityScript", "Assembly-UnityScript-firstpass", "ES2", "Ionic.Zip", "Ionic.Zip.Reduced", "UnityEngine.UI", "0Harmony", "cInput", "Newtonsoft.Json", "System.Xml"];
 
+#if MSC
     //Old stuff
     internal Mod[] PLoadMods = [];
     internal Mod[] SecondPassMods = [];
@@ -35,7 +38,7 @@ public partial class ModLoader
     internal Mod[] UpdateMods = [];
     internal Mod[] FixedUpdateMods = [];
     internal Mod[] OnSaveMods = [];
-
+#endif
     //New Stuff
     internal Mod[] Mod_OnNewGame = [];   //When New Game is started
     internal Mod[] Mod_PreLoad = [];     //Phase 1 (mod loading)

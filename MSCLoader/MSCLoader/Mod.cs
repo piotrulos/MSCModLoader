@@ -45,7 +45,8 @@ public abstract partial class Mod
     public virtual Game SupportedGames => Game.MySummerCar;
 
     /// <summary>
-    /// Setup your mod.
+    /// Setup your mod. IMPORTANT! Only SetupFunction() is allowed here
+    /// Please disclose AI generated code in Description and AssemblyInfo inside AssemblyTrademark field
     /// </summary>
     public virtual void ModSetup() { }
 

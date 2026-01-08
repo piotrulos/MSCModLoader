@@ -922,7 +922,11 @@ public partial class ModLoader : MonoBehaviour
     {
         ModConsole.Print("<color=aqua>==== Resetting mods ====</color>");
         SaveLoad.ResetSaveFile();
+#if MSC
         canvLoading.SetLoading("Resetting mods", 0, BC_ModList.Length + Mod_OnNewGame.Length, "Preparing....");
+#elif MWC
+        canvLoading.SetLoading("Resetting mods", 0, Mod_OnNewGame.Length, "Preparing....");
+#endif
         for (int i = 0; i < Mod_OnNewGame.Length; i++)
         {
             canvLoading.SetLoadingProgress(Mod_OnNewGame[i].Name);
@@ -974,7 +978,11 @@ public partial class ModLoader : MonoBehaviour
     {
         FsmGameObject playerCam = FsmVariables.GlobalVariables.FindFsmGameObject("POV");
         ModConsole.PrintSplit("<b></b><color=aqua>==== Loading mods (Phase 1) ====</color><color=#505050ff>", true);
+#if MSC
         int totalCount = PLoadMods.Length + BC_ModList.Length + SecondPassMods.Length + Mod_PreLoad.Length + Mod_OnLoad.Length + Mod_PostLoad.Length;
+#elif MWC
+        int totalCount = Mod_PreLoad.Length + Mod_OnLoad.Length + Mod_PostLoad.Length;
+#endif
         canvLoading.SetLoading("Loading mods - Phase 1", 0, totalCount, "Loading mods. Please wait...");
         yield return null;
         for (int i = 0; i < Mod_PreLoad.Length; i++)
@@ -1146,12 +1154,14 @@ public partial class ModLoader : MonoBehaviour
 #endif
     }
 
+#if MSC
     internal static bool CheckEmptyMethod(Mod mod, string methodName)
     {
         //TO TRASH
         MethodInfo method = mod.GetType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         return (method.IsVirtual && method.DeclaringType == mod.GetType() && method.GetMethodBody().GetILAsByteArray().Length > 2);
     }
+#endif
 
     private void LoadEADll(string file, bool repeated = false)
     {
@@ -1275,6 +1285,7 @@ public partial class ModLoader : MonoBehaviour
             File.Delete(Path.Combine(ModsFolder, "unused.txt"));
         }
         actualModList = [.. LoadedMods.Where(x => !x.ID.StartsWith("MSCLoader_"))];
+#if MSC
         BC_ModList = [.. actualModList.Where(x => !x.newFormat)];
 
         PLoadMods = [.. BC_ModList.Where(x => CheckEmptyMethod(x, "PreLoad"))];
@@ -1283,7 +1294,7 @@ public partial class ModLoader : MonoBehaviour
         UpdateMods = [.. BC_ModList.Where(x => CheckEmptyMethod(x, "Update"))];
         FixedUpdateMods = [.. BC_ModList.Where(x => CheckEmptyMethod(x, "FixedUpdate"))];
         OnSaveMods = [.. BC_ModList.Where(x => CheckEmptyMethod(x, "OnSave"))];
-
+#endif
         Mod_OnNewGame = [.. actualModList.Where(x => x.newFormat && x.A_OnNewGame != null)];
         Mod_PreLoad = [.. actualModList.Where(x => x.newFormat && x.A_PreLoad != null)];
         Mod_OnLoad = [.. actualModList.Where(x => x.newFormat && x.A_OnLoad != null)];
