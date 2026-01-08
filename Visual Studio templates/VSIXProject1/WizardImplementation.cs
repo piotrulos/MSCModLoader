@@ -49,10 +49,12 @@ namespace VSIXProject1
                 inputForm.ShowDialog();
 
                 //Set variables
+
                 replacementsDictionary.Add("$managedPath$", Form1.managedPath);
                 replacementsDictionary.Add("$modName$", Form1.modName);
                 replacementsDictionary.Add("$modAuthor$", Form1.modAuthor);
                 replacementsDictionary.Add("$modVersion$", Form1.modVersion);
+                replacementsDictionary.Add("$game$", Form1.game);
 
                 //Add references
                 replacementsDictionary.Add("$assPM$", Form1.assPM);
@@ -75,7 +77,8 @@ namespace VSIXProject1
 
                 //Post-build stuff
                 replacementsDictionary.Add("$advScript$", Form1.advMiniDlls);
-                replacementsDictionary.Add("$modsPath$", Form1.modsPath);
+                replacementsDictionary.Add("$modsPath$", Form1.mscModsPath);
+                replacementsDictionary.Add("$modsPathMwc$", Form1.mwcModsPath);
                 replacementsDictionary.Add("$abPath$", "NONE");
 
 

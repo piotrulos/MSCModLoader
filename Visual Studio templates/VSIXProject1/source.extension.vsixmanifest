@@ -1,30 +1,30 @@
 ﻿<?xml version="1.0" ?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
-  <Metadata>
-    <Identity Id="MSCLoaderTemplates.Piotrulos.40e0e374-6a16-47ae-87f8-009138faa324" Version="1.3.3" Language="en-US" Publisher="Piotrulos" />
-    <DisplayName>MSCLoader Templates</DisplayName>
-    <Description xml:space="preserve">MSCLoader Template for VS 2022</Description>
-    <MoreInfo>https://github.com/piotrulos/MSCModLoader/wiki/How-to-use-templates</MoreInfo>
-    <Icon>mscpatchericon.ico</Icon>
-  </Metadata>
-  <Installation>
-    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0,19.0)">
-      <ProductArchitecture>amd64</ProductArchitecture>
-    </InstallationTarget>
-    <InstallationTarget Version="[17.0,19.0)" Id="Microsoft.VisualStudio.Community">
-      <ProductArchitecture>arm64</ProductArchitecture>
-    </InstallationTarget>
-  </Installation>
-  <Dependencies>
-  </Dependencies>
-  <Assets>
-    <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="MSCLoader Mod" d:TargetPath="|MSCLoader Mod;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
-    <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="MonoBehaviour Class" d:TargetPath="|MonoBehaviour Class;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
-    <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="Console Command" d:TargetPath="|Console Command;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" AssemblyName="|%CurrentProject%;AssemblyName|" />
-  </Assets>
-  <Prerequisites>
-    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,19.0)" DisplayName="Visual Studio core editor" />
-    <Prerequisite Id="Microsoft.Net.Component.3.5.DeveloperTools" Version="[17.0,19.0)" DisplayName=".NET Framework 3.5 development tools" />
-  </Prerequisites>
+    <Metadata>
+        <Identity Id="MSCLoaderTemplates.Piotrulos.40e0e374-6a16-47ae-87f8-009138faa324" Version="1.4" Language="en-US" Publisher="Piotrulos" />
+        <DisplayName>MSCLoader Templates</DisplayName>
+        <Description xml:space="preserve">MSCLoader Template for VS 2022</Description>
+        <MoreInfo>https://github.com/piotrulos/MSCModLoader/wiki/How-to-use-templates</MoreInfo>
+        <Icon>mscpatchericon.ico</Icon>
+    </Metadata>
+    <Installation>
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0,19.0)">
+            <ProductArchitecture>amd64</ProductArchitecture>
+        </InstallationTarget>
+        <InstallationTarget Version="[17.0,19.0)" Id="Microsoft.VisualStudio.Community">
+            <ProductArchitecture>arm64</ProductArchitecture>
+        </InstallationTarget>
+    </Installation>
+    <Dependencies>
+    </Dependencies>
+    <Assets>
+        <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="MSCLoader Mod" d:TargetPath="|MSCLoader Mod;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+        <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="MonoBehaviour Class" d:TargetPath="|MonoBehaviour Class;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
+        <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="Console Command" d:TargetPath="|Console Command;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
+        <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" AssemblyName="|%CurrentProject%;AssemblyName|" />
+    </Assets>
+    <Prerequisites>
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,19.0)" DisplayName="Visual Studio core editor" />
+        <Prerequisite Id="Microsoft.Net.Component.3.5.DeveloperTools" Version="[17.0,19.0)" DisplayName=".NET Framework 3.5 development tools" />
+    </Prerequisites>
 </PackageManifest>

@@ -6,7 +6,10 @@ namespace VSIXProject1
 {
     public partial class Form1 : Form
     {
+        public static string mscManagedPath = "";
+        public static string mwcManagedPath = "";
         public static string managedPath = "";
+        public static string game = "Game.MySummerCar";
         public static string modName = "";
         public static string modAuthor = "";
         public static string modVersion = "";
@@ -28,32 +31,33 @@ namespace VSIXProject1
         public static string setUpdate = "false";
         public static string setFixedUpdate = "false";
 
-        public static string modsPath = "NONE";
+        public static string mscModsPath = "NONE";
+        public static string mwcModsPath = "NONE";
         public static string advMiniDlls = "false";
-
-        private string[] saveData = null;
 
         public Form1()
         {
             InitializeComponent();
-            if (File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MSCLoader_template.txt")))
-            {
-                saveData = File.ReadAllLines(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MSCLoader_template.txt"));
-                if (Directory.Exists(saveData[0]))
-                {
-                    managedPathBox.Text = saveData[0];
-                }
-                if (saveData.Length > 1)
-                    authorNameBox.Text = saveData[1];
-            }
+            mscPathBox.Text = Properties.Settings.Default.mscpath;
+            mwcPathBox.Text = Properties.Settings.Default.mwcpath;
+            authorNameBox.Text = Properties.Settings.Default.author;
             comboBox1.SelectedIndex = 0;
         }
 
         private void browseManaged_Click(object sender, EventArgs e)
         {
-            if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
+            openFileDialog1.Filter = "mysummercar.exe|mysummercar.exe";
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                managedPathBox.Text = folderBrowserDialog1.SelectedPath;
+                mscPathBox.Text = Path.GetDirectoryName(Path.GetFullPath(openFileDialog1.FileName));
+            }
+        }
+        private void browseMWC_Click(object sender, EventArgs e)
+        {
+            openFileDialog1.Filter = "mywintercar.exe|mywintercar.exe";
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                mwcPathBox.Text = Path.GetDirectoryName(Path.GetFullPath(openFileDialog1.FileName));
             }
         }
 
@@ -83,7 +87,19 @@ namespace VSIXProject1
 
         private void doneButton_Click(object sender, EventArgs e)
         {
-            managedPath = managedPathBox.Text;
+            if (string.IsNullOrEmpty(mscPathBox.Text) && comboBox1.SelectedIndex == 0)
+            {
+                MessageBox.Show("Please select My Summer Car path", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (string.IsNullOrEmpty(mwcPathBox.Text) && (comboBox1.SelectedIndex == 1 || comboBox1.SelectedIndex == 2))
+            {
+                MessageBox.Show("Please select My Winter Car path", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            mscManagedPath = Path.GetFullPath(Path.Combine(mscPathBox.Text, "mysummercar_Data", "Managed"));
+            mwcManagedPath = Path.GetFullPath(Path.Combine(mwcPathBox.Text, "mywintercar_Data", "Managed"));
             modName = modNameBox.Text;
             modAuthor = authorNameBox.Text;
             modVersion = versionBox.Text;
@@ -106,12 +122,7 @@ namespace VSIXProject1
             if (setupFixedUpdate.Checked) setFixedUpdate = "true";
             if (advMiniDll.Checked) advMiniDlls = "true";
 
-            if (string.IsNullOrEmpty(managedPath))
-            {
-                MessageBox.Show("Please select Managed path", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            string dsini = Path.GetFullPath(Path.Combine(managedPath, "..", "..", "doorstop_config.ini"));
+            string dsini = Path.GetFullPath(Path.Combine(mscPathBox.Text, "doorstop_config.ini"));
             if (File.Exists(dsini))
             {
                 foreach (string l in File.ReadAllLines(dsini))
@@ -120,23 +131,69 @@ namespace VSIXProject1
                     {
                         if (l.Contains("GF"))
                         {
-                            modsPath = Path.GetFullPath(Path.Combine(managedPath, "..", "..", "Mods"));
+                            mscModsPath = Path.GetFullPath(Path.Combine(mscPathBox.Text, "Mods"));
                         }
                         if (l.Contains("MD"))
                         {
-                            modsPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MySummerCar", "Mods"));
+                            mscModsPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MySummerCar", "Mods"));
                         }
                         if (l.Contains("AD"))
                         {
-                            modsPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "..", "LocalLow", "Amistech", "My Summer Car", "Mods"));
+                            mscModsPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "..", "LocalLow", "Amistech", "My Summer Car", "Mods"));
                         }
                         break;
                     }
                 }
-
             }
-            saveData = new string[] { managedPath, modAuthor };
-            File.WriteAllLines(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MSCLoader_template.txt"), saveData);
+            string dsini2 = Path.GetFullPath(Path.Combine(mwcPathBox.Text, "doorstop_config.ini"));
+            if (File.Exists(dsini2))
+            {
+                foreach (string l in File.ReadAllLines(dsini2))
+                {
+                    if (l.StartsWith("mods"))
+                    {
+                        if (l.Contains("GF"))
+                        {
+                            mwcModsPath = Path.GetFullPath(Path.Combine(mwcPathBox.Text, "Mods"));
+                        }
+                        if (l.Contains("MD"))
+                        {
+                            mwcModsPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Winter Car", "Mods"));
+                        }
+                        if (l.Contains("AD"))
+                        {
+                            mwcModsPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "..", "LocalLow", "Amistech", "My Winter Car", "Mods"));
+                        }
+                        break;
+                    }
+                }
+            }
+            switch (comboBox1.SelectedIndex)
+            {
+                case 0:
+                    mwcModsPath = "NONE";
+                    managedPath = mscManagedPath;
+                    game = "Game.MySummerCar";
+                    break;
+                case 1:
+                    mscModsPath = "NONE";
+                    managedPath = mwcManagedPath;
+                    game = "Game.MyWinterCar";
+                    break;
+                case 2:
+                    managedPath = mwcManagedPath;
+                    game = "Game.MySummerCar_And_MyWinterCar";
+                    break;
+                default:
+                    mwcModsPath = "NONE";
+                    managedPath = mscManagedPath;
+                    game = "Game.MySummerCar";
+                    break;
+            }
+            Properties.Settings.Default.mscpath = mscPathBox.Text;
+            Properties.Settings.Default.mwcpath = mwcPathBox.Text;
+            Properties.Settings.Default.author = modAuthor;
+            Properties.Settings.Default.Save();
             Close();
         }
 
@@ -146,5 +203,6 @@ namespace VSIXProject1
             MaximumSize = Size;
             MinimumSize = Size;
         }
+
     }
 }

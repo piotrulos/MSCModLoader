@@ -33,11 +33,10 @@ namespace VSIXProject1
         private void InitializeComponent()
         {
             this.doneButton = new System.Windows.Forms.Button();
-            this.managedPathBox = new System.Windows.Forms.TextBox();
+            this.mscPathBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.browseManaged = new System.Windows.Forms.Button();
+            this.browseMSC = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
-            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.label3 = new System.Windows.Forms.Label();
             this.modNameBox = new System.Windows.Forms.TextBox();
             this.versionBox = new System.Windows.Forms.TextBox();
@@ -70,6 +69,10 @@ namespace VSIXProject1
             this.label7 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.advMiniDll = new System.Windows.Forms.CheckBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.browseMWC = new System.Windows.Forms.Button();
+            this.mwcPathBox = new System.Windows.Forms.TextBox();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -79,20 +82,20 @@ namespace VSIXProject1
             // doneButton
             // 
             this.doneButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.doneButton.Location = new System.Drawing.Point(278, 426);
+            this.doneButton.Location = new System.Drawing.Point(278, 489);
             this.doneButton.Name = "doneButton";
             this.doneButton.Size = new System.Drawing.Size(75, 21);
             this.doneButton.TabIndex = 0;
             this.doneButton.Text = "Done";
             this.doneButton.Click += new System.EventHandler(this.doneButton_Click);
             // 
-            // managedPathBox
+            // mscPathBox
             // 
-            this.managedPathBox.Location = new System.Drawing.Point(12, 64);
-            this.managedPathBox.Name = "managedPathBox";
-            this.managedPathBox.ReadOnly = true;
-            this.managedPathBox.Size = new System.Drawing.Size(249, 20);
-            this.managedPathBox.TabIndex = 1;
+            this.mscPathBox.Location = new System.Drawing.Point(12, 64);
+            this.mscPathBox.Name = "mscPathBox";
+            this.mscPathBox.ReadOnly = true;
+            this.mscPathBox.Size = new System.Drawing.Size(249, 20);
+            this.mscPathBox.TabIndex = 1;
             // 
             // label1
             // 
@@ -105,35 +108,30 @@ namespace VSIXProject1
             this.label1.Text = "MSCLoader Template Config";
             this.label1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // browseManaged
+            // browseMSC
             // 
-            this.browseManaged.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.browseMSC.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.browseManaged.Location = new System.Drawing.Point(267, 64);
-            this.browseManaged.Name = "browseManaged";
-            this.browseManaged.Size = new System.Drawing.Size(87, 20);
-            this.browseManaged.TabIndex = 3;
-            this.browseManaged.Text = "Browse...";
-            this.browseManaged.Click += new System.EventHandler(this.browseManaged_Click);
+            this.browseMSC.Location = new System.Drawing.Point(267, 64);
+            this.browseMSC.Name = "browseMSC";
+            this.browseMSC.Size = new System.Drawing.Size(87, 20);
+            this.browseMSC.TabIndex = 3;
+            this.browseMSC.Text = "Browse...";
+            this.browseMSC.Click += new System.EventHandler(this.browseManaged_Click);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(9, 48);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(161, 13);
+            this.label2.Size = new System.Drawing.Size(119, 13);
             this.label2.TabIndex = 4;
-            this.label2.Text = "My summer car Managed folder: ";
-            // 
-            // folderBrowserDialog1
-            // 
-            this.folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.MyComputer;
-            this.folderBrowserDialog1.ShowNewFolderButton = false;
+            this.label2.Text = "My Summer Car  folder: ";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(9, 97);
+            this.label3.Location = new System.Drawing.Point(9, 142);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(96, 13);
             this.label3.TabIndex = 5;
@@ -141,7 +139,7 @@ namespace VSIXProject1
             // 
             // modNameBox
             // 
-            this.modNameBox.Location = new System.Drawing.Point(12, 113);
+            this.modNameBox.Location = new System.Drawing.Point(12, 158);
             this.modNameBox.Name = "modNameBox";
             this.modNameBox.Size = new System.Drawing.Size(127, 20);
             this.modNameBox.TabIndex = 6;
@@ -150,7 +148,7 @@ namespace VSIXProject1
             // 
             this.versionBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.versionBox.Location = new System.Drawing.Point(267, 113);
+            this.versionBox.Location = new System.Drawing.Point(267, 158);
             this.versionBox.Name = "versionBox";
             this.versionBox.Size = new System.Drawing.Size(86, 20);
             this.versionBox.TabIndex = 7;
@@ -159,7 +157,7 @@ namespace VSIXProject1
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(264, 97);
+            this.label4.Location = new System.Drawing.Point(264, 142);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(45, 13);
             this.label4.TabIndex = 8;
@@ -168,7 +166,7 @@ namespace VSIXProject1
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(9, 406);
+            this.label5.Location = new System.Drawing.Point(9, 451);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(201, 13);
             this.label5.TabIndex = 9;
@@ -176,7 +174,7 @@ namespace VSIXProject1
             // 
             // authorNameBox
             // 
-            this.authorNameBox.Location = new System.Drawing.Point(145, 113);
+            this.authorNameBox.Location = new System.Drawing.Point(145, 158);
             this.authorNameBox.Name = "authorNameBox";
             this.authorNameBox.Size = new System.Drawing.Size(116, 20);
             this.authorNameBox.TabIndex = 10;
@@ -185,7 +183,7 @@ namespace VSIXProject1
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(142, 97);
+            this.label6.Location = new System.Drawing.Point(142, 142);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(41, 13);
             this.label6.TabIndex = 11;
@@ -201,7 +199,7 @@ namespace VSIXProject1
             this.groupBox1.Controls.Add(this.addUIDll);
             this.groupBox1.Controls.Add(this.addAssCSDll);
             this.groupBox1.Controls.Add(this.addPlaymakerDll);
-            this.groupBox1.Location = new System.Drawing.Point(166, 139);
+            this.groupBox1.Location = new System.Drawing.Point(166, 184);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(187, 155);
             this.groupBox1.TabIndex = 12;
@@ -279,7 +277,7 @@ namespace VSIXProject1
             this.groupBox2.Controls.Add(this.setupOnSave);
             this.groupBox2.Controls.Add(this.setupOnMenuLoad);
             this.groupBox2.Controls.Add(this.setupOnLoad);
-            this.groupBox2.Location = new System.Drawing.Point(12, 139);
+            this.groupBox2.Location = new System.Drawing.Point(12, 184);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(148, 226);
             this.groupBox2.TabIndex = 13;
@@ -385,7 +383,7 @@ namespace VSIXProject1
             this.groupBox3.Controls.Add(this.linkLabel3);
             this.groupBox3.Controls.Add(this.linkLabel2);
             this.groupBox3.Controls.Add(this.linkLabel1);
-            this.groupBox3.Location = new System.Drawing.Point(166, 296);
+            this.groupBox3.Location = new System.Drawing.Point(166, 341);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(187, 69);
             this.groupBox3.TabIndex = 14;
@@ -429,13 +427,12 @@ namespace VSIXProject1
             // 
             this.comboBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox1.Enabled = false;
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
             "My Summer Car",
             "My Winter Car",
             "Both (Universal)"});
-            this.comboBox1.Location = new System.Drawing.Point(62, 427);
+            this.comboBox1.Location = new System.Drawing.Point(62, 490);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(128, 21);
             this.comboBox1.TabIndex = 0;
@@ -444,7 +441,7 @@ namespace VSIXProject1
             // 
             this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(12, 430);
+            this.label7.Location = new System.Drawing.Point(12, 493);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(44, 13);
             this.label7.TabIndex = 15;
@@ -455,7 +452,7 @@ namespace VSIXProject1
             this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox4.Controls.Add(this.advMiniDll);
-            this.groupBox4.Location = new System.Drawing.Point(12, 365);
+            this.groupBox4.Location = new System.Drawing.Point(12, 410);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(342, 38);
             this.groupBox4.TabIndex = 17;
@@ -472,12 +469,47 @@ namespace VSIXProject1
             this.advMiniDll.Text = "Add Mini.dll config";
             this.advMiniDll.UseVisualStyleBackColor = true;
             // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(9, 88);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(109, 13);
+            this.label8.TabIndex = 20;
+            this.label8.Text = "My Winter Car folder: ";
+            // 
+            // browseMWC
+            // 
+            this.browseMWC.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.browseMWC.Location = new System.Drawing.Point(267, 104);
+            this.browseMWC.Name = "browseMWC";
+            this.browseMWC.Size = new System.Drawing.Size(87, 20);
+            this.browseMWC.TabIndex = 19;
+            this.browseMWC.Text = "Browse...";
+            this.browseMWC.Click += new System.EventHandler(this.browseMWC_Click);
+            // 
+            // mwcPathBox
+            // 
+            this.mwcPathBox.Location = new System.Drawing.Point(12, 104);
+            this.mwcPathBox.Name = "mwcPathBox";
+            this.mwcPathBox.ReadOnly = true;
+            this.mwcPathBox.Size = new System.Drawing.Size(249, 20);
+            this.mwcPathBox.TabIndex = 18;
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog1";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(365, 459);
+            this.ClientSize = new System.Drawing.Size(365, 522);
             this.ControlBox = false;
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.browseMWC);
+            this.Controls.Add(this.mwcPathBox);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.comboBox1);
@@ -492,10 +524,10 @@ namespace VSIXProject1
             this.Controls.Add(this.modNameBox);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.browseManaged);
+            this.Controls.Add(this.browseMSC);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.doneButton);
-            this.Controls.Add(this.managedPathBox);
+            this.Controls.Add(this.mscPathBox);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Form1";
@@ -528,12 +560,11 @@ namespace VSIXProject1
 
         #endregion
         private static string customMessage;
-        private TextBox managedPathBox;
+        private TextBox mscPathBox;
         private Button doneButton;
         private Label label1;
-        private Button browseManaged;
+        private Button browseMSC;
         private Label label2;
-        private FolderBrowserDialog folderBrowserDialog1;
         private Label label3;
         private TextBox modNameBox;
         private TextBox versionBox;
@@ -566,5 +597,9 @@ namespace VSIXProject1
         private Label label7;
         private GroupBox groupBox4;
         private CheckBox advMiniDll;
+        private Label label8;
+        private Button browseMWC;
+        private TextBox mwcPathBox;
+        private OpenFileDialog openFileDialog1;
     }
 }

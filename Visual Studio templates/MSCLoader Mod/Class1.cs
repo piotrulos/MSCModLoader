@@ -9,7 +9,8 @@ namespace $safeprojectname$
         public override string Name => "$modName$"; // Your mod name
         public override string Author => "$modAuthor$"; // Name of the Author (your name)
         public override string Version => "$modVersion$"; // Version
-        public override string Description => ""; // Short description of your mod
+        public override string Description => ""; // Short description of your mod 
+        public override Game SupportedGames => $game$;
 
         public override void ModSetup()
         {$if$ ($setOnMenuLoad$ == true)

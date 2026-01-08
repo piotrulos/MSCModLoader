@@ -98,30 +98,46 @@ $endif$
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <MODSFOLDER>$modsPath$</MODSFOLDER>
+    <MSCMODSFOLDER>$modsPath$</MSCMODSFOLDER>
+    <MWCMODSFOLDER>$modsPathMwc$</MWCMODSFOLDER>
     <ABFOLDER>$abPath$</ABFOLDER>
     <PostBuildEvent>
       echo .
       echo "== Running post build actions for configuration $(ConfigurationName)! ==="
 
-      IF "$(MODSFOLDER)"=="NONE" (
-      echo  "Set your &lt;MODSFOLDER&gt; path macro in .csproj file"
-      ) ELSE (
       IF "$(ConfigurationName)" == "Release" (
-      copy "$(TargetPath)" "$(MODSFOLDER)" /y
-      echo  "Copied dll into mods folder!"
+      IF NOT "$(MSCMODSFOLDER)" == "NONE" (
+      copy "$(TargetPath)" "$(MSCMODSFOLDER)" /y
+      echo  "Copied dll into MSC mods folder!"        
+      )
+      IF NOT "$(MWCMODSFOLDER)" == "NONE" (
+      copy "$(TargetPath)" "$(MWCMODSFOLDER)" /y
+      echo  "Copied dll into MWC mods folder!"        
+      )
       )
       IF "$(ConfigurationName)" == "Debug" (
-      copy "$(TargetPath)" "$(MODSFOLDER)" /y
-      copy "$(TargetDir)$(TargetName).pdb" "$(MODSFOLDER)" /y
+      IF NOT "$(MSCMODSFOLDER)" == "NONE" (        
+      copy "$(TargetPath)" "$(MSCMODSFOLDER)" /y
+      copy "$(TargetDir)$(TargetName).pdb" "$(MSCMODSFOLDER)" /y
       echo  "Copied pdb file into mods folder!"
-      cd "$(MODSFOLDER)"
-      IF exist "$(MODSFOLDER)\debug.bat" (
-      call "$(MODSFOLDER)\debug.bat"
+      cd "$(MSCMODSFOLDER)"
+      IF exist "$(MSCMODSFOLDER)\debug.bat" (
+      call "$(MSCMODSFOLDER)\debug.bat"
       ) ELSE (
-      echo "debug.bat not found in "$(MODSFOLDER)". You probably dont have MSCLoader debugging enabled!"
+      echo "debug.bat not found in "$(MSCMODSFOLDER)". You probably dont have MSCLoader debugging enabled!"
       )
       )
+      IF NOT "$(MWCMODSFOLDER)" == "NONE" (        
+      copy "$(TargetPath)" "$(MWCMODSFOLDER)" /y
+      copy "$(TargetDir)$(TargetName).pdb" "$(MWCMODSFOLDER)" /y
+      echo  "Copied pdb file into mods folder!"
+      cd "$(MWCMODSFOLDER)"
+      IF exist "$(MWCMODSFOLDER)\debug.bat" (
+      call "$(MWCMODSFOLDER)\debug.bat"
+      ) ELSE (
+      echo "debug.bat not found in "$(MWCMODSFOLDER)". You probably dont have MSCLoader debugging enabled!"
+      )
+      )      
       )
 $if$ ($advScript$ == true)
       IF "$(ABFOLDER)"=="NONE" (
