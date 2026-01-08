@@ -52,6 +52,17 @@ namespace MSCLoader
                     WarningText.text = "<color=aqua>Early Access Mod</color>";
                     WarningInfo.text = $"This mod is a <color=aqua>Early Access Mod</color>. There may be bugs. {Environment.NewLine}Please respect any rules given by mod author, breaking them may result in blacklisting from ANY future Early Access mods.";
                 }
+#if MWC
+                if (mod.isIncompatible)
+                {
+                    WarningText.gameObject.SetActive(true);
+                    WarningBtn.gameObject.SetActive(true);
+                    BugReportBtn.gameObject.SetActive(false);
+                    WarningText.text = "<color=lightblue>My Summer Car Mod</color>";
+                    WarningInfo.text = $"This mod wasn't designed for My Winter Car, and may not work as intended. {Environment.NewLine}Check if there updated version (or remake) available for My Winter Car.";
+
+                }
+#endif
 #if MSC
                 if (mod.proSettings || (mod.AdditionalReferences != null && mod.AdditionalReferences.Contains("MSCLoader.Features")))
                 {

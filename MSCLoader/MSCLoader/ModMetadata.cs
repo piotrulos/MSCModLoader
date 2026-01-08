@@ -262,7 +262,11 @@ internal class ModMetadata
         }
         key = File.ReadAllText(auth);
         if (!VerifyOwnership(mod.ID, false)) return;
-
+        if(mod.UpdateInfo == null)
+        {
+            ModConsole.Error("Update info is blank, check for updates first.");
+            return;
+        }
         if (mod.UpdateInfo.mod_type != 1)
         {
             Version v1 = new Version(mod.Version);

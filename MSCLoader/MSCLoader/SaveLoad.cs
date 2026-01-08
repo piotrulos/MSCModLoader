@@ -99,7 +99,7 @@ public class SaveLoad
 
     /// <summary>
     /// Serialize custom save class to custom file (see example)
-    /// Call Only in <see cref="Mod.OnSave"/>
+    /// Call Only in OnSave
     /// </summary>
     /// <typeparam name="T">Your class</typeparam>
     /// <param name="mod">Mod Instance</param>

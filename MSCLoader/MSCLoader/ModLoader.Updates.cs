@@ -470,6 +470,7 @@ public partial class ModLoader : MonoBehaviour
             yield return null;
         dnsaf = true;
         canvLoading.SetUpdate("Downloading MSCLoader Update...", 0, 100, "Connecting...");
+        canvLoading.ResizeUpdateStatus(true);
         switch (type)
         {
             case 0:
@@ -477,7 +478,7 @@ public partial class ModLoader : MonoBehaviour
                 DownloadFile($"mscl_download.php?type=core&id={MSCLInfo.BuildType}", Path.Combine(Path.Combine("Updates", "Core"), "update.zip"));
                 while (downloadInProgress)
                 {
-                    canvLoading.SetUpdateProgress(downloadPercentage, $"(MSCLoader) <color=aqua>update.zip</color> [<color=lime>{downloadPercentage}%</color>]");
+                    canvLoading.SetUpdateProgress(downloadPercentage, $"(MSCLoader) <color=aqua>update.zip</color>{Environment.NewLine}[<color=lime>{downloadPercentage}%</color>] ({sizeStatus})");
                     yield return null;
                 }
                 yield return new WaitForSeconds(1f);
@@ -500,7 +501,7 @@ public partial class ModLoader : MonoBehaviour
                 ModConsole.Print($"Downloading: <color=aqua>{mod}.zip</color>");
                 while (downloadInProgress)
                 {
-                    canvLoading.SetUpdateProgress(downloadPercentage, $"<color=aqua>{mod}.zip</color> [<color=lime>{downloadPercentage}%</color>]");
+                    canvLoading.SetUpdateProgress(downloadPercentage, $"<color=aqua>{mod}.zip</color>{Environment.NewLine}[<color=lime>{downloadPercentage}%</color>] ({sizeStatus})");
                     yield return null;
                 }
                 canvLoading.SetUpdateProgress(100, $"<color=lime>Download Complete</color>");
@@ -512,6 +513,7 @@ public partial class ModLoader : MonoBehaviour
                 break;
         }
         dnsaf = false;
+        canvLoading.ResizeUpdateStatus(false);
         yield return new WaitForSeconds(3f);
         if (!dnsaf)
             canvLoading.modUpdateUI.SetActive(false);
@@ -525,13 +527,14 @@ public partial class ModLoader : MonoBehaviour
         dnsaf = true;
         canvLoading.SetUpdate("Downloading mod updates...", 0, 100, "Connecting...");
         yield return null;
+        canvLoading.ResizeUpdateStatus(true);
         for (int i = 0; i < ModSelfUpdateList.Count; i++)
         {
             ModConsole.Print($"Downloading: <color=aqua>{ModSelfUpdateList[i]}.zip</color>");
             DownloadFile($"mscl_download.php?type={MSCLInfo.namePrefix}_mod&id={ModSelfUpdateList[i]}", Path.Combine(Path.Combine("Updates", "Mods"), $"{ModSelfUpdateList[i]}.zip"));
             while (downloadInProgress)
             {
-                canvLoading.SetUpdateProgress(downloadPercentage, $"({i + 1}/{ModSelfUpdateList.Count}) <color=aqua>{ModSelfUpdateList[i]}.zip</color> [<color=lime>{downloadPercentage}%</color>]");
+                canvLoading.SetUpdateProgress(downloadPercentage, $"({i + 1}/{ModSelfUpdateList.Count}) <color=aqua>{ModSelfUpdateList[i]}.zip</color>{Environment.NewLine}[<color=lime>{downloadPercentage}%</color>] ({sizeStatus})");
                 yield return null;
             }
             yield return new WaitForSeconds(1f);
@@ -543,11 +546,12 @@ public partial class ModLoader : MonoBehaviour
             DownloadFile($"mscl_download.php?type=reference&id={RefSelfUpdateList[i]}", Path.Combine(Path.Combine("Updates", "References"), $"{RefSelfUpdateList[i]}.zip"));
             while (downloadInProgress)
             {
-                canvLoading.SetUpdateProgress(downloadPercentage, $"({i + 1}/{RefSelfUpdateList.Count}) <color=aqua>{RefSelfUpdateList[i]}.zip</color> [<color=lime>{downloadPercentage}%</color>]");
+                canvLoading.SetUpdateProgress(downloadPercentage, $"({i + 1}/{RefSelfUpdateList.Count}) <color=aqua>{RefSelfUpdateList[i]}.zip</color>{Environment.NewLine}[<color=lime>{downloadPercentage}%</color>] ({sizeStatus})");
                 yield return null;
             }
             yield return new WaitForSeconds(1f);
         }
+        canvLoading.ResizeUpdateStatus(false);
         canvLoading.SetUpdateProgress(100, $"<color=lime>Download Complete</color>");
         ModUI.ShowMessage("You need to restart the game for the updates to take effect!", "download completed");
         dnsaf = false;
@@ -556,6 +560,7 @@ public partial class ModLoader : MonoBehaviour
             canvLoading.ToggleUpdateUI(false);
     }
     int downloadPercentage = 0;
+    string sizeStatus = "0MB/0MB";
     internal void DownloadFile(string url, string path, bool desc = false)
     {
         using (WebClient webClient = new WebClient())
@@ -574,6 +579,7 @@ public partial class ModLoader : MonoBehaviour
     {
         downloadInProgress = true;
         downloadPercentage = e.ProgressPercentage;
+        sizeStatus = $"{Math.Round((double)(e.BytesReceived) / 1024 / 1024, 2)}MB/{Math.Round((double)(e.TotalBytesToReceive) / 1024 / 1024, 2)}MB";
     }
 
     private void DownloadModCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
@@ -613,6 +619,7 @@ public partial class ModLoader : MonoBehaviour
         dnsaf = true;
         canvLoading.SetUpdate("Downloading required files...", 0, 100, "Connecting...");
         yield return new WaitForSeconds(1f);
+        canvLoading.ResizeUpdateStatus(true);
         for (int i = 0; i < mods.Count; i++)
         {
             ModConsole.Print($"Downloading: <color=aqua>{mods[i]}.zip</color>");
@@ -620,7 +627,7 @@ public partial class ModLoader : MonoBehaviour
             currentCount++;
             while (downloadInProgress)
             {
-                canvLoading.SetUpdateProgress(downloadPercentage, $"({currentCount}/{totalCount}) <color=aqua>{mods[i]}.zip</color> [<color=lime>{downloadPercentage}%</color>]");
+                canvLoading.SetUpdateProgress(downloadPercentage, $"({currentCount}/{totalCount}) <color=aqua>{mods[i]}.zip</color>{Environment.NewLine}[<color=lime>{downloadPercentage}%</color>] ({sizeStatus})");
                 yield return null;
             }
             yield return new WaitForSeconds(1f);
@@ -633,11 +640,12 @@ public partial class ModLoader : MonoBehaviour
             currentCount++;
             while (downloadInProgress)
             {
-                canvLoading.SetUpdateProgress(downloadPercentage, $"({currentCount}/{totalCount}) <color=aqua>{refs[i]}.zip</color> [<color=lime>{downloadPercentage}%</color>]");
+                canvLoading.SetUpdateProgress(downloadPercentage, $"({currentCount}/{totalCount}) <color=aqua>{refs[i]}.zip</color>{Environment.NewLine}[<color=lime>{downloadPercentage}%</color>] ({sizeStatus})");
                 yield return null;
             }
             yield return new WaitForSeconds(1f);
         }
+        canvLoading.ResizeUpdateStatus(false);
         canvLoading.SetUpdateProgress(100, $"<color=lime>Download Complete</color>");
         ModUI.ShowMessage("You need to restart the game for the updates to take effect!", "download completed");
         dnsaf = false;

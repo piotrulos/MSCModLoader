@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("MSCLoader")]
 #if MSC
-[assembly: AssemblyDescription("My Summer Car Mod Loader")]
+[assembly: AssemblyDescription("Mod Loader for My Summer Car")]
 #elif MWC
-[assembly: AssemblyDescription("My Winter Car Mod Loader")]
+[assembly: AssemblyDescription("Mod Loader for My Winter Car")]
 #endif
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Kosmo Software")]
@@ -37,5 +37,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.3.6.385")]
-[assembly: AssemblyFileVersion("1.3.6.385")]
+[assembly: AssemblyVersion("1.4.0.388")]
+[assembly: AssemblyFileVersion("1.4.0.388")]

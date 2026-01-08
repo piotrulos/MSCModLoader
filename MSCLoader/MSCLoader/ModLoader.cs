@@ -1249,7 +1249,14 @@ public partial class ModLoader : MonoBehaviour
                 File.Delete(files[i]);
                 continue;
             }
-
+            //File duplicates
+            string[] alreadyIncluded = [.. Directory.GetFiles(ManagedPath, "*.dll").Select(Path.GetFileName)];
+            if (Path.GetFileName(files[i]) == "0Harmony12.dll" || Path.GetFileName(files[i]) == "0Harmony-1.2.dll" || Path.GetFileName(files[i]) == "Ionic.Zip.dll" || alreadyIncluded.Contains(Path.GetFileName(files[i])))
+            {
+                ModConsole.Warning($"<b>{Path.GetFileName(files[i])}</b> already exist in <b>{Path.GetFullPath(ManagedPath)}</b> - skipping");
+                File.Delete(files[i]);
+                continue;
+            }
             if (MSCLInternal.IsEAFile(files[i]))
             {
                 eaQueue.Add(files[i]);
@@ -1512,6 +1519,7 @@ public partial class ModLoader : MonoBehaviour
                         if (ModMenu.ignoreCompatibility.GetValue())
                         {
                             ModConsole.Warning($"Mod <b><color=orange>{Path.GetFileName(file)}</color></b> is not set as compatible with current game! This mod was made for: <b><color=yellow>{m.SupportedGames}</color></b>.");
+                            m.isIncompatible = true;
                         } 
                         else 
                         { 

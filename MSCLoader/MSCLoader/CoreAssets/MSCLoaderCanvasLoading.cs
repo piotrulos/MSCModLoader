@@ -75,7 +75,17 @@ internal class MSCLoaderCanvasLoading : MonoBehaviour
     {
         uProgress.value = progress;
         SetUpdateStatus(status);
-
+    }
+    public void ResizeUpdateStatus(bool expand)
+    {
+        if (expand)
+        {
+            uStatus.transform.parent.GetComponent<LayoutElement>().preferredHeight = 45;
+        }
+        else
+        {
+            uStatus.transform.parent.GetComponent<LayoutElement>().preferredHeight = 20;
+        }
     }
     public void SetLoadingProgress(int progress, int maxValue)
     {

@@ -164,6 +164,7 @@ internal class ModMenuView : MonoBehaviour
         SettingsElement tx = CreateText(header.HeaderListView.transform, $"<color=yellow>ID:</color> <color=aqua>{mod.ID}</color> (Compiled using MSCLoader <color=yellow>{mod.compiledVersion}</color>){Environment.NewLine}" +
             $"<color=yellow>Version:</color> <color=aqua>{mod.Version}</color>{Environment.NewLine}" +
             $"<color=yellow>Author:</color> <color=aqua>{mod.Author}</color>{Environment.NewLine}" +
+            $"<color=yellow>Supported Games:</color> <color=aqua>{mod.SupportedGames.ToString().Replace("_", " ")}</color>{Environment.NewLine}" +
             $"<color=yellow>Additional references used by this Mod:</color>{Environment.NewLine}");
         if (mod.AdditionalReferences != null)
             tx.settingName.text += $"<color=aqua>{string.Join(", ", mod.AdditionalReferences)}</color>";
@@ -241,6 +242,7 @@ internal class ModMenuView : MonoBehaviour
         SettingsElement tx = CreateText(header.HeaderListView.transform, $"<color=yellow>ID:</color> <color=aqua>{mod.ID}</color> (Compiled using MSCLoader <color=yellow>{mod.compiledVersion}</color>){Environment.NewLine}" +
             $"<color=yellow>Version:</color> <color=aqua>{mod.Version}</color>{Environment.NewLine}" +
             $"<color=yellow>Author:</color> <color=aqua>{mod.Author}</color>{Environment.NewLine}" +
+            $"<color=yellow>Supported Games:</color> <color=aqua>{mod.SupportedGames.ToString().Replace("_", " ")}</color>{Environment.NewLine}" +
             $"<color=yellow>Additional references used by this Mod:</color>{Environment.NewLine}");
         if (mod.AdditionalReferences != null)
             tx.settingName.text += $"<color=aqua>{string.Join(", ", mod.AdditionalReferences)}</color>";
