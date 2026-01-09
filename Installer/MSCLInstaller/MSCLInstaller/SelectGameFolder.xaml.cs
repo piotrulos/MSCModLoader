@@ -29,6 +29,7 @@ namespace MSCLInstaller
                     main.Title += " - My Summer Car";
                     exeName = "mysummercar.exe";
                     savePath = "MSCFolder.txt";
+                    HelpText.Text = HelpText.Text.Replace("[GAME]", "My Summer Car");
                     break;
                 case Game.MSC_IMA:
                     main.Title += " - My Summer Car (Community)";
@@ -37,6 +38,7 @@ namespace MSCLInstaller
                     main.Title += " - My Winter Car";
                     exeName = "mywintercar.exe";
                     savePath = "MWCFolder.txt";
+                    HelpText.Text = HelpText.Text.Replace("[GAME]", "My Winter Car");
                     break;
             }
             FindOnSteam();
@@ -199,19 +201,22 @@ namespace MSCLInstaller
 
         private bool CheckForBSLoaders()
         {
-            if (File.Exists(Path.Combine(Storage.gamePath, "version.dll"))) //Unsupported doorstop clone (hard floor)
+            if (File.Exists(Path.Combine(Storage.gamePath, "version.dll")) || Directory.Exists(Path.Combine(Storage.gamePath, "MelonLoader"))) //Unsupported doorstop clone (hard floor)
             {
+                Dbg.Log("MelonLoader appears to be installed", true, true);
                 return true;
             }
 
-            if(Directory.Exists(Path.Combine(Storage.gamePath, "MelonLoader")) || Directory.Exists(Path.Combine(Storage.gamePath, "Plugins")) || Directory.Exists(Path.Combine(Storage.gamePath, "BepInEx")) || Directory.Exists(Path.Combine(Storage.gamePath, "MWCLoader")))
+            if(Directory.Exists(Path.Combine(Storage.gamePath, "Plugins")) || Directory.Exists(Path.Combine(Storage.gamePath, "BepInEx")))
             {
+                Dbg.Log("BepInEx, Plugins folders detected ", true, true);
                 return true;
             }
             //Other BS
             string p = Path.Combine(Storage.gamePath, "mywintercar_Data", "Managed");
-            if (File.Exists(Path.Combine(p, "MWCLoader.dll")) || File.Exists(Path.Combine(p, "LightspeedModLoader.dll")))
+            if (File.Exists(Path.Combine(p, "MWCLoader.dll")) || File.Exists(Path.Combine(p, "MWCModLoader.dll")) || File.Exists(Path.Combine(p, "LightspeedModLoader.dll")) || Directory.Exists(Path.Combine(Storage.gamePath, "MWCLoader")))
             {
+                Dbg.Log("[FAKE] MWCLoader, LightspeedModLoader or MWCModLoader appears to be installed (fake mod loaders)", true, true);
                 return true;
             }
             return false;

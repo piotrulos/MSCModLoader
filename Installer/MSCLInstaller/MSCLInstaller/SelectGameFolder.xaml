@@ -24,7 +24,7 @@
             </StackPanel>
             <TextBlock Name="DetectedGameText" Text=""/>
             <GroupBox Header="Help">
-                <TextBlock Text="On this step you need to select where My Summer Car is installed.&#x0a;This should happen automatically, if not click &quot;Change...&quot;&#x0a;&#x0a;If detected text is green you can go to next step"/>
+                <TextBlock Name="HelpText" Text="On this step you need to select where [GAME] is installed.&#x0a;This should happen automatically, if not click &quot;Change...&quot;&#x0a;&#x0a;If detected text is green you can go to next step"/>
             </GroupBox>
         </StackPanel>
 
