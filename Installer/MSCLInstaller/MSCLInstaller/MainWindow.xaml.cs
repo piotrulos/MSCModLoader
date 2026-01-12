@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Media;
@@ -32,6 +33,34 @@ namespace MSCLInstaller
             }
 
         }
+
+        private void CheckForMissingFiles()
+        {
+            Storage.packFiles = Directory.GetFiles(Storage.currentPath, "*.pack");
+            
+            if (Storage.packFiles.Length == 0)
+            {
+                Dbg.MissingFilesError();
+                return;
+            }
+
+            bool hasMSC = File.Exists("main_msc.pack");
+            bool hasMWC = File.Exists("main_mwc.pack");
+
+            if (Storage.requiredDlls.Any(dll => !File.Exists(dll)))
+            {
+                Dbg.MissingFilesError();
+                return;
+            }
+
+            if (hasMSC && hasMWC)
+                SelectGamePage();
+            else if (hasMSC)
+                SelectGameFolderPage(Game.MSC);
+            else if (hasMWC)
+                SelectGameFolderPage(Game.MWC);
+        }
+
         private void Initialize()
         {
             MSCLInstallerVer = Assembly.GetExecutingAssembly().GetName().Version;
@@ -45,27 +74,7 @@ namespace MSCLInstaller
             selectGameFolder = new SelectGameFolder();
             mscloaderInstaller = new MSCLoaderInstaller();
             selectModsFolder = new SelectModsFolder();
-            Storage.packFiles = Directory.GetFiles(Storage.currentPath, "*.pack");
-            if (Storage.packFiles.Length == 0)
-            {
-                Dbg.MissingFilesError();
-            }
-            if (!File.Exists("Ionic.Zip.Reduced.dll") || !File.Exists("INIFileParser.dll"))
-            {
-                Dbg.MissingFilesError();
-            }
-            if (File.Exists("main_msc.pack") && File.Exists("main_mwc.pack"))
-            {
-                SelectGamePage();
-            }
-            else if (File.Exists("main_msc.pack") && !File.Exists("main_mwc.pack"))
-            {
-                SelectGameFolderPage(Game.MSC);
-            }
-            else if (!File.Exists("main_msc.pack") && File.Exists("main_mwc.pack"))
-            {
-                SelectGameFolderPage(Game.MWC);
-            }
+            CheckForMissingFiles();
             StatusBarText.Text = $"MSCLInstaller (ver. {MSCLInstallerVer.Major}.{MSCLInstallerVer.Minor}.{MSCLInstallerVer.Build})";
         }
         internal void SetMSCLoaderVer(string ver)

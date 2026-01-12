@@ -29,5 +29,11 @@
         public static bool skipIntroCfg = false;
         public static bool skipConfigScreenCfg = false;
         public static ModsFolder modsFolderCfg = ModsFolder.GameFolder;
+
+        public static readonly string[] requiredDlls =
+        {
+            "INIFileParser.dll",
+            "Ionic.Zip.Reduced.dll"
+        };
     }
 }
