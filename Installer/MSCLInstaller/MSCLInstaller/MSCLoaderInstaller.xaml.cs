@@ -32,6 +32,8 @@ namespace MSCLInstaller
         }
         public void Init(MainWindow m)
         {
+            // What a mess please clean this up
+
             if (initialized)
             {
                 UpdatePathText();
@@ -130,71 +132,70 @@ namespace MSCLInstaller
         {
             AdvancedRadio.Visibility = advancedOptions;
         }
+
+        private Version GetZipVersion(string zipPath)
+        {
+            if (!ZipFile.IsZipFile(zipPath))
+            {
+                Dbg.Log($"Failed to read file: {zipPath}");
+                return new Version("0.0.0.0");
+            }
+
+            using (ZipFile zip = ZipFile.Read(zipPath))
+            {
+                return zip.Comment != null ? new Version(zip.Comment) : new Version("0.0.0.0");
+            }
+        }
+
         void VersionCompares()
         {
-            string corepack;
-            if (Storage.is64)
-                corepack = Path.Combine(Storage.currentPath, "core64.pack");
-            else
-                corepack = Path.Combine(Storage.currentPath, "core32.pack");
-            if (!ZipFile.IsZipFile(corepack))
-            {
-                Dbg.Log($"Failed to read file: {corepack}");
-            }
-            Version coreVer = new Version("0.0.0.0");
-            using (ZipFile zip = ZipFile.Read(corepack))
-            {
-                if (zip.Comment != null)
-                {
-                    coreVer = new Version(zip.Comment);
-                }
-            }
-            Dbg.Log("Comparing core file version...", true);
-            if (InstallerHelpers.VersionCompare(coreVer, Path.Combine(Storage.gamePath, "winhttp.dll")))
-            {
-                updateCore = true;
-            }
-            Directory.CreateDirectory(Path.Combine(Storage.currentPath, "temp"));
-            string refpack = Path.Combine(Storage.currentPath, "main_ref.pack");
-            if (!ZipFile.IsZipFile(refpack))
-            {
-                Dbg.Log($"Failed to read file: {refpack}");
-            }
-            using (ZipFile zip = ZipFile.Read(refpack))
-            {
-                zip.ExtractAll(Path.Combine(Storage.currentPath, "temp"));
-            }
-            Dbg.Log("Comparing references versions...", true);
-            foreach (string f in Directory.GetFiles(Path.Combine(Storage.currentPath, "temp")))
-            {
-                if(Path.GetExtension(f).ToLower() != ".dll") continue;
-                if (InstallerHelpers.VersionCompare(f, Path.Combine(Storage.gamePath, Storage.selectedGame == Game.MSC ? "mysummercar_Data" : "mywintercar_Data", "Managed", Path.GetFileName(f))))
-                {
-                    updateRefs = true;
-                }
-            }
-            Directory.Delete(Path.Combine(Storage.currentPath, "temp"), true);
-            string msc = Path.Combine(Storage.currentPath, Storage.selectedGame == Game.MSC ? "main_msc.pack" : "main_mwc.pack");
-            if (!ZipFile.IsZipFile(msc))
-            {
-                Dbg.Log($"Failed to read file: {msc}");
-            }
-            Version mscVer = new Version("0.0.0.0");
-            using (ZipFile zip = ZipFile.Read(msc))
-            {
-                if (zip.Comment != null)
-                {
-                    mscVer = new Version(zip.Comment);
-                }
-            }
-            Dbg.Log("Comparing MSCLoader version...", true);
-            if (InstallerHelpers.VersionCompare(mscVer, Path.Combine(Storage.gamePath, Storage.selectedGame == Game.MSC ? "mysummercar_Data" : "mywintercar_Data", "Managed", "MSCLoader.dll")))
-            {
-                updateMSCL = true;
-            }
-            main.SetMSCLoaderVer(mscVer.ToString());
 
+            string managedPath = Path.Combine(Storage.gamePath,
+                Storage.selectedGame == Game.MSC ? "mysummercar_Data" : "mywintercar_Data",
+                "Managed");
+
+            // Core Pack
+            string corepack = Path.Combine(Storage.currentPath, Storage.is64 ? "core64.pack" : "core32.pack");
+            Version coreVer = GetZipVersion(corepack);
+            Dbg.Log($"Comparing core version: {coreVer}", true);
+            if (InstallerHelpers.VersionCompare(coreVer, Path.Combine(Storage.gamePath, "winhttp.dll")))
+                updateCore = true;
+
+            // References
+            string tempDir = Path.Combine(Storage.currentPath, "temp");
+            Directory.CreateDirectory(tempDir);
+            try
+            {
+                string refpack = Path.Combine(Storage.currentPath, "main_ref.pack");
+                if (!ZipFile.IsZipFile(refpack))
+                    Dbg.Log($"Failed to read file: {refpack}");
+                using (ZipFile zip = ZipFile.Read(refpack))
+                    zip.ExtractAll(tempDir);
+
+                Dbg.Log("Comparing reference DLLs...", true);
+                foreach (var dll in Directory.GetFiles(tempDir, "*.dll"))
+                {
+                    string target = Path.Combine(managedPath, Path.GetFileName(dll));
+                    if (InstallerHelpers.VersionCompare(dll, target))
+                        updateRefs = true;
+                }
+            }
+            finally
+            {
+                if (Directory.Exists(tempDir))
+                    Directory.Delete(tempDir, true);
+            }
+
+            // MSCLoader
+            string mscPack = Path.Combine(Storage.currentPath, Storage.selectedGame == Game.MSC ? "main_msc.pack" : "main_mwc.pack");
+            Version mscVer = GetZipVersion(mscPack);
+            Dbg.Log($"Comparing MSCLoader version: {mscVer}", true);
+            if (InstallerHelpers.VersionCompare(mscVer, Path.Combine(managedPath, "MSCLoader.dll")))
+                updateMSCL = true;
+
+            main.SetMSCLoaderVer(mscVer.ToString());
         }
+
         bool CheckConfig()
         {
             if (File.Exists(Path.Combine(Storage.gamePath, "doorstop_config.ini")))
