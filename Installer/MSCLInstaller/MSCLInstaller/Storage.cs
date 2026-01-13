@@ -35,5 +35,15 @@
             "INIFileParser.dll",
             "Ionic.Zip.Reduced.dll"
         };
+
+        public static readonly string[] requiredPacks =
+        {
+            "main_msc.pack",
+            "main_mwc.pack",
+            "main_ref.pack",
+            "dbg.pack",
+            "core64.pack",
+            "core32.pack",
+        };
     }
 }

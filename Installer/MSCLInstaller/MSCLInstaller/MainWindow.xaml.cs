@@ -21,6 +21,7 @@ namespace MSCLInstaller
         public MainWindow()
         {
             InitializeComponent();
+
             try
             {
                 Initialize();
@@ -36,29 +37,23 @@ namespace MSCLInstaller
 
         private void CheckForMissingFiles()
         {
-            Storage.packFiles = Directory.GetFiles(Storage.currentPath, "*.pack");
-            
-            if (Storage.packFiles.Length == 0)
+            Dbg.Log("Checking for missing files");
+
+            string missingPack = Storage.requiredPacks.FirstOrDefault(pack => !File.Exists(pack));
+            if (Storage.requiredPacks.Any(pack => !File.Exists(pack)))
             {
-                Dbg.MissingFilesError();
+                Dbg.MissingFileError(missingPack);
                 return;
             }
 
-            bool hasMSC = File.Exists("main_msc.pack");
-            bool hasMWC = File.Exists("main_mwc.pack");
-
-            if (Storage.requiredDlls.Any(dll => !File.Exists(dll)))
+            string missingDll = Storage.requiredDlls.FirstOrDefault(dll => !File.Exists(dll)); // Returns the first missing file.
+            if (missingDll != null)
             {
-                Dbg.MissingFilesError();
+                Dbg.MissingFileError(missingDll);
                 return;
             }
 
-            if (hasMSC && hasMWC)
-                SelectGamePage();
-            else if (hasMSC)
-                SelectGameFolderPage(Game.MSC);
-            else if (hasMWC)
-                SelectGameFolderPage(Game.MWC);
+             SelectGamePage();
         }
 
         private void Initialize()

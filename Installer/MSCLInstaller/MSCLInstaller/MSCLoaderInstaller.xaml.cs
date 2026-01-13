@@ -137,10 +137,6 @@ namespace MSCLInstaller
                 corepack = Path.Combine(Storage.currentPath, "core64.pack");
             else
                 corepack = Path.Combine(Storage.currentPath, "core32.pack");
-            if (!File.Exists(corepack))
-            {
-                Dbg.MissingFilesError();
-            }
             if (!ZipFile.IsZipFile(corepack))
             {
                 Dbg.Log($"Failed to read file: {corepack}");
@@ -160,10 +156,6 @@ namespace MSCLInstaller
             }
             Directory.CreateDirectory(Path.Combine(Storage.currentPath, "temp"));
             string refpack = Path.Combine(Storage.currentPath, "main_ref.pack");
-            if (!File.Exists(refpack))
-            {
-                Dbg.MissingFilesError();
-            }
             if (!ZipFile.IsZipFile(refpack))
             {
                 Dbg.Log($"Failed to read file: {refpack}");
@@ -183,10 +175,6 @@ namespace MSCLInstaller
             }
             Directory.Delete(Path.Combine(Storage.currentPath, "temp"), true);
             string msc = Path.Combine(Storage.currentPath, Storage.selectedGame == Game.MSC ? "main_msc.pack" : "main_mwc.pack");
-            if (!File.Exists(msc))
-            {
-                Dbg.MissingFilesError();
-            }
             if (!ZipFile.IsZipFile(msc))
             {
                 Dbg.Log($"Failed to read file: {msc}");
