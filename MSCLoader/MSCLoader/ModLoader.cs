@@ -152,10 +152,9 @@ public partial class ModLoader : MonoBehaviour
                 GameObject ngm = GameObject.Find("Interface/Buttons/ButtonNewgame").GetPlayMaker("SetSize").GetState("State 1").GetAction<ActivateGameObject>(1).gameObject.GameObject.Value;
                 ngm.transform.Find("Buttons/ButtonBegin").GetPlayMaker("SetSize").FsmInject("Load", ModNewGameReset, false, 0);
 #endif
-#if MSC
                 if (IsReferencePresent("MSCCoreLibrary"))
                     TimeSchedulerCalls("stop");
-#endif
+
                 break;
             case "Intro":
                 currentScene = CurrentScene.NewGameIntro;
@@ -169,19 +168,15 @@ public partial class ModLoader : MonoBehaviour
                     QualitySettings.vSyncCount = 0;
 
                 menuInfoAnim.Play("fade_out");
-#if MSC
                 if (IsReferencePresent("MSCCoreLibrary"))
                     TimeSchedulerCalls("start");
-#endif
                 StartLoadingMods();
                 ModMenu.ModMenuHandle();
                 break;
             case "Ending":
                 currentScene = CurrentScene.Ending;
-#if MSC
                 if (IsReferencePresent("MSCCoreLibrary"))
                     TimeSchedulerCalls("stop");
-#endif
                 break;
             default:
                 break;
@@ -197,7 +192,7 @@ public partial class ModLoader : MonoBehaviour
             StartCoroutine(NewGameMods());
         }
     }
-#if MSC
+
     private void TimeSchedulerCalls(string call)
     {
         switch (call)
@@ -219,7 +214,6 @@ public partial class ModLoader : MonoBehaviour
                 break;
         }
     }
-#endif
     private void StartLoadingMods()
     {
         if (!allModsLoaded && !IsModsLoading)
@@ -1108,10 +1102,9 @@ public partial class ModLoader : MonoBehaviour
         GameObject.Find("Database/PlayerDatabase").GetPlayMaker("Simulation").FsmInject("Save data", SaveMods); //TODO: test
 #endif
         ModConsole.PrintSplit("<i></i></color>", false);
-#if MSC
-        if (IsReferencePresent("MSCCoreLibrary"))
-            TimeSchedulerCalls("load");
-#endif
+        
+        if (IsReferencePresent("MSCCoreLibrary")) TimeSchedulerCalls("load");
+
         yield return null;
         allModsLoaded = true;
         canvLoading.ToggleLoadingUI(false);
@@ -1149,9 +1142,9 @@ public partial class ModLoader : MonoBehaviour
                 ModException(e, OnSaveMods[i], true);
             }
         }
-        if (IsReferencePresent("MSCCoreLibrary"))
-            TimeSchedulerCalls("save");
 #endif
+
+        if (IsReferencePresent("MSCCoreLibrary")) TimeSchedulerCalls("save");
     }
 
 #if MSC
