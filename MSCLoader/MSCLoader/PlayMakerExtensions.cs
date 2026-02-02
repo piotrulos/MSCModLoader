@@ -261,7 +261,7 @@ public static class PlayMakerExtensions
     /// <param name="fsm">The target PlaymakerFSM</param>
     /// <param name="eventName">Event name</param>
     /// <returns></returns>
-    public static FsmEvent GetEvent(this PlayMakerFSM fsm, string eventName) => fsm.GetEvent(eventName);  
+    public static FsmEvent GetEvent(this PlayMakerFSM fsm, string eventName) => fsm.Fsm.GetEvent(eventName);  
 
     private static FsmEvent GetEvent(Fsm fsm, string name) => fsm.GetEvent(name);
     

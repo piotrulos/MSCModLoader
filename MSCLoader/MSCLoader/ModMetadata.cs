@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 
 namespace MSCLoader;
 internal class RequiredList
@@ -692,7 +693,7 @@ internal class ModMetadata
         }
         try
         {
-            dwl = getdwl.DownloadString($"{ModLoader.serverURL}/changelog.php?kameh={MSCLInfo.namePrefix}&mods={string.Join(",", idLists.ToArray())}&vers={string.Join(",", verLists.ToArray())}&names={string.Join("|,|", nameLists.ToArray())}");
+            dwl = getdwl.DownloadString($"{ModLoader.serverURL}/changelog.php?kameh={MSCLInfo.namePrefix}&mods={Uri.EscapeDataString(string.Join(",", idLists.ToArray()))}&vers={string.Join(",", verLists.ToArray())}&names={Uri.EscapeDataString(string.Join("|,|", nameLists.ToArray()))}"); 
         }
         catch (Exception e)
         {
