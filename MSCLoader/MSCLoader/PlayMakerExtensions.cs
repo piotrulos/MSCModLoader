@@ -261,25 +261,10 @@ public static class PlayMakerExtensions
     /// <param name="fsm">The target PlaymakerFSM</param>
     /// <param name="eventName">Event name</param>
     /// <returns></returns>
-    public static FsmEvent GetEvent(this PlayMakerFSM fsm, string eventName)
-    {
-        for (int i = 0; i < fsm.FsmEvents.Length; i++)
-        {
-            if (fsm.FsmEvents[i].Name == eventName)
-                return fsm.FsmEvents[i];
-        }
-        return null;
-    }
+    public static FsmEvent GetEvent(this PlayMakerFSM fsm, string eventName) => fsm.GetEvent(eventName);  
 
-    private static FsmEvent GetEvent(Fsm fsm, string name)
-    {
-        for (int i = 0; i < fsm.Events.Length; i++)
-        {
-            if (fsm.Events[i].Name == name)
-                return fsm.Events[i];
-        }
-        return null;
-    }
+    private static FsmEvent GetEvent(Fsm fsm, string name) => fsm.GetEvent(name);
+    
 
     /// <summary>
     /// Add event to PlayMakerFSM
