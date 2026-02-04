@@ -6,6 +6,14 @@ namespace MSCLoader.Commands;
 
 internal class CommandLogAll : ConsoleCommand
 {
+    class LogAllMenuResult
+    {
+        public bool modClassLog = false;
+        public bool errorsLog = false;
+        public bool warningsLog = false;
+        public bool messagesLog = false;
+        public bool saveLog = false;
+    }
     public override string Name => "log-all";
     public override string Alias => "logall";
 
@@ -63,6 +71,30 @@ internal class CommandLogAll : ConsoleCommand
             Console.WriteLine(e);
             File.Delete(Path.Combine(ModLoader.SettingsFolder, Path.Combine("MSCLoader_Settings", "logall.save")));
         }
+    }
+    void LogAllMenu()
+    {
+        PopupSetting logAllMenu = ModUI.CreatePopupSetting("Log All Settings", "Close");
+        logAllMenu.AddText($"Below option adds extra logging for Mod class only <color=orange>(Update,FixedUpdate,OnGUI)</color>");
+        logAllMenu.AddCheckBox("modClassLog", "Log all Mod class errors", ModLoader.LogAllErrors);
+        logAllMenu.AddText($"Below options enables logging for <color=orange>everything</color> (including MonoBehaviours in game), enabling all options logs everything and <color=orange>may spam console</color>");
+        logAllMenu.AddCheckBox("errorsLog", "Log all errors", errors);
+        logAllMenu.AddCheckBox("warningsLog", "Log all warnings", warnings);
+        logAllMenu.AddCheckBox("messagesLog", "Log all messages", messages);
+        logAllMenu.AddText($"Selecting below option will remember all above changed settings everytime you relaunch game");
+        logAllMenu.AddCheckBox("saveLog", "Remember above settings between restarts", false);
+        logAllMenu.ShowPopup(LogAllMenuSetup);
+    }
+    void LogAllMenuSetup(string result)
+    {
+        LogAllMenuResult r = ModUI.ParsePopupResponse<LogAllMenuResult>(result);
+        ModLoader.LogAllErrors = r.modClassLog;
+        errors = r.errorsLog;
+        warnings = r.warningsLog;
+        messages = r.messagesLog;
+        if (r.saveLog)
+            Save();
+        SetupLog();
     }
     public override void Run(string[] args)
     {
@@ -194,27 +226,30 @@ internal class CommandLogAll : ConsoleCommand
                     ModConsole.Print("Use <color=orange><b>log-all help</b></color> for more info");
                     break;
             }
-            if (messages || warnings || errors)
-            {
-                if (!setup)
-                {
-                    setup = true;
-                    UnityEngine.Application.logMessageReceived += HandleLog;
-                }
-            }
-            else if (!messages && !warnings && !errors)
-            {
-                if (setup)
-                {
-                    setup = false;
-                    UnityEngine.Application.logMessageReceived -= HandleLog;
-                }
-            }
+            SetupLog();
         }
         else
         {
-            ModConsole.Warning("<b>Usage:</b> log-all <mods|errors|warnings|messages|everything> [true|false]");
-            ModConsole.Print("Use <color=orange><b>log-all help</b></color> for more info");
+            LogAllMenu();
+        }
+    }
+    void SetupLog()
+    {
+        if (messages || warnings || errors)
+        {
+            if (!setup)
+            {
+                setup = true;
+                UnityEngine.Application.logMessageReceived += HandleLog;
+            }
+        }
+        else if (!messages && !warnings && !errors)
+        {
+            if (setup)
+            {
+                setup = false;
+                UnityEngine.Application.logMessageReceived -= HandleLog;
+            }
         }
     }
     void HandleLog(string logString, string stackTrace, LogType type)
