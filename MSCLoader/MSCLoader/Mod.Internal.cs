@@ -78,6 +78,7 @@ public partial class Mod
     internal bool disableWarn = false;
     internal bool isEA = false;
     internal bool isIncompatible = false;
+    internal bool hasConflict = false;
     internal int modErrors = 0;
     internal string compiledVersion;
     internal string fileName;

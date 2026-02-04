@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 
 namespace MSCLoader;
 internal class RequiredList
@@ -168,7 +167,7 @@ internal class ModMetadata
             ModConsole.Error("Your assembly is missing GUID");
             return;
         }
-        string response = MSCLInternal.MSCLDataRequest("mscl_create.php", new Dictionary<string, string> { {"kameh", MSCLInfo.namePrefix }, { "steamID", steamID }, { "key", key }, { "resID", mscldata.modID }, { "version", mod.Version }, { "sign", mscldata.sign }, { "asmGuid", mod.asmGuid }, { "type", "mod" } }, true);
+        string response = MSCLInternal.MSCLDataRequest("mscl_create.php", new Dictionary<string, string> { { "kameh", MSCLInfo.namePrefix }, { "steamID", steamID }, { "key", key }, { "resID", mscldata.modID }, { "version", mod.Version }, { "sign", mscldata.sign }, { "asmGuid", mod.asmGuid }, { "type", "mod" } }, true);
 
         string[] result = response.Split('|');
         switch (result[0])
@@ -263,7 +262,7 @@ internal class ModMetadata
         }
         key = File.ReadAllText(auth);
         if (!VerifyOwnership(mod.ID, false)) return;
-        if(mod.UpdateInfo == null)
+        if (mod.UpdateInfo == null)
         {
             ModConsole.Error("Update info is blank, check for updates first.");
             return;
@@ -537,11 +536,11 @@ internal class ModMetadata
             try
             {
                 Mod mod = ModLoader.GetModByID(mv.versions[i].mod_id, true);
-                if (mod == null) 
-                { 
-                    mod = ModLoader.IncompatibleMods.Select(x =>  x).Where(x => x.ID == mv.versions[i].mod_id).FirstOrDefault();
-                    if(mod == null) continue;
-                } 
+                if (mod == null)
+                {
+                    mod = ModLoader.IncompatibleMods.Select(x => x).Where(x => x.ID == mv.versions[i].mod_id).FirstOrDefault();
+                    if (mod == null) continue;
+                }
                 mod.UpdateInfo = mv.versions[i];
                 if (mv.versions[i].mod_type == 2 || mv.versions[i].mod_type == 9)
                 {
@@ -639,7 +638,7 @@ internal class ModMetadata
             for (int i = 0; i < ModLoader.ModSelfUpdateList.Count; i++)
             {
                 Mod m = ModLoader.GetModByID(ModLoader.ModSelfUpdateList[i], true);
-                if(m == null)
+                if (m == null)
                 {
                     m = ModLoader.IncompatibleMods.Select(x => x).Where(x => x.ID == ModLoader.ModSelfUpdateList[i]).FirstOrDefault();
                     if (m == null) continue;
@@ -693,7 +692,7 @@ internal class ModMetadata
         }
         try
         {
-            dwl = getdwl.DownloadString($"{ModLoader.serverURL}/changelog.php?kameh={MSCLInfo.namePrefix}&mods={Uri.EscapeDataString(string.Join(",", idLists.ToArray()))}&vers={string.Join(",", verLists.ToArray())}&names={Uri.EscapeDataString(string.Join("|,|", nameLists.ToArray()))}"); 
+            dwl = getdwl.DownloadString($"{ModLoader.serverURL}/changelog.php?kameh={MSCLInfo.namePrefix}&mods={Uri.EscapeDataString(string.Join(",", idLists.ToArray()))}&vers={string.Join(",", verLists.ToArray())}&names={Uri.EscapeDataString(string.Join("|,|", nameLists.ToArray()))}");
         }
         catch (Exception e)
         {
@@ -788,6 +787,8 @@ internal class ModMetadata
                 {
                     if (ModLoader.GetModByID(modIDs[i], true) != null)
                     {
+                        ModLoader.GetModByID(modIDs[i], true).hasConflict = true;
+                        mod.hasConflict = true;
                         if (mod.metadata.modConflicts.disableIfConflict)
                         {
                             mod.isDisabled = true;

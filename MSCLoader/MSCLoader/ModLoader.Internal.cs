@@ -8,7 +8,7 @@ using System.Text;
 namespace MSCLoader;
 
 public partial class ModLoader
-{     
+{
     internal static Game currentGame = Game.MySummerCar;
     internal static CurrentScene currentScene = CurrentScene.MainMenu;
 
@@ -105,7 +105,7 @@ public partial class ModLoader
     void OnApplicationQuit()
     {
         //Save current log as "previous"
-        if(File.Exists("output_log_previous.txt")) File.Delete("output_log_previous.txt");
+        if (File.Exists("output_log_previous.txt")) File.Delete("output_log_previous.txt");
         File.Copy("output_log.txt", "output_log_previous.txt");
     }
 

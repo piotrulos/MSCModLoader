@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace MSCLoader;
 
@@ -26,7 +25,7 @@ public class SaveLoad
 #elif MWC
         ES2.Save(new byte[2] { 0x03, 0x02 }, "Mods.txt?tag=MSCLoaderInternalStuff");
 #endif
-        }
+    }
 
     internal static void LoadModsSaveData()
     {

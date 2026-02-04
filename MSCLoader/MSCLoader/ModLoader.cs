@@ -367,8 +367,8 @@ public partial class ModLoader : MonoBehaviour
                 ModConsole.Print($"<b><color=orange>Hello <color=lime>{"kidsrow!"}</color>!</color></b>");
                 throw new Exception("[EMULATOR] Do What You Want, Cause A Pirate Is Free... You Are A Pirate!");
             }
-            
-            if(File.Exists(Path.GetFullPath(Path.Combine("", "steam_api.dll"))))
+
+            if (File.Exists(Path.GetFullPath(Path.Combine("", "steam_api.dll"))))
             {
                 if (ModMetadata.CalculateFileChecksum(Path.Combine("", "steam_api.dll")) != "7B857C897BC69313E4936DC3DCCE5193")
                 {
@@ -424,7 +424,7 @@ public partial class ModLoader : MonoBehaviour
         }
 
 #endif
-            PreLoadMods();
+        PreLoadMods();
         if (InvalidMods.Count > 0)
             ModConsole.Print($"<b><color=orange>Loaded <color=aqua>{actualModList.Length}</color> mods (<color=magenta>{InvalidMods.Count}</color> failed to load)!</color></b>{Environment.NewLine}");
         else
@@ -1100,7 +1100,7 @@ public partial class ModLoader : MonoBehaviour
         GameObject.Find("Database/PlayerDatabase").GetPlayMaker("Simulation").FsmInject("Save data", SaveMods); //TODO: test
 #endif
         ModConsole.PrintSplit("<i></i></color>", false);
-        
+
         if (IsReferencePresent("MSCCoreLibrary")) TimeSchedulerCalls("load");
 
         yield return null;
@@ -1209,7 +1209,7 @@ public partial class ModLoader : MonoBehaviour
         Steamworks.HAuthTicket hticket = Steamworks.SteamUser.GetAuthSessionTicket(pTicket, 1024, out uint _);
         string ticket = BitConverter.ToString(pTicket).Replace("-", string.Empty).TrimEnd('0', ' ');
         string response = string.Empty;
-        response = MSCLInternal.MSCLDataRequest("mscl_eaverify.php", new Dictionary<string, string> { {"kameh", MSCLInfo.namePrefix },{ "steamID", steamID }, { "SteamTicket", ticket }, { "uid", SystemInfo.deviceUniqueIdentifier }, { "file", Path.GetFileNameWithoutExtension(file) } });
+        response = MSCLInternal.MSCLDataRequest("mscl_eaverify.php", new Dictionary<string, string> { { "kameh", MSCLInfo.namePrefix }, { "steamID", steamID }, { "SteamTicket", ticket }, { "uid", SystemInfo.deviceUniqueIdentifier }, { "file", Path.GetFileNameWithoutExtension(file) } });
         string[] result = response.Split('|');
         switch (result[0])
         {
@@ -1252,9 +1252,16 @@ public partial class ModLoader : MonoBehaviour
             }
             //File duplicates
             string[] alreadyIncluded = [.. Directory.GetFiles(ManagedPath, "*.dll").Select(Path.GetFileName)];
-            if (Path.GetFileName(files[i]) == "0Harmony12.dll" || Path.GetFileName(files[i]) == "0Harmony-1.2.dll" || Path.GetFileName(files[i]) == "Ionic.Zip.dll" || alreadyIncluded.Contains(Path.GetFileName(files[i])))
+            string[] refFiles = [.. Directory.GetFiles(Path.Combine(ModsFolder, "References"), "*.dll").Select(Path.GetFileName)];
+            if (Path.GetFileName(files[i]) == "0Harmony12.dll" || Path.GetFileName(files[i]) == "0Harmony-1.2.dll" || Path.GetFileName(files[i]) == "Ionic.Zip.dll" || Path.GetFileName(files[i]) == "winhttp.dll" || alreadyIncluded.Contains(Path.GetFileName(files[i])))
             {
                 ModConsole.Warning($"<b>{Path.GetFileName(files[i])}</b> already exist in <b>{Path.GetFullPath(ManagedPath)}</b> - skipping");
+                File.Delete(files[i]);
+                continue;
+            }
+            if (refFiles.Contains(Path.GetFileName(files[i])))
+            {
+                ModConsole.Warning($"<b>{Path.GetFileName(files[i])}</b> already exist in <b>{Path.GetFullPath(Path.Combine(ModsFolder, "References"))}</b> - skipping");
                 File.Delete(files[i]);
                 continue;
             }
@@ -1470,6 +1477,21 @@ public partial class ModLoader : MonoBehaviour
                 asm = Assembly.Load(byteFile);
                 isEA = true;
             }
+            string[] res = asm.GetManifestResourceNames();
+            for (int i = 0; i < res.Length; i++)
+            {
+                Stream resourceStream = asm.GetManifestResourceStream(res[i]);
+                if (resourceStream != null)
+                {
+                    BinaryReader resourceReader = new BinaryReader(resourceStream);
+                    byte[] resourceBytes = resourceReader.ReadBytes((int)resourceStream.Length);
+                    if (resourceBytes[0] == 0x4D && resourceBytes[1] == 0x5A && resourceBytes[2] == 0x90 && resourceBytes[3] == 0x00)
+                    {
+                        throw new Exception($"{Path.GetFileName(file)} - Executable files in resources are no longer allowed. Move them outside of the assembly.");
+                    }
+                }
+            }
+
             bool isMod = false;
             AssemblyName[] list = asm.GetReferencedAssemblies();
             if (Attribute.IsDefined(asm, typeof(System.Runtime.InteropServices.GuidAttribute)))
@@ -1481,6 +1503,11 @@ public partial class ModLoader : MonoBehaviour
                 if (!stdRef.Contains(list[i].Name))
                 {
                     addRef.Add(list[i].Name);
+                }
+                if (list[i].Name == "LightspeedModLoader" || list[i].Name == "MWCLoader" || list[i].Name == "MelonLoader" || list[i].Name == "BepInEx")
+                {
+                    File.Move(file, Path.Combine(ModsFolder, Path.GetFileName(file) + ".PendingOverwrite"));
+                    throw new Exception("This mod is not designed for MSCLoader and will be removed.");
                 }
                 if (list[i].Name == "MSCLoader")
                 {
@@ -1515,16 +1542,16 @@ public partial class ModLoader : MonoBehaviour
                 {
                     Mod m = (Mod)Activator.CreateInstance(asmTypes[j]);
                     if (m.ID.StartsWith("MSCLoader_")) continue;
-                    if ((m.SupportedGames & currentGame) ==  0)
+                    if ((m.SupportedGames & currentGame) == 0)
                     {
 #if MWC
                         if (ModMenu.ignoreCompatibility.GetValue())
                         {
                             ModConsole.Warning($"Mod <b><color=orange>{Path.GetFileName(file)}</color></b> is not set as compatible with current game! This mod was made for: <b><color=yellow>{m.SupportedGames}</color></b>.");
                             m.isIncompatible = true;
-                        } 
-                        else 
-                        { 
+                        }
+                        else
+                        {
 #endif
                             ModConsole.Error($"Mod <b><color=orange>{Path.GetFileName(file)}</color></b> is not set as compatible with current game! This mod was made for: <b><color=yellow>{m.SupportedGames}</color></b>.");
                             IncompatibleMods.Add(m);

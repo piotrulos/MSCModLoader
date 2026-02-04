@@ -283,9 +283,24 @@ namespace MSCLoader
         PopupSetting bugReport;
         internal void ShowBugReportWindow(Mod mod)
         {
+            if (ModLoader.Instance.ModloaderUpdateMessage)
+            {
+                ModUI.ShowMessage($"MSCLoader has an update available!{Environment.NewLine}<color=aqua>Please update MSCLoader to the latest version before reporting bugs!</color>", "Error");
+                return;
+            }
             if (ModLoader.HasUpdateModList.Contains(mod))
             {
                 ModUI.ShowMessage($"This mod has an update available!{Environment.NewLine}<color=aqua>Please update mod to the latest version before reporting bugs!</color>", "Error");
+                return;
+            }
+            if (ModLoader.InvalidMods.Count > 1)
+            {
+                ModUI.ShowMessage($"Too many invalid mods detected!{Environment.NewLine}<color=aqua>Please fix all broken mods before reporting bugs!</color>", "Error");
+                return;
+            }
+            if (mod.hasConflict)
+            {
+                ModUI.ShowMessage($"You have other mods installed that are marked as conflicting with this mod!{Environment.NewLine}<color=aqua>Please resolve conflicts before reporting bugs!</color>", "Error");
                 return;
             }
             string dwl = string.Empty;
@@ -393,7 +408,7 @@ namespace MSCLoader
                 zip.AddFile(Path.Combine(dir, "bugReport.json"), "");
                 zip.AddFile(Path.Combine(dir, "ModList.txt"), "");
                 zip.AddFile(Path.Combine(".", "output_log.txt"), "");
-                if(File.Exists(Path.Combine(".", "output_log_previous.txt")))
+                if (File.Exists(Path.Combine(".", "output_log_previous.txt")))
                     zip.AddFile(Path.Combine(".", "output_log_previous.txt"), "");
                 if (report.bugReportSaveFile)
                 {
@@ -546,7 +561,7 @@ namespace MSCLoader
                         {
                             Texture2D t2d = new Texture2D(1, 1);
                             byte[] iconBytes = File.ReadAllBytes(Path.Combine(ModLoader.MetadataFolder, Path.Combine("Mod Icons", mod.metadata.icon)));
-                            t2d.LoadImage(iconBytes);                              
+                            t2d.LoadImage(iconBytes);
                             icon.texture = t2d;
                             if (iconBytes.Length < 10)
                             {
