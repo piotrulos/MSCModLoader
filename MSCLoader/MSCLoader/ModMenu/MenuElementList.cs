@@ -393,6 +393,8 @@ namespace MSCLoader
                 zip.AddFile(Path.Combine(dir, "bugReport.json"), "");
                 zip.AddFile(Path.Combine(dir, "ModList.txt"), "");
                 zip.AddFile(Path.Combine(".", "output_log.txt"), "");
+                if(File.Exists(Path.Combine(".", "output_log_previous.txt")))
+                    zip.AddFile(Path.Combine(".", "output_log_previous.txt"), "");
                 if (report.bugReportSaveFile)
                 {
 #if MSC

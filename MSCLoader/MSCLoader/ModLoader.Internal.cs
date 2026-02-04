@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace MSCLoader;
 
@@ -90,12 +91,67 @@ public partial class ModLoader
     internal bool IsModsResetting = false;
     internal bool ModloaderUpdateMessage = false;
 
+    internal static bool devMode = false;
+    internal static string GetMetadataFolder(string fn) => Path.Combine(MetadataFolder, fn);
+
     internal static Mod GetModByID(string modID, bool includeDisabled = false)
     {
         Mod m = LoadedMods.Where(x => x.ID.Equals(modID)).FirstOrDefault();
         if (includeDisabled) return m; //if include disabled is true then just return (can be null)
         if (!m.isDisabled) return m; //if include disabled is false we go here to check if mod is not disabled and return it.
         return null; //null if any above if is false
+    }
+
+    void OnApplicationQuit()
+    {
+        //Save current log as "previous"
+        if(File.Exists("output_log_previous.txt")) File.Delete("output_log_previous.txt");
+        File.Copy("output_log.txt", "output_log_previous.txt");
+    }
+
+    internal static string SidChecksumCalculator(string rawData)
+    {
+        System.Security.Cryptography.SHA1 sha256 = System.Security.Cryptography.SHA1.Create();
+        byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(rawData));
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < bytes.Length; i++)
+        {
+            builder.Append(bytes[i].ToString("x2"));
+        }
+        return builder.ToString();
+    }
+
+    internal static string SystemInfoFix()
+    {
+        string Sinfo = SystemInfo.operatingSystem;
+        try
+        {
+            if (Sinfo.Contains("Windows"))
+            {
+                string windowsfixed = Sinfo;
+                int build = int.Parse(Sinfo.Split('(')[1].Split(')')[0].Split('.')[2]);
+                if (build > 21999)
+                {
+                    windowsfixed = $"Windows 11 (10.0.{build})";
+                    if (Sinfo.Contains("64bit"))
+                        windowsfixed += " 64bit";
+                    return windowsfixed;
+                }
+                else if (build > 9841)
+                {
+                    windowsfixed = $"Windows 10 (10.0.{build})";
+                    if (Sinfo.Contains("64bit"))
+                        windowsfixed += " 64bit";
+                    return windowsfixed;
+                }
+                else return Sinfo;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+        return Sinfo;
     }
 }
 
