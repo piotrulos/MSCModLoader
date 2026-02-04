@@ -19,7 +19,7 @@ internal class ModMenu : Mod
     internal static byte cfmu_set = 0;
     internal static ModMenu instance;
     internal static SettingsCheckBox dm_logST, dm_operr, dm_warn, dm_pcon;
-    internal static SettingsCheckBox expWarning, modPath, forceMenuVsync, openLinksOverlay, skipGameIntro, skipConfigScreen, filterAdPopups;
+    internal static SettingsCheckBox expWarning, modPath, forceMenuVsync, openLinksOverlay, skipGameIntro, skipConfigScreen, filterAdPopups, disableExternalWarnings, forbidExternal;
 #if MWC    
     internal static SettingsCheckBox ignoreCompatibility;
 #endif    
@@ -33,7 +33,8 @@ internal class ModMenu : Mod
         SetupFunction(Setup.ModSettings, Mod_Settings);
         SetupFunction(Setup.ModSettingsLoaded, Mod_SettingsLoaded);
     }
-
+    public static bool ShowWarnStatus() => !disableExternalWarnings.GetValue();
+    public static bool ForbidExternalLaunch() => forbidExternal.GetValue();
     private void Mod_Settings()
     {
         Settings.ModSettings(this);
@@ -59,6 +60,10 @@ internal class ModMenu : Mod
         Settings.AddText("Compatibility stuff");
         ignoreCompatibility = Settings.AddCheckBox("MSCLoader_ignoreCompatibility", "Ignore compatibility warnings (for MSC mods)", false, IgnoreCompatibilityWarning);
 #endif
+        Settings.AddText("You can disable Warning in colsone about launching external applications, but due to recent malware attempts <color=orange>it's recommended to keep it enabled to see what mods trying to launch externally.</color>");
+        disableExternalWarnings = Settings.AddCheckBox("MSCLoader_disableExternalWarnings", "Disable console warnings about external applications", false);
+        Settings.AddText("Below option forbids all external applications/commands from running. Enable it if you don't trust anyting.");
+        forbidExternal = Settings.AddCheckBox("MSCLoader_forbidExternal", "Forbid external applications completly", false);
         Settings.AddHeader("Update Settings");
         Settings.AddText("How often MSCLoader checks for Mod/References updates.");
         checkLaunch = Settings.AddCheckBoxGroup("MSCLoader_checkOnLaunch", "Every launch", true, "cfmu_set");
@@ -67,7 +72,7 @@ internal class ModMenu : Mod
 
         Settings.AddHeader("MSCLoader Credits", Color.black);
         Settings.AddText("All source code contributors and used libraries are listed on GitHub");
-        Settings.AddButton("Support on <color=orange>ko-fi.com</color>", () => System.Diagnostics.Process.Start("https://ko-fi.com/piotrulos44779"), new Color32(0, 64, 128, 255), Color.white, SettingsButton.ButtonIcon.KoFi);
+        Settings.AddButton("Support on <color=orange>ko-fi.com</color>", () => Application.OpenURL("https://ko-fi.com/piotrulos44779"), new Color32(0, 64, 128, 255), Color.white, SettingsButton.ButtonIcon.KoFi);
         Settings.AddText("Non-GitHub contributions:");
         Settings.AddText("<color=aqua>BrennFuchS</color> - Default mod icon.");
 

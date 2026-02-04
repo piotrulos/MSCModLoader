@@ -342,13 +342,39 @@ public partial class ModLoader : MonoBehaviour
         MainMenuInfo();
         ModsUpdateDir = Directory.GetFiles(Path.Combine("Updates", "Mods"), "*.zip");
         RefsUpdateDir = Directory.GetFiles(Path.Combine("Updates", "References"), "*.zip");
-        if (ModsUpdateDir.Length == 0 && RefsUpdateDir.Length == 0)
+        string[] failUpdateClean = Directory.GetFiles(ModsFolder, "*.PendingOverwrite");
+        string[] failUpdateCleanRefs = Directory.GetFiles(Path.Combine(ModsFolder, "References"), "*.PendingOverwrite");
+        if (failUpdateClean.Length > 0 || failUpdateCleanRefs.Length > 0)
         {
-            ContinueInit();
+            if (failUpdateClean.Length > 0)
+            {
+                for (int i = 0; i < failUpdateClean.Length; i++)
+                {
+                    File.Delete(failUpdateClean[i]);
+                }
+            }
+            if (failUpdateCleanRefs.Length > 0)
+            {
+                for (int i = 0; i < failUpdateCleanRefs.Length; i++)
+                {
+                    File.Delete(failUpdateCleanRefs[i]);
+                }
+            }
+        }
+        if (!returnToMainMenu)
+        {
+            if (ModsUpdateDir.Length == 0 && RefsUpdateDir.Length == 0)
+            {
+                ContinueInit();
+            }
+            else
+            {
+                UnpackUpdates();
+            }
         }
         else
         {
-            UnpackUpdates();
+            ContinueInit();
         }
         if (launchArgs.Contains("-mscloader-disable")) ModUI.ShowMessage("To use <color=yellow>-mscloader-disable</color> launch option, you need to update the core module of MSCLoader, download latest version and launch <color=aqua>MSCLInstaller.exe</color> to update", "Outdated module");
     }
@@ -1489,6 +1515,10 @@ public partial class ModLoader : MonoBehaviour
                     {
                         throw new Exception($"{Path.GetFileName(file)} - Executable files in resources are no longer allowed. Move them outside of the assembly.");
                     }
+                    if (resourceBytes[0] == 0x50 && resourceBytes[1] == 0x4B && resourceBytes[2] == 0x03 && resourceBytes[3] == 0x04)
+                    {
+                        throw new Exception($"{Path.GetFileName(file)} - zip files in resources are no longer allowed. Move them outside of the assembly.");
+                    }
                 }
             }
 
@@ -1676,8 +1706,11 @@ public partial class ModLoader : MonoBehaviour
                 mod.ModSetup();
                 if (mod.newFormat && mod.fileName == null)
                 {
-                    Console.WriteLine($"Calling OnMenuLoad (for mod {mod.ID})");
-                    mod.A_OnMenuLoad?.Invoke();
+                    if (mod.A_OnMenuLoad != null)
+                    {
+                        Console.WriteLine($"Calling OnMenuLoad (for mod {mod.ID})");
+                        mod.A_OnMenuLoad?.Invoke();
+                    }
                 }
             }
             catch (Exception e)
