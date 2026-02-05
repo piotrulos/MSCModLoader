@@ -4,6 +4,7 @@ namespace MSCLoader;
 internal class PopupSettingController : MonoBehaviour
 {
     public GameObject popupSettingPrefab;
+    public ModMenuView mmv;
     public bool alreadyCreated = false;
 #if !Mini
     PopupSetting currentPopupSetting;
@@ -23,7 +24,6 @@ internal class PopupSettingController : MonoBehaviour
             mWindow.transform.SetParent(transform, false);
             PopupSettingGroup popupSettingGroup = mWindow.GetComponent<PopupSettingGroup>();
             popupSettingGroup.popupSettingController = this;
-            ModMenuView mmv = GameObject.Find("MSCLoader Mod Menu").GetComponentInChildren<ModMenuView>();
             popupSettingGroup.PopupTitle.text = popupSetting.WindowTitle.ToUpper();
             popupSettingGroup.ConfirmButtonText.text = popupSetting.SubmitButtonText.ToUpper();
             Transform currentTransform = popupSettingGroup.PopupListView.transform;
