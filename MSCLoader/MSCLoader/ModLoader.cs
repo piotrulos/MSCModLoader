@@ -292,6 +292,8 @@ public partial class ModLoader : MonoBehaviour
         mscUnloader.reset = false;
         if (!Directory.Exists(ModsFolder))
             Directory.CreateDirectory(ModsFolder);
+        if (!Directory.Exists(Path.Combine(ModsFolder, "References")))
+            Directory.CreateDirectory(Path.Combine(ModsFolder, "References"));
         if (!Directory.Exists("Updates"))
             Directory.CreateDirectory("Updates");
         if (!Directory.Exists(Path.Combine("Updates", "Mods")))
@@ -682,56 +684,49 @@ public partial class ModLoader : MonoBehaviour
 
     private void LoadReferences()
     {
-        if (Directory.Exists(Path.Combine(ModsFolder, "References")))
-        {
-            string[] files = Directory.GetFiles(Path.Combine(ModsFolder, "References"), "*.dll");
-            string[] alreadyIncluded = Directory.GetFiles(ManagedPath, "*.dll").Select(Path.GetFileName).ToArray();
-            string[] unusedFiles = [];
+        string[] files = Directory.GetFiles(Path.Combine(ModsFolder, "References"), "*.dll");
+        string[] alreadyIncluded = Directory.GetFiles(ManagedPath, "*.dll").Select(Path.GetFileName).ToArray();
+        string[] unusedFiles = [];
 
-            if (File.Exists(Path.Combine(Path.Combine(ModsFolder, "References"), "unused.txt")))
+        if (File.Exists(Path.Combine(Path.Combine(ModsFolder, "References"), "unused.txt")))
+        {
+            unusedFiles = File.ReadAllLines(Path.Combine(Path.Combine(ModsFolder, "References"), "unused.txt"));
+        }
+        for (int i = 0; i < files.Length; i++)
+        {
+            if (Path.GetFileName(files[i]) == "0Harmony12.dll" || Path.GetFileName(files[i]) == "0Harmony-1.2.dll" || Path.GetFileName(files[i]) == "Ionic.Zip.dll" || alreadyIncluded.Contains(Path.GetFileName(files[i])))
             {
-                unusedFiles = File.ReadAllLines(Path.Combine(Path.Combine(ModsFolder, "References"), "unused.txt"));
+                ModConsole.Warning($"<b>{Path.GetFileName(files[i])}</b> already exist in <b>{Path.GetFullPath(ManagedPath)}</b> - skipping");
+                File.Delete(files[i]);
+                continue;
             }
-            for (int i = 0; i < files.Length; i++)
+            if (unusedFiles.Contains(Path.GetFileName(files[i])))
             {
-                if (Path.GetFileName(files[i]) == "0Harmony12.dll" || Path.GetFileName(files[i]) == "0Harmony-1.2.dll" || Path.GetFileName(files[i]) == "Ionic.Zip.dll" || alreadyIncluded.Contains(Path.GetFileName(files[i])))
-                {
-                    ModConsole.Warning($"<b>{Path.GetFileName(files[i])}</b> already exist in <b>{Path.GetFullPath(ManagedPath)}</b> - skipping");
-                    File.Delete(files[i]);
-                    continue;
-                }
-                if (unusedFiles.Contains(Path.GetFileName(files[i])))
-                {
-                    ModConsole.Print($"<b>{Path.GetFileName(files[i])}</b> is marked as no longer needed after update - deleting");
-                    File.Delete(files[i]);
-                    continue;
-                }
-                try
-                {
-                    Assembly asm = Assembly.LoadFrom(files[i]);
-                    LoadReferencesMeta(asm, files[i]);
-                }
-                catch (Exception e)
-                {
-                    ModConsole.Error($"<b>References/{Path.GetFileName(files[i])}</b> - Failed to load.");
-                    Console.WriteLine(e);
-                    References reference = new References()
-                    {
-                        FileName = Path.GetFileName(files[i]),
-                        Invalid = true,
-                        ExMessage = e.GetFullMessage()
-                    };
-                    ReferencesList.Add(reference);
-                }
+                ModConsole.Print($"<b>{Path.GetFileName(files[i])}</b> is marked as no longer needed after update - deleting");
+                File.Delete(files[i]);
+                continue;
             }
-            if (File.Exists(Path.Combine(Path.Combine(ModsFolder, "References"), "unused.txt")))
+            try
             {
-                File.Delete(Path.Combine(Path.Combine(ModsFolder, "References"), "unused.txt"));
+                Assembly asm = Assembly.LoadFrom(files[i]);
+                LoadReferencesMeta(asm, files[i]);
+            }
+            catch (Exception e)
+            {
+                ModConsole.Error($"<b>References/{Path.GetFileName(files[i])}</b> - Failed to load.");
+                Console.WriteLine(e);
+                References reference = new References()
+                {
+                    FileName = Path.GetFileName(files[i]),
+                    Invalid = true,
+                    ExMessage = e.GetFullMessage()
+                };
+                ReferencesList.Add(reference);
             }
         }
-        else
+        if (File.Exists(Path.Combine(Path.Combine(ModsFolder, "References"), "unused.txt")))
         {
-            Directory.CreateDirectory(Path.Combine(ModsFolder, "References"));
+            File.Delete(Path.Combine(Path.Combine(ModsFolder, "References"), "unused.txt"));
         }
     }
     private void LoadReferencesMeta(Assembly ass, string fn)
