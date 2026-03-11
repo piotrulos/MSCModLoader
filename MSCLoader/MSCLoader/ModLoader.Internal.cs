@@ -105,8 +105,47 @@ public partial class ModLoader
     void OnApplicationQuit()
     {
         //Save current log as "previous"
-        if (File.Exists("output_log_previous.txt")) File.Delete("output_log_previous.txt");
-        File.Copy("output_log.txt", "output_log_previous.txt");
+        try
+        {
+            string logPath = GetOutputLogPath();
+            if (logPath != null)
+            {
+                string prevPath = GetOutputLogPreviousPath();
+                if (File.Exists(prevPath)) File.Delete(prevPath);
+                File.Copy(logPath, prevPath);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to copy output log: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Resolves the path to the Unity output log file.
+    /// Windows/Proton: output_log.txt in game directory.
+    /// Linux native: Player.log in Application.persistentDataPath.
+    /// </summary>
+    internal static string GetOutputLogPath()
+    {
+        if (File.Exists("output_log.txt"))
+            return Path.GetFullPath("output_log.txt");
+        string playerLog = Path.Combine(Application.persistentDataPath, "Player.log");
+        if (File.Exists(playerLog))
+            return playerLog;
+        if (File.Exists("Player.log"))
+            return Path.GetFullPath("Player.log");
+        return null;
+    }
+
+    internal static string GetOutputLogPreviousPath()
+    {
+        string logPath = GetOutputLogPath();
+        if (logPath == null) return null;
+        string dir = Path.GetDirectoryName(logPath);
+        string name = Path.GetFileNameWithoutExtension(logPath);
+        string ext = Path.GetExtension(logPath);
+        return Path.Combine(dir, $"{name}_previous{ext}");
     }
 
     internal static string SidChecksumCalculator(string rawData)
@@ -135,16 +174,32 @@ public partial class ModLoader
                     windowsfixed = $"Windows 11 (10.0.{build})";
                     if (Sinfo.Contains("64bit"))
                         windowsfixed += " 64bit";
-                    return windowsfixed;
                 }
                 else if (build > 9841)
                 {
                     windowsfixed = $"Windows 10 (10.0.{build})";
                     if (Sinfo.Contains("64bit"))
                         windowsfixed += " 64bit";
-                    return windowsfixed;
                 }
-                else return Sinfo;
+                else
+                {
+                    windowsfixed = Sinfo;
+                }
+
+                // Detect Wine/Proton layer when running on Linux
+                string wineTag = DetectWineLayer();
+                if (!string.IsNullOrEmpty(wineTag))
+                    windowsfixed += $" {wineTag}";
+
+                return windowsfixed;
+            }
+
+            // Native Linux detection
+            if (Sinfo.Contains("Linux"))
+            {
+                string distroInfo = GetLinuxDistroInfo();
+                if (!string.IsNullOrEmpty(distroInfo))
+                    return $"{Sinfo} ({distroInfo})";
             }
         }
         catch (Exception ex)
@@ -152,6 +207,58 @@ public partial class ModLoader
             Console.WriteLine(ex);
         }
         return Sinfo;
+    }
+
+    /// <summary>
+    /// Detect if running under Wine or Proton.
+    /// Returns "[Proton]" or "[Wine]" or null.
+    /// </summary>
+    private static string DetectWineLayer()
+    {
+        try
+        {
+            // Proton sets STEAM_COMPAT_DATA_PATH
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("STEAM_COMPAT_DATA_PATH")))
+                return "[Proton]";
+            // Wine sets WINEPREFIX or WINELOADERNOEXEC
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WINEPREFIX"))
+                || !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WINELOADERNOEXEC")))
+                return "[Wine]";
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// Read Linux distribution info from /etc/os-release.
+    /// Returns "Ubuntu 24.04" style string, or null.
+    /// </summary>
+    private static string GetLinuxDistroInfo()
+    {
+        try
+        {
+            string osRelease = "/etc/os-release";
+            if (!File.Exists(osRelease)) return null;
+            string name = null;
+            string version = null;
+            foreach (string line in File.ReadAllLines(osRelease))
+            {
+                if (line.StartsWith("NAME="))
+                    name = line.Substring(5).Trim('"');
+                else if (line.StartsWith("VERSION_ID="))
+                    version = line.Substring(11).Trim('"');
+            }
+            if (name != null)
+                return version != null ? $"{name} {version}" : name;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+        return null;
     }
 }
 

@@ -407,9 +407,12 @@ namespace MSCLoader
             {
                 zip.AddFile(Path.Combine(dir, "bugReport.json"), "");
                 zip.AddFile(Path.Combine(dir, "ModList.txt"), "");
-                zip.AddFile(Path.Combine(".", "output_log.txt"), "");
-                if (File.Exists(Path.Combine(".", "output_log_previous.txt")))
-                    zip.AddFile(Path.Combine(".", "output_log_previous.txt"), "");
+                string logPath = ModLoader.GetOutputLogPath();
+                if (logPath != null && File.Exists(logPath))
+                    zip.AddFile(logPath, "");
+                string prevLogPath = ModLoader.GetOutputLogPreviousPath();
+                if (prevLogPath != null && File.Exists(prevLogPath))
+                    zip.AddFile(prevLogPath, "");
                 if (report.bugReportSaveFile)
                 {
 #if MSC

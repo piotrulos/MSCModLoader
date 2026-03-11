@@ -152,6 +152,17 @@ namespace MSCLoader.Preloader
         }
         private static void OutputLogChecker()
         {
+            // Binary patching mainData is Windows-specific (offsets differ on Linux builds).
+            // On native Linux, Unity logs to Player.log by default and doesn't need patching.
+            // Only skip for native Linux — Proton uses Windows binaries so patching is fine.
+            if (Environment.GetEnvironmentVariable("STEAM_COMPAT_DATA_PATH") == null
+                && Environment.GetEnvironmentVariable("WINEPREFIX") == null
+                && Environment.OSVersion.Platform == PlatformID.Unix)
+            {
+                MDebug.Log("Skipping OutputLogChecker (native Linux detected, Player.log is used by default)");
+                return;
+            }
+
             try
             {
                 bool enLog = false;
