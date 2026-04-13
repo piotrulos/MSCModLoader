@@ -3,9 +3,11 @@ using IniParser;
 using IniParser.Model;
 using Ionic.Zip;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using UnityEngine;
 
 namespace Doorstop
 {
@@ -34,7 +36,6 @@ namespace MSCLoader.Preloader
         {
             string[] launchArgs = System.Environment.GetCommandLineArgs(); //Environment CommandLine Argument
 
-            if (File.Exists("MSCLoader_Preloader.txt")) File.Delete("MSCLoader_Preloader.txt");
             MDebug.Init();
             MDebug.Log($"Launch parameters");
             MDebug.Log($"{string.Join(" ", launchArgs)}", true);
@@ -268,6 +269,68 @@ namespace MSCLoader.Preloader
                 }
                 return true;
 
+            }
+        }
+        [HarmonyPatch(typeof(System.Diagnostics.Process), nameof(System.Diagnostics.Process.Start), new[] { typeof(ProcessStartInfo) })]
+        class ProcessStartPatch
+        {
+            static bool Prefix(ref ProcessStartInfo startInfo)
+            {
+                try
+                {
+                    if (startInfo.FileName.Contains("cmd.exe") || startInfo.FileName.Contains("powershell.exe") || startInfo.FileName.StartsWith("cmd") || startInfo.FileName.StartsWith("powershell") || startInfo.FileName.Contains(".bat") || startInfo.FileName.Contains(".ps1") || startInfo.FileName.Contains(".cmd") || startInfo.FileName.Contains(".vbs"))
+                    {
+                        ModUI.ShowMessage($"Malicious execution detected from one of the mods{Environment.NewLine}{Environment.NewLine}Attempt to execute: <color=orange>{startInfo.FileName}</color>{Environment.NewLine}Arguments: <color=orange>{startInfo.Arguments}</color>{Environment.NewLine}{Environment.NewLine}More details in output_log", "Malicious Behavior");
+
+                        Console.WriteLine($"=========== WARNING ===============");
+                        Console.WriteLine($"Attempt to execute: {startInfo.FileName}");
+                        Console.WriteLine($"Arguments: {startInfo.Arguments}");
+                        Console.WriteLine($"CreateNoWindow: {startInfo.CreateNoWindow}");
+                        Console.WriteLine($"UseShellExecute: {startInfo.UseShellExecute}");
+                        Console.WriteLine($"WindowStyle: {startInfo.WindowStyle}");
+                        Console.WriteLine($"WorkingDirectory: {startInfo.WorkingDirectory}");
+                        Console.WriteLine($"==================================");
+                        return false;
+                    }
+                    if(startInfo.WindowStyle == ProcessWindowStyle.Hidden || startInfo.WindowStyle == ProcessWindowStyle.Minimized || startInfo.CreateNoWindow)
+                    {
+                        Console.WriteLine($"=========== WARNING ===============");
+                        Console.WriteLine($"Attempt to execute: {startInfo.FileName}");
+                        Console.WriteLine($"Arguments: {startInfo.Arguments}");
+                        Console.WriteLine($"CreateNoWindow: {startInfo.CreateNoWindow}");
+                        Console.WriteLine($"UseShellExecute: {startInfo.UseShellExecute}");
+                        Console.WriteLine($"WindowStyle: {startInfo.WindowStyle}");
+                        Console.WriteLine($"WorkingDirectory: {startInfo.WorkingDirectory}");
+                        Console.WriteLine($"==================================");
+                        ModUI.ShowMessage($"Suspicious execution detected from one of the mods{Environment.NewLine}{Environment.NewLine}Attempt to execute: <color=orange>{startInfo.FileName}</color>{Environment.NewLine}Arguments: <color=orange>{startInfo.Arguments}</color>{Environment.NewLine}{Environment.NewLine}More details in output_log", "Suspicious Behaviour");
+                        return false;
+                    }
+                    Console.WriteLine($"=========== WARNING ===============");
+                    Console.WriteLine($"Execute: {startInfo.FileName}");
+                    Console.WriteLine($"Arguments: {startInfo.Arguments}");
+                    Console.WriteLine($"CreateNoWindow: {startInfo.CreateNoWindow}");
+                    Console.WriteLine($"UseShellExecute: {startInfo.UseShellExecute}");
+                    Console.WriteLine($"WindowStyle: {startInfo.WindowStyle}");
+                    Console.WriteLine($"WorkingDirectory: {startInfo.WorkingDirectory}");
+                    Console.WriteLine($"==================================");
+                    if (ModMenu.ShowWarnStatus())
+                    {
+                        ModConsole.Warning($"External execution detected from one of the mods");
+                        ModConsole.Warning($"Executed: <b>{startInfo.FileName}</b> Arguments: <b>{startInfo.Arguments}</b>");
+                    }
+                    if (ModMenu.ForbidExternalLaunch())
+                    {
+                        ModConsole.Error($"External execution forbidden by your settings");
+                        ModConsole.Warning($"Command: <b>{startInfo.FileName}</b> Arguments: <b>{startInfo.Arguments}</b>");
+                        return false;
+                    }
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error {ex.Message}");
+                }
+                return false; 
             }
         }
 

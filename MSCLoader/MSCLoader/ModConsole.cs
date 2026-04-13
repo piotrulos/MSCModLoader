@@ -144,9 +144,10 @@ public class ModConsole : Mod
     /// <param name="str">Text to print to console.</param>
     public static void Print(string str)
     {
+        string assemblyName = System.Reflection.Assembly.GetCallingAssembly().GetName().Name;
         if (console != null)
             console.controller.AppendLogLine(str);
-        Console.WriteLine($"MSCLoader Message: {Regex.Replace(str, "<.*?>", string.Empty)}");
+        Console.WriteLine($"{assemblyName}: {Regex.Replace(str, "<.*?>", string.Empty)}");
     }
     /// <summary>
     /// Prints anything to console.
@@ -163,12 +164,14 @@ public class ModConsole : Mod
     /// <param name="str">Text to print to error log.</param>
     public static void Error(string str)
     {
+        string assemblyName = $"{System.Reflection.Assembly.GetCallingAssembly().GetName().Name} ";
+        if(assemblyName.StartsWith("MSCLoader")) assemblyName = "";
         if (console != null)
         {
             console.SetVisibility(true);
-            console.controller.AppendLogLine($"<color=red><b>Error: </b>{str}</color>");
+            console.controller.AppendLogLine($"<color=red><b>{assemblyName}Error: </b>{str}</color>");
         }
-        System.Console.WriteLine($"MSCLoader ERROR: {Regex.Replace(str, "<.*?>", string.Empty)}");
+        System.Console.WriteLine($"{assemblyName} ERROR: {Regex.Replace(str, "<.*?>", string.Empty)}");
     }
 
     /// <summary>
@@ -177,12 +180,14 @@ public class ModConsole : Mod
     /// <param name="str">Text to print to error log.</param>
     public static void Warning(string str)
     {
+        string assemblyName = $"{System.Reflection.Assembly.GetCallingAssembly().GetName().Name} ";
+        if (assemblyName.StartsWith("MSCLoader")) assemblyName = "";
         if (console != null)
         {
             console.SetVisibility(true);
-            console.controller.AppendLogLine($"<color=yellow><b>Warning: </b>{str}</color>");
+            console.controller.AppendLogLine($"<color=yellow><b>{assemblyName}Warning: </b>{str}</color>");
         }
-        System.Console.WriteLine($"MSCLoader WARNING: {Regex.Replace(str, "<.*?>", string.Empty)}");
+        System.Console.WriteLine($"{assemblyName} WARNING: {Regex.Replace(str, "<.*?>", string.Empty)}");
     }
 
     //compatibility layer with pro

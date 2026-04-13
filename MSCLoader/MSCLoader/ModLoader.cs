@@ -392,10 +392,14 @@ public partial class ModLoader : MonoBehaviour
             }
             if (File.Exists(Path.GetFullPath(Path.Combine("steam_api.ini", ""))) || File.Exists(Path.GetFullPath(Path.Combine("steam_32.dll", ""))) || File.Exists(Path.GetFullPath(Path.Combine("steam_64.dll", ""))) || File.Exists(Path.GetFullPath(Path.Combine("steamclient.dll", ""))) || File.Exists(Path.GetFullPath(Path.Combine("steamclient64.dll", ""))))
             {
-                ModConsole.Print($"<b><color=orange>Hello <color=lime>{"kidsrow!"}</color>!</color></b>");
+                ModConsole.Print($"<b><color=orange>Hello <color=lime>{"kidsrowCracked!"}</color>!</color></b>");
                 throw new Exception("[EMULATOR] Do What You Want, Cause A Pirate Is Free... You Are A Pirate!");
             }
-
+            if (File.Exists(Path.GetFullPath(Path.Combine("OnlineFix64.dll", ""))) || File.Exists(Path.GetFullPath(Path.Combine("winmm.dll", ""))) || File.Exists(Path.GetFullPath(Path.Combine("SteamOverlay64.dll", ""))) || File.Exists(Path.GetFullPath(Path.Combine("OnlineFix.ini", ""))) || File.Exists(Path.GetFullPath(Path.Combine("SteamFix64.dll", ""))))
+            {
+                ModConsole.Print($"<b><color=orange>Hello <color=lime>{"OnlineFixCracked!"}</color>!</color></b>");
+                throw new Exception("[EMULATOR] Do What You Want, Cause A Pirate Is Free... You Are A Pirate!");
+            }
             if (File.Exists(Path.GetFullPath(Path.Combine("", "steam_api.dll"))))
             {
                 if (ModMetadata.CalculateFileChecksum(Path.Combine("", "steam_api.dll")) != "7B857C897BC69313E4936DC3DCCE5193")
