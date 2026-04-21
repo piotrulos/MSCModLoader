@@ -63,7 +63,7 @@ internal class ModMenu : Mod
         Settings.AddText("You can disable Warning in colsone about launching external applications, but due to recent malware attempts <color=orange>it's recommended to keep it enabled to see what mods trying to launch externally.</color>");
         disableExternalWarnings = Settings.AddCheckBox("MSCLoader_disableExternalWarnings", "Disable console warnings about external applications", false);
         Settings.AddText("Below option forbids all external applications/commands from running. Enable it if you don't trust anyting.");
-        forbidExternal = Settings.AddCheckBox("MSCLoader_forbidExternal", "Forbid external applications completly", false);
+        forbidExternal = Settings.AddCheckBox("MSCLoader_forbidExternal", "Disable external applications calls completly", false);
         Settings.AddHeader("Update Settings");
         Settings.AddText("How often MSCLoader checks for Mod/References updates.");
         checkLaunch = Settings.AddCheckBoxGroup("MSCLoader_checkOnLaunch", "Every launch", true, "cfmu_set");

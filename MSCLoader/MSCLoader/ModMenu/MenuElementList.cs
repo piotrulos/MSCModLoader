@@ -521,6 +521,10 @@ namespace MSCLoader
                 Title.text = $"<color=lime>{mod.Name}</color>";
                 Author.text = $"by <color=orange>{mod.Author}</color> (<color=aqua>{mod.Version}</color>)";
                 DownloadInfoTxt.text = $"New Version ({mod.UpdateInfo.mod_version})";
+                if (string.IsNullOrEmpty(mod.Description))
+                    Description.text = "No short description provided...";
+                else
+                    Description.text = mod.Description;
                 if (ModLoader.ModSelfUpdateList.Contains(mod.ID))
                     DownloadUpdateBtn.onClick.AddListener(delegate
                     {
