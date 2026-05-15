@@ -1,6 +1,5 @@
 ﻿#if !Mini
 using HutongGames.PlayMaker;
-using System;
 
 namespace MSCLoader;
 
@@ -37,6 +36,7 @@ internal class SetMouseCursorFix : FsmStateAction
 /// <summary>
 /// Playmaker hook inject method.
 /// </summary>
+/// <exclude />
 [Obsolete("Obsolete", true)]
 public class FsmHook
 {
@@ -46,6 +46,7 @@ public class FsmHook
     /// <param name="gameObject">GameObject where to hook</param>
     /// <param name="stateName">Name of the state</param>
     /// <param name="hook">Your function to hook</param>
+    /// <exclude />
     [Obsolete("Please use the other FsmInject override.", true)]
     public static void FsmInject(GameObject gameObject, string stateName, Action hook)
     {

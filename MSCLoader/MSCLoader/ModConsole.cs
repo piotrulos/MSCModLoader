@@ -165,7 +165,7 @@ public class ModConsole : Mod
     public static void Error(string str)
     {
         string assemblyName = $"{System.Reflection.Assembly.GetCallingAssembly().GetName().Name} ";
-        if(assemblyName.StartsWith("MSCLoader")) assemblyName = "";
+        if (assemblyName.StartsWith("MSCLoader")) assemblyName = "";
         if (console != null)
         {
             console.SetVisibility(true);

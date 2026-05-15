@@ -448,6 +448,7 @@ namespace MSCLoader
                 Client.UploadFileCompleted += UploadBugReportCompleted;
                 Client.UploadProgressChanged += UploadBugReportProgressChanged;
                 bugUploadInProgress = true;
+                ModConsole.Print("Uploading Bug Report...");
                 Client.UploadFileAsync(new Uri($"{ModLoader.serverURL}/mscl_bugreport.php?steam={steamID}&resid={ID}&kameh={MSCLInfo.namePrefix}"), "POST", file);
             }
             yield return null;
@@ -461,11 +462,11 @@ namespace MSCLoader
         private void UploadBugReportProgressChanged(object sender, UploadProgressChangedEventArgs e)
         {
             bugUploadInProgress = true;
-            ModConsole.Print("Uploading... " + e.ProgressPercentage);
         }
 
         private void UploadBugReportCompleted(object sender, UploadFileCompletedEventArgs e)
         {
+            bugUploadInProgress = false;
             if (e.Error != null)
             {
                 ModConsole.Error("Failed to upload");
@@ -486,7 +487,6 @@ namespace MSCLoader
                     ModUI.ShowMessage("Bug Report uploaded successfully!", "Success");
                 }
             }
-            bugUploadInProgress = false;
 
         }
 

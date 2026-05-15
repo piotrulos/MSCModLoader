@@ -6,6 +6,7 @@ namespace MSCLoader;
 /// <summary>
 /// OBJLoader (obsoloete)
 /// </summary>
+/// <exclude />
 public class OBJLoader
 {
     private struct meshStruct
@@ -28,6 +29,7 @@ public class OBJLoader
     /// </summary>
     /// <param name="filePath"></param>
     /// <returns></returns>
+    /// <exclude />
     public Mesh ImportFile(string filePath)
     {
         meshStruct newMesh = createMeshStruct(filePath);

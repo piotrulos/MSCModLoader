@@ -13,6 +13,7 @@ namespace MSCLoader
         /// The ID of the settings (Should only be used once in your mod).
         /// </summary>
         /// <exclude />
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public string ID;
 
         /// <summary>
@@ -20,12 +21,16 @@ namespace MSCLoader
         /// </summary>
         /// <exclude />
         [Obsolete("No longer used", true)]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+
         public string Name { get => settingName; set { settingName = value; UpdateName(); } }
 
         /// <summary>
         /// The Mod this Setting belongs to (This is set when using Add whatever).
         /// </summary>
         /// <exclude />
+        [Obsolete("No longer used", true)]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public Mod Mod;
 
         /// <summary>
@@ -33,12 +38,15 @@ namespace MSCLoader
         /// </summary>
         /// <exclude />
         [Obsolete("No longer used", true)]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public object Value { get { GetValue(); return valueName; } set { valueName = value; UpdateValue(); } }
 
         /// <summary>
         /// Action to execute for specifed setting.
         /// </summary>
         /// <exclude />
+        [Obsolete("No longer used", true)]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public Action DoAction;
         internal SettingsType SettingType;
 
@@ -46,6 +54,8 @@ namespace MSCLoader
         /// Helpful additional variables.
         /// </summary>
         /// <exclude />
+        [Obsolete("No longer used", true)]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public object[] Vals;
 
         //internal Text NameText;
@@ -92,6 +102,7 @@ namespace MSCLoader
         /// <param name="value">Default Value for this setting</param>    
         /// <exclude />
         [Obsolete("No longer used", true)]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public Settings(string id, string name, object value)
         {
             ID = id;
@@ -108,6 +119,8 @@ namespace MSCLoader
         /// <param name="doAction">Function to execute for this setting</param>
         /// <exclude />
         [Obsolete("No longer used", true)]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+
         public Settings(string id, string name, Action doAction)
         {
             ID = id;
@@ -125,6 +138,8 @@ namespace MSCLoader
         /// <param name="doAction">Function to execute for this setting</param>
         /// <exclude />
         [Obsolete("No longer used", true)]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+
         public Settings(string id, string name, object value, Action doAction)
         {
             ID = id;
@@ -160,6 +175,7 @@ namespace MSCLoader
         /// <returns>SettingsCheckBox</returns>
         /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [Obsolete("Please switch to new settings format (just remove 'this,')", true)]
         public static SettingsCheckBox AddCheckBox(Mod mod, string settingID, string name, bool value = false, Action onValueChanged = null)
         {
             settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
@@ -178,6 +194,7 @@ namespace MSCLoader
         /// <returns>SettingsCheckBoxGroup</returns>
         /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [Obsolete("Please switch to new settings format (just remove 'this,')", true)]
         public static SettingsCheckBoxGroup AddCheckBoxGroup(Mod mod, string settingID, string name, bool value = false, string group = null, Action onValueChanged = null)
         {
             settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
@@ -198,6 +215,7 @@ namespace MSCLoader
         /// <returns>SettingsSliderInt</returns>
         /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [Obsolete("Please switch to new settings format (just remove 'this,')", true)]
         public static SettingsSliderInt AddSlider(Mod mod, string settingID, string name, int minValue, int maxValue, int value = 0, Action onValueChanged = null, string[] textValues = null)
         {
             settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
@@ -218,6 +236,7 @@ namespace MSCLoader
         /// <returns></returns>
         /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [Obsolete("Please switch to new settings format (just remove 'this,')", true)]
         public static SettingsSlider AddSlider(Mod mod, string settingID, string name, float minValue, float maxValue, float value = 0f, Action onValueChanged = null, int decimalPoints = 2)
         {
             settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
@@ -235,6 +254,7 @@ namespace MSCLoader
         /// <returns>SettingsTextBox</returns>
         /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [Obsolete("Please switch to new settings format (just remove 'this,')", true)]
         public static SettingsTextBox AddTextBox(Mod mod, string settingID, string name, string value, string placeholderText) => AddTextBox(mod, settingID, name, value, placeholderText, InputField.ContentType.Standard);
 
         /// <summary>
@@ -249,6 +269,7 @@ namespace MSCLoader
         /// <returns>SettingsTextBox</returns>
         /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [Obsolete("Please switch to new settings format (just remove 'this,')", true)]
         public static SettingsTextBox AddTextBox(Mod mod, string settingID, string name, string value, string placeholderText, InputField.ContentType contentType)
         {
             settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
@@ -267,6 +288,7 @@ namespace MSCLoader
         /// <returns>SettingsDropDownList</returns>
         /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [Obsolete("Please switch to new settings format (just remove 'this,')", true)]
         public static SettingsDropDownList AddDropDownList(Mod mod, string settingID, string name, string[] arrayOfItems, int defaultSelected = 0, Action OnSelectionChanged = null)
         {
             settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
@@ -282,6 +304,7 @@ namespace MSCLoader
         /// <returns>SettingsColorPicker</returns>
         /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [Obsolete("Please switch to new settings format (just remove 'this,')", true)]
         public static SettingsColorPicker AddColorPickerRGB(Mod mod, string settingID, string name, Action OnColorChanged = null) => AddColorPickerRGBInternal(mod, settingID, name, new Color32(0, 0, 0, 255), OnColorChanged, false);
         /// <summary>
         /// Add Color Picker with RGBA sliders
@@ -293,6 +316,7 @@ namespace MSCLoader
         /// <returns>SettingsColorPicker</returns>  
         /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [Obsolete("Please switch to new settings format (just remove 'this,')", true)]
         public static SettingsColorPicker AddColorPickerRGBA(Mod mod, string settingID, string name, Action OnColorChanged = null) => AddColorPickerRGBInternal(mod, settingID, name, new Color32(0, 0, 0, 255), OnColorChanged, true);
         /// <summary>
         /// Add Color Picker with RGB sliders
@@ -305,6 +329,7 @@ namespace MSCLoader
         /// <returns>SettingsColorPicker</returns>  
         /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [Obsolete("Please switch to new settings format (just remove 'this,')", true)]
         public static SettingsColorPicker AddColorPickerRGB(Mod mod, string settingID, string name, Color32 defaultColor, Action OnColorChanged = null) => AddColorPickerRGBInternal(mod, settingID, name, defaultColor, OnColorChanged, false);
         /// <summary>
         /// Add Color Picker with RGBA sliders
@@ -317,9 +342,11 @@ namespace MSCLoader
         /// <returns>SettingsColorPicker</returns>  
         /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [Obsolete("Please switch to new settings format (just remove 'this,')", true)]
         public static SettingsColorPicker AddColorPickerRGBA(Mod mod, string settingID, string name, Color32 defaultColor, Action OnColorChanged = null) => AddColorPickerRGBInternal(mod, settingID, name, defaultColor, OnColorChanged, true);
 
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [Obsolete("Please switch to new settings format (just remove 'this,')", true)]
         internal static SettingsColorPicker AddColorPickerRGBInternal(Mod mod, string settingID, string name, Color32 defaultColor, Action OnColorChanged, bool showAlphaSlider)
         {
             settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
@@ -333,6 +360,7 @@ namespace MSCLoader
         /// <param name="onClick">What to do when button is clicked</param>
         /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [Obsolete("Please switch to new settings format (just remove 'this,')", true)]
         public static void AddButton(Mod mod, string name, Action onClick) => AddButton(mod, $"{mod.ID}_btn", name, onClick, new Color32(85, 38, 0, 255), Color.white);
 
         /// <summary>
@@ -345,6 +373,7 @@ namespace MSCLoader
         /// <param name="buttonTextColor">Button text color</param>
         /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [Obsolete("Please switch to new settings format (just remove 'this,')", true)]
         public static void AddButton(Mod mod, string name, Action onClick, Color btnColor, Color buttonTextColor) => AddButton(mod, $"{mod.ID}_btn", name, onClick, btnColor, buttonTextColor);
 
         /// <summary>
@@ -356,6 +385,7 @@ namespace MSCLoader
         /// <param name="onClick">What to do when button is clicked</param>
         /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [Obsolete("Please switch to new settings format (just remove 'this,')", true)]
         public static void AddButton(Mod mod, string settingID, string name, Action onClick) => AddButton(mod, settingID, name, onClick, new Color32(85, 38, 0, 255), Color.white);
 
         /// <summary>
@@ -369,6 +399,7 @@ namespace MSCLoader
         /// <param name="buttonTextColor">Button text color</param>
         /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [Obsolete("Please switch to new settings format (just remove 'this,')", true)]
         public static void AddButton(Mod mod, string settingID, string name, Action onClick, Color btnColor, Color buttonTextColor)
         {
             settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
@@ -404,6 +435,7 @@ namespace MSCLoader
         /// <param name="HeaderTitle">Title of your header</param>
         /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [Obsolete("Please switch to new settings format (just remove 'this,')", true)]
         public static void AddHeader(Mod mod, string HeaderTitle) => AddHeader(mod, HeaderTitle, false);
 
         /// <summary>
@@ -414,6 +446,7 @@ namespace MSCLoader
         /// <param name="collapsedByDefault">Header collapsed by default (optional default=false)</param>
         /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [Obsolete("Please switch to new settings format (just remove 'this,')", true)]
         public static void AddHeader(Mod mod, string HeaderTitle, bool collapsedByDefault = false) => AddHeader(mod, HeaderTitle, new Color32(95, 34, 18, 255), new Color32(236, 229, 2, 255), collapsedByDefault);
 
         /// <summary>
@@ -424,6 +457,7 @@ namespace MSCLoader
         /// <param name="backgroundColor">Background color of header</param>
         /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [Obsolete("Please switch to new settings format (just remove 'this,')", true)]
         public static void AddHeader(Mod mod, string HeaderTitle, Color backgroundColor) => AddHeader(mod, HeaderTitle, backgroundColor, false);
 
         /// <summary>
@@ -435,6 +469,7 @@ namespace MSCLoader
         /// <param name="collapsedByDefault">Header collapsed by default (optional default=false)</param>
         /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [Obsolete("Please switch to new settings format (just remove 'this,')", true)]
         public static void AddHeader(Mod mod, string HeaderTitle, Color backgroundColor, bool collapsedByDefault = false) => AddHeader(mod, HeaderTitle, backgroundColor, new Color32(236, 229, 2, 255), collapsedByDefault);
 
         /// <summary>
@@ -446,6 +481,7 @@ namespace MSCLoader
         /// <param name="textColor">Text Color of header</param>
         /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [Obsolete("Please switch to new settings format (just remove 'this,')", true)]
         public static void AddHeader(Mod mod, string HeaderTitle, Color backgroundColor, Color textColor) => AddHeader(mod, HeaderTitle, backgroundColor, textColor, false);
 
         /// <summary>
@@ -458,6 +494,7 @@ namespace MSCLoader
         /// <param name="collapsedByDefault">Header collapsed by default (optional default=false)</param>
         /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [Obsolete("Please switch to new settings format (just remove 'this,')", true)]
         public static void AddHeader(Mod mod, string HeaderTitle, Color backgroundColor, Color textColor, bool collapsedByDefault = false)
         {
             settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)
@@ -489,6 +526,7 @@ namespace MSCLoader
         /// <param name="text">Just a text (supports unity rich text)</param>
         /// <exclude />
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [Obsolete("Please switch to new settings format (just remove 'this,')", true)]
         public static void AddText(Mod mod, string text)
         {
             settingsMod = mod; //Just for backward compatibility (if settings were made outside ModSettings function)

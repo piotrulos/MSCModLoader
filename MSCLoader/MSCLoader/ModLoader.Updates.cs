@@ -398,7 +398,7 @@ public partial class ModLoader : MonoBehaviour
                 canvLoading.SetUpdate("Uploading update file...", 0, 100, "Connecting...");
                 while (downloadInProgress)
                 {
-                    canvLoading.SetUpdateProgress(downloadPercentage, $"(Uploading) <color=aqua>{ID}.zip</color> [<color=lime>{downloadPercentage}%</color>]");
+                    canvLoading.SetUpdateProgress(5, $"(Uploading) <color=aqua>{ID}.zip</color> [...]");
                     yield return null;
                 }
                 File.Delete(Path.Combine(tmpFolder, $"{ID}.zip"));
@@ -426,6 +426,7 @@ public partial class ModLoader : MonoBehaviour
 
     private void UploadModUpdateProgress(object sender, UploadProgressChangedEventArgs e)
     {
+        //This is broken in 5.0.0 somehow
         downloadInProgress = true;
         downloadPercentage = e.ProgressPercentage;
     }
