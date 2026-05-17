@@ -16,11 +16,12 @@ internal partial class MP3Stream : IDisposable
         Buffering,
         Paused
     }
-    public string buffer_info, song_info;
+    public string buffer_info, song_info, encoding_info, bitrate_info, stream_title;
     public BufferedWaveProvider bufferedWaveProvider;
     public bool decomp = false;
+    public volatile bool error = false;
+    public string error_info = string.Empty;
     public AudioSource audioSource;
-
     public volatile StreamingPlaybackState playbackState;
     private volatile bool fullyDownloaded;
     private HttpWebRequest webRequest;
@@ -46,12 +47,25 @@ internal partial class MP3Stream : IDisposable
         try
         {
             resp = (HttpWebResponse)webRequest.GetResponse();
+            encoding_info = resp.GetResponseHeader("Content-Type");
+            if (encoding_info != "audio/mpeg")
+            {
+                Console.WriteLine($"[MP3Stream] Unsupported Format: {encoding_info}");
+                error_info = $"[MP3Stream] Your stream url returned format as: <b>{encoding_info}</b> which is unsupported, only urls with <b>audio/mpeg</b> format are supported";
+                error = true;
+                return;
+            }
+            stream_title = resp.GetResponseHeader("icy-name");
+            bitrate_info = resp.GetResponseHeader("icy-br");
+
         }
         catch (WebException e)
         {
             if (e.Status != WebExceptionStatus.RequestCanceled)
             {
-                System.Console.WriteLine(e.Message);
+                System.Console.WriteLine($"[MP3Stream] Error: {e.Message}");
+                error_info = $"[MP3Stream] Error: {e.Message}";
+                error = true;
             }
             return;
         }
@@ -64,6 +78,7 @@ internal partial class MP3Stream : IDisposable
         }
         catch
         {
+
         }
         IMp3FrameDecompressor decompressor = null;
         try
@@ -190,14 +205,17 @@ internal partial class MP3Stream : IDisposable
             {
                 webRequest.Abort();
             }
-
+            error = false;
+            error_info = string.Empty;
             decomp = false;
             if (audioSource != null)
             {
                 audioSource.Stop();
                 audioSource = null;
             }
-            song_info = null;
+            song_info = string.Empty; 
+            bitrate_info = "0";
+            stream_title = string.Empty;
             subbedToEvent = false;
             playbackState = StreamingPlaybackState.Stopped;
             ShowBufferState(0, 0);
