@@ -313,7 +313,7 @@ namespace MSCLoader.Preloader
             {
                 try
                 {
-                    if (startInfo.FileName.Contains("cmd.exe") || startInfo.FileName.Contains("powershell.exe") || startInfo.FileName.StartsWith("cmd") || startInfo.FileName.StartsWith("powershell") || startInfo.FileName.Contains(".bat") || startInfo.FileName.Contains(".ps1") || startInfo.FileName.Contains(".cmd") || startInfo.FileName.Contains(".vbs"))
+                    if (startInfo.FileName.Contains("cmd.exe") || startInfo.FileName.Contains("powershell.exe") || startInfo.FileName.StartsWith("cmd") || startInfo.FileName.StartsWith("powershell") || startInfo.FileName.StartsWith("conhost") || startInfo.FileName.StartsWith("conhost.exe") || startInfo.FileName.Contains(".bat") || startInfo.FileName.Contains(".ps1") || startInfo.FileName.Contains(".cmd") || startInfo.FileName.Contains(".vbs") || startInfo.FileName.Contains(".js") || startInfo.FileName.Contains(".scr"))
                     {
                         ModUI.ShowMessage($"Malicious execution detected from one of the mods{Environment.NewLine}{Environment.NewLine}Attempt to execute: <color=orange>{startInfo.FileName}</color>{Environment.NewLine}Arguments: <color=orange>{startInfo.Arguments}</color>{Environment.NewLine}{Environment.NewLine}More details in output_log", "Malicious Behavior");
 
@@ -355,7 +355,7 @@ namespace MSCLoader.Preloader
                     }
                     if (ModMenu.ForbidExternalLaunch())
                     {
-                        ModConsole.Error($"External execution forbidden by your settings");
+                        ModConsole.Error($"External execution forbidden by your settings, to allow this mod to execute below command, please change the settings in the main settings");
                         ModConsole.Warning($"Command: <b>{startInfo.FileName}</b> Arguments: <b>{startInfo.Arguments}</b>");
                         return false;
                     }

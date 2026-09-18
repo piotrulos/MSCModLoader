@@ -129,7 +129,7 @@ internal partial class MP3Stream : IDisposable
                             decompressor = CreateFrameDecompressor(frame);
                             bufferedWaveProvider = new BufferedWaveProvider(decompressor.OutputFormat)
                             {
-                                BufferDuration = TimeSpan.FromSeconds(30) // allow us to get well ahead of ourselves
+                                BufferDuration = TimeSpan.FromSeconds(45) // allow us to get well ahead of ourselves
                             };
                             //this.bufferedWaveProvider.BufferedDuration = 250;
 
