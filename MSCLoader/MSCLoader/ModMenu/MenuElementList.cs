@@ -82,7 +82,7 @@ namespace MSCLoader
             DisableMod.isOn = mod.isDisabled;
             DisableMod.onValueChanged.AddListener(DisableThisMod);
             QuickInfo.text = $"<color=yellow>ID:</color> <color=aqua>{mod.ID}</color> (MSCLoader <color=yellow>{mod.compiledVersion}</color>){Environment.NewLine}";
-            if (mod.hasUpdate)
+            if (mod.updateAvailable)
                 QuickInfo.text += $"<color=yellow>Version:</color> <color=aqua>{mod.Version}</color> (<color=lime>{mod.UpdateInfo.mod_version} available</color>){Environment.NewLine}";
             else
                 QuickInfo.text += $"<color=yellow>Version:</color> <color=aqua>{mod.Version}</color>{Environment.NewLine}";

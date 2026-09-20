@@ -72,7 +72,7 @@ public partial class Mod
     }
 
     //Configuraton flags
-    internal bool hasUpdate = false;
+    internal bool updateAvailable = false;
     internal bool newFormat = false;
     internal bool newEnDisFormat = false;
     internal bool newSettingsFormat = false;

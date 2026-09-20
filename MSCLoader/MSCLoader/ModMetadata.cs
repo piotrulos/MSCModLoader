@@ -552,7 +552,7 @@ internal class ModMetadata
                 switch (v1.CompareTo(v2))
                 {
                     case 1:
-                        mod.hasUpdate = true;
+                        mod.updateAvailable = true;
                         ModLoader.HasUpdateModList.Add(mod);
                         if (mv.versions[i].mod_type == 4 || mv.versions[i].mod_type == 6)
                         {
@@ -562,7 +562,7 @@ internal class ModMetadata
                     case -1:
                         if (mv.versions[i].mod_type == 6)
                         {
-                            mod.hasUpdate = true;
+                            mod.updateAvailable = true;
                             ModLoader.ModSelfUpdateList.Add(mod.ID);
                             ModLoader.HasUpdateModList.Add(mod);
                         }

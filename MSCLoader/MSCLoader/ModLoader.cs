@@ -143,20 +143,14 @@ public partial class ModLoader : MonoBehaviour
                     unloader = true;
                     return;
                 }
-#if MWC
-                //OnNewGame() temporary MWC point until intro exist
-                GameObject ngm = GameObject.Find("Interface/Buttons/ButtonNewgame").GetPlayMaker("SetSize").GetState("State 1").GetAction<ActivateGameObject>(1).gameObject.GameObject.Value;
-                ngm.transform.Find("Buttons/ButtonBegin").GetPlayMaker("SetSize").FsmInject("Load", ModNewGameReset, false, 0);
-#endif
+
                 if (IsReferencePresent("MSCCoreLibrary"))
                     TimeSchedulerCalls("stop");
 
                 break;
             case "Intro":
                 currentScene = CurrentScene.NewGameIntro;
-#if MSC
                 ModNewGameReset();
-#endif
                 break;
             case "GAME":
                 currentScene = CurrentScene.Game;
