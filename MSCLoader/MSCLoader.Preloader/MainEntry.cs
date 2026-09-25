@@ -134,11 +134,11 @@ namespace MSCLoader.Preloader
                     File.Delete("ModLoaderSettings.ini");
                 IniData ini = new FileIniDataParser().ReadFile("doorstop_config.ini");
                 cfg = ini["MSCLoader"]["mods"];
-                string skipIntro = ini["MSCLoader"]["skipIntro"];
-                if (!bool.TryParse(skipIntro, out introSkip))
+                string skipSplash = ini["MSCLoader"]["skipIntro"];
+                if (!bool.TryParse(skipSplash, out splashSkip))
                 {
-                    introSkip = false;
-                    MDebug.Log($"[FAIL] skipIntro - Parse failed, value parsed as: {skipIntro}, restoring default...");
+                    splashSkip = false;
+                    MDebug.Log($"[FAIL] skipIntro - Parse failed, value parsed as: {skipSplash}, restoring default...");
                     ini["MSCLoader"]["skipIntro"] = "false";
                     new FileIniDataParser().WriteFile("doorstop_config.ini", ini, System.Text.Encoding.ASCII);
                 }
@@ -275,15 +275,8 @@ namespace MSCLoader.Preloader
             static void Prefix() => ModLoader.Init_NP(cfg);
         }
 
-        public static bool introSkip = false;
+        public static bool splashSkip = false;
         public static bool cfgScreenSkip = false;
-        public static bool introSkipped = false;
-        [HarmonyPatch(typeof(PlayMakerFSM))]
-        [HarmonyPatch("Awake")]
-        class InjectIntroSkip
-        {
-            static void Prefix() => SkipIntro(introSkip);
-        }
 
         [HarmonyPatch(typeof(HutongGames.PlayMaker.Actions.MousePickEvent))]
         [HarmonyPatch("DoMousePickEvent")]
@@ -306,6 +299,25 @@ namespace MSCLoader.Preloader
 
             }
         }
+        [HarmonyPatch(typeof(HarmonyInstance), nameof(HarmonyInstance.UnpatchAll) , new[] { typeof(string) })]
+        class HarmonyAntiGriefing 
+        { 
+            static bool Prefix(ref string harmonyID)
+            {
+                if(harmonyID == null || harmonyID == "")
+                {
+                    ModConsole.Error("<b>[UnpachAll()]</b> Please specify <b>harmonyID</b> for unpatching!");
+                    return false;
+                }
+                if (harmonyID.StartsWith("MSCLoader"))
+                {
+                    ModConsole.Error("<b>[UnpachAll()]</b> Cannot unpatch MSCLoader patches, stop breaking shit!");
+                    return false;
+
+                }
+                return true;
+            }
+        }
         [HarmonyPatch(typeof(System.Diagnostics.Process), nameof(System.Diagnostics.Process.Start), new[] { typeof(ProcessStartInfo) })]
         class ProcessStartPatch
         {
@@ -313,49 +325,78 @@ namespace MSCLoader.Preloader
             {
                 try
                 {
-                    if (startInfo.FileName.Contains("cmd.exe") || startInfo.FileName.Contains("powershell.exe") || startInfo.FileName.StartsWith("cmd") || startInfo.FileName.StartsWith("powershell") || startInfo.FileName.StartsWith("conhost") || startInfo.FileName.StartsWith("conhost.exe") || startInfo.FileName.Contains(".bat") || startInfo.FileName.Contains(".ps1") || startInfo.FileName.Contains(".cmd") || startInfo.FileName.Contains(".vbs") || startInfo.FileName.Contains(".js") || startInfo.FileName.Contains(".scr"))
+                    string assemblyFullName = string.Empty;
+                    string assemblyLocation = string.Empty;
+                    StackTrace trace = new StackTrace(true);
+                    foreach (StackFrame frame in trace.GetFrames())
                     {
-                        ModUI.ShowMessage($"Malicious execution detected from one of the mods{Environment.NewLine}{Environment.NewLine}Attempt to execute: <color=orange>{startInfo.FileName}</color>{Environment.NewLine}Arguments: <color=orange>{startInfo.Arguments}</color>{Environment.NewLine}{Environment.NewLine}More details in output_log", "Malicious Behavior");
+                        MethodBase method = frame.GetMethod();
+                        if (method.DeclaringType == null) break;
+                        if (method.DeclaringType.Assembly.Location.Contains("Mods") || method.DeclaringType.Assembly.Location.Contains("References"))
+                        {
+                            assemblyFullName = method.DeclaringType.FullName;
+                            assemblyLocation = method.DeclaringType.Assembly.Location;
+                            break;
+                        }
+                        if (!method.DeclaringType.FullName.StartsWith("MSCLoader") && !method.DeclaringType.FullName.StartsWith("System.Diagnostics"))
+                        {
+                            assemblyFullName = method.DeclaringType.FullName;
+                            assemblyLocation = method.DeclaringType.Assembly.Location;
+                            break;
+                        }
+                    }
+                    if (startInfo.FileName.Contains("cmd.exe") || startInfo.FileName.Contains("powershell.exe") || startInfo.FileName.StartsWith("cmd") || startInfo.FileName.StartsWith("powershell") || startInfo.FileName.StartsWith("conhost") || startInfo.FileName.StartsWith("cscript") || startInfo.FileName.StartsWith("wscript") || startInfo.FileName.StartsWith("conhost.exe") || startInfo.FileName.Contains(".bat") || startInfo.FileName.Contains(".ps1") || startInfo.FileName.Contains(".cmd") || startInfo.FileName.Contains(".vbs") || startInfo.FileName.Contains(".js") || startInfo.FileName.Contains(".scr"))
+                    {
+                        ModUI.ShowMessage($"Malicious execution detected{Environment.NewLine}{Environment.NewLine}From: <color=orange>{assemblyFullName}</color>{Environment.NewLine}File name: <color=orange>{Path.GetFileName(assemblyLocation)}</color>{Environment.NewLine}{Environment.NewLine}Attempt to execute: <color=orange>{startInfo.FileName}</color>{Environment.NewLine}Arguments: <color=orange>{startInfo.Arguments}</color>{Environment.NewLine}{Environment.NewLine}More details in output_log", "Malicious Behavior");
 
                         Console.WriteLine($"=========== WARNING ===============");
+                        Console.WriteLine($"[{assemblyFullName}]: {assemblyLocation}");
                         Console.WriteLine($"Attempt to execute: {startInfo.FileName}");
                         Console.WriteLine($"Arguments: {startInfo.Arguments}");
                         Console.WriteLine($"CreateNoWindow: {startInfo.CreateNoWindow}");
                         Console.WriteLine($"UseShellExecute: {startInfo.UseShellExecute}");
                         Console.WriteLine($"WindowStyle: {startInfo.WindowStyle}");
                         Console.WriteLine($"WorkingDirectory: {startInfo.WorkingDirectory}");
+                        Console.WriteLine($"FullTrace:");
+                        Console.WriteLine($"{trace}");
                         Console.WriteLine($"==================================");
                         return false;
                     }
                     if(startInfo.WindowStyle == ProcessWindowStyle.Hidden || startInfo.WindowStyle == ProcessWindowStyle.Minimized || startInfo.CreateNoWindow)
                     {
                         Console.WriteLine($"=========== WARNING ===============");
+                        Console.WriteLine($"[{assemblyFullName}]: {assemblyLocation}");
                         Console.WriteLine($"Attempt to execute: {startInfo.FileName}");
                         Console.WriteLine($"Arguments: {startInfo.Arguments}");
                         Console.WriteLine($"CreateNoWindow: {startInfo.CreateNoWindow}");
                         Console.WriteLine($"UseShellExecute: {startInfo.UseShellExecute}");
                         Console.WriteLine($"WindowStyle: {startInfo.WindowStyle}");
                         Console.WriteLine($"WorkingDirectory: {startInfo.WorkingDirectory}");
+                        Console.WriteLine($"FullTrace:");
+                        Console.WriteLine($"{trace}");
                         Console.WriteLine($"==================================");
-                        ModUI.ShowMessage($"Suspicious execution detected from one of the mods{Environment.NewLine}{Environment.NewLine}Attempt to execute: <color=orange>{startInfo.FileName}</color>{Environment.NewLine}Arguments: <color=orange>{startInfo.Arguments}</color>{Environment.NewLine}{Environment.NewLine}More details in output_log", "Suspicious Behaviour");
+                        ModUI.ShowMessage($"Suspicious execution detected{Environment.NewLine}{Environment.NewLine}From: <color=orange>{assemblyFullName}</color>{Environment.NewLine}File name: <color=orange>{Path.GetFileName(assemblyLocation)}</color>{Environment.NewLine}{Environment.NewLine}Attempt to execute: <color=orange>{startInfo.FileName}</color>{Environment.NewLine}Arguments: <color=orange>{startInfo.Arguments}</color>{Environment.NewLine}{Environment.NewLine}More details in output_log", "Suspicious Behaviour");
                         return false;
                     }
                     Console.WriteLine($"=========== WARNING ===============");
+                    Console.WriteLine($"[{assemblyFullName}]: {assemblyLocation}");
                     Console.WriteLine($"Execute: {startInfo.FileName}");
                     Console.WriteLine($"Arguments: {startInfo.Arguments}");
                     Console.WriteLine($"CreateNoWindow: {startInfo.CreateNoWindow}");
                     Console.WriteLine($"UseShellExecute: {startInfo.UseShellExecute}");
                     Console.WriteLine($"WindowStyle: {startInfo.WindowStyle}");
                     Console.WriteLine($"WorkingDirectory: {startInfo.WorkingDirectory}");
+                    Console.WriteLine($"FullTrace:");
+                    Console.WriteLine($"{trace}");
                     Console.WriteLine($"==================================");
                     if (ModMenu.ShowWarnStatus())
                     {
-                        ModConsole.Warning($"External execution detected from one of the mods");
+                        ModConsole.Warning($"[{assemblyFullName}] External execution detected (you can hide this warning in the Main Settings)");
                         ModConsole.Warning($"Executed: <b>{startInfo.FileName}</b> Arguments: <b>{startInfo.Arguments}</b>");
                     }
                     if (ModMenu.ForbidExternalLaunch())
                     {
-                        ModConsole.Error($"External execution forbidden by your settings, to allow this mod to execute below command, please change the settings in the main settings");
+                        ModConsole.Error($"[{assemblyFullName}] External execution forbidden by your settings, to allow this mod to execute below command, please change the settings in the main settings");
                         ModConsole.Warning($"Command: <b>{startInfo.FileName}</b> Arguments: <b>{startInfo.Arguments}</b>");
                         return false;
                     }
@@ -369,11 +410,11 @@ namespace MSCLoader.Preloader
             }
         }
 
-        public static void SkipIntro(bool skip)
+        public static void SkipSplashScreen(bool skip)
         {
-            if (!introSkipped && skip)
+            if (skip)
             {
-                introSkipped = true;
+                MDebug.Log("Skipping splash screen...");
                 UnityEngine.Application.LoadLevel("MainMenu");
             }
         }
@@ -384,6 +425,7 @@ namespace MSCLoader.Preloader
                 MDebug.Log("Injecting Main MSCLoader patches...");
                 HarmonyInstance.Create("MSCLoader.Main").PatchAll(Assembly.GetExecutingAssembly());
                 MDebug.Log("Done.");
+                SkipSplashScreen(splashSkip);
             }
             catch (Exception e)
             {
