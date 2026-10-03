@@ -7,12 +7,15 @@ namespace MSCLoader;
 /// </summary>
 public class ModUIDrag : MonoBehaviour, IDragHandler
 {
-
-    RectTransform m_transform = null;
+    /// <summary>
+    /// RectTransform to move (recommended to be root of the window)
+    /// </summary>
+    public RectTransform m_transform = null;
 
     void Start()
     {
-        m_transform = GetComponent<RectTransform>();
+        if(m_transform == null)
+            m_transform = GetComponent<RectTransform>();
     }
     void IDragHandler.OnDrag(PointerEventData eventData)
     {

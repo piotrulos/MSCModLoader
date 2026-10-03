@@ -681,7 +681,7 @@ public partial class ModLoader : MonoBehaviour
     private void LoadReferences()
     {
         string[] files = Directory.GetFiles(Path.Combine(ModsFolder, "References"), "*.dll");
-        string[] alreadyIncluded = Directory.GetFiles(ManagedPath, "*.dll").Select(Path.GetFileName).ToArray();
+        string[] alreadyIncluded = [.. Directory.GetFiles(ManagedPath, "*.dll").Select(Path.GetFileName)];
         string[] unusedFiles = [];
 
         if (File.Exists(Path.Combine(Path.Combine(ModsFolder, "References"), "unused.txt")))
@@ -690,7 +690,7 @@ public partial class ModLoader : MonoBehaviour
         }
         for (int i = 0; i < files.Length; i++)
         {
-            if (Path.GetFileName(files[i]) == "0Harmony12.dll" || Path.GetFileName(files[i]) == "0Harmony-1.2.dll" || Path.GetFileName(files[i]) == "Ionic.Zip.dll" || alreadyIncluded.Contains(Path.GetFileName(files[i])))
+            if (Path.GetFileName(files[i]) == "0Harmony12.dll" || Path.GetFileName(files[i]) == "0Harmony-1.2.dll" || Path.GetFileName(files[i]) == "Ionic.Zip.dll" || Path.GetFileName(files[i]) == "System.Threading.dll" || alreadyIncluded.Contains(Path.GetFileName(files[i])))
             {
                 ModConsole.Warning($"<b>{Path.GetFileName(files[i])}</b> already exist in <b>{Path.GetFullPath(ManagedPath)}</b> - skipping");
                 File.Delete(files[i]);
@@ -745,6 +745,8 @@ public partial class ModLoader : MonoBehaviour
         ReferencesList.Add(reference);
         Console.WriteLine($"GUID: {reference.Guid}");
         Console.WriteLine($"ReferenceID: {reference.AssemblyID} (v{reference.AssemblyFileVersion}) [{reference.AssemblyAuthor}]");
+        if (!ass.ImageRuntimeVersion.Equals(Assembly.GetExecutingAssembly().ImageRuntimeVersion))
+            ModConsole.Warning($"File <b>{Path.GetFileName(fn)}</b> is targeting runtime version <b>{ass.ImageRuntimeVersion}</b> which is different than current running version <b>{Assembly.GetExecutingAssembly().ImageRuntimeVersion}</b>. This may cause unexpected behaviours (like crashes), check if this reference compatible with mono2.0/net3.5");
     }
     private void LoadCoreAssets()
     {

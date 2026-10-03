@@ -16,10 +16,11 @@ namespace MSCLoader
 
         [Header("Values")]
         public RawImage icon;
-        public Text Title, Author, Description, QuickInfo, WarningInfo, WarningText;
+        public Text Title, Author, Description, QuickInfo, WarningInfo, WarningText, DisabledText;
         public Button SettingsBtn, KeybindsBtn, MoreInfoBtn, WarningBtn, BugReportBtn;
         public Toggle DisableMod;
         public Texture2D invalidModIcon, ReferenceIcon, invalidReferenceIcon;
+        public Material grayscaleMat;
 
         [Header("Additional Values")]
         public Text DownloadInfoTxt;
@@ -38,12 +39,16 @@ namespace MSCLoader
             if (mod.isDisabled)
             {
                 Title.text = $"<color=red>{mod.Name}</color>";
-                WarningText.gameObject.SetActive(true);
+              //  WarningText.gameObject.SetActive(true);
                 BugReportBtn.gameObject.SetActive(false);
-                WarningText.text = "Mod is disabled";
+              //  WarningText.text = "Mod is disabled";
+              icon.material = grayscaleMat;
+                DisabledText.gameObject.SetActive(true);
             }
             else
             {
+                icon.material = null;
+                DisabledText.gameObject.SetActive(false);
                 Title.text = mod.Name;
                 if (mod.isEA)
                 {
@@ -641,8 +646,10 @@ namespace MSCLoader
                         ModLoader.ModException(e, mod);
                     }
                     Title.text = $"<color=red>{mod.Name}</color>";
-                    WarningText.gameObject.SetActive(true);
-                    WarningText.text = "Mod is disabled";
+                    DisabledText.gameObject.SetActive(true);
+                    icon.material = grayscaleMat;
+                  //  WarningText.gameObject.SetActive(true);
+                   // WarningText.text = "Mod is disabled";
                     if (mod.disableWarn)
                     {
                         ModUI.ShowMessage("This mod was loaded in Main Menu, to fully disable this mod you need to restart the game.");
@@ -676,8 +683,10 @@ namespace MSCLoader
                         ModLoader.ModException(e, mod);
                     }
                     Title.text = mod.Name;
-                    WarningText.text = string.Empty;
-                    WarningText.gameObject.SetActive(false);
+                    //  WarningText.text = string.Empty;
+                    // WarningText.gameObject.SetActive(false);
+                    DisabledText.gameObject.SetActive(false);
+                    icon.material = null;
                     if (onEnableExist)
                         ModConsole.Print($"Mod <b><color=orange>{mod.Name}</color></b> has been <color=green><b>Enabled</b></color>");
                     else

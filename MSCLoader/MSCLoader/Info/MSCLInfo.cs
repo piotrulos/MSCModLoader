@@ -13,7 +13,7 @@ internal class MSCLInfo
     public static readonly string namePrefix = "msc";
 #endif
 #if MWC
-    public static readonly string menuAssetVersion = "f3bc75de";
+    public static readonly string menuAssetVersion = "c9aa6576";
     public static readonly string consoleAssetVersion = "7099769d";
     public static readonly string coreAssetsPath = "MSCLoader.CoreAssets.core_mwc.unity3d";
     public static readonly string namePrefix = "mwc";

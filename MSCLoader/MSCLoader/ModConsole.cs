@@ -138,6 +138,7 @@ public class ModConsole : Mod
         ConsoleCommand.Add(new MetadataCommand());
         ConsoleCommand.Add(new EarlyAccessCommand());
         ConsoleCommand.Add(new SaveDbgCommand());
+        ConsoleCommand.Add(new HarmonyCommand());
     }
     internal static void PrintSplit(string str, bool start)
     {

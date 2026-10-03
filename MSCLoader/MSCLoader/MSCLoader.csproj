@@ -61,6 +61,9 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\0Harmony.dll</HintPath>
+    </Reference>
     <Reference Include="Assembly-CSharp" Condition="!$(DefineConstants.Contains('Mini'))">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
@@ -138,6 +141,7 @@
     <Compile Include="Commands\CommandLogAll.cs" />
     <Compile Include="Commands\EarlyAccessCommand.cs" />
     <Compile Include="Commands\MetadataCommand.cs" />
+    <Compile Include="Commands\HarmonyCommand.cs" />
     <Compile Include="Commands\SaveDbgCommand.cs" />
     <Compile Include="ConsoleCommand.cs" />
     <Compile Include="ConsoleController.cs" />
