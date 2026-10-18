@@ -1129,7 +1129,7 @@ public partial class ModLoader : MonoBehaviour
 #if MSC
         GameObject.Find("ITEMS").GetComponent<PlayMakerFSM>().FsmInject("Save game", SaveMods);
 #elif MWC
-        GameObject.Find("Database/PlayerDatabase").GetPlayMaker("Simulation").FsmInject("Save data", SaveMods); //TODO: test
+        GameObject.Find("Database/PlayerDatabase").GetPlayMaker("Simulation").FsmInject("Save data", SaveMods); 
 #endif
         ModConsole.PrintSplit("<i></i></color>", false);
 
@@ -1512,6 +1512,10 @@ public partial class ModLoader : MonoBehaviour
             string[] res = asm.GetManifestResourceNames();
             for (int i = 0; i < res.Length; i++)
             {
+                if (res[i].EndsWith(".ps1") || res[i].EndsWith(".bat"))
+                {
+                    throw new Exception($"{Path.GetFileName(file)} - Executable files in resources are no longer allowed. Move them outside of the assembly.");
+                }
                 Stream resourceStream = asm.GetManifestResourceStream(res[i]);
                 if (resourceStream != null)
                 {
@@ -1529,27 +1533,27 @@ public partial class ModLoader : MonoBehaviour
             }
 
             bool isMod = false;
-            AssemblyName[] list = asm.GetReferencedAssemblies();
+            AssemblyName[] refAsm = asm.GetReferencedAssemblies();          
             if (Attribute.IsDefined(asm, typeof(System.Runtime.InteropServices.GuidAttribute)))
                 asmGuid = ((System.Runtime.InteropServices.GuidAttribute)Attribute.GetCustomAttribute(asm, typeof(System.Runtime.InteropServices.GuidAttribute))).Value;
             Console.WriteLine($"GUID: {asmGuid}");
             string msVer = null;
-            for (int i = 0; i < list.Length; i++)
+            for (int i = 0; i < refAsm.Length; i++)
             {
-                if (!stdRef.Contains(list[i].Name))
+                if (!stdRef.Contains(refAsm[i].Name))
                 {
-                    addRef.Add(list[i].Name);
+                    addRef.Add(refAsm[i].Name);
                 }
-                if (list[i].Name == "LightspeedModLoader" || list[i].Name == "MWCLoader" || list[i].Name == "MelonLoader" || list[i].Name == "BepInEx")
+                if (refAsm[i].Name == "LightspeedModLoader" || refAsm[i].Name == "MWCLoader" || refAsm[i].Name == "MelonLoader" || refAsm[i].Name == "BepInEx")
                 {
                     File.Move(file, Path.Combine(ModsFolder, Path.GetFileName(file) + ".PendingOverwrite"));
                     throw new Exception("This mod is not designed for MSCLoader and will be removed.");
                 }
-                if (list[i].Name == "MSCLoader")
+                if (refAsm[i].Name == "MSCLoader")
                 {
                     mscl = true;
-                    string[] verparse = list[i].Version.ToString().Split('.');
-                    if (list[i].Version.ToString() == "1.0.0.0")
+                    string[] verparse = refAsm[i].Version.ToString().Split('.');
+                    if (refAsm[i].Version.ToString() == "1.0.0.0")
                         msVer = "0.1";
                     else
                     {
@@ -1567,7 +1571,7 @@ public partial class ModLoader : MonoBehaviour
 
             // Look through all public classes
             Type[] asmTypes = asm.GetTypes();
-
+           
             for (int j = 0; j < asmTypes.Length; j++)
             {
                 if (asmTypes[j] == null) continue;
@@ -1609,6 +1613,19 @@ public partial class ModLoader : MonoBehaviour
                         LoadMod(m, msVer, file, [.. addRef], isEA);
                     else
                         LoadMod(m, msVer, file, null, isEA);
+                    EnsureAI(m, asmTypes);
+                    try
+                    {
+                        string[] nativeList = PeModuleRefs.ReadNativeDlls(Path.GetFullPath(file));
+                        if (nativeList != null)
+                        {
+                            m.warnings.NativeAssembliesFound(nativeList);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
                     break;
                 }
                 else
@@ -1669,6 +1686,35 @@ public partial class ModLoader : MonoBehaviour
         }
 
     }
+
+    //Obviously "Ensure" it.
+    private void EnsureAI(Mod mod, Type[] types)
+    {
+        for(int i = 0; i < types.Length; i++)
+        {
+            if (types[i].Name.ToLower().Contains("confusedby"))
+            {
+                mod.warnings.Obf();
+            }
+            var me = types[i].GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+            
+            for (int j = 0; j < me.Length; j++)
+            {
+                if (me[j].Name.ToLower().StartsWith("ensure"))
+                {
+                    mod.disclosures.EnsureAI();
+                    continue;
+                }
+                if (me[j].Name.ToLower().Contains("ensure"))
+                {
+                    mod.disclosures.EnsureAILC();
+                    continue;
+                }
+            }
+
+        }
+    }
+
     private bool ReferencesArePresent(string[] refs)
     {
         int count = 0;
@@ -1705,6 +1751,10 @@ public partial class ModLoader : MonoBehaviour
             if (mod.AdditionalReferences != null)
             {
                 modIDsReferences.Add(mod.ID);
+                if (mod.AdditionalReferences.Contains("0Harmony"))
+                {
+                    mod.warnings.HarmonyUsage();
+                }
             }
             try
             {

@@ -318,10 +318,40 @@ namespace MSCLoader.Preloader
                 return true;
             }
         }
-        [HarmonyPatch(typeof(System.Diagnostics.Process), nameof(System.Diagnostics.Process.Start), new[] { typeof(ProcessStartInfo) })]
+        [HarmonyPatch(typeof(HarmonyInstance), nameof(HarmonyInstance.Create), new[] { typeof(string) })]
+        class HarmonyTrack
+        {
+            static bool Prefix(ref string id)
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    throw new Exception("id cannot be null");
+                }
+                string assemblyLocation = string.Empty;
+                StackTrace trace = new StackTrace(true);
+                foreach (StackFrame frame in trace.GetFrames())
+                {
+                    MethodBase method = frame.GetMethod();
+                    if (method.DeclaringType == null) break;
+                    if (method.DeclaringType.Assembly.Location.Contains("Mods") || method.DeclaringType.Assembly.Location.Contains("References"))
+                    {
+                        assemblyLocation = method.DeclaringType.Assembly.Location;
+                        break;
+                    }
+                   /* if (!method.DeclaringType.FullName.StartsWith("MSCLoader") && !method.DeclaringType.FullName.StartsWith("System.Diagnostics"))
+                    {
+                        assemblyLocation = method.DeclaringType.Assembly.Location;
+                        break;
+                    }*/
+                }
+                MSCLInternal.AddHarmonyInstance(assemblyLocation, id);
+                return true;
+            }
+        }
+        [HarmonyPatch(typeof(System.Diagnostics.Process), "Start_common", new[] { typeof(ProcessStartInfo), typeof(Process)})]
         class ProcessStartPatch
         {
-            static bool Prefix(ref ProcessStartInfo startInfo)
+            static bool Prefix(ref ProcessStartInfo startInfo, ref Process process)
             {
                 try
                 {
@@ -347,7 +377,7 @@ namespace MSCLoader.Preloader
                     }
                     if (startInfo.FileName.Contains("cmd.exe") || startInfo.FileName.Contains("powershell.exe") || startInfo.FileName.StartsWith("cmd") || startInfo.FileName.StartsWith("powershell") || startInfo.FileName.StartsWith("conhost") || startInfo.FileName.StartsWith("cscript") || startInfo.FileName.StartsWith("wscript") || startInfo.FileName.StartsWith("conhost.exe") || startInfo.FileName.Contains(".bat") || startInfo.FileName.Contains(".ps1") || startInfo.FileName.Contains(".cmd") || startInfo.FileName.Contains(".vbs") || startInfo.FileName.Contains(".js") || startInfo.FileName.Contains(".scr"))
                     {
-                        ModUI.ShowMessage($"Malicious execution detected{Environment.NewLine}{Environment.NewLine}From: <color=orange>{assemblyFullName}</color>{Environment.NewLine}File name: <color=orange>{Path.GetFileName(assemblyLocation)}</color>{Environment.NewLine}{Environment.NewLine}Attempt to execute: <color=orange>{startInfo.FileName}</color>{Environment.NewLine}Arguments: <color=orange>{startInfo.Arguments}</color>{Environment.NewLine}{Environment.NewLine}More details in output_log", "Malicious Behavior");
+                        ModUI.ShowMessage($"Malicious execution detected{Environment.NewLine}{Environment.NewLine}From file: <color=yellow>{Path.GetFileName(assemblyLocation)}</color>{Environment.NewLine}{Environment.NewLine}Attempt to execute: <color=yellow>{startInfo.FileName}</color>{Environment.NewLine}With arguments: <color=yellow>{startInfo.Arguments}</color>{Environment.NewLine}{Environment.NewLine}More details in output_log", "Malicious Behavior");
 
                         Console.WriteLine($"=========== WARNING ===============");
                         Console.WriteLine($"[{assemblyFullName}]: {assemblyLocation}");
@@ -360,9 +390,9 @@ namespace MSCLoader.Preloader
                         Console.WriteLine($"FullTrace:");
                         Console.WriteLine($"{trace}");
                         Console.WriteLine($"==================================");
-                        return false;
+                        throw new InvalidOperationException("Operation not allowed due to security reasons.");
                     }
-                    if(startInfo.WindowStyle == ProcessWindowStyle.Hidden || startInfo.WindowStyle == ProcessWindowStyle.Minimized || startInfo.CreateNoWindow)
+                    if (startInfo.WindowStyle == ProcessWindowStyle.Hidden || startInfo.WindowStyle == ProcessWindowStyle.Minimized || startInfo.CreateNoWindow)
                     {
                         Console.WriteLine($"=========== WARNING ===============");
                         Console.WriteLine($"[{assemblyFullName}]: {assemblyLocation}");
@@ -375,8 +405,8 @@ namespace MSCLoader.Preloader
                         Console.WriteLine($"FullTrace:");
                         Console.WriteLine($"{trace}");
                         Console.WriteLine($"==================================");
-                        ModUI.ShowMessage($"Suspicious execution detected{Environment.NewLine}{Environment.NewLine}From: <color=orange>{assemblyFullName}</color>{Environment.NewLine}File name: <color=orange>{Path.GetFileName(assemblyLocation)}</color>{Environment.NewLine}{Environment.NewLine}Attempt to execute: <color=orange>{startInfo.FileName}</color>{Environment.NewLine}Arguments: <color=orange>{startInfo.Arguments}</color>{Environment.NewLine}{Environment.NewLine}More details in output_log", "Suspicious Behaviour");
-                        return false;
+                        ModUI.ShowMessage($"Suspicious execution detected{Environment.NewLine}{Environment.NewLine}File name: <color=yellow>{Path.GetFileName(assemblyLocation)}</color>{Environment.NewLine}{Environment.NewLine}Attempt to execute: <color=yellow>{startInfo.FileName}</color>{Environment.NewLine}With arguments: <color=yellow>{startInfo.Arguments}</color>{Environment.NewLine}{Environment.NewLine}More details in output_log", "Suspicious Behaviour");
+                        throw new InvalidOperationException("Operation not allowed due to security reasons.");
                     }
                     Console.WriteLine($"=========== WARNING ===============");
                     Console.WriteLine($"[{assemblyFullName}]: {assemblyLocation}");
@@ -398,7 +428,7 @@ namespace MSCLoader.Preloader
                     {
                         ModConsole.Error($"[{assemblyFullName}] External execution forbidden by your settings, to allow this mod to execute below command, please change the settings in the main settings");
                         ModConsole.Warning($"Command: <b>{startInfo.FileName}</b> Arguments: <b>{startInfo.Arguments}</b>");
-                        return false;
+                        throw new InvalidOperationException("Operation not allowed due to security reasons.");
                     }
                     return true;
                 }
@@ -406,7 +436,7 @@ namespace MSCLoader.Preloader
                 {
                     Console.WriteLine($"Error {ex.Message}");
                 }
-                return false; 
+                throw new InvalidOperationException("Operation not allowed due to security reasons.");
             }
         }
 

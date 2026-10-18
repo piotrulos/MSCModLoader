@@ -4,6 +4,53 @@ using System.Collections.Generic;
 
 namespace MSCLoader;
 
+internal class ModDisclosures
+{
+    internal enum DisclosureType
+    {
+        None = 0,
+        CodeWMDisclosure = 1,
+        CodeWMDisclosureLC = 2,
+        UserDisclosureAssets = 4,
+        UserDisclosureCode = 8,
+        CodeReviewFound = 16,
+        CodeReviewFoundAssets = 32
+    }
+    internal DisclosureType disclosureType = DisclosureType.None;
+    internal string userDisclosureMessage = "";
+    internal string codeReviewMessage = "";
+
+    internal bool IsDisclosed(DisclosureType type) => (disclosureType & type) == type;
+    internal bool HasDisclosures => disclosureType != DisclosureType.None;
+    internal void EnsureAI() => disclosureType |= DisclosureType.CodeWMDisclosure;
+    internal void EnsureAILC() => disclosureType |= DisclosureType.CodeWMDisclosureLC;
+}
+internal class ModWarnings
+{
+    internal enum WarningType
+    {
+        None = 0,
+        NativeAssemblies = 1,
+        IsObfuscated = 2,
+        NoValidEntryPoint = 4,
+        HarmonyUsage = 8
+
+    }
+    internal WarningType warningType = WarningType.None;
+    internal string[] nativeAssemblies = [];
+    internal bool HasWarnings => warningType != WarningType.None;
+    internal bool GetWarning(WarningType type) => (warningType & type) == type;
+
+    internal void NativeAssembliesFound(string[] assemblies)
+    {
+        nativeAssemblies = assemblies; 
+        warningType |= WarningType.NativeAssemblies;
+    }
+    internal void Obf() => warningType |= WarningType.IsObfuscated;
+    internal void NoValidEntryPoint() => warningType |= WarningType.NoValidEntryPoint;
+    internal void HarmonyUsage() => warningType |= WarningType.HarmonyUsage;
+}
+
 public partial class Mod
 {
 
@@ -72,6 +119,8 @@ public partial class Mod
     }
 
     //Configuraton flags
+    internal ModDisclosures disclosures = new ModDisclosures();
+    internal ModWarnings warnings = new ModWarnings();
     internal bool updateAvailable = false;
     internal bool newFormat = false;
     internal bool newEnDisFormat = false;

@@ -1,8 +1,14 @@
 ﻿#if !Mini
 using HutongGames.PlayMaker;
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace MSCLoader;
+
+
 
 /// <summary>
 /// Exception extensions
@@ -38,7 +44,6 @@ public static class MSCExtensions
     /// </summary>
     /// <param name="transform">Transform part of GameObject to make pickable</param>
     public static void MakePickable(this Transform transform) => LoadAssets.MakeGameObjectPickable(transform.gameObject);
-
 }
 
 /// <summary>
@@ -822,5 +827,161 @@ public static class PlayMakerProxyExtensions
         return null;
     }
 }
+
+/// <summary>
+/// Read DLLs to get native .dll references info
+/// </summary>
+internal class PeModuleRefs
+{
+    static byte[] d;
+    static int[] rows = new int[64];
+    static int heap;
+
+    static int U16(int o) { return BitConverter.ToUInt16(d, o); }
+    static int I32(int o) { return BitConverter.ToInt32(d, o); }
+
+    static int secStart, secCount;
+    static int Rva(int rva)
+    {
+        for (int i = 0; i < secCount; i++)
+        {
+            int s = secStart + i * 40;
+            int vs = I32(s + 8), va = I32(s + 12), raw = I32(s + 16), ptr = I32(s + 20);
+            if (rva >= va && rva < va + Math.Max(vs, raw)) return rva - va + ptr;
+        }
+        throw new Exception("RVA not in any section");
+    }
+
+    // simple table index size
+    static int Idx(int t) { return rows[t] >= 65536 ? 4 : 2; }
+    // coded index size
+    static int Coded(int bits, params int[] tables)
+    {
+        int max = 0;
+        foreach (int t in tables) max = Math.Max(max, rows[t]);
+        return max < (1 << (16 - bits)) ? 2 : 4;
+    }
+
+    static int RowSize(int t)
+    {
+        int S = (heap & 1) != 0 ? 4 : 2;
+        int G = (heap & 2) != 0 ? 4 : 2;
+        int B = (heap & 4) != 0 ? 4 : 2;
+        int TypeDefOrRef = Coded(2, 0x02, 0x01, 0x1B);
+        int ResScope = Coded(2, 0x00, 0x1A, 0x23, 0x01);
+        int MemberRefParent = Coded(3, 0x02, 0x01, 0x1A, 0x06, 0x1B);
+        int HasConstant = Coded(2, 0x04, 0x08, 0x17);
+        int HasCustomAttr = Coded(5, 0x06, 0x04, 0x01, 0x02, 0x08, 0x09, 0x0A, 0x00, 0x0E, 0x17, 0x14,
+                                     0x11, 0x1A, 0x1B, 0x20, 0x23, 0x26, 0x27, 0x28, 0x2A, 0x2C, 0x2B);
+        int CustomAttrType = Coded(3, 0x06, 0x0A);
+        int HasFieldMarshal = Coded(1, 0x04, 0x08);
+        int HasDeclSecurity = Coded(2, 0x02, 0x06, 0x20);
+        int HasSemantics = Coded(1, 0x14, 0x17);
+        int MethodDefOrRef = Coded(1, 0x06, 0x0A);
+
+        return t switch
+        {
+            0x00 => 2 + S + 3 * G,                                    // Module
+            0x01 => ResScope + 2 * S,                                 // TypeRef
+            0x02 => 4 + 2 * S + TypeDefOrRef + Idx(0x04) + Idx(0x06), // TypeDef
+            0x03 => Idx(0x04),                                        // FieldPtr
+            0x04 => 2 + S + B,                                        // Field
+            0x05 => Idx(0x06),                                        // MethodPtr
+            0x06 => 4 + 2 + 2 + S + B + Idx(0x08),                    // MethodDef
+            0x07 => Idx(0x08),                                        // ParamPtr
+            0x08 => 2 + 2 + S,                                        // Param
+            0x09 => Idx(0x02) + TypeDefOrRef,                         // InterfaceImpl
+            0x0A => MemberRefParent + S + B,                          // MemberRef
+            0x0B => 2 + HasConstant + B,                              // Constant
+            0x0C => HasCustomAttr + CustomAttrType + B,               // CustomAttribute
+            0x0D => HasFieldMarshal + B,                              // FieldMarshal
+            0x0E => 2 + HasDeclSecurity + B,                          // DeclSecurity
+            0x0F => 2 + 4 + Idx(0x02),                                // ClassLayout
+            0x10 => 4 + Idx(0x04),                                    // FieldLayout
+            0x11 => B,                                                // StandAloneSig
+            0x12 => Idx(0x02) + Idx(0x14),                            // EventMap
+            0x13 => Idx(0x14),                                        // EventPtr
+            0x14 => 2 + S + TypeDefOrRef,                             // Event
+            0x15 => Idx(0x02) + Idx(0x17),                            // PropertyMap
+            0x16 => Idx(0x17),                                        // PropertyPtr
+            0x17 => 2 + S + B,                                        // Property
+            0x18 => 2 + Idx(0x06) + HasSemantics,                     // MethodSemantics
+            0x19 => Idx(0x02) + 2 * MethodDefOrRef,                   // MethodImpl
+            _ => throw new Exception("Unexpected table " + t),
+        };
+    }
+
+    //Reset statics
+    static void Reset()
+    {
+        secCount = 0;
+        secStart = 0;
+        d = null;
+        rows = new int[64];
+        heap = 0;
+
+    }
+    internal static string[] ReadNativeDlls(string file)
+    {
+        List<string> result = new List<string>();
+        Reset();
+        d = File.ReadAllBytes(file);
+
+        // --- PE headers ---
+        int pe = I32(0x3C);
+        secCount = U16(pe + 6);
+        int optSize = U16(pe + 20);
+        int opt = pe + 24;
+        bool pe64 = U16(opt) == 0x20B;
+        secStart = opt + optSize;
+        int clrRva = I32(opt + (pe64 ? 112 : 96) + 14 * 8);   // data directory 14 = CLR header
+        if (clrRva == 0) { Console.WriteLine("Not a .NET assembly."); return null; }
+
+        // --- CLR header -> metadata root ---
+        int cli = Rva(clrRva);
+        int md = Rva(I32(cli + 8));
+        if (I32(md) != 0x424A5342) { Console.WriteLine("Bad metadata signature."); return null; }
+        int p = md + 16 + I32(md + 12);               // skip version string
+        int streams = U16(p + 2);
+        p += 4;
+
+        int tilde = -1, strings = -1;
+        for (int i = 0; i < streams; i++)
+        {
+            int off = I32(p), q = p + 8;
+            StringBuilder sb = new StringBuilder();
+            while (d[q] != 0) sb.Append((char)d[q++]);
+            p += 8 + ((sb.Length + 1 + 3) & ~3);
+            if (sb.ToString() == "#~" || sb.ToString() == "#-") tilde = md + off;
+            else if (sb.ToString() == "#Strings") strings = md + off;
+        }
+        if (tilde < 0 || strings < 0) { Console.WriteLine("Metadata streams not found."); return null; }
+
+        // --- Table stream header ---
+        heap = d[tilde + 6];
+        ulong valid = BitConverter.ToUInt64(d, tilde + 8);
+        p = tilde + 24;
+        for (int i = 0; i < 64; i++)
+            if ((valid & (1UL << i)) != 0) { rows[i] = I32(p); p += 4; }
+        if ((heap & 0x40) != 0) p += 4;               // extra data
+
+        if (rows[0x1A] == 0) { Console.WriteLine("No ModuleRef table (no native references)."); return null; }
+
+        // skip all tables before ModuleRef (0x1A)
+        for (int t = 0; t < 0x1A; t++) p += rows[t] * RowSize(t);
+
+        int strIdxSize = (heap & 1) != 0 ? 4 : 2;
+        for (int r = 0; r < rows[0x1A]; r++)
+        {
+            int idx = strIdxSize == 4 ? I32(p) : U16(p);
+            p += strIdxSize;
+            int s = strings + idx, e = s;
+            while (d[e] != 0) e++;
+            result.Add(Encoding.UTF8.GetString(d, s, e - s));
+        }
+        return [.. result];
+    }
+}
+
 
 #endif

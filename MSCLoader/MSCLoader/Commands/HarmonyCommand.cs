@@ -11,6 +11,14 @@ internal class HarmonyCommand : ConsoleCommand
 
     public override void Run(string[] args)
     {
+        if(args.Length > 0)
+        {
+            for (int i = 0; i < MSCLInternal.harmonyInstances.Count; i++)
+            {
+                string[] s = MSCLInternal.harmonyInstances[i].Split('|');
+                ModConsole.Print($"<color=aqua>{s[0]}</color> -> <color=lime>{s[1]}</color>");
+            }
+        }
         HarmonyInstance harmony = HarmonyInstance.Create("MSCLoader.Dbg");
         var originals = harmony.GetPatchedMethods().ToList();
         foreach (var original in originals)

@@ -11,11 +11,19 @@ namespace MSCLoader;
 
 internal class MSCLInternal
 {
+
     internal static bool AsyncRequestInProgress = false;
     internal static bool AsyncRequestError = false;
     internal static string AsyncRequestResult = string.Empty;
-
     internal static string PublicKey = string.Empty;
+
+    internal static List<string> harmonyInstances = new List<string>();
+
+    internal static void AddHarmonyInstance(string fileName, string instanceID)
+    {
+        harmonyInstances.Add($"{Path.GetFileName(fileName)}|{instanceID}");
+    }
+    internal static void ResetHarmonyInstances() => harmonyInstances.Clear();
     internal static bool ValidateVersion(string version)
     {
         try

@@ -51,6 +51,7 @@ internal class MSCUnloader : MonoBehaviour
             ModLoader.returnToMainMenu = true;
             ModLoader.loaderPrepared = false;
             ModLoader.initCalled = false;
+            MSCLInternal.ResetHarmonyInstances();
             Application.LoadLevel(Application.loadedLevelName);
             doReset = false;
         }
