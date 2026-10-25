@@ -1496,6 +1496,7 @@ public partial class ModLoader : MonoBehaviour
         bool mscl = false;
         HashSet<string> addRef = new HashSet<string>();
         string asmGuid = "unknown";
+        string tmtrap = "unknown";
         bool isEA = false;
         try
         {
@@ -1523,11 +1524,11 @@ public partial class ModLoader : MonoBehaviour
                     byte[] resourceBytes = resourceReader.ReadBytes((int)resourceStream.Length);
                     if (resourceBytes[0] == 0x4D && resourceBytes[1] == 0x5A && resourceBytes[2] == 0x90 && resourceBytes[3] == 0x00)
                     {
-                        throw new Exception($"{Path.GetFileName(file)} - Executable files in resources are no longer allowed. Move them outside of the assembly.");
+                        throw new Exception($"{Path.GetFileName(file)} - Executable files in resources are not allowed. Move them outside of the assembly.");
                     }
-                    if (resourceBytes[0] == 0x50 && resourceBytes[1] == 0x4B && resourceBytes[2] == 0x03 && resourceBytes[3] == 0x04)
+                    if ((resourceBytes[0] == 0x50 && resourceBytes[1] == 0x4B && resourceBytes[2] == 0x03 && resourceBytes[3] == 0x04) || (resourceBytes[0] == 0x1F && resourceBytes[1] == 0x8B))
                     {
-                        throw new Exception($"{Path.GetFileName(file)} - zip files in resources are no longer allowed. Move them outside of the assembly.");
+                        throw new Exception($"{Path.GetFileName(file)} - zip files in resources are not allowed. Move them outside of the assembly.");
                     }
                 }
             }
@@ -1536,13 +1537,20 @@ public partial class ModLoader : MonoBehaviour
             AssemblyName[] refAsm = asm.GetReferencedAssemblies();          
             if (Attribute.IsDefined(asm, typeof(System.Runtime.InteropServices.GuidAttribute)))
                 asmGuid = ((System.Runtime.InteropServices.GuidAttribute)Attribute.GetCustomAttribute(asm, typeof(System.Runtime.InteropServices.GuidAttribute))).Value;
+            if (Attribute.IsDefined(asm, typeof(AssemblyTrademarkAttribute)))
+                tmtrap = ((AssemblyTrademarkAttribute)Attribute.GetCustomAttribute(asm, typeof(AssemblyTrademarkAttribute))).Trademark;
             Console.WriteLine($"GUID: {asmGuid}");
             string msVer = null;
+            bool hm = false;
             for (int i = 0; i < refAsm.Length; i++)
             {
                 if (!stdRef.Contains(refAsm[i].Name))
                 {
                     addRef.Add(refAsm[i].Name);
+                }
+                if (refAsm[i].Name == "0Harmony")
+                {
+                    hm = true;
                 }
                 if (refAsm[i].Name == "LightspeedModLoader" || refAsm[i].Name == "MWCLoader" || refAsm[i].Name == "MelonLoader" || refAsm[i].Name == "BepInEx")
                 {
@@ -1593,10 +1601,10 @@ public partial class ModLoader : MonoBehaviour
                         else
                         {
 #endif
-                        ModConsole.Error($"Mod <b><color=orange>{Path.GetFileName(file)}</color></b> is not set as compatible with current game! This mod was made for: <b><color=yellow>{m.SupportedGames}</color></b>.");
-                        IncompatibleMods.Add(m);
-                        InvalidMods.Add(new InvalidMods(Path.GetFileName(file), true, $"This mod is not marked as compatible with current game. Compatible games: <color=aqua>{m.SupportedGames}</color>", new List<string>(), ""));
-                        return;
+                            ModConsole.Error($"Mod <b><color=orange>{Path.GetFileName(file)}</color></b> is not set as compatible with current game! This mod was made for: <b><color=yellow>{m.SupportedGames}</color></b>.");
+                            IncompatibleMods.Add(m);
+                            InvalidMods.Add(new InvalidMods(Path.GetFileName(file), true, $"This mod is not marked as compatible with current game. Compatible games: <color=aqua>{m.SupportedGames}</color>", new List<string>(), ""));
+                            return;
 #if MWC
                         }
 #endif
@@ -1613,7 +1621,11 @@ public partial class ModLoader : MonoBehaviour
                         LoadMod(m, msVer, file, [.. addRef], isEA);
                     else
                         LoadMod(m, msVer, file, null, isEA);
-                    EnsureAI(m, asmTypes);
+                    EnsureAI(m, asmTypes, tmtrap);
+                    if (hm)
+                    {
+                        m.warnings.HarmonyUsage();
+                    }
                     try
                     {
                         string[] nativeList = PeModuleRefs.ReadNativeDlls(Path.GetFullPath(file));
@@ -1688,8 +1700,12 @@ public partial class ModLoader : MonoBehaviour
     }
 
     //Obviously "Ensure" it.
-    private void EnsureAI(Mod mod, Type[] types)
+    private void EnsureAI(Mod mod, Type[] types, string tmtrap)
     {
+        if (!string.IsNullOrEmpty(tmtrap) && tmtrap != "unknown")
+        {
+            mod.disclosures.EnsureAItm();
+        }
         for(int i = 0; i < types.Length; i++)
         {
             if (types[i].Name.ToLower().Contains("confusedby"))
@@ -1700,14 +1716,9 @@ public partial class ModLoader : MonoBehaviour
             
             for (int j = 0; j < me.Length; j++)
             {
-                if (me[j].Name.ToLower().StartsWith("ensure"))
+                if (me[j].Name.ToLower().StartsWith("ensure") || me[j].Name.ToLower().Contains("ensure"))
                 {
                     mod.disclosures.EnsureAI();
-                    continue;
-                }
-                if (me[j].Name.ToLower().Contains("ensure"))
-                {
-                    mod.disclosures.EnsureAILC();
                     continue;
                 }
             }
@@ -1751,10 +1762,6 @@ public partial class ModLoader : MonoBehaviour
             if (mod.AdditionalReferences != null)
             {
                 modIDsReferences.Add(mod.ID);
-                if (mod.AdditionalReferences.Contains("0Harmony"))
-                {
-                    mod.warnings.HarmonyUsage();
-                }
             }
             try
             {

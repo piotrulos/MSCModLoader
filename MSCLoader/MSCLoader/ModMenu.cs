@@ -203,7 +203,7 @@ internal class ModMenu : Mod
         GameObject.DontDestroyOnLoad(UI);
         GameObject.Destroy(UIp);
         ab.Unload(false);
-        ModUI.popupSettingController = UI.GetComponent<PopupSettingController>();
+        ModUI.popupSettingController = UI.GetComponent<PopupController>();
     }
 
     // Reset keybinds

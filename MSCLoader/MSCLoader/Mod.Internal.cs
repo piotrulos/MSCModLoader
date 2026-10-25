@@ -10,7 +10,7 @@ internal class ModDisclosures
     {
         None = 0,
         CodeWMDisclosure = 1,
-        CodeWMDisclosureLC = 2,
+        CodeWMDisclosureTM = 2,
         UserDisclosureAssets = 4,
         UserDisclosureCode = 8,
         CodeReviewFound = 16,
@@ -23,7 +23,7 @@ internal class ModDisclosures
     internal bool IsDisclosed(DisclosureType type) => (disclosureType & type) == type;
     internal bool HasDisclosures => disclosureType != DisclosureType.None;
     internal void EnsureAI() => disclosureType |= DisclosureType.CodeWMDisclosure;
-    internal void EnsureAILC() => disclosureType |= DisclosureType.CodeWMDisclosureLC;
+    internal void EnsureAItm() => disclosureType |= DisclosureType.CodeWMDisclosureTM;
 }
 internal class ModWarnings
 {
@@ -33,7 +33,8 @@ internal class ModWarnings
         NativeAssemblies = 1,
         IsObfuscated = 2,
         NoValidEntryPoint = 4,
-        HarmonyUsage = 8
+        HarmonyUsage = 8,
+        IsEarlyAccess = 16
 
     }
     internal WarningType warningType = WarningType.None;

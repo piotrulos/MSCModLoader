@@ -180,7 +180,8 @@
     <Compile Include="ModMenu\MenuElementList.cs" />
     <Compile Include="ModMenu\ModMenuButton.cs" />
     <Compile Include="ModMenu\ModMenuView.cs" />
-    <Compile Include="ModMenu\PopupSettingController.cs" />
+    <Compile Include="ModMenu\PopupController.cs" />
+    <Compile Include="ModMenu\PopupWindowGroup.cs" />
     <Compile Include="ModMenu\ScrollRectCulling.cs" />
     <Compile Include="ModMenu\SettingsElement.cs" />
     <Compile Include="ModMenu\PopupSettingGroup.cs" />

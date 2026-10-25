@@ -79,6 +79,8 @@ internal class ModMenuView : MonoBehaviour
     public void ModList(GameObject listView, string search)
     {
         StopAllCoroutines();
+        modList = true;
+        modListView = listView;
         RemoveChildren(listView.transform);
         if (ModLoader.Instance.actualModList.Length == 0 && search == string.Empty)
         {
@@ -91,6 +93,7 @@ internal class ModMenuView : MonoBehaviour
 
     public void UpdateList(GameObject listView)
     {
+        modList = false;
         RemoveChildren(listView.transform);
         if (ModLoader.HasUpdateModList.Count == 0 && ModLoader.HasUpdateRefList.Count == 0)
         {
@@ -116,6 +119,7 @@ internal class ModMenuView : MonoBehaviour
     }
     public void ReferencesList(GameObject listView)
     {
+        modList = false;
         RemoveChildren(listView.transform);
         if (ModLoader.Instance.ReferencesList.Count == 0)
         {
@@ -132,6 +136,7 @@ internal class ModMenuView : MonoBehaviour
     }
     public void MainSettingsList(GameObject listView)
     {
+        modList = false;
         RemoveChildren(listView.transform);
         Transform currentTransform = null;
         for (int i = 0; i < Settings.GetModSettings(ModLoader.LoadedMods[0]).Count; i++)

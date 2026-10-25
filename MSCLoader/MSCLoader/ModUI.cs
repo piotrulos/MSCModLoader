@@ -59,7 +59,7 @@ public class MsgBoxBtn
 public class ModUI
 {
     internal static MessageBoxesCanvas messageBoxCv;
-    internal static PopupSettingController popupSettingController;
+    internal static PopupController popupSettingController;
     internal static GameObject canvasPrefab;
     internal static MSCLoaderCanvasLoading loadingCanvas;
     private static GameObject msclCanv;
@@ -211,7 +211,7 @@ public class ModUI
             ModConsole.Error("<b>ShowCustomMessage()</b> - MessageBox requires at least one button.");
             return;
         }
-        if (message.ToLower().Contains("patreon") || message.ToLower().Contains("paypal") || message.ToLower().Contains("donate") || message.ToLower().Contains("donating") || message.ToLower().Contains("donation") || message.ToLower().Contains("sponsoring") || message.ToLower().Contains("discord"))
+        if (message.ToLower().Contains("patreon") || message.ToLower().Contains("ko-fi") || message.ToLower().Contains("paypal") || message.ToLower().Contains("donate") || message.ToLower().Contains("donating") || message.ToLower().Contains("donation") || message.ToLower().Contains("sponsoring") || message.ToLower().Contains("discord"))
         {
             isBeggingAdPopup = true;
         }
@@ -311,7 +311,7 @@ public class ModUI
     /// <param name="title">Window title</param>
     /// <param name="submitButtonText">Submit button text</param>
     /// <returns>PopupSetting</returns>
-    public static PopupSetting CreatePopupSetting(string title, string submitButtonText) => new PopupSetting(title, submitButtonText);
+    public static PopupSetting CreatePopupSetting(string title, string submitButtonText) => new(title, submitButtonText);
 
     /// <summary>
     /// Parse popup response by deserializing it.
@@ -383,68 +383,11 @@ public class ModUI
 }
 
 /// <summary>
-/// Popup Setting Window
+/// Popup Elements
 /// </summary>
-public class PopupSetting
+public class PopupElements
 {
-    internal string WindowTitle = "Popup Setting".ToUpper();
-    internal string SubmitButtonText = "Confirm".ToUpper();
     internal List<ModSetting> settingElements = new List<ModSetting>();
-    internal PopupSetting(string title, string buttonText)
-    {
-        WindowTitle = title;
-        SubmitButtonText = buttonText;
-    }
-    internal string ReturnJsonString()
-    {
-        List<string> json = new List<string>();
-        foreach (ModSetting s in settingElements)
-        {
-            if (s.Popup_NoReturnValue) continue;
-            switch (s.SettingType)
-            {
-                case SettingsType.CheckBox:
-                    SettingsCheckBox ss = (SettingsCheckBox)s;
-                    json.Add($"\"{ss.ID}\":{ss.GetValue().ToString().ToLower()}");
-                    break;
-                case SettingsType.Slider:
-                    SettingsSlider ss2 = (SettingsSlider)s;
-                    json.Add($"\"{ss2.ID}\":{ss2.GetValue()}");
-                    break;
-                case SettingsType.SliderInt:
-                    SettingsSliderInt ss3 = (SettingsSliderInt)s;
-                    json.Add($"\"{ss3.ID}\":{ss3.GetValue()}");
-                    break;
-                case SettingsType.TextBox:
-                    SettingsTextBox ss4 = (SettingsTextBox)s;
-                    json.Add($"\"{ss4.ID}\":{JsonConvert.ToString(ss4.GetValue())}");
-                    break;
-                case SettingsType.TextArea:
-                    SettingsTextArea ss5 = (SettingsTextArea)s;
-                    json.Add($"\"{ss5.ID}\":{JsonConvert.ToString(ss5.GetValue())}");
-                    break;
-                case SettingsType.DropDown:
-                    SettingsDropDownList ss6 = (SettingsDropDownList)s;
-                    json.Add($"\"{ss6.ID}\":{ss6.GetSelectedItemIndex()}");
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        return $"{{{string.Join(",", [.. json])}}}";
-    }
-    /// <summary>
-    /// Show popup window
-    /// </summary>
-    /// <param name="OnSubmit">This will be called once confirm button is pressed to submit result</param>
-    /// <param name="dontCloseOnConfirm">Don't close popup window on confirm</param>
-    public void ShowPopup(Action<string> OnSubmit, bool dontCloseOnConfirm = false) => ModUI.popupSettingController.CreatePopupSetting(this, OnSubmit, dontCloseOnConfirm);
-
-    /// <summary>
-    /// Close popup manually if you used dontCloseOnConfirm
-    /// </summary>
-    public void ClosePopup() => ModUI.popupSettingController.DestroyActivePopup();
 
     /// <summary>
     /// Create Settings Group, you can group settings to easily toggle visibility of multiple elements or create horizontal layout group.
@@ -630,7 +573,92 @@ public class PopupSetting
         settingElements.Add(s);
         return s;
     }
+}
 
+/// <summary>
+/// Customizable Popup Setting Window (single instance, value returns on confirm)
+/// </summary>
+public class PopupSetting : PopupElements
+{
+    internal string WindowTitle = "Popup Setting".ToUpper();
+    internal string SubmitButtonText = "Confirm".ToUpper();
 
+    internal PopupSetting(string title, string buttonText)
+    {
+        WindowTitle = title;
+        SubmitButtonText = buttonText;
+    }
+    internal string ReturnJsonString()
+    {
+        List<string> json = new List<string>();
+        foreach (ModSetting s in settingElements)
+        {
+            if (s.Popup_NoReturnValue) continue;
+            switch (s.SettingType)
+            {
+                case SettingsType.CheckBox:
+                    SettingsCheckBox ss = (SettingsCheckBox)s;
+                    json.Add($"\"{ss.ID}\":{ss.GetValue().ToString().ToLower()}");
+                    break;
+                case SettingsType.Slider:
+                    SettingsSlider ss2 = (SettingsSlider)s;
+                    json.Add($"\"{ss2.ID}\":{ss2.GetValue()}");
+                    break;
+                case SettingsType.SliderInt:
+                    SettingsSliderInt ss3 = (SettingsSliderInt)s;
+                    json.Add($"\"{ss3.ID}\":{ss3.GetValue()}");
+                    break;
+                case SettingsType.TextBox:
+                    SettingsTextBox ss4 = (SettingsTextBox)s;
+                    json.Add($"\"{ss4.ID}\":{JsonConvert.ToString(ss4.GetValue())}");
+                    break;
+                case SettingsType.TextArea:
+                    SettingsTextArea ss5 = (SettingsTextArea)s;
+                    json.Add($"\"{ss5.ID}\":{JsonConvert.ToString(ss5.GetValue())}");
+                    break;
+                case SettingsType.DropDown:
+                    SettingsDropDownList ss6 = (SettingsDropDownList)s;
+                    json.Add($"\"{ss6.ID}\":{ss6.GetSelectedItemIndex()}");
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return $"{{{string.Join(",", [.. json])}}}";
+    }
+    /// <summary>
+    /// Show popup setting window
+    /// </summary>
+    /// <param name="OnSubmit">This will be called once confirm button is pressed to submit result</param>
+    /// <param name="dontCloseOnConfirm">Don't close popup window on confirm</param>
+    public void ShowPopup(Action<string> OnSubmit, bool dontCloseOnConfirm = false) => ModUI.popupSettingController.CreatePopupSetting(this, OnSubmit, dontCloseOnConfirm);
+
+    /// <summary>
+    /// Close popup setting manually if you used dontCloseOnConfirm
+    /// </summary>
+    public void ClosePopup() => ModUI.popupSettingController.DestroyActivePopup();
+}
+
+/// <summary>
+/// Customizable Popup Window (multiple instances, no return value)
+/// </summary>
+public class PopupWindow : PopupElements
+{
+    internal string WindowTitle = "Popup Window".ToUpper();
+
+    internal PopupWindow(string title, string buttonText)
+    {
+        WindowTitle = title;
+    }
+    /// <summary>
+    /// Show popup window
+    /// </summary>
+    public void ShowPopup() => ModUI.popupSettingController.CreatePopupWindow(this);
+
+    /// <summary>
+    /// Close popup manually if you used dontCloseOnConfirm
+    /// </summary>
+  //  public void ClosePopup() => ModUI.popupSettingController.DestroyActivePopup();
 }
 #endif

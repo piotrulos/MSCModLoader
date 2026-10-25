@@ -3,10 +3,17 @@
 namespace MSCLoader;
 internal class PopupSettingGroup : MonoBehaviour
 {
-    public PopupSettingController popupSettingController;
+    public PopupController popupSettingController;
     public Text PopupTitle, ConfirmButtonText;
     public Image PopupBackground;
     public GameObject PopupListView;
+
+    internal void Setup(PopupController psc, string title, string confirmButtonText)
+    {
+        popupSettingController = psc;
+        PopupTitle.text = title.ToUpper();
+        ConfirmButtonText.text = confirmButtonText.ToUpper();
+    }
     public void DestroyThis() //Close
     {
 #if !Mini
