@@ -149,7 +149,8 @@
     <Compile Include="ConsoleView.cs" />
     <Compile Include="CoreAssets\MessageBoxesCanvas.cs" />
     <Compile Include="CoreAssets\MSCLoaderCanvasLoading.cs" />
-    <Compile Include="CoreAssets\UnifiedRaycast.cs" />
+    <Compile Include="Core\MSCLoaderCore.cs" />
+    <Compile Include="UnifiedRaycast.cs" />
     <Compile Include="DummyCompLayer\ModAssets.cs" Condition="$(DefineConstants.Contains('MSC'))" />
     <Compile Include="DummyCompLayer\ModHelper.cs" Condition="$(DefineConstants.Contains('MSC'))" />
     <Compile Include="DummyCompLayer\ModPrompt.cs" Condition="$(DefineConstants.Contains('MSC'))" />
@@ -202,8 +203,8 @@
     <Compile Include="ModUI.cs" />
     <Compile Include="ModUIDrag.cs" />
     <Compile Include="ModCallbacks\BC_ModUpdate.cs" Condition="$(DefineConstants.Contains('MSC'))" />
-    <Compile Include="MSCLInternal.cs" />
-    <Compile Include="MSCUnloader.cs" />
+    <Compile Include="Core\MSCLInternal.cs" />
+    <Compile Include="Core\MSCUnloader.cs" />
     <Compile Include="AudioLibrary\NAudio.Vorbis\VorbisWaveReader.cs" />
     <Compile Include="OBJLoader.cs" Condition="$(DefineConstants.Contains('MSC'))" />
     <Compile Include="PlayMakerExtensions.cs" />
@@ -222,6 +223,7 @@
   <ItemGroup>
     <EmbeddedResource Include="CoreAssets\core_mwc.unity3d" Condition="!$(DefineConstants.Contains('Mini')) and $(DefineConstants.Contains('MWC'))" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if "$(ConfigurationName)" == "MSC_Release" (

@@ -673,8 +673,8 @@ internal class MenuElementList : MonoBehaviour
                 Title.text = $"<color=red>{mod.Name}</color>";
                 DisabledText.gameObject.SetActive(true);
                 icon.material = grayscaleMat;
-              //  WarningText.gameObject.SetActive(true);
-               // WarningText.text = "Mod is disabled";
+                //  WarningText.gameObject.SetActive(true);
+                // WarningText.text = "Mod is disabled";
                 if (mod.disableWarn)
                 {
                     ModUI.ShowMessage("This mod was loaded in Main Menu, to fully disable this mod you need to restart the game.");

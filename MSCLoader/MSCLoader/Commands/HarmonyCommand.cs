@@ -11,7 +11,7 @@ internal class HarmonyCommand : ConsoleCommand
 
     public override void Run(string[] args)
     {
-        if(args.Length > 0)
+        if (args.Length > 0)
         {
             for (int i = 0; i < MSCLInternal.harmonyInstances.Count; i++)
             {
@@ -20,12 +20,12 @@ internal class HarmonyCommand : ConsoleCommand
             }
         }
         HarmonyInstance harmony = HarmonyInstance.Create("MSCLoader.Dbg");
-        var originals = harmony.GetPatchedMethods().ToList();
-        foreach (var original in originals)
+        System.Collections.Generic.List<System.Reflection.MethodBase> originals = harmony.GetPatchedMethods().ToList();
+        foreach (System.Reflection.MethodBase original in originals)
         {
-            var info = harmony.GetPatchInfo(original);
+            Patches info = harmony.GetPatchInfo(original);
             ModConsole.Print(original.FullDescription());
-            foreach(var owner in info.Owners) ModConsole.Print(owner); 
+            foreach (string owner in info.Owners) ModConsole.Print(owner);
         }
 
     }

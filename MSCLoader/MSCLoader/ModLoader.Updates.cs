@@ -9,7 +9,7 @@ using System.Linq;
 using System.Net;
 
 namespace MSCLoader;
-public partial class ModLoader : MonoBehaviour
+public partial class ModLoader
 {
     void UnpackZipFile(string zip, string target)
     {
@@ -87,7 +87,7 @@ public partial class ModLoader : MonoBehaviour
     }
 
     internal bool checkForUpdatesProgress = false;
-    IEnumerator CheckForRefModUpdates()
+    internal IEnumerator CheckForRefModUpdates()
     {
         checkForUpdatesProgress = true;
         canvLoading.SetUpdate("Checking for mod updates...", 0, 3, "Connecting...");
@@ -196,7 +196,7 @@ public partial class ModLoader : MonoBehaviour
         ModMetadata.GetSelfUpdateList();
         if (MetadataUpdateList.Count > 0 && !failed)
         {
-            StartCoroutine(DownloadMetadataFiles());
+            CoreInstance.DownloadMetadata();
         }
         else
         {
@@ -206,7 +206,7 @@ public partial class ModLoader : MonoBehaviour
         }
     }
 
-    IEnumerator DownloadMetadataFiles()
+    internal IEnumerator DownloadMetadataFiles()
     {
         while (checkForUpdatesProgress) yield return null;
         checkForUpdatesProgress = true;
@@ -315,7 +315,7 @@ public partial class ModLoader : MonoBehaviour
         }
         else
         {
-            StartCoroutine(DownloadSingleUpdateC(1, mod.ID));
+            CoreInstance.DownloadSingleUpdate(1, mod.ID);
         }
     }
     internal void DownloadRefUpdate(References refer)
@@ -327,7 +327,7 @@ public partial class ModLoader : MonoBehaviour
         }
         else
         {
-            StartCoroutine(DownloadSingleUpdateC(2, refer.AssemblyID));
+            CoreInstance.DownloadSingleUpdate(2, refer.AssemblyID);
         }
     }
     internal void DownloadModloaderUpdate()
@@ -339,7 +339,7 @@ public partial class ModLoader : MonoBehaviour
         }
         else
         {
-            StartCoroutine(DownloadSingleUpdateC(0));
+            CoreInstance.DownloadSingleUpdate(0);
         }
     }
 
@@ -352,7 +352,7 @@ public partial class ModLoader : MonoBehaviour
         }
         else
         {
-            StartCoroutine(DownloadModsUpdatesC());
+            CoreInstance.DownloadModUpdates();
         }
     }
 
@@ -365,13 +365,13 @@ public partial class ModLoader : MonoBehaviour
         }
         else
         {
-            StartCoroutine(UploadModFile(ID, ver, key, isRef));
+            CoreInstance.UploadModFile(ID, ver, key, isRef);
         }
     }
     internal bool downloadInProgress = false;
     private bool downloadErrored = false;
 
-    IEnumerator UploadModFile(string ID, string ver, string key, bool isRef)
+    internal IEnumerator UploadModFile(string ID, string ver, string key, bool isRef)
     {
         dnsaf = true;
         string type = isRef ? "reference" : "mod";
@@ -463,7 +463,7 @@ public partial class ModLoader : MonoBehaviour
         }
     }
 
-    IEnumerator DownloadSingleUpdateC(byte type, string mod = null)
+    internal IEnumerator DownloadSingleUpdateC(byte type, string mod = null)
     {
         while (checkForUpdatesProgress)
             yield return null;
@@ -519,7 +519,7 @@ public partial class ModLoader : MonoBehaviour
         if (!dnsaf)
             canvLoading.modUpdateUI.SetActive(false);
     }
-    IEnumerator DownloadModsUpdatesC()
+    internal IEnumerator DownloadModsUpdatesC()
     {
         while (checkForUpdatesProgress)
             yield return null;
@@ -606,10 +606,10 @@ public partial class ModLoader : MonoBehaviour
         if (refs.Count == 0 && mods.Count == 0) return;
         ModUI.ShowYesNoMessage($"<color=yellow>Installed mods are missing required files!</color> {Environment.NewLine}{Environment.NewLine}{(refs.Count != 0 ? $"Missing References: <color=aqua>{string.Join(", ", refs.ToArray())}</color>{Environment.NewLine}" : "")}{(mods.Count != 0 ? $"Missing Mods: <color=aqua>{string.Join(", ", mods.ToArray())}</color>{Environment.NewLine}" : "")} {Environment.NewLine}These files are REQUIRED to run the mods correctly!{Environment.NewLine}Do you want to download these files now?", "Missing required files", delegate
         {
-            StartCoroutine(DownloadRequiredFilesC(refs, mods));
+            CoreInstance.DownloadRequiredFiles(refs, mods);
         });
     }
-    IEnumerator DownloadRequiredFilesC(List<string> refs, List<string> mods)
+    internal IEnumerator DownloadRequiredFilesC(List<string> refs, List<string> mods)
     {
         while (checkForUpdatesProgress)
             yield return null;

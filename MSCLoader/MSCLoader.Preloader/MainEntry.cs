@@ -32,6 +32,10 @@ namespace MSCLoader.Preloader
         static bool mwc = false;
         static bool signleInstancePatch = false;
 
+        public static string cfg;
+        public static bool splashSkip = false;
+        public static bool cfgScreenSkip = false;
+
         //Entry point for doorstop
         public static void Main()
         {
@@ -266,8 +270,6 @@ namespace MSCLoader.Preloader
                 InjectModLoader(); //Inject modloader
             }
         }
-        public static string cfg;
-
         [HarmonyPatch(typeof(PlayMakerArrayListProxy))]
         [HarmonyPatch("Awake")]
         class InjectMSCLoader
@@ -275,8 +277,6 @@ namespace MSCLoader.Preloader
             static void Prefix() => ModLoader.Init_NP(cfg);
         }
 
-        public static bool splashSkip = false;
-        public static bool cfgScreenSkip = false;
 
         [HarmonyPatch(typeof(HutongGames.PlayMaker.Actions.MousePickEvent))]
         [HarmonyPatch("DoMousePickEvent")]
@@ -338,11 +338,7 @@ namespace MSCLoader.Preloader
                         assemblyLocation = method.DeclaringType.Assembly.Location;
                         break;
                     }
-                   /* if (!method.DeclaringType.FullName.StartsWith("MSCLoader") && !method.DeclaringType.FullName.StartsWith("System.Diagnostics"))
-                    {
-                        assemblyLocation = method.DeclaringType.Assembly.Location;
-                        break;
-                    }*/
+
                 }
                 MSCLInternal.AddHarmonyInstance(assemblyLocation, id);
                 return true;

@@ -26,7 +26,7 @@ internal class MSCLCanvasManager : MonoBehaviour
     void OnDisable()
     {
         if (isApplicationQuitting) return;
-        ModLoader.HandleCanv(gameObject);
+        ModLoader.mscloaderGameObject?.GetComponent<MSCLoaderCore>().HandleCanv(gameObject);
     }
     void OnApplicationQuit()
     {

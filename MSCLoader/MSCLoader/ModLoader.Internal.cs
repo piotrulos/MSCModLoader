@@ -16,10 +16,11 @@ public partial class ModLoader
     internal static List<InvalidMods> InvalidMods;
     internal static List<Mod> IncompatibleMods = new List<Mod>();
     internal static ModLoader Instance;
+    internal MSCLoaderCore CoreInstance;
     internal static bool unloader = false;
     internal static bool returnToMainMenu = false;
     internal static List<string> saveErrors;
-
+    internal static GameObject mscloaderGameObject;
     internal Mod[] actualModList = [];
 #if MSC
     internal Mod[] BC_ModList = [];
@@ -56,7 +57,6 @@ public partial class ModLoader
     internal MSCUnloader mscUnloader;
 
     internal static string steamID;
-    internal static bool loaderPrepared = false;
     internal static bool initCalled = false;
 #if MSC
     internal static string ModsFolder = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Path.Combine("MySummerCar", "Mods")));
@@ -86,14 +86,21 @@ public partial class ModLoader
 #endif
     // internal static readonly string serverURL = "http://localhost/msc2"; //localhost for testing only
 
-    internal bool IsModsLoading = false;
-    internal bool allModsLoaded = false;
-    internal bool IsModsResetting = false;
+    internal static bool IsModsLoading = false;
+    internal static bool allModsLoaded = false;
+    internal static bool IsModsResetting = false;
     internal bool ModloaderUpdateMessage = false;
 
     internal static bool devMode = false;
     internal static string GetMetadataFolder(string fn) => Path.Combine(MetadataFolder, fn);
 
+    internal static void ResetStaticVariables()
+    {
+        IsModsLoading = false;
+        allModsLoaded = false;
+        IsModsResetting = false;
+        initCalled = false;
+    }
     internal static Mod GetModByID(string modID, bool includeDisabled = false)
     {
         Mod m = LoadedMods.Where(x => x.ID.Equals(modID)).FirstOrDefault();
@@ -102,12 +109,7 @@ public partial class ModLoader
         return null; //null if any above if is false
     }
 
-    void OnApplicationQuit()
-    {
-        //Save current log as "previous"
-        if (File.Exists("output_log_previous.txt")) File.Delete("output_log_previous.txt");
-        File.Copy("output_log.txt", "output_log_previous.txt");
-    }
+
 
     internal static string SidChecksumCalculator(string rawData)
     {

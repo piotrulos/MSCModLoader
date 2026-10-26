@@ -44,7 +44,7 @@ internal class ModWarnings
 
     internal void NativeAssembliesFound(string[] assemblies)
     {
-        nativeAssemblies = assemblies; 
+        nativeAssemblies = assemblies;
         warningType |= WarningType.NativeAssemblies;
     }
     internal void Obf() => warningType |= WarningType.IsObfuscated;

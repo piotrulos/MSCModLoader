@@ -20,7 +20,7 @@ namespace MSCLoader;
 /// <summary>
 /// This is main Mod Loader class.
 /// </summary>
-public partial class ModLoader : MonoBehaviour
+public partial class ModLoader
 {
     /// <summary>
     /// A list of all loaded mods.
@@ -48,6 +48,7 @@ public partial class ModLoader : MonoBehaviour
 
     internal static void Init_NP(string cfg)
     {
+        if (Instance != null) return;
         currentGame = Application.productName == "My Summer Car" ? Game.MySummerCar : Game.MyWinterCar;
         switch (cfg)
         {
@@ -91,17 +92,21 @@ public partial class ModLoader : MonoBehaviour
         PrepareModLoader();
     }
 
-    private static void PrepareModLoader()
+    internal static void PrepareModLoader()
     {
-        if (!loaderPrepared)
+        if (Instance == null)
         {
-            loaderPrepared = true;
-            GameObject go = new("MSCLoader", typeof(ModLoader));
-            Instance = go.GetComponent<ModLoader>();
-            DontDestroyOnLoad(go);
+            GameObject go = new GameObject("MSCLoader", typeof(MSCLoaderCore));
+            Instance = new ModLoader
+            {
+                CoreInstance = go.GetComponent<MSCLoaderCore>()
+            };
+            mscloaderGameObject = go;
+            GameObject.DontDestroyOnLoad(go);
+            return;
         }
         if (Application.loadedLevelName == "MainMenu" && !initCalled)
-        {
+        {         
             initCalled = true;
             Instance.Init();
             return;
@@ -118,72 +123,7 @@ public partial class ModLoader : MonoBehaviour
             }
         }
     }
-    bool vse = false;
-    private void OnLevelWasLoaded(int level)
-    {
-        switch (Application.loadedLevelName)
-        {
-            case "MainMenu":
-                PrepareModLoader();
-                currentScene = CurrentScene.MainMenu;
-                if (GameObject.Find("Music"))
-                    GameObject.Find("Music").GetComponent<AudioSource>().Play();
-                if (QualitySettings.vSyncCount != 0)
-                    vse = true;
-                if (ModMenu.forceMenuVsync.GetValue() && !vse)
-                    QualitySettings.vSyncCount = 1; //vsync in menu
-                if (GameObject.Find("MSCLoader Info") == null)
-                {
-                    MainMenuInfo();
-                }
-                if (allModsLoaded)
-                {
-                    loaderPrepared = false;
-                    mscUnloader.MSCLoaderReset();
-                    unloader = true;
-                    return;
-                }
-
-                if (IsReferencePresent("MSCCoreLibrary"))
-                    TimeSchedulerCalls("stop");
-
-                break;
-            case "Intro":
-                currentScene = CurrentScene.NewGameIntro;
-                ModNewGameReset();
-                break;
-            case "GAME":
-                currentScene = CurrentScene.Game;
-                if (ModMenu.forceMenuVsync.GetValue() && !vse)
-                    QualitySettings.vSyncCount = 0;
-
-                menuInfoAnim.Play("fade_out");
-                if (IsReferencePresent("MSCCoreLibrary"))
-                    TimeSchedulerCalls("start");
-                StartLoadingMods();
-                ModMenu.ModMenuHandle();
-                break;
-            case "Ending":
-                currentScene = CurrentScene.Ending;
-                if (IsReferencePresent("MSCCoreLibrary"))
-                    TimeSchedulerCalls("stop");
-                break;
-            default:
-                break;
-
-        }
-    }
-
-    private void ModNewGameReset()
-    {
-        if (!IsModsResetting)
-        {
-            IsModsResetting = true;
-            StartCoroutine(NewGameMods());
-        }
-    }
-
-    private void TimeSchedulerCalls(string call)
+    internal static void TimeSchedulerCalls(string call)
     {
         switch (call)
         {
@@ -204,15 +144,6 @@ public partial class ModLoader : MonoBehaviour
                 break;
         }
     }
-    private void StartLoadingMods()
-    {
-        if (!allModsLoaded && !IsModsLoading)
-        {
-            IsModsLoading = true;
-            StartCoroutine(LoadMods());
-        }
-    }
-
     private void Init()
     {
         Console.WriteLine($"{Environment.NewLine}[MSCLoader Init]");
@@ -272,7 +203,7 @@ public partial class ModLoader : MonoBehaviour
         {
             GameObject go = new GameObject("MSCUnloader", typeof(MSCUnloader));
             mscUnloader = go.GetComponent<MSCUnloader>();
-            DontDestroyOnLoad(go);
+            GameObject.DontDestroyOnLoad(go);
         }
         else
         {
@@ -458,13 +389,13 @@ public partial class ModLoader : MonoBehaviour
         ModMenu.LoadBinds();
 #if MSC
         GameObject old_callbacks = new GameObject("BC Callbacks");
-        old_callbacks.transform.SetParent(gameObject.transform, false);
+        old_callbacks.transform.SetParent(mscloaderGameObject.transform, false);
         if (OnGUImods.Length > 0) old_callbacks.AddComponent<BC_ModOnGUI>().modLoader = this;
         if (UpdateMods.Length > 0) old_callbacks.AddComponent<BC_ModUpdate>().modLoader = this;
         if (FixedUpdateMods.Length > 0) old_callbacks.AddComponent<BC_ModFixedUpdate>().modLoader = this;
 #endif
         GameObject mod_callbacks = new GameObject("MSCLoader Callbacks");
-        mod_callbacks.transform.SetParent(gameObject.transform, false);
+        mod_callbacks.transform.SetParent(mscloaderGameObject.transform, false);
         if (Mod_OnGUI.Length > 0) mod_callbacks.AddComponent<A_ModOnGUI>().modLoader = this;
         if (Mod_Update.Length > 0) mod_callbacks.AddComponent<A_ModUpdate>().modLoader = this;
         if (Mod_FixedUpdate.Length > 0) mod_callbacks.AddComponent<A_ModFixedUpdate>().modLoader = this;
@@ -494,25 +425,13 @@ public partial class ModLoader : MonoBehaviour
         }
 
     }
-    internal static void HandleCanv(GameObject go)
-    {
-        Instance.HandleCCanv(go);
-    }
-    void HandleCCanv(GameObject go)
-    {
-        StartCoroutine(HandleCanvC(go));
-    }
-    IEnumerator HandleCanvC(GameObject go)
-    {
-        yield return null;
-        go.SetActive(true);
-    }
+
     internal void CheckForModsUpd(bool force = false)
     {
         string sp = Path.Combine(SettingsFolder, Path.Combine("MSCLoader_Settings", "lastCheck"));
         if (force || ModMenu.cfmu_set == 0 || !File.Exists(sp))
         {
-            DownloadUpdateData();
+            CoreInstance.DownloadUpdateData();
             File.WriteAllText(sp, DateTime.Now.ToString());
             return;
         }
@@ -520,7 +439,7 @@ public partial class ModLoader : MonoBehaviour
         DateTime.TryParse(File.ReadAllText(sp), out lastCheck);
         if ((DateTime.Now - lastCheck).TotalDays >= ModMenu.cfmu_set || (DateTime.Now - lastCheck).TotalDays < 0)
         {
-            DownloadUpdateData();
+            CoreInstance.DownloadUpdateData();
             File.WriteAllText(sp, DateTime.Now.ToString());
         }
         else
@@ -543,7 +462,7 @@ public partial class ModLoader : MonoBehaviour
             }
             else
             {
-                DownloadUpdateData();
+                CoreInstance.DownloadUpdateData();
                 File.WriteAllText(sp, DateTime.Now.ToString());
             }
 
@@ -551,11 +470,7 @@ public partial class ModLoader : MonoBehaviour
 
     }
     internal bool updChecked = false;
-    private void DownloadUpdateData()
-    {
-        StartCoroutine(CheckForRefModUpdates());
-        updChecked = true;
-    }
+
 
     [Serializable]
     class SaveOtk
@@ -762,13 +677,13 @@ public partial class ModLoader : MonoBehaviour
         ModUI.PrepareDefaultCanvas();
         GameObject mb = GameObject.Instantiate(mbP);
         ModUI.messageBoxCv = mb.GetComponent<MessageBoxesCanvas>();
-        DontDestroyOnLoad(mb);
+        GameObject.DontDestroyOnLoad(mb);
 
         GameObject loading = GameObject.Instantiate(loadingP);
         canvLoading = loading.GetComponent<MSCLoaderCanvasLoading>();
         ModUI.loadingCanvas = canvLoading;
         canvLoading.lHeader.text = $"MSCLOADER <color=green>{MSCLoader_Ver}</color>";
-        DontDestroyOnLoad(loading);
+        GameObject.DontDestroyOnLoad(loading);
 
         GameObject.Destroy(loadingP);
         GameObject.Destroy(mbP);
@@ -806,10 +721,10 @@ public partial class ModLoader : MonoBehaviour
         Instance.mainMenuInfo.transform.GetChild(1).gameObject.SetActive(ModMenu.modPath.GetValue());
     }
 
-    private void MainMenuInfo()
+    internal void MainMenuInfo()
     {
         Text info, mf, extra;
-        mainMenuInfo = Instantiate(mainMenuInfo);
+        mainMenuInfo = GameObject.Instantiate(mainMenuInfo);
         mainMenuInfo.name = "MSCLoader Info";
         menuInfoAnim = mainMenuInfo.GetComponent<Animation>();
         menuInfoAnim.Play("fade_in");
@@ -930,7 +845,7 @@ public partial class ModLoader : MonoBehaviour
         Console.WriteLine(e);
     }
 
-    IEnumerator NewGameMods()
+    internal IEnumerator NewGameMods()
     {
         ModConsole.Print("<color=aqua>==== Resetting mods ====</color>");
         SaveLoad.ResetSaveFile();
@@ -989,7 +904,7 @@ public partial class ModLoader : MonoBehaviour
         curUnLock.Actions[1] = new SetMouseCursorFix(false);
     }
 
-    IEnumerator LoadMods()
+    internal IEnumerator LoadMods()
     {
         FsmGameObject playerCam = FsmVariables.GlobalVariables.FindFsmGameObject("POV");
         ModConsole.PrintSplit("<b></b><color=aqua>==== Loading mods (Phase 1) ====</color><color=#505050ff>", true);
@@ -1493,11 +1408,14 @@ public partial class ModLoader : MonoBehaviour
 
     private void LoadDLL(string file, byte[] byteFile = null)
     {
-        bool mscl = false;
+        bool isEA = false;
+        bool isMod = false;
+        bool msclMod = false;
+        bool hmRef = false;
+        string msclVer = null;
         HashSet<string> addRef = new HashSet<string>();
         string asmGuid = "unknown";
         string tmtrap = "unknown";
-        bool isEA = false;
         try
         {
             Assembly asm = null;
@@ -1513,63 +1431,36 @@ public partial class ModLoader : MonoBehaviour
             string[] res = asm.GetManifestResourceNames();
             for (int i = 0; i < res.Length; i++)
             {
-                if (res[i].EndsWith(".ps1") || res[i].EndsWith(".bat"))
-                {
-                    throw new Exception($"{Path.GetFileName(file)} - Executable files in resources are no longer allowed. Move them outside of the assembly.");
-                }
-                Stream resourceStream = asm.GetManifestResourceStream(res[i]);
-                if (resourceStream != null)
-                {
-                    BinaryReader resourceReader = new BinaryReader(resourceStream);
-                    byte[] resourceBytes = resourceReader.ReadBytes((int)resourceStream.Length);
-                    if (resourceBytes[0] == 0x4D && resourceBytes[1] == 0x5A && resourceBytes[2] == 0x90 && resourceBytes[3] == 0x00)
-                    {
-                        throw new Exception($"{Path.GetFileName(file)} - Executable files in resources are not allowed. Move them outside of the assembly.");
-                    }
-                    if ((resourceBytes[0] == 0x50 && resourceBytes[1] == 0x4B && resourceBytes[2] == 0x03 && resourceBytes[3] == 0x04) || (resourceBytes[0] == 0x1F && resourceBytes[1] == 0x8B))
-                    {
-                        throw new Exception($"{Path.GetFileName(file)} - zip files in resources are not allowed. Move them outside of the assembly.");
-                    }
-                }
+                CheckResources(res[i], file, asm);
             }
-
-            bool isMod = false;
-            AssemblyName[] refAsm = asm.GetReferencedAssemblies();          
+            AssemblyName[] refAsm = asm.GetReferencedAssemblies();
             if (Attribute.IsDefined(asm, typeof(System.Runtime.InteropServices.GuidAttribute)))
                 asmGuid = ((System.Runtime.InteropServices.GuidAttribute)Attribute.GetCustomAttribute(asm, typeof(System.Runtime.InteropServices.GuidAttribute))).Value;
             if (Attribute.IsDefined(asm, typeof(AssemblyTrademarkAttribute)))
                 tmtrap = ((AssemblyTrademarkAttribute)Attribute.GetCustomAttribute(asm, typeof(AssemblyTrademarkAttribute))).Trademark;
             Console.WriteLine($"GUID: {asmGuid}");
-            string msVer = null;
-            bool hm = false;
+
             for (int i = 0; i < refAsm.Length; i++)
             {
-                if (!stdRef.Contains(refAsm[i].Name))
+                if (!stdRef.Contains(refAsm[i].Name)) addRef.Add(refAsm[i].Name);
+                switch (refAsm[i].Name)
                 {
-                    addRef.Add(refAsm[i].Name);
-                }
-                if (refAsm[i].Name == "0Harmony")
-                {
-                    hm = true;
-                }
-                if (refAsm[i].Name == "LightspeedModLoader" || refAsm[i].Name == "MWCLoader" || refAsm[i].Name == "MelonLoader" || refAsm[i].Name == "BepInEx")
-                {
-                    File.Move(file, Path.Combine(ModsFolder, Path.GetFileName(file) + ".PendingOverwrite"));
-                    throw new Exception("This mod is not designed for MSCLoader and will be removed.");
-                }
-                if (refAsm[i].Name == "MSCLoader")
-                {
-                    mscl = true;
-                    string[] verparse = refAsm[i].Version.ToString().Split('.');
-                    if (refAsm[i].Version.ToString() == "1.0.0.0")
-                        msVer = "0.1";
-                    else
-                    {
-                        if (verparse[2] == "0")
-                            msVer = $"{verparse[0]}.{verparse[1]}";
-                        else
-                            msVer = $"{verparse[0]}.{verparse[1]}.{verparse[2]}";
-                    }
+                    case "0Harmony":
+                        hmRef = true;
+                        break;
+                    case "LightspeedModLoader":
+                    case "MWCLoader":
+                    case "MelonLoader":
+                    case "BepInEx":
+                        File.Move(file, Path.Combine(ModsFolder, Path.GetFileName(file) + ".PendingOverwrite"));
+                        throw new Exception("This mod is not designed for MSCLoader and will be removed.");
+                    case "MSCLoader":
+                        msclMod = true;
+                        Version verparse = refAsm[i].Version;
+                        msclVer = verparse.ToString() == "1.0.0.0"
+                            ? "0.1 - 0.2.1"
+                            : verparse.Build == 0 ? $"{verparse.Major}.{verparse.Minor}" : $"{verparse.Major}.{verparse.Minor}.{verparse.Build}";
+                        break;
                 }
             }
 
@@ -1579,7 +1470,7 @@ public partial class ModLoader : MonoBehaviour
 
             // Look through all public classes
             Type[] asmTypes = asm.GetTypes();
-           
+
             for (int j = 0; j < asmTypes.Length; j++)
             {
                 if (asmTypes[j] == null) continue;
@@ -1601,10 +1492,10 @@ public partial class ModLoader : MonoBehaviour
                         else
                         {
 #endif
-                            ModConsole.Error($"Mod <b><color=orange>{Path.GetFileName(file)}</color></b> is not set as compatible with current game! This mod was made for: <b><color=yellow>{m.SupportedGames}</color></b>.");
-                            IncompatibleMods.Add(m);
-                            InvalidMods.Add(new InvalidMods(Path.GetFileName(file), true, $"This mod is not marked as compatible with current game. Compatible games: <color=aqua>{m.SupportedGames}</color>", new List<string>(), ""));
-                            return;
+                        ModConsole.Error($"Mod <b><color=orange>{Path.GetFileName(file)}</color></b> is not set as compatible with current game! This mod was made for: <b><color=yellow>{m.SupportedGames}</color></b>.");
+                        IncompatibleMods.Add(m);
+                        InvalidMods.Add(new InvalidMods(Path.GetFileName(file), true, $"This mod is not marked as compatible with current game. Compatible games: <color=aqua>{m.SupportedGames}</color>", new List<string>(), ""));
+                        return;
 #if MWC
                         }
 #endif
@@ -1617,12 +1508,9 @@ public partial class ModLoader : MonoBehaviour
                     }
                     m.asmGuid = asmGuid;
                     isMod = true;
-                    if (addRef.Count > 0)
-                        LoadMod(m, msVer, file, [.. addRef], isEA);
-                    else
-                        LoadMod(m, msVer, file, null, isEA);
+                    LoadMod(m, msclVer, file, [.. addRef], isEA);
                     EnsureAI(m, asmTypes, tmtrap);
-                    if (hm)
+                    if (hmRef)
                     {
                         m.warnings.HarmonyUsage();
                     }
@@ -1649,29 +1537,22 @@ public partial class ModLoader : MonoBehaviour
             {
                 crashedGuids.Add(asmGuid);
                 ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - doesn't look like a mod or missing Mod subclass!{Environment.NewLine}<b>Details:</b> File loaded correctly, but failed to find Mod methods.{Environment.NewLine}If this is a reference put this file into \"<b>References</b>\" folder.{Environment.NewLine}");
-                InvalidMods.Add(new InvalidMods(Path.GetFileName(file), true, "File loaded correctly, but failed to find Mod methods.", addRef.ToList(), asmGuid));
+                InvalidMods.Add(new InvalidMods(Path.GetFileName(file), true, "File loaded correctly, but failed to find Mod methods.", [.. addRef], asmGuid));
             }
         }
         catch (Exception e)
         {
-            if (mscl)
+            if (msclMod)
             {
                 crashedGuids.Add(asmGuid);
                 ModConsole.Error($"<b>{Path.GetFileName(file)}</b> - crashed during load.<b>Details:</b> {e.GetFullMessage()}");
-                InvalidMods.Add(new InvalidMods(Path.GetFileName(file), true, e.GetFullMessage(), addRef.ToList(), asmGuid));
+                InvalidMods.Add(new InvalidMods(Path.GetFileName(file), true, e.GetFullMessage(), [.. addRef], asmGuid));
 
                 if (addRef.Count > 0)
                 {
-                    List<string> filteredRef = new List<string>();
-                    foreach (string s in addRef)
-                    {
-                        if (!AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name == s))
-                        {
-                            filteredRef.Add(s);
-                        }
-                    }
-                    if (filteredRef.Count > 0)
-                        ModConsole.Print($"<color=red>Potential missing files: </color><color=aqua>{string.Join(", ", filteredRef.ToArray())}</color>{Environment.NewLine}");
+                    string[] filteredRef = [.. addRef.Where(s => !AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name == s))];
+                    if (filteredRef.Length > 0)
+                        ModConsole.Print($"<color=red>Potential missing files: </color><color=aqua>{string.Join(", ", filteredRef)}</color>{Environment.NewLine}");
                 }
             }
             else
@@ -1694,9 +1575,7 @@ public partial class ModLoader : MonoBehaviour
             if (devMode)
                 ModConsole.Error(e.ToString());
             Console.WriteLine(e);
-            //InvalidMods.Add(Path.GetFileName(file));
         }
-
     }
 
     //Obviously "Ensure" it.
@@ -1706,14 +1585,14 @@ public partial class ModLoader : MonoBehaviour
         {
             mod.disclosures.EnsureAItm();
         }
-        for(int i = 0; i < types.Length; i++)
+        for (int i = 0; i < types.Length; i++)
         {
             if (types[i].Name.ToLower().Contains("confusedby"))
             {
                 mod.warnings.Obf();
             }
-            var me = types[i].GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
-            
+            MethodInfo[] me = types[i].GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+
             for (int j = 0; j < me.Length; j++)
             {
                 if (me[j].Name.ToLower().StartsWith("ensure") || me[j].Name.ToLower().Contains("ensure"))
@@ -1725,7 +1604,27 @@ public partial class ModLoader : MonoBehaviour
 
         }
     }
-
+    private void CheckResources(string res, string file, Assembly asm)
+    {
+        if (res.EndsWith(".ps1") || res.EndsWith(".bat"))
+        {
+            throw new Exception($"{Path.GetFileName(file)} - Executable files in resources are no longer allowed. Move them outside of the assembly.");
+        }
+        Stream resourceStream = asm.GetManifestResourceStream(res);
+        if (resourceStream != null)
+        {
+            BinaryReader resourceReader = new BinaryReader(resourceStream);
+            byte[] resourceBytes = resourceReader.ReadBytes((int)resourceStream.Length);
+            if (resourceBytes[0] == 0x4D && resourceBytes[1] == 0x5A && resourceBytes[2] == 0x90 && resourceBytes[3] == 0x00)
+            {
+                throw new Exception($"{Path.GetFileName(file)} - Executable files in resources are not allowed. Move them outside of the assembly.");
+            }
+            if ((resourceBytes[0] == 0x50 && resourceBytes[1] == 0x4B && resourceBytes[2] == 0x03 && resourceBytes[3] == 0x04) || (resourceBytes[0] == 0x1F && resourceBytes[1] == 0x8B))
+            {
+                throw new Exception($"{Path.GetFileName(file)} - zip files in resources are not allowed. Move them outside of the assembly.");
+            }
+        }
+    }
     private bool ReferencesArePresent(string[] refs)
     {
         int count = 0;
@@ -1759,7 +1658,7 @@ public partial class ModLoader : MonoBehaviour
             mod.compiledVersion = msver;
             mod.fileName = fname;
             mod.AdditionalReferences = additionalRef;
-            if (mod.AdditionalReferences != null)
+            if (mod.AdditionalReferences != null && mod.AdditionalReferences.Length > 0)
             {
                 modIDsReferences.Add(mod.ID);
             }

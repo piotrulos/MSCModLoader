@@ -33,7 +33,7 @@ internal class MSCUnloader : MonoBehaviour
             GameObject[] gos = FindObjectsOfType<GameObject>();
             for (int i = 0; i < gos.Length; i++)
             {
-                if (gos[i].name == "MSCUnloader")
+                if (gos[i].name == "MSCUnloader" || gos[i].name == "MSCLoader")
                     continue;
                 Destroy(gos[i]);
             }
@@ -49,10 +49,10 @@ internal class MSCUnloader : MonoBehaviour
 
             ModLoader.unloader = false;
             ModLoader.returnToMainMenu = true;
-            ModLoader.loaderPrepared = false;
-            ModLoader.initCalled = false;
+            ModLoader.ResetStaticVariables();
             MSCLInternal.ResetHarmonyInstances();
             Application.LoadLevel(Application.loadedLevelName);
+            ModLoader.PrepareModLoader();
             doReset = false;
         }
     }

@@ -14,7 +14,7 @@ public class ModUIDrag : MonoBehaviour, IDragHandler
 
     void Start()
     {
-        if(m_transform == null)
+        if (m_transform == null)
             m_transform = GetComponent<RectTransform>();
     }
     void IDragHandler.OnDrag(PointerEventData eventData)
