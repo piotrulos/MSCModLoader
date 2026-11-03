@@ -13,13 +13,31 @@ internal class PopupController : MonoBehaviour
     internal bool dontCloseOnSubmit = false;
     GameObject activePopup = null;
 
-    public void CreatePopupWindow(PopupWindow popupWindow)
+    public GameObject CreatePopupWindow(PopupWindow popupWindow)
     {
         GameObject popup = Instantiate(popupWindowPrefab);
         popup.transform.SetParent(transform, false);
         PopupWindowGroup popupWindowGroup = popup.GetComponent<PopupWindowGroup>();
         popupWindowGroup.popupSettingController = this;
         popupWindowGroup.PopupTitle.text = popupWindow.WindowTitle.ToUpper();
+        Transform currentTransform = popupWindowGroup.PopupListView.transform;
+
+        for (int i = 0; i < popupWindow.settingElements.Count; i++)
+        {
+            switch (popupWindow.settingElements[i].SettingType)
+            {
+                case SettingsType.LayoutGroup:
+                    currentTransform = mmv.SettingsLayoutGroup(popupWindow.settingElements[i], currentTransform);
+                    break;
+                case SettingsType.LayoutGroupEnd:
+                    currentTransform = popupWindowGroup.PopupListView.transform;
+                    break;
+                default:
+                    mmv.SettingsList(popupWindow.settingElements[i], currentTransform);
+                    break;
+            }
+        }
+        return popup;
     }
     public void CreatePopupSetting(PopupSetting popupSetting, Action<string> onSubmit, bool dontClose)
     {

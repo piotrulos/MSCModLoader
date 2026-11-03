@@ -131,6 +131,7 @@
     <Reference Include="UnityEngine.UI">
       <HintPath>..\..\..\..\..\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\UnityEngine.UI.dll</HintPath>
       <Private>False</Private>
+      <Aliases>global, Unity</Aliases>
     </Reference>
   </ItemGroup>
   <ItemGroup>

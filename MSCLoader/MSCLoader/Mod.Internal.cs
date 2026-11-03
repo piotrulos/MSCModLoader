@@ -16,14 +16,15 @@ internal class ModDisclosures
         CodeReviewFound = 16,
         CodeReviewFoundAssets = 32
     }
-    internal DisclosureType disclosureType = DisclosureType.None;
+    private DisclosureType disclosures = DisclosureType.None;
     internal string userDisclosureMessage = "";
     internal string codeReviewMessage = "";
 
-    internal bool IsDisclosed(DisclosureType type) => (disclosureType & type) == type;
-    internal bool HasDisclosures => disclosureType != DisclosureType.None;
-    internal void EnsureAI() => disclosureType |= DisclosureType.CodeWMDisclosure;
-    internal void EnsureAItm() => disclosureType |= DisclosureType.CodeWMDisclosureTM;
+    internal bool IsDisclosed(DisclosureType type) => (disclosures & type) == type;
+    
+    internal bool HasDisclosures => disclosures != DisclosureType.None;
+    internal void EnsureAI() => disclosures |= DisclosureType.CodeWMDisclosure;
+    internal void EnsureAItm() => disclosures |= DisclosureType.CodeWMDisclosureTM;
 }
 internal class ModWarnings
 {
@@ -37,19 +38,20 @@ internal class ModWarnings
         IsEarlyAccess = 16
 
     }
-    internal WarningType warningType = WarningType.None;
+    private WarningType warnings = WarningType.None;
     internal string[] nativeAssemblies = [];
-    internal bool HasWarnings => warningType != WarningType.None;
-    internal bool GetWarning(WarningType type) => (warningType & type) == type;
+    internal bool HasWarnings => warnings != WarningType.None;
+    internal bool GetWarning(WarningType type) => (warnings & type) == type;
+ //   internal WarningType GetWarnings() => warnings;
 
     internal void NativeAssembliesFound(string[] assemblies)
     {
         nativeAssemblies = assemblies;
-        warningType |= WarningType.NativeAssemblies;
+        warnings |= WarningType.NativeAssemblies;
     }
-    internal void Obf() => warningType |= WarningType.IsObfuscated;
-    internal void NoValidEntryPoint() => warningType |= WarningType.NoValidEntryPoint;
-    internal void HarmonyUsage() => warningType |= WarningType.HarmonyUsage;
+    internal void Obf() => warnings |= WarningType.IsObfuscated;
+    internal void NoValidEntryPoint() => warnings |= WarningType.NoValidEntryPoint;
+    internal void HarmonyUsage() => warnings |= WarningType.HarmonyUsage;
 }
 
 public partial class Mod

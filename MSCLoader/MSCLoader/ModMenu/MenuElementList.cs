@@ -176,7 +176,32 @@ internal class MenuElementList : MonoBehaviour
 #endif
     public void ShowModWarningsWindow()
     {
-
+#if !Mini
+        if (mod == null || !mod.warnings.HasWarnings) return;
+        PopupWindow warningsWindow = ModUI.CreatePopupWindow("Mod Warnings");
+        if (mod.warnings.GetWarning(ModWarnings.WarningType.NativeAssemblies))
+        {
+            warningsWindow.AddText("Native Assemblies");
+            warningsWindow.AddText(string.Join(",", mod.warnings.nativeAssemblies));
+        }
+        if (mod.warnings.GetWarning(ModWarnings.WarningType.IsObfuscated))
+        {
+            warningsWindow.AddText("Is Obfuscated");
+        }
+        if (mod.warnings.GetWarning(ModWarnings.WarningType.NoValidEntryPoint))
+        {
+            warningsWindow.AddText("No Valid Entry Point");
+        }
+        if (mod.warnings.GetWarning(ModWarnings.WarningType.HarmonyUsage))
+        {
+            warningsWindow.AddText("Harmony Usage");
+        }
+        if (mod.warnings.GetWarning(ModWarnings.WarningType.IsEarlyAccess))
+        {
+            warningsWindow.AddText("Is Early Access");
+        }
+        warningsWindow.ShowPopup();
+#endif
     }
     public void ShowModDisclosuresWindow()
     {

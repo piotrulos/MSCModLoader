@@ -1,13 +1,20 @@
-﻿using System.Collections;
+﻿extern alias Unity; //Workaround for TG's BS where he put outline in Assembly-CSharp for no reason.
+using System.Collections;
 using UnityEngine.UI;
+using Outline = Unity.UnityEngine.UI.Outline;
 
 namespace MSCLoader;
 internal class SettingsGroup : MonoBehaviour
 {
     public bool isHeader = true;
-    public RawImage headerButtonImg;
     public RectTransform contents;
     public LayoutElement conentsElement;
+    public HorizontalOrVerticalLayoutGroup layoutGroup;
+    public Outline outline;
+    public Image background;
+
+    [Header("Header Stuff")]
+    public RawImage headerButtonImg;
     public Texture2D upArrow, downArrow;
     private bool collapsed;
     private bool anim;
@@ -16,7 +23,7 @@ internal class SettingsGroup : MonoBehaviour
     public Image HeaderBackground;
     public GameObject HeaderListView;
     public void Toggle()
-    {
+    {      
         if (!isHeader) return;
         if (anim) return;
         if (collapsed)

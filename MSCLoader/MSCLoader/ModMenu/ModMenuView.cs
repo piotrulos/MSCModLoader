@@ -178,10 +178,8 @@ internal class ModMenuView : MonoBehaviour
         if (savedDataCount > 0)
         {
             tx.settingName.text += $"{Environment.NewLine}{Environment.NewLine}<color=yellow>Unified save system: </color><color=aqua>{savedDataCount}</color><color=lime> saved values</color>";
-            SettingsElement rbtn = CreateButton(header.HeaderListView.transform, "Reset save file", Color.red, Color.black);
-            rbtn.settingName.alignment = TextAnchor.MiddleLeft;
-            rbtn.iconElement.texture = rbtn.iconPack[(int)SettingsButton.ButtonIcon.Delete];
-            rbtn.iconElement.gameObject.SetActive(true);
+            SettingsElement rbtn = CreateButton(header.HeaderListView.transform);
+            rbtn.SetupButtonWithIcon("Reset save file", Color.red, Color.black, SettingsButton.ButtonIcon.Delete);
             rbtn.button.onClick.AddListener(delegate
             {
                 if (ModLoader.CurrentScene != CurrentScene.MainMenu)
@@ -211,26 +209,20 @@ internal class ModMenuView : MonoBehaviour
             {
                 if (!string.IsNullOrEmpty(mod.metadata.links[0]))
                 {
-                    SettingsElement nexusBtn = CreateButton(header2.HeaderListView.transform, "SHOW ON <color=orange>NEXUSMODS.COM</color>", Color.white, new Color32(2, 35, 60, 255));
-                    nexusBtn.settingName.alignment = TextAnchor.MiddleLeft;
-                    nexusBtn.iconElement.texture = nexusBtn.iconPack[(int)SettingsButton.ButtonIcon.NexusMods];
-                    nexusBtn.iconElement.gameObject.SetActive(true);
+                    SettingsElement nexusBtn = CreateButton(header2.HeaderListView.transform);
+                    nexusBtn.SetupButtonWithIcon("SHOW ON <color=orange>NEXUSMODS.COM</color>", Color.white, new Color32(2, 35, 60, 255), SettingsButton.ButtonIcon.NexusMods);
                     nexusBtn.button.onClick.AddListener(() => OpenModLink(mod.metadata.links[0]));
                 }
                 if (!string.IsNullOrEmpty(mod.metadata.links[1]))
                 {
-                    SettingsElement rdBtn = CreateButton(header2.HeaderListView.transform, "SHOW ON <color=orange>RACEDEPARTMENT.COM</color>", Color.white, new Color32(2, 35, 49, 255));
-                    rdBtn.settingName.alignment = TextAnchor.MiddleLeft;
-                    rdBtn.iconElement.texture = rdBtn.iconPack[(int)SettingsButton.ButtonIcon.RaceDepartment];
-                    rdBtn.iconElement.gameObject.SetActive(true);
+                    SettingsElement rdBtn = CreateButton(header2.HeaderListView.transform);
+                    rdBtn.SetupButtonWithIcon("SHOW ON <color=orange>RACEDEPARTMENT.COM</color>", Color.white, new Color32(2, 35, 49, 255), SettingsButton.ButtonIcon.RaceDepartment);
                     rdBtn.button.onClick.AddListener(() => OpenModLink(mod.metadata.links[1]));
                 }
                 if (!string.IsNullOrEmpty(mod.metadata.links[2]))
                 {
-                    SettingsElement ghBtn = CreateButton(header2.HeaderListView.transform, "SHOW ON <color=orange>GITHUB.COM</color>", Color.white, Color.black);
-                    ghBtn.settingName.alignment = TextAnchor.MiddleLeft;
-                    ghBtn.iconElement.texture = ghBtn.iconPack[(int)SettingsButton.ButtonIcon.Github];
-                    ghBtn.iconElement.gameObject.SetActive(true);
+                    SettingsElement ghBtn = CreateButton(header2.HeaderListView.transform);
+                    ghBtn.SetupButtonWithIcon("SHOW ON <color=orange>GITHUB.COM</color>", Color.white, Color.black, SettingsButton.ButtonIcon.Github);
                     ghBtn.button.onClick.AddListener(() => OpenModLink(mod.metadata.links[2]));
                 }
             }
@@ -336,7 +328,8 @@ internal class ModMenuView : MonoBehaviour
         SettingsGroup header4 = CreateHeader(listView.transform, "Upload", Color.yellow);
         CreateText(header4.HeaderListView.transform, "<b><color=aqua>Recomended option!</color></b> Updates mod information to latest version and Uploads it, so it's available as in-game update.");
         bool alreadyClicked = false;
-        SettingsElement uploadBtn = CreateButton(header4.HeaderListView.transform, "Upload and Update Mod", Color.white, Color.black);
+        SettingsElement uploadBtn = CreateButton(header4.HeaderListView.transform);
+        uploadBtn.SetupButtonWithIcon("Upload and Update Mod", Color.white, Color.black, SettingsButton.ButtonIcon.CloudArrow);
         uploadBtn.button.onClick.AddListener(delegate
         {
             if (alreadyClicked)
@@ -347,19 +340,16 @@ internal class ModMenuView : MonoBehaviour
             ModMetadata.UploadUpdate(mod, assets, references, refList.ToArray());
             alreadyClicked = true;
         });
-        uploadBtn.settingName.alignment = TextAnchor.MiddleLeft;
-        uploadBtn.iconElement.texture = uploadBtn.iconPack[(int)SettingsButton.ButtonIcon.CloudArrow];
-        uploadBtn.iconElement.gameObject.SetActive(true);
+
         CreateText(header4.HeaderListView.transform, $"{Environment.NewLine}This button below updates mod's version only. Use this if you want to update version number only, without uploading update file. (mod will not be available as in-game update)");
 
-        SettingsElement uploadBtn2 = CreateButton(header4.HeaderListView.transform, "Update Mod version only", Color.white, Color.black);
+        SettingsElement uploadBtn2 = CreateButton(header4.HeaderListView.transform);
+        uploadBtn2.SetupButtonWithIcon("Update Mod Version Only", Color.white, Color.black, SettingsButton.ButtonIcon.Update);
         uploadBtn2.button.onClick.AddListener(delegate
         {
             ModMetadata.UpdateModVersionNumber(mod);
         });
-        uploadBtn2.settingName.alignment = TextAnchor.MiddleLeft;
-        uploadBtn2.iconElement.texture = uploadBtn2.iconPack[(int)SettingsButton.ButtonIcon.Update];
-        uploadBtn2.iconElement.gameObject.SetActive(true);
+
     }
     internal static void OpenModLink(string url)
     {
@@ -442,10 +432,9 @@ internal class ModMenuView : MonoBehaviour
 
         if (!mod.hideResetAllSettings)
         {
-            SettingsElement rbtn = CreateButton(listView.transform, "Reset all settings to default", new Color32(128, 255, 255, 255), Color.black);
-            rbtn.settingName.alignment = TextAnchor.MiddleLeft;
-            rbtn.iconElement.texture = rbtn.iconPack[(int)SettingsButton.ButtonIcon.Reset];
-            rbtn.iconElement.gameObject.SetActive(true);
+            SettingsElement rbtn = CreateButton(listView.transform);
+            rbtn.SetupButtonWithIcon("Reset all settings to default", new Color32(128, 255, 255, 255), Color.black, SettingsButton.ButtonIcon.Reset);
+
             rbtn.button.onClick.AddListener(delegate
             {
                 ModMenu.ResetSettings(mod);
@@ -496,10 +485,8 @@ internal class ModMenuView : MonoBehaviour
                 keyBind.transform.SetParent(currentTransform, false);
             }
         }
-        SettingsElement rbtn = CreateButton(listView.transform, "Reset all Keybinds to default", new Color32(128, 255, 255, 255), Color.black);
-        rbtn.settingName.alignment = TextAnchor.MiddleLeft;
-        rbtn.iconElement.texture = rbtn.iconPack[(int)SettingsButton.ButtonIcon.Reset];
-        rbtn.iconElement.gameObject.SetActive(true);
+        SettingsElement rbtn = CreateButton(listView.transform);
+        rbtn.SetupButtonWithIcon("Reset all Keybinds to default", new Color32(128, 255, 255, 255), Color.black, SettingsButton.ButtonIcon.Reset);
         rbtn.button.onClick.AddListener(delegate
         {
             ModMenu.ResetBinds(mod);
@@ -576,23 +563,14 @@ internal class ModMenuView : MonoBehaviour
                 GameObject btnP = Instantiate(ButtonPrefab);
                 SettingsElement btn = btnP.GetComponent<SettingsElement>();
                 settingBtn.SettingsElement = btn;
-                btn.SetupButton(settingBtn.Name.ToUpper(), settingBtn.TextColor, settingBtn.BackgroundColor);
+                btn.SetupButton(settingBtn);
                 if (settingBtn.PredefinedIcon != SettingsButton.ButtonIcon.None)
                 {
-                    btn.settingName.alignment = TextAnchor.MiddleLeft;
-                    if (settingBtn.PredefinedIcon == SettingsButton.ButtonIcon.Custom)
-                    {
-                        if (settingBtn.CustomIcon == null)
-                        {
-                            ModConsole.Error($"Custom icon for Button {settingBtn.Name} is null.");
-                        }
-                        btn.iconElement.texture = settingBtn.CustomIcon;
-                    }
-                    else
-                    {
-                        btn.iconElement.texture = btn.iconPack[(int)settingBtn.PredefinedIcon];
-                    }
-                    btn.iconElement.gameObject.SetActive(true);
+                    btn.SetupButtonWithIcon(settingBtn);                   
+                }
+                else
+                {
+                    btn.SetupButton(settingBtn);
                 }
                 btn.button.onClick.AddListener(settingBtn.DoAction.Invoke);
                 btn.transform.SetParent(listView, false);
@@ -603,20 +581,14 @@ internal class ModMenuView : MonoBehaviour
                 GameObject rbtnP = Instantiate(ButtonPrefab);
                 SettingsElement rbtn = rbtnP.GetComponent<SettingsElement>();
                 settingRes.SettingsElement = rbtn;
-                rbtn.SetupButton(settingRes.Name.ToUpper(), Color.white, Color.black);
-                rbtn.settingName.alignment = TextAnchor.MiddleLeft;
-                rbtn.iconElement.texture = rbtn.iconPack[(int)SettingsButton.ButtonIcon.Reset];
-                rbtn.iconElement.gameObject.SetActive(true);
+                rbtn.SetupButtonWithIcon(settingRes.Name.ToUpper(), Color.white, Color.black, SettingsButton.ButtonIcon.Reset);
                 rbtn.button.onClick.AddListener(delegate
                 {
                     settingRes.ResetSettings();
                     universalView.FillSettings(settingRes.ThisMod);
                     if (settingRes.ThisMod.newSettingsFormat)
                     {
-                        if (settingRes.ThisMod.A_ModSettingsLoaded != null)
-                        {
-                            settingRes.ThisMod.A_ModSettingsLoaded.Invoke();
-                        }
+                        settingRes.ThisMod.A_ModSettingsLoaded?.Invoke();
                     }
 #if MSC
                     else
@@ -769,13 +741,10 @@ internal class ModMenuView : MonoBehaviour
         hdr.transform.SetParent(listView, false);
         return header;
     }
-    public SettingsElement CreateButton(Transform listView, string text, Color textColor, Color btnColor)
+    public SettingsElement CreateButton(Transform listView)
     {
         GameObject btnP = Instantiate(ButtonPrefab);
         SettingsElement btn = btnP.GetComponent<SettingsElement>();
-        btn.settingName.text = text.ToUpper();
-        btn.settingName.color = textColor;
-        btn.button.GetComponent<Image>().color = btnColor;
         btn.transform.SetParent(listView.transform, false);
         return btn;
     }

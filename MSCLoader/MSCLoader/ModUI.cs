@@ -314,6 +314,13 @@ public class ModUI
     public static PopupSetting CreatePopupSetting(string title, string submitButtonText) => new(title, submitButtonText);
 
     /// <summary>
+    /// Create Popup Window
+    /// </summary>
+    /// <param name="title">Window title</param>
+    /// <returns>PopupWindow</returns>
+    public static PopupWindow CreatePopupWindow(string title) => new(title);
+
+    /// <summary>
     /// Parse popup response by deserializing it.
     /// </summary>
     /// <typeparam name="T">Your class</typeparam>
@@ -646,19 +653,25 @@ public class PopupSetting : PopupElements
 public class PopupWindow : PopupElements
 {
     internal string WindowTitle = "Popup Window".ToUpper();
-
-    internal PopupWindow(string title, string buttonText)
+    internal GameObject popupWindow;
+    internal PopupWindow(string title)
     {
         WindowTitle = title;
     }
     /// <summary>
     /// Show popup window
     /// </summary>
-    public void ShowPopup() => ModUI.popupSettingController.CreatePopupWindow(this);
+    public void ShowPopup() => popupWindow = ModUI.popupSettingController.CreatePopupWindow(this);
 
     /// <summary>
     /// Close popup manually if you used dontCloseOnConfirm
     /// </summary>
-  //  public void ClosePopup() => ModUI.popupSettingController.DestroyActivePopup();
+    public void ClosePopup() 
+    {
+        if(popupWindow != null)
+            GameObject.Destroy(popupWindow);
+        else
+            ModConsole.Error("ClosePopup() Popup window not found");
+    }
 }
 #endif

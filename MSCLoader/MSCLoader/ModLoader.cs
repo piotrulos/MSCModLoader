@@ -306,6 +306,67 @@ public partial class ModLoader
     void ContinueInit()
     {
         LoadReferences();
+        SteamInit();
+        SaveLoad.LoadModsSaveData();
+#if MWC
+        if (ModMenu.ignoreCompatibility.GetValue())
+        {
+            Console.WriteLine("=========================");
+            Console.WriteLine("Compatibility is ignored.");
+            Console.WriteLine("=========================");
+        }
+
+#endif
+        PreLoadMods();
+        if (InvalidMods.Count > 0)
+            ModConsole.Print($"<b><color=orange>Loaded <color=aqua>{actualModList.Length}</color> mods (<color=magenta>{InvalidMods.Count}</color> failed to load)!</color></b>{Environment.NewLine}");
+        else
+            ModConsole.Print($"<b><color=orange>Loaded <color=aqua>{actualModList.Length}</color> mods!</color></b>{Environment.NewLine}");
+        MSCLInternal.LoadMSCLDataFile();
+        LoadModsSettings();
+        ModMenu.LoadBinds();
+#if MSC
+        //Backwards compatibility callbacks
+        GameObject old_callbacks = new GameObject("BC Callbacks");
+        old_callbacks.transform.SetParent(mscloaderGameObject.transform, false);
+        if (OnGUImods.Length > 0) old_callbacks.AddComponent<BC_ModOnGUI>().modLoader = this;
+        if (UpdateMods.Length > 0) old_callbacks.AddComponent<BC_ModUpdate>().modLoader = this;
+        if (FixedUpdateMods.Length > 0) old_callbacks.AddComponent<BC_ModFixedUpdate>().modLoader = this;
+#endif
+        GameObject mod_callbacks = new GameObject("MSCLoader Callbacks");
+        mod_callbacks.transform.SetParent(mscloaderGameObject.transform, false);
+        if (Mod_OnGUI.Length > 0) mod_callbacks.AddComponent<A_ModOnGUI>().modLoader = this;
+        if (Mod_Update.Length > 0) mod_callbacks.AddComponent<A_ModUpdate>().modLoader = this;
+        if (Mod_FixedUpdate.Length > 0) mod_callbacks.AddComponent<A_ModFixedUpdate>().modLoader = this;
+        
+        if (!returnToMainMenu)
+        {
+            CheckForModsUpd();
+        }
+
+        if (devMode)
+            ModConsole.Warning("You are running MSCLoader in <color=red><b>DevMode</b></color>, this mode is <b>only for modders</b> and shouldn't be used in normal gameplay.");
+        System.Console.WriteLine(SystemInfoFix()); //operating system version to output_log.txt
+        if (InvalidMods.Count > 0)
+        {
+            ModConsole.Error("Some files failed to load, scroll up to see more info.");
+        }
+        if (saveErrors != null)
+        {
+            if (saveErrors.Count > 0 && wasSaving)
+            {
+                ModUI.ShowMessage($"Some mods have thrown an error during saving{Environment.NewLine}Check console for more information!");
+                for (int i = 0; i < saveErrors.Count; i++)
+                {
+                    ModConsole.Error(saveErrors[i]);
+                }
+            }
+            wasSaving = false;
+        }
+
+    }
+    private void SteamInit()
+    {
         try
         {
             if (File.Exists(Path.GetFullPath(Path.Combine("LAUNCHER.exe", ""))) || File.Exists(Path.GetFullPath(Path.Combine("SmartSteamEmu64.dll", ""))) || File.Exists(Path.GetFullPath(Path.Combine("SmartSteamEmu.dll", ""))))
@@ -347,14 +408,20 @@ public partial class ModLoader
             {
                 webClient.Headers.Add("user-agent", $"MSCLoader/{MSCLoader_Ver} ({SystemInfoFix()}) [{MSCLInfo.BuildType}]");
                 webClient.DownloadStringCompleted += SAuthCheckCompleted;
-                webClient.DownloadStringAsync(new Uri($"{serverURL}/sauth.php?sid={steamID}"));
+                webClient.DownloadStringAsync(new Uri($"{serverURL}/mscl_sauth.php?sid={steamID}"));
             }
-            if (LoadedMods.Count >= 100)
-                Steamworks.SteamFriends.SetRichPresence("status", $"This madman is playing with {actualModList.Length} mods.");
-            else if (LoadedMods.Count >= 50)
-                Steamworks.SteamFriends.SetRichPresence("status", $"Playing with {actualModList.Length} mods. Crazy!");
-            else
-                Steamworks.SteamFriends.SetRichPresence("status", $"Playing with {actualModList.Length} mods.");
+            switch (LoadedMods.Count)
+            {
+                case >= 100:
+                    Steamworks.SteamFriends.SetRichPresence("status", $"This madman is playing with {actualModList.Length} mods.");
+                    break;
+                case >= 50:
+                    Steamworks.SteamFriends.SetRichPresence("status", $"Playing with {actualModList.Length} mods. Crazy!");
+                    break;
+                default:
+                    Steamworks.SteamFriends.SetRichPresence("status", $"Playing with {actualModList.Length} mods.");
+                    break;
+            }
         }
         catch (Exception e)
         {
@@ -369,63 +436,7 @@ public partial class ModLoader
                 Environment.Exit(0);
             }
         }
-        SaveLoad.LoadModsSaveData();
-#if MWC
-        if (ModMenu.ignoreCompatibility.GetValue())
-        {
-            Console.WriteLine("=========================");
-            Console.WriteLine("Compatibility is ignored.");
-            Console.WriteLine("=========================");
-        }
-
-#endif
-        PreLoadMods();
-        if (InvalidMods.Count > 0)
-            ModConsole.Print($"<b><color=orange>Loaded <color=aqua>{actualModList.Length}</color> mods (<color=magenta>{InvalidMods.Count}</color> failed to load)!</color></b>{Environment.NewLine}");
-        else
-            ModConsole.Print($"<b><color=orange>Loaded <color=aqua>{actualModList.Length}</color> mods!</color></b>{Environment.NewLine}");
-        MSCLInternal.LoadMSCLDataFile();
-        LoadModsSettings();
-        ModMenu.LoadBinds();
-#if MSC
-        GameObject old_callbacks = new GameObject("BC Callbacks");
-        old_callbacks.transform.SetParent(mscloaderGameObject.transform, false);
-        if (OnGUImods.Length > 0) old_callbacks.AddComponent<BC_ModOnGUI>().modLoader = this;
-        if (UpdateMods.Length > 0) old_callbacks.AddComponent<BC_ModUpdate>().modLoader = this;
-        if (FixedUpdateMods.Length > 0) old_callbacks.AddComponent<BC_ModFixedUpdate>().modLoader = this;
-#endif
-        GameObject mod_callbacks = new GameObject("MSCLoader Callbacks");
-        mod_callbacks.transform.SetParent(mscloaderGameObject.transform, false);
-        if (Mod_OnGUI.Length > 0) mod_callbacks.AddComponent<A_ModOnGUI>().modLoader = this;
-        if (Mod_Update.Length > 0) mod_callbacks.AddComponent<A_ModUpdate>().modLoader = this;
-        if (Mod_FixedUpdate.Length > 0) mod_callbacks.AddComponent<A_ModFixedUpdate>().modLoader = this;
-        if (!returnToMainMenu)
-        {
-            CheckForModsUpd();
-        }
-
-        if (devMode)
-            ModConsole.Warning("You are running MSCLoader in <color=red><b>DevMode</b></color>, this mode is <b>only for modders</b> and shouldn't be used in normal gameplay.");
-        System.Console.WriteLine(SystemInfoFix()); //operating system version to output_log.txt
-        if (InvalidMods.Count > 0)
-        {
-            ModConsole.Error("Some files failed to load, scroll up to see more info.");
-        }
-        if (saveErrors != null)
-        {
-            if (saveErrors.Count > 0 && wasSaving)
-            {
-                ModUI.ShowMessage($"Some mods have thrown an error during saving{Environment.NewLine}Check console for more information!");
-                for (int i = 0; i < saveErrors.Count; i++)
-                {
-                    ModConsole.Error(saveErrors[i]);
-                }
-            }
-            wasSaving = false;
-        }
-
     }
-
     internal void CheckForModsUpd(bool force = false)
     {
         string sp = Path.Combine(SettingsFolder, Path.Combine("MSCLoader_Settings", "lastCheck"));
@@ -477,6 +488,12 @@ public partial class ModLoader
     {
         public string k1;
         public string k2;
+
+        internal SaveOtk(string p1, string p2)
+        {
+            k1 = p1;
+            k2 = p2;
+        }
     }
 
     private void SAuthCheckCompleted(object sender, DownloadStringCompletedEventArgs e)
@@ -497,26 +514,14 @@ public partial class ModLoader
                 string[] ed = result.Split('|');
                 if (ed[0] == "error")
                 {
-                    switch (ed[1])
-                    {
-                        case "0":
-                            throw new Exception("Getting steamID failed.");
-                        case "1":
-                            throw new Exception("steamID rejected.");
-                        default:
-                            throw new Exception("Unknown error.");
-                    }
+                    throw new Exception(ed[1]);                   
                 }
                 else if (ed[0] == "ok")
                 {
-                    SaveOtk s = new SaveOtk
-                    {
-                        k1 = ed[1],
-                        k2 = ed[2]
-                    };
-                    System.Runtime.Serialization.Formatters.Binary.BinaryFormatter f = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                    SaveOtk s = new(ed[1], ed[2]);
+                    System.Runtime.Serialization.Formatters.Binary.BinaryFormatter f = new();
                     string sp = Path.Combine(SettingsFolder, Path.Combine("MSCLoader_Settings", "otk.bin"));
-                    FileStream st = new FileStream(sp, FileMode.Create);
+                    FileStream st = new(sp, FileMode.Create);
                     f.Serialize(st, s);
                     st.Close();
                 }
@@ -533,7 +538,7 @@ public partial class ModLoader
                     ModUI.ShowMessage($"<color=orange><b>Warning:</b></color>{Environment.NewLine}You are using beta build: <color=orange><b>{Name}</b></color>{Environment.NewLine}{Environment.NewLine}Remember that some mods may not work correctly on beta branches.", "Experimental build warning");
             }
             Console.WriteLine($"MSC buildID: <b>{Steamworks.SteamApps.GetAppBuildId()}</b>");
-            if (Steamworks.SteamApps.GetAppBuildId() < 10000)
+            if (Steamworks.SteamApps.GetAppBuildId() < 100000)
                 throw new DivideByZeroException();
         }
         catch (Exception ex)
@@ -543,8 +548,8 @@ public partial class ModLoader
             {
                 if (File.Exists(sp))
                 {
-                    System.Runtime.Serialization.Formatters.Binary.BinaryFormatter f = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-                    FileStream st = new FileStream(sp, FileMode.Open);
+                    System.Runtime.Serialization.Formatters.Binary.BinaryFormatter f = new();
+                    FileStream st = new(sp, FileMode.Open);
                     SaveOtk s = f.Deserialize(st) as SaveOtk;
                     st.Close();
                     string otk = "otk_" + SidChecksumCalculator($"{steamID}{s.k1}");

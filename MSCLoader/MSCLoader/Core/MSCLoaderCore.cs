@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !Mini
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -122,3 +123,4 @@ internal class MSCLoaderCore : MonoBehaviour
     }
 
 }
+#endif
